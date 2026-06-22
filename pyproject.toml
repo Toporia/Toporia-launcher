@@ -1,0 +1,30 @@
+[build-system]
+requires = ["setuptools>=68", "wheel"]
+build-backend = "setuptools.backends.legacy:build"
+
+[project]
+name = "toporia"
+version = "0.1.0"
+description = "Open-source topology optimisation platform with benchmarks and a live GUI"
+readme = "README.md"
+requires-python = ">=3.10"
+license = { text = "MIT" }
+keywords = ["topology optimisation", "structural optimisation", "finite element", "SIMP"]
+
+dependencies = [
+    "numpy>=1.24",
+    "scipy>=1.10",
+    "matplotlib>=3.7",
+    "Pillow>=9.0",
+    "PySide6>=6.5",
+]
+
+[project.optional-dependencies]
+dev = ["pytest>=7", "ruff"]
+
+[project.scripts]
+toporia = "toporia.gui:launch"
+
+[tool.setuptools.packages.find]
+where = ["."]
+include = ["toporia*"]

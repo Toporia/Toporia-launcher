@@ -1,0 +1,144 @@
+cff-version: 1.2.0
+message: "If you use Toporia in your research, please cite it using the metadata below."
+
+title: "Toporia: An open platform for topology optimization research"
+version: 0.1.0-alpha
+date-released: 2025-06-22
+license: Apache-2.0
+repository-code: https://github.com/toporia/toporia
+
+keywords:
+  - topology optimization
+  - structural optimization
+  - finite element analysis
+  - density filter
+  - level-set method
+  - manufacturing constraints
+  - open source
+  - Python
+
+authors:
+  - family-names: "Fieber"
+    given-names: "Johannes"
+    affiliation: "TU Delft - Delft University of Technology"
+
+abstract: >
+  Toporia is an open-source Python platform for topology optimization research.
+  It provides a modular backbone with swappable filters, optimizers, and problem
+  definitions, implementing methods from the research literature including
+  density-based SIMP optimization, RBF level-set methods, and manufacturing
+  constraint filters for milling and additive manufacturing.
+
+references:
+
+  - type: article
+    title: >-
+      Efficient topology optimization in MATLAB using 88 lines of code
+    authors:
+      - family-names: Andreassen
+        given-names: Erik
+      - family-names: Clausen
+        given-names: Anders
+      - family-names: Schevenels
+        given-names: Mattias
+      - family-names: Lazarov
+        given-names: Boyan S.
+      - family-names: Sigmund
+        given-names: Ole
+    journal: Structural and Multidisciplinary Optimization
+    volume: 43
+    start: 1
+    end: 16
+    year: 2011
+    doi: 10.1007/s00158-010-0594-7
+    notes: >-
+      Source of the SIMP material model, optimality criteria (OC) optimizer,
+      density filter, and Heaviside projection filter implemented in Toporia.
+
+  - type: article
+    title: >-
+      An 88-line MATLAB code for the parameterized level set method based
+      topology optimization using radial basis functions
+    authors:
+      - family-names: Wei
+        given-names: Peng
+      - family-names: Li
+        given-names: Zuyu
+      - family-names: Li
+        given-names: Xueping
+      - family-names: Wang
+        given-names: Michael Yu
+    journal: Structural and Multidisciplinary Optimization
+    volume: 58
+    start: 831
+    end: 849
+    year: 2018
+    doi: 10.1007/s00158-018-1904-8
+    notes: >-
+      Source of the parameterized RBF level-set method implemented in Toporia.
+
+  - type: article
+    title: Topology optimization for multi-axis machining
+    authors:
+      - family-names: Langelaar
+        given-names: Matthijs
+    journal: Computer Methods in Applied Mechanics and Engineering
+    volume: 351
+    start: 226
+    end: 252
+    year: 2019
+    doi: 10.1016/j.cma.2019.03.037
+    notes: >-
+      Source of the milling manufacturing constraint filter implemented in Toporia.
+
+  - type: article
+    title: >-
+      An additive manufacturing filter for topology optimization of
+      print-ready designs
+    authors:
+      - family-names: Langelaar
+        given-names: Matthijs
+    journal: Structural and Multidisciplinary Optimization
+    volume: 55
+    start: 871
+    end: 883
+    year: 2017
+    doi: 10.1007/s00158-016-1522-2
+    notes: >-
+      Source of the additive manufacturing overhang filter implemented in Toporia.
+
+  - type: article
+    title: A discrete level-set topology optimization code written in Matlab
+    authors:
+      - family-names: Challis
+        given-names: Vivien J.
+    journal: Structural and Multidisciplinary Optimization
+    volume: 41
+    start: 453
+    end: 464
+    year: 2010
+    doi: 10.1007/s00158-009-0430-0
+    notes: >-
+      Source of the discrete level-set method implemented in Toporia.
+      Remove this entry if this method is not included in your release.
+
+  - type: article
+    title: >-
+      Level set topology and shape optimization by density methods using
+      cut elements with length scale control
+    authors:
+      - family-names: Andreasen
+        given-names: Casper Schousboe
+      - family-names: Elingaard
+        given-names: Mathias Obs
+      - family-names: Aage
+        given-names: Niels
+    journal: Structural and Multidisciplinary Optimization
+    volume: 62
+    start: 685
+    end: 707
+    year: 2020
+    doi: 10.1007/s00158-020-02527-1
+    notes: >-
+      Source of the cut-element level-set method with length scale control
+      implemented in Toporia. Remove this entry if this method is not included.
