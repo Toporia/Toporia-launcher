@@ -167,7 +167,7 @@ class TopOptConfig:
 
     # ── Filter pipeline ───────────────────────────────────────────────────────
     # List of filter spec dicts applied in order: Regularization → Projection → Manufacturing.
-    # Each dict must have "type" in {"density","sensitivity","heaviside","milling","am","routing","symmetry"} plus
+    # Each dict must have "type" in {"density","sensitivity","heaviside","am","routing","symmetry"} plus
     # type-specific params.  See methods/filters.py for full parameter reference.
     # Empty list means raw optimizer output with no filtering.
     # Example: [{"type":"density"},{"type":"symmetry","axis":"left_right"},{"type":"routing","radius_mm":2.0,"start_iter":20}]

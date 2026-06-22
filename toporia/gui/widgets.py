@@ -635,16 +635,6 @@ class SensitivitySweep2DParamsGroup(QGroupBox):
 
 # ── Filter pipeline widgets ───────────────────────────────────────────────────
 
-# Milling direction labels — IDs match filter_milling.py image-coordinate convention.
-# canvas.py applies np.flipud, so array row 0 is at IMAGE BOTTOM.
-# Checkbox label → (direction ID in filter code)
-_MILL_DIR_LABELS = [
-    ("From top ↓",    2),   # tool enters at IMAGE top,    propagates downward
-    ("From left →",   1),   # tool enters at IMAGE left,   propagates rightward
-    ("From bottom ↑", 0),   # tool enters at IMAGE bottom, propagates upward
-    ("From right ←",  3),   # tool enters at IMAGE right,  propagates leftward
-]
-
 # AM filter directions: (integer value passed to AMFilter, display label).
 # 0 = build up from image bottom, 90 = build right from image left, etc.
 _AM_DIRECTIONS = [
@@ -683,17 +673,6 @@ class _FilterParams(QWidget):
             f.addRow("eta",           self.eta)
             f.addRow("beta max",      self.beta_max)
             f.addRow("beta interval", self.beta_interval)
-
-        elif ftype == "milling":
-            self.P = _dbl(20.0, 1.0, 200.0, dec=0, step=5.0)
-            f.addRow("P (sharpness)", self.P)
-            # Direction checkboxes
-            dir_widget = QWidget(); dh = QHBoxLayout(dir_widget); dh.setContentsMargins(0,0,0,0)
-            self._dir_checks = []
-            for label, idx in _MILL_DIR_LABELS:
-                cb = QCheckBox(label); cb.setChecked(idx == 2); dh.addWidget(cb)  # default: from top
-                self._dir_checks.append((idx, cb))
-            f.addRow("Directions", dir_widget)
 
         elif ftype == "am":
             self.direction = QComboBox()
@@ -747,9 +726,6 @@ class _FilterParams(QWidget):
             spec["eta"]           = self.eta.value()
             spec["beta_max"]      = self.beta_max.value()
             spec["beta_interval"] = self.beta_interval.value()
-        elif self.ftype == "milling":
-            spec["P"]          = self.P.value()
-            spec["directions"] = [idx for idx, cb in self._dir_checks if cb.isChecked()]
         elif self.ftype == "am":
             spec["direction"]      = self.direction.currentData()
             spec["overhang_angle"] = self.overhang.value()
@@ -772,11 +748,6 @@ class _FilterParams(QWidget):
             self.eta.setValue(float(spec.get("eta", 0.5)))
             self.beta_max.setValue(float(spec.get("beta_max", 32.0)))
             self.beta_interval.setValue(int(spec.get("beta_interval", 25)))
-        elif self.ftype == "milling":
-            self.P.setValue(float(spec.get("P", 20.0)))
-            dirs = set(spec.get("directions", [2]))
-            for idx, cb in self._dir_checks:
-                cb.setChecked(idx in dirs)
         elif self.ftype == "am":
             idx = self.direction.findData(spec.get("direction", 0))
             if idx >= 0:
@@ -809,7 +780,6 @@ class _FilterRow(QWidget):
         for label, key in [("Density filter",     "density"),
                            ("Sensitivity filter", "sensitivity"),
                            ("Heaviside (project)", "heaviside"),
-                           ("Milling constraint",  "milling"),
                            ("AM overhang filter",  "am"),
                            ("Routing radius filter", "routing"),
                            ("Symmetry filter", "symmetry")]:
@@ -822,7 +792,7 @@ class _FilterRow(QWidget):
 
         # Parameter panels — one per type, swapped on type change
         self._panels = {}
-        for key in ("density", "sensitivity", "heaviside", "milling", "am", "routing", "symmetry"):
+        for key in ("density", "sensitivity", "heaviside", "am", "routing", "symmetry"):
             p = _FilterParams(key, self)
             self._panels[key] = p
             outer.addWidget(p)

@@ -1,5 +1,5 @@
 """
-Morpho — open-source topology optimisation platform.
+Toporia — open-source topology optimisation platform.
 
 Quickstart
 ----------

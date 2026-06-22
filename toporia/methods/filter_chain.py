@@ -16,13 +16,13 @@
 from .filters import (
     Filter, FilterChain,
     DensityFilter, SensitivityFilter,
-    HeavisideFilter, MillingFilter, AMFilter, RoutingRadiusFilter, SymmetryFilter,
+    HeavisideFilter, AMFilter, RoutingRadiusFilter, SymmetryFilter,
 )
 
 __all__ = [
     "Filter", "FilterChain",
     "DensityFilter", "SensitivityFilter",
-    "HeavisideFilter", "MillingFilter", "AMFilter", "RoutingRadiusFilter",
+    "HeavisideFilter", "AMFilter", "RoutingRadiusFilter",
     "SymmetryFilter",
     "DensityFilterPipeline",
     "build_filter_chain",
@@ -33,13 +33,12 @@ def build_filter_chain(filter_specs, problem, config):
     """Instantiate a FilterChain from a list of spec dicts and call setup.
 
     Each spec must have "type" in
-    {"density","sensitivity","heaviside","milling","am","routing","symmetry"} plus
+    {"density","sensitivity","heaviside","am","routing","symmetry"} plus
     type-specific optional parameters.  Examples:
 
       {"type": "density"}
       {"type": "density",    "rmin": 2.0}
       {"type": "heaviside",  "beta": 1.0, "eta": 0.5, "beta_max": 32, "beta_interval": 25}
-      {"type": "milling",    "directions": [0, 2], "P": 20}
       {"type": "am",         "direction": "S"}
       {"type": "routing",    "radius_mm": 2.0, "P": 20, "start_iter": 20, "ramp_iters": 20, "threshold": 0.05}
       {"type": "symmetry",   "axis": "left_right"}
@@ -52,10 +51,6 @@ def build_filter_chain(filter_specs, problem, config):
             eta=s.get("eta", 0.5),
             beta_max=s.get("beta_max", 32.0),
             beta_interval=s.get("beta_interval", 25),
-        ),
-        "milling":     lambda s: MillingFilter(
-            directions=s.get("directions", [0]),
-            P=s.get("P", 20),
         ),
         "am":          lambda s: AMFilter(
             direction=s.get("direction", 0),

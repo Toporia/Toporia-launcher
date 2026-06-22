@@ -8,7 +8,6 @@
 #   filter_density.py     — DensityFilter   (weighted neighbourhood average)
 #   filter_sensitivity.py — SensitivityFilter (heuristic sensitivity weighting)
 #   filter_heaviside.py   — HeavisideFilter  (projection, beta continuation)
-#   filter_milling.py     — MillingFilter    (CNC accessibility constraint)
 #   filter_am.py          — AMFilter         (additive manufacturing overhang)
 #
 # The factory function (build_filter_chain) lives in
@@ -18,7 +17,6 @@ from .filter_base        import Filter, FilterChain
 from .filter_density     import DensityFilter
 from .filter_sensitivity import SensitivityFilter
 from .filter_heaviside   import HeavisideFilter
-from .filter_milling     import MillingFilter
 from .filter_am          import AMFilter
 from .filter_routing     import RoutingRadiusFilter
 from .filter_symmetry    import SymmetryFilter
@@ -27,7 +25,6 @@ __all__ = [
     "Filter", "FilterChain",
     "DensityFilter", "SensitivityFilter",
     "HeavisideFilter",
-    "MillingFilter",
     "AMFilter",
     "RoutingRadiusFilter",
     "SymmetryFilter",
