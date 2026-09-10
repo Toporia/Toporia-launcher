@@ -1,9 +1,12 @@
-"""library.methods — optimisation algorithms and their filters.
+"""library.methods — the selectable optimisation methods.
 
 Every OptimizationMethod subclass in this package with a non-empty `name` is
-found automatically by the METHODS registry; there is no list to maintain.  To
-add an algorithm, add a module here that declares name, label, params and
-capabilities (see core/contract.py).
+found automatically by the METHODS registry; there is no list to maintain.
+
+Gradient-based methods are pairings of a model and an updater, declared in
+compositions.py (see core/composition.py).  The RBF level set evolves its own
+design representation with its own volume control, so it implements the
+contract directly.
 
 Modules starting with an underscore hold shared helpers and are not scanned.
 """

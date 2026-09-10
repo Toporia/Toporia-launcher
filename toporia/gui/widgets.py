@@ -523,7 +523,7 @@ class _FilterRow(QWidget):
 
     def __init__(self, on_remove, parent=None, spec=None):
         super().__init__(parent)
-        from toporia.library.methods.filters import FILTERS
+        from toporia.library.filters import FILTERS
 
         outer = QVBoxLayout(self)
         outer.setContentsMargins(0, 2, 0, 2)
@@ -562,7 +562,7 @@ class _FilterRow(QWidget):
         return {"type": key, **self._forms[key].get_values()}
 
     def load_spec(self, spec):
-        from toporia.library.methods.filters import FILTERS
+        from toporia.library.filters import FILTERS
         values = dict(spec)
         key = FILTERS.get(values.pop("type", "density")).name
         self._type.setCurrentIndex(self._type.findData(key))

@@ -52,6 +52,9 @@ class OptimizationMethod(ABC):
     method marked @abstractmethod.  If it doesn't, Python refuses to instantiate
     it.
 
+    Most gradient-based methods are not written against this class directly
+    but assembled from a Model and an Updater (core/composition.py).
+
     A method also describes itself through class attributes.  The registry
     (toporia.library.methods.METHODS) finds every subclass with a `name`, the
     GUI builds its panel from `params`, and `capabilities` tells both what the

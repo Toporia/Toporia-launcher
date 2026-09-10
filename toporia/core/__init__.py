@@ -5,6 +5,7 @@
     run.py        Run = Scenario + Solver + Output, and parameter paths into it
     problem.py    the geometric problem built from a Scenario at a mesh resolution
     contract.py   the interface every optimisation method implements
+    composition.py  a method assembled from a Model (physics) and an Updater (update rule)
     params.py     self-describing parameter declarations
     registry.py   plugin discovery
     serialize.py  Scenario / Solver <-> JSON, and fingerprints
@@ -14,6 +15,7 @@ Nothing in core imports from toporia.engine, toporia.library or toporia.gui
 rule is what keeps the data flow readable.
 """
 
+from .composition import ComposedMethod, Evaluation, Model, Updater
 from .contract import Capabilities, OptimizationMethod
 from .params import Param, resolve_params
 from .problem import BaseProblem, RectangularProblem
@@ -37,4 +39,5 @@ __all__ = [
     "apply_param", "read_param",
     "BaseProblem", "RectangularProblem",
     "OptimizationMethod", "Capabilities", "Param", "resolve_params",
+    "ComposedMethod", "Model", "Updater", "Evaluation",
 ]

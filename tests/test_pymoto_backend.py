@@ -1,13 +1,16 @@
 """test_pymoto_backend.py — the contract canary.
 
-pyMOTO knows nothing about Toporia.  If the adapter in
-library/methods/pymoto_compliance.py can drive it using only core.contract and
+pyMOTO knows nothing about Toporia.  If the model in
+library/models/pymoto_compliance.py can drive it using only core.contract and
 core.problem, then those two modules contain no Toporia-specific assumptions.
 
 A failure here after a contract change is the signal that the contract has
 quietly grown a dependency on how Toporia's own methods happen to work.
 """
 
+import importlib.util
+import subprocess
+import sys
 
 import numpy as np
 import pytest
@@ -16,7 +19,10 @@ from toporia.core.contract import OBJECTIVE
 from toporia.engine.runner import initialized_method
 from toporia.library.problems import get_run
 
-pymoto = pytest.importorskip("pymoto", reason="optional dependency: pip install pymoto")
+# Checked without importing pyMOTO: importing it switches matplotlib's backend,
+# and the library only ever imports it through import_pymoto(), which undoes that.
+pytestmark = pytest.mark.skipif(importlib.util.find_spec("pymoto") is None,
+                                reason="optional dependency: pip install pymoto")
 
 
 def _run(method_name, problem_name="MBB Beam", iterations=25, **overrides):
@@ -68,3 +74,20 @@ def test_honours_passive_and_void_bounds():
     density = method.get_density()
     assert np.all(density[problem.void_elements] < 1e-6)
     assert np.all(density[problem.passive_elements] > 1.0 - 1e-6)
+
+
+def test_importing_pymoto_leaves_the_matplotlib_backend_alone():
+    """pyMOTO calls matplotlib.use("TkAgg") on import; import_pymoto() must undo it.
+
+    Otherwise selecting a pyMOTO method would switch every figure the GUI or the
+    CLI saves to Tk.  Run in a fresh interpreter, because in this process pyMOTO
+    may already have been imported by an earlier test.
+    """
+    script = (
+        "import matplotlib; matplotlib.use('Agg')\n"
+        "from toporia.library.models.pymoto_compliance import import_pymoto\n"
+        "import_pymoto()\n"
+        "print(matplotlib.get_backend())\n"
+    )
+    result = subprocess.run([sys.executable, "-c", script], capture_output=True, text=True, check=True)
+    assert result.stdout.strip().lower() == "agg"

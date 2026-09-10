@@ -1,4 +1,4 @@
-# filter_chain.py — build a filter pipeline from spec dicts
+# library/filters/pipeline.py — build a filter pipeline from spec dicts
 #
 #   build_filter_chain(filter_specs, problem, solver)
 #       Looks each spec's "type" up in the FILTERS registry, validates its
@@ -6,17 +6,18 @@
 #       FilterChain.  Empty list → caller uses no chain (raw optimiser output).
 #
 #   DensityFilterPipeline
-#       Small adapter used by the density methods to keep filter bookkeeping out
-#       of their update rules.
+#       Small adapter used by density models (library/models) to keep filter
+#       bookkeeping out of their physics.
 #
-# Individual filter classes live in methods/filters/ (one file per filter).
-# FilterChain and the Filter ABC live in methods/filters/filter_base.py.
+# Individual filter classes live next to this file, one per module; FilterChain
+# and the Filter ABC live in filter_base.py.
 
 import numpy as np
 
 from toporia.core.params import resolve_params
 
-from .filters import FILTERS, FilterChain
+from . import FILTERS
+from .filter_base import FilterChain
 
 __all__ = ["DensityFilterPipeline", "build_filter_chain"]
 

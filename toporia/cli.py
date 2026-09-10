@@ -77,18 +77,21 @@ def _label(solver_path):
 # ── Commands ──────────────────────────────────────────────────────────────────
 
 def _cmd_list(args):
+    from toporia.library.filters import FILTERS
     from toporia.library.methods import METHODS
-    from toporia.library.methods.filters import FILTERS
+    from toporia.library.models import MODELS
     from toporia.library.problems import problem_names
+    from toporia.library.updaters import UPDATERS
 
     print("Presets:")
     for name in problem_names():
         print(f"  {name}")
-    for title, registry in (("Methods", METHODS), ("Filters", FILTERS)):
+    for title, registry in (("Methods", METHODS), ("Models", MODELS),
+                            ("Updaters", UPDATERS), ("Filters", FILTERS)):
         print(f"\n{title}:")
         for cls in registry.classes():
             params = ", ".join(p.name for p in cls.params) or "-"
-            print(f"  {cls.name:<12} {cls.label:<32} params: {params}")
+            print(f"  {cls.name:<18} {cls.label:<32} params: {params}")
     return 0
 
 

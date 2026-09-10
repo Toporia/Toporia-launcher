@@ -15,8 +15,8 @@ because only numbers can be swept.
 
 from toporia.core import SCENARIO_PARAMS, SOLVER_PARAMS
 
+from .filters import FILTERS
 from .methods import METHODS
-from .methods.filters import FILTERS
 
 # The LoadCase fields a sweep may vary, with their display labels.
 LOAD_CASE_FIELDS = (("Fmag", "Fmag"), ("Fa", "Angle"), ("weight", "Weight"))

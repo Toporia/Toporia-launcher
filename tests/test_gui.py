@@ -14,8 +14,8 @@ QtWidgets = pytest.importorskip("PySide6.QtWidgets")
 
 from toporia.core import read_param  # noqa: E402
 from toporia.core.params import resolve_params  # noqa: E402
+from toporia.library.filters import FILTERS  # noqa: E402
 from toporia.library.methods import METHODS  # noqa: E402
-from toporia.library.methods.filters import FILTERS  # noqa: E402
 from toporia.library.problems import get_run, problem_names  # noqa: E402
 
 PLUGINS = [(f"method:{c.name}", c) for c in METHODS.classes()] + \

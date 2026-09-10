@@ -1,9 +1,14 @@
 """library — the swappable parts.
 
-Everything here is an *implementation* that the engine selects at run time:
-finite element solvers (fe/), optimisation algorithms and filters (methods/),
-and benchmark problem definitions (problems/).
+Everything here is an implementation the engine selects at run time.  Each
+subpackage is scanned for plugins, so extending one means adding a file:
 
-Adding a new method, filter or problem means adding a file in here.  It should
-never require editing core/ or engine/.
+    fe/        finite element solvers
+    filters/   density filters and the filter pipeline
+    models/    what is optimised: design -> objective, volume and gradients
+    updaters/  how a design moves: OC, MMA, pyMOTO's MMA and GCMMA
+    methods/   the selectable methods: model + updater pairings, and the level set
+    problems/  benchmark and application presets
+
+Extending the library never requires editing core/ or engine/.
 """
