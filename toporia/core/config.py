@@ -9,8 +9,11 @@
 #   cfg = TopOptConfig(volfrac=0.3, max_iter=200)   ← only override what you need
 #   new = dataclasses.replace(cfg, volfrac=0.4)     ← get a modified COPY; original unchanged
 
-from dataclasses import dataclass, field
+import re
+from dataclasses import dataclass, field, fields, replace
 from pathlib import Path
+
+from .params import Param
 
 # Resolved once at import time so every file can find the project root regardless
 # of where the terminal is opened.  __file__ = path of this file.
@@ -115,9 +118,14 @@ class TopOptConfig:
     """
 
     # ── Algorithm ─────────────────────────────────────────────────────────────
-    # "density"  → SIMP density method (top88): robust, widely used, recommended
-    # "levelset" → RBF level-set method (TOPRBF): crisp boundaries, slower
+    # Name of a registered method (see toporia.library.methods.METHODS), e.g.
+    # "density", "density_mma", "levelset" or "pymoto".
     method: str = "density"
+
+    # The selected method's own parameters, keyed by Param name.  Anything left
+    # out uses the default declared on the method class; an unknown key is an
+    # error.  Example: {"penal": 3.5, "move": 0.1}
+    method_params: dict = field(default_factory=dict)
 
     # ── Domain geometry [mm] ──────────────────────────────────────────────────
     Lx: float = 100.0   # domain width
@@ -152,25 +160,18 @@ class TopOptConfig:
         default_factory=lambda: [LoadCase(Fmag=1.0, Fa=0.0, weight=1.0)]
     )
 
-    # ── Density method (SIMP) parameters ─────────────────────────────────────
+    # ── Design constraint and convergence ─────────────────────────────────────
     volfrac: float = 0.5    # target fraction of solid material (0=all void, 1=all solid)
-    penal:   float = 3.0    # SIMP penalty: pushes intermediate densities toward 0 or 1
-    rmin:    float = 1.5    # default filter radius [elements]
     max_iter: int  = 100    # hard iteration limit
-    tol:     float = 0.01   # convergence: stop when max density change < tol
-    move:    float = 0.20   # OC update step limit: max density change per iteration
-    mma_tol: float = 1e-4   # MMA convergence tolerance on max design-variable change
-    mma_asyinit: float = 0.5  # initial MMA asymptote distance as fraction of bounds
-    mma_asyincr: float = 1.2  # asymptote expansion after consistent design motion
-    mma_asydecr: float = 0.7  # asymptote contraction after oscillating design motion
-    mma_c: float = 1000.0     # upper multiplier scale for the one-constraint MMA solve
+    tol:     float = 0.01   # stop when the design change a method reports is below tol
 
     # ── Filter pipeline ───────────────────────────────────────────────────────
-    # List of filter spec dicts applied in order: Regularization → Projection → Manufacturing.
-    # Each dict must have "type" in {"density","sensitivity","heaviside","am","routing","symmetry"} plus
-    # type-specific params.  See methods/filters.py for full parameter reference.
-    # Empty list means raw optimizer output with no filtering.
-    # Example: [{"type":"density"},{"type":"symmetry","axis":"left_right"},{"type":"routing","radius_mm":2.0,"start_iter":20}]
+    # Filters applied in order, each {"type": <filter name>, <param>: <value>}.
+    # Types and their parameters are declared on the filter classes (see
+    # toporia.library.methods.filters.FILTERS); omitted parameters use defaults.
+    # Only honoured by methods whose capabilities say accepts_filters=True.
+    # Empty list means raw optimiser output with no filtering.
+    # Example: [{"type": "density", "rmin": 2.0}, {"type": "symmetry", "axis": "left_right"}]
     filter_specs: list = field(default_factory=lambda: [{"type": "density"}])
 
     # ── Material properties (linear elastic) ─────────────────────────────────
@@ -178,44 +179,81 @@ class TopOptConfig:
     Emin: float = 1e-9   # tiny stiffness for void elements (avoids singular K matrix)
     nu:   float = 0.3    # Poisson's ratio
 
-    # ── Level-set method parameters ───────────────────────────────────────────
-    # Evolution and volume-control parameters from TOPRBF.m.
-    ls_dt:         float = 0.5    # level-set update step; larger is faster, smaller is steadier
-    ls_nrelax:     int   = 30     # ramp iterations before feedback volume control starts
-    ls_delta:      float = 10.0   # half-width of the Phi=0 delta band that receives updates
-    ls_mu:         float = 20.0   # relaxation-phase volume penalty strength
-    ls_gamma:      float = 0.05   # initial feedback gain after relaxation
-    ls_gamma_step: float = 0.05   # feedback gain increase per iteration
-    ls_gamma_max:  float = 5.0    # feedback gain cap to limit oscillation
-
-    # RBF initialization and numerical-resolution controls.
-    ls_init_hole_radius: float = 0.1   # initial hole radius as a fraction of nely
-    ls_rbf_c:            float = 1e-4  # multiquadric RBF regularization constant
-    ls_sample_step:      float = 0.1   # element-volume sampling spacing in [-1, 1]
-    ls_max_nodes:        int   = 3000  # dense RBF node cap before coarsening internally
-
     # ── Output ────────────────────────────────────────────────────────────────
     output_dir: Path = PROJECT_ROOT / "results"
     save_every: int  = 10   # save intermediate density PNG every N iterations (0 = off)
 
 
-def apply_param(cfg, key: str, value: float):
-    """Return a NEW config with exactly one parameter changed.
-    is used in the GUI to number load case parameters The "lc" prefix
-    Handles two key formats:
-      "volfrac"   → plain TopOptConfig field
-      "lc0.Fmag"  → sub-field of load case 0 (index after "lc", field after ".")
+# ── Parameter declarations for the scenario-level fields ──────────────────────
+# Method and filter parameters are declared on their own classes in
+# toporia.library.  These are the fields every run has, whatever its method.
+# The GUI builds its Core / Convergence / Output panels from them.
 
-    The original cfg is never modified — dataclasses.replace() always makes a copy.
-    This immutability is important in sweep loops where the base config must stay
-    unchanged across all iterations.
+DESIGN_PARAMS = (
+    Param("m", 1.0, "Mesh res m",
+          "Elements per millimetre. Higher values give finer designs but slower FEA.",
+          min=0.1, max=5.0, step=0.1, decimals=2, units="el/mm"),
+    Param("volfrac", 0.5, "Vol fraction",
+          "Target fraction of solid material allowed in the design.",
+          min=0.01, max=1.0, step=0.05, decimals=3),
+)
+CONVERGENCE_PARAMS = (
+    Param("max_iter", 100, "Max iters",
+          "Maximum number of optimisation iterations before stopping.", min=1, max=2000),
+    Param("tol", 0.01, "Tolerance",
+          "Stop when the design change reported by the method falls below this value.",
+          min=0.0, max=1.0, step=0.005, decimals=4),
+)
+OUTPUT_PARAMS = (
+    Param("save_every", 10, "Save every N",
+          "Save an intermediate density image every N iterations. Use 0 for final only.",
+          min=0, max=1000),
+)
+CONFIG_PARAMS = DESIGN_PARAMS + CONVERGENCE_PARAMS + OUTPUT_PARAMS
+
+
+_INDEXED_PATH = re.compile(r"^(?P<collection>\w+)\[(?P<index>\d+)\]\.(?P<field>\w+)$")
+
+
+def apply_param(cfg, path: str, value):
+    """Return a NEW config with the value at one parameter path replaced.
+
+    Parameter paths
+    ---------------
+      "volfrac"              a TopOptConfig field
+      "method.penal"         a parameter of the selected method (config.method_params)
+      "filters[1].beta"      a parameter of the second filter in config.filter_specs
+      "load_cases[0].Fmag"   a field of the first load case
+
+    Method and filter parameter names are not checked here, because core does
+    not know which plugins exist.  They are validated when the run starts,
+    against the Param declarations on the plugin classes, so a typo still fails
+    before any computation.  toporia.library.catalog.parameter_paths lists the
+    valid paths for a given configuration.
+
+    The original cfg is never modified: sweeps rely on the base config staying
+    unchanged across every cell.
     """
-    from dataclasses import replace
-    if key.startswith("lc") and "." in key:
-        dot   = key.index(".")
-        idx   = int(key[2:dot])      # extract integer index from "lc0", "lc1", etc.
-        field = key[dot + 1:]        # field name after the dot: "Fmag", "Fa", or "weight"
-        cases = list(cfg.load_cases) # copy the list so we can replace one element
-        cases[idx] = replace(cases[idx], **{field: value})  # replace that load case
-        return replace(cfg, load_cases=cases)
-    return replace(cfg, **{key: value})  # plain field: replace directly
+    if path.startswith("method."):
+        name = path[len("method."):]
+        return replace(cfg, method_params={**cfg.method_params, name: value})
+
+    match = _INDEXED_PATH.match(path)
+    if match:
+        collection, index, field_name = match["collection"], int(match["index"]), match["field"]
+        if collection == "filters":
+            specs = [dict(spec) for spec in cfg.filter_specs]
+            specs[index][field_name] = value
+            return replace(cfg, filter_specs=specs)
+        if collection == "load_cases":
+            cases = list(cfg.load_cases)
+            cases[index] = replace(cases[index], **{field_name: value})
+            return replace(cfg, load_cases=cases)
+        raise KeyError(f"Unknown parameter collection {collection!r} in path {path!r}")
+
+    fields_by_name = {f.name: f for f in fields(cfg)}
+    if path not in fields_by_name:
+        raise KeyError(f"Unknown parameter path {path!r}")
+    if fields_by_name[path].type in (int, "int"):
+        value = int(round(value))   # sweeps generate floats; keep integer fields integral
+    return replace(cfg, **{path: value})

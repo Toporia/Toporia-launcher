@@ -14,23 +14,37 @@
 # This file contains no optimisation logic and no widget definitions.
 # It only wires together the pieces from widgets.py, canvas.py, and runner.py.
 
-import traceback   # for formatting Python exception messages into readable text
+import traceback  # for formatting Python exception messages into readable text
 
-from PySide6.QtWidgets import (
-    QMainWindow, QWidget, QVBoxLayout, QHBoxLayout,
-    QLabel, QComboBox, QPushButton, QScrollArea, QTextEdit, QSplitter,
-    QApplication,
-)
 from PySide6.QtCore import Qt
 from PySide6.QtGui import QFont, QTextCursor
+from PySide6.QtWidgets import (
+    QApplication,
+    QComboBox,
+    QHBoxLayout,
+    QLabel,
+    QMainWindow,
+    QPushButton,
+    QScrollArea,
+    QSplitter,
+    QTextEdit,
+    QVBoxLayout,
+    QWidget,
+)
 
-from .canvas  import LiveCanvas
-from .widgets import (CoreParamsGroup, LoadCasesGroup, SweepParamsGroup,
-                       Sweep2DParamsGroup,
-                       CompareLoadCasesParamsGroup, CompareTwoParamsGroup,
-                       SensitivityParamsGroup,
-                       SensitivitySweepParamsGroup, SensitivitySweep2DParamsGroup,
-                       FilterPipelineGroup)
+from .canvas import LiveCanvas
+from .widgets import (
+    CompareLoadCasesParamsGroup,
+    CompareTwoParamsGroup,
+    CoreParamsGroup,
+    FilterPipelineGroup,
+    LoadCasesGroup,
+    SensitivityParamsGroup,
+    SensitivitySweep2DParamsGroup,
+    SensitivitySweepParamsGroup,
+    Sweep2DParamsGroup,
+    SweepParamsGroup,
+)
 
 
 class _StopRequested(Exception):
@@ -54,7 +68,8 @@ class MainWindow(QMainWindow):
         ll = QVBoxLayout(left); ll.setSpacing(6)
 
         # Configuration row: selects the problem geometry and default solver settings.
-        from toporia.problems import CONFIGURATIONS, DEFAULT_PROBLEM as DEFAULT_CONFIGURATION
+        from toporia.library.problems import CONFIGURATIONS
+        from toporia.library.problems import DEFAULT_PROBLEM as DEFAULT_CONFIGURATION
         crow = QHBoxLayout()
         crow.addWidget(QLabel("Configuration:"))
         self.config_combo = QComboBox()
@@ -101,9 +116,13 @@ class MainWindow(QMainWindow):
                   self.cg, self.clcg, self.sens, self.ssg, self.ssg2):
             pl.addWidget(g)
 
-        # When the user adds or removes a load case, refresh all sweep dropdowns.
-        for w in (self.sg, self.sg2, self.cg, self.sens, self.ssg, self.ssg2):
-            self.lc.cases_changed.connect(w.refresh)
+        # The sweep / compare / sensitivity dropdowns list every parameter path of
+        # the current setup, so they are rebuilt whenever the method, the filter
+        # pipeline or the number of load cases changes.
+        self._sweep_groups = (self.sg, self.sg2, self.cg, self.sens, self.ssg, self.ssg2)
+        self.lc.cases_changed.connect(self._refresh_parameter_paths)
+        self.filters.pipeline_changed.connect(self._refresh_parameter_paths)
+        self.core.method_changed.connect(self._on_method_changed)
 
         # Run/Stop button — the same button toggles between two roles.
         self._stop = False   # flag checked inside on_iter to interrupt the loop
@@ -132,7 +151,7 @@ class MainWindow(QMainWindow):
 
     def _on_config_changed(self, name):
         """Load a configuration preset: update self._base_cfg and populate the widgets."""
-        from toporia.problems import get_config
+        from toporia.library.problems import get_config
         try:
             cfg = get_config(name)
         except Exception as e:
@@ -142,6 +161,21 @@ class MainWindow(QMainWindow):
         self.core.load_from_config(cfg)
         self.filters.load_from_config(cfg)
         self.lc.load_from_config(cfg)
+        self._on_method_changed(self.core.method_name())
+
+    def _on_method_changed(self, name):
+        """Adapt the panels to what the selected method can do."""
+        from toporia.library.methods import METHODS
+        self.filters.setVisible(METHODS.get(name).capabilities.accepts_filters)
+        self._refresh_parameter_paths()
+
+    def _refresh_parameter_paths(self, *_):
+        """Rebuild every parameter dropdown from the current method, filters and load cases."""
+        from toporia.library.catalog import parameter_paths
+        items = parameter_paths(self.core.method_name(), self.filters.get_filter_specs(),
+                                len(self.lc.get_load_cases()))
+        for group in self._sweep_groups:
+            group.refresh(items)
 
     def _on_mode(self, m):
         """Show only the parameter groups relevant to the selected mode."""
@@ -181,7 +215,7 @@ class MainWindow(QMainWindow):
         self.run_btn.clicked.connect(self._on_stop)
         QApplication.processEvents()
 
-        from . import runner   # imports SciPy-backed optimisation code only when needed
+        from . import runner  # imports SciPy-backed optimisation code only when needed
 
         cfg = runner.build_config(self.core, self.lc, self.filters, base_cfg=self._base_cfg)
 

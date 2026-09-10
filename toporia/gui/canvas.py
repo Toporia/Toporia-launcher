@@ -8,12 +8,12 @@
 # The canvas is updated after every optimisation step via refresh().
 # For sweep results, show_grid() loads the assembled PNG from disk and displays it.
 
-import numpy as np
-import matplotlib.pyplot as plt
 import matplotlib.image as mpimg
+import matplotlib.pyplot as plt
+import numpy as np
 from matplotlib.backends.backend_qtagg import FigureCanvasQTAgg as FigureCanvas
-from PySide6.QtWidgets import QSizePolicy
 from PySide6.QtGui import QPalette
+from PySide6.QtWidgets import QSizePolicy
 
 
 class LiveCanvas(FigureCanvas):

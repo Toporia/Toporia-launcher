@@ -1,7 +1,8 @@
 # runner.py — bridge between the GUI and the optimisation scripts
 #
-# This is the ONLY file in the gui/ package that imports from the optimisation
-# codebase (Run_one, sweep, sweep_2d).  Everything else in gui/ is pure UI.
+# This is the only file in the gui/ package that RUNS optimisation code.  The
+# widgets import plugin declarations (Param lists, capabilities) to build
+# themselves, but never start a computation.
 #
 # Responsibilities:
 #   1. Redirect print() output from the optimisation scripts into the GUI log box
@@ -12,14 +13,14 @@ import sys
 from pathlib import Path
 
 from toporia.core.config import TopOptConfig
-from toporia.functions.Run_one import run_one as _run_one
-from toporia.functions.sweep import sweep as _sweep
-from toporia.functions.sweep_2d import sweep_2d as _sweep_2d
-from toporia.functions.Compare_Two import compare_two as _compare_two
-from toporia.functions.CompareLoadCases import compare_load_cases as _compare_lc
-from toporia.functions.Sensitivity import sensitivity_field as _sensitivity_field
-from toporia.functions.SensitivitySweep import sensitivity_sweep as _sens_sweep
-from toporia.functions.SensitivitySweep import sensitivity_sweep_2d as _sens_sweep_2d
+from toporia.engine.compare_load_cases import compare_load_cases as _compare_lc
+from toporia.engine.compare_two import compare_two as _compare_two
+from toporia.engine.run_one import run_one as _run_one
+from toporia.engine.sensitivity import sensitivity_field as _sensitivity_field
+from toporia.engine.sensitivity_sweep import sensitivity_sweep as _sens_sweep
+from toporia.engine.sensitivity_sweep import sensitivity_sweep_2d as _sens_sweep_2d
+from toporia.engine.sweep import sweep as _sweep
+from toporia.engine.sweep_2d import sweep_2d as _sweep_2d
 
 
 class _LogStream:
@@ -50,7 +51,7 @@ class _LogStream:
 def build_config(core, lc, filters=None, base_cfg=None):
     """Read widget values and construct a TopOptConfig.
 
-    core     — CoreParamsGroup widget (method, volfrac, penal, etc.)
+    core     — CoreParamsGroup widget (scenario fields, method and its parameters)
     lc       — LoadCasesGroup widget (list of LoadCase objects)
     filters  — FilterPipelineGroup widget (optional explicit filter pipeline)
     base_cfg — TopOptConfig from the selected configuration preset; provides the
@@ -62,12 +63,10 @@ def build_config(core, lc, filters=None, base_cfg=None):
     kw = core.get_kwargs()
     kw["load_cases"] = lc.get_load_cases()
     if filters is not None:
-        kw["rmin"] = filters.get_default_rmin()
-        specs = filters.get_filter_specs()
-        kw["filter_specs"] = specs
+        kw["filter_specs"] = filters.get_filter_specs()
     if base_cfg is None:
         try:
-            from toporia.problems import get_default_config
+            from toporia.library.problems import get_default_config
             base = get_default_config()
         except Exception:
             base = TopOptConfig()

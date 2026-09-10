@@ -13,10 +13,11 @@ import sys
 # imported anywhere.  "QtAgg" means: render into a Qt widget using the Agg
 # (anti-grain geometry) rasteriser.
 import matplotlib
+
 matplotlib.use("QtAgg")
 
-from PySide6.QtWidgets import QApplication
 from PySide6.QtCore import QLocale
+from PySide6.QtWidgets import QApplication
 
 from .window import MainWindow
 

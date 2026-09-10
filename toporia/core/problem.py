@@ -25,23 +25,25 @@ import numpy as np
 
 from .config import TopOptConfig
 
-
 # ── Public interface ──────────────────────────────────────────────────────────
 
 class BaseProblem:
     """Interface contract every topology-optimization problem must fulfill.
 
-    The FEA solver (morpho.methods.base.solve_fea) and all optimization
-    algorithms access exactly these attributes.  A custom problem only needs to
-    set them — no specific class hierarchy is required, but subclassing
-    BaseProblem and calling validate() is the recommended pattern.
+    A problem describes GEOMETRY only: where material may go, where the
+    structure is held, and where loads are applied.  It deliberately carries no
+    degree-of-freedom numbering and no force vectors — those are conventions of
+    a particular finite element solver, and live in toporia.library.fe.
+
+    That separation is what lets a foreign solver (a 3-D mesh, a pyMOTO
+    network) consume the same problem without any translation layer.
 
     To implement a custom problem
     -----------------------------
     1. Subclass BaseProblem (or duck-type it if you prefer).
     2. In __post_init__ / __init__, set all required attributes listed below.
     3. Call self.validate() at the end of setup to catch omissions early.
-    4. Register the problem in morpho/problems/__init__.py so the GUI sees it.
+    4. Register the problem in toporia/library/problems/__init__.py so the GUI sees it.
 
     Attributes
     ----------
@@ -49,20 +51,22 @@ class BaseProblem:
         Number of finite elements along the x-axis (domain width direction).
     nely : int
         Number of finite elements along the y-axis (domain height direction).
-    ndof : int
-        Total degrees of freedom.  For a 2-D Q4 mesh:
-        ndof = 2 * (nelx + 1) * (nely + 1).
-    free_dofs : np.ndarray, shape (n_free,), dtype int
-        Sorted indices of unconstrained DOFs — the complement of fixed_dofs
-        within arange(ndof).
-    forces : list[tuple[float, np.ndarray]]
-        One entry per load case: (weight, f) where f is an ndof-length force
-        vector and weight is its contribution to the weighted compliance sum.
-        Weights should sum to 1 to keep the objective scale consistent.
+    nn : int
+        Total number of mesh nodes: (nelx + 1) * (nely + 1).
+    fixed_nodes, fixed_x_nodes, fixed_y_nodes : np.ndarray, shape (nely+1, nelx+1), dtype bool
+        Nodes constrained in both / only x / only y.  These are *geometric*
+        masks: they carry no degree-of-freedom numbering, so any solver can
+        map them onto its own convention.
+    load_node_sets : list[np.ndarray], each shape (nely+1, nelx+1), dtype bool
+        One node mask per load application region.  The magnitude, direction
+        and weight of each load case live in TopOptConfig.load_cases; this
+        records only *where* the load acts.
     void_elements : np.ndarray, shape (nely, nelx), dtype bool
         True for elements forced to density 0 (holes, empty regions).
     passive_elements : np.ndarray, shape (nely, nelx), dtype bool
         True for elements forced to density 1 (material rings, mandatories).
+    lower_bound, upper_bound : np.ndarray, shape (nely, nelx), dtype float
+        Derived from the two masks above; this is the form methods consume.
 
     See Also
     --------
@@ -72,11 +76,29 @@ class BaseProblem:
     # Class-level annotations — concrete subclasses must set these as instance vars.
     nelx:             int
     nely:             int
-    ndof:             int
-    free_dofs:        np.ndarray
-    forces:           list
+    nn:               int
+    fixed_nodes:      np.ndarray
+    fixed_x_nodes:    np.ndarray
+    fixed_y_nodes:    np.ndarray
+    load_node_sets:   list
     void_elements:    np.ndarray
     passive_elements: np.ndarray
+
+    # ── Derived views ─────────────────────────────────────────────────────────
+    # Methods consume per-element bounds, not masks.  Both MMA implementations,
+    # the OC bisection and pyMOTO all want the same thing: "how low and how high
+    # may this element go".  Deriving them here means there is exactly one source
+    # of truth and no method can forget to clamp after an update.
+
+    @property
+    def lower_bound(self):
+        """Per-element minimum density: 1.0 where solid is enforced, else 0.0."""
+        return self.passive_elements.astype(float)
+
+    @property
+    def upper_bound(self):
+        """Per-element maximum density: 0.0 where void is enforced, else 1.0."""
+        return (~self.void_elements).astype(float)
 
     def validate(self):
         """Verify all required attributes have been set.
@@ -85,7 +107,8 @@ class BaseProblem:
         Raises NotImplementedError immediately rather than letting the solver
         encounter a confusing AttributeError mid-run.
         """
-        required = ["nelx", "nely", "ndof", "free_dofs", "forces",
+        required = ["nelx", "nely", "nn", "load_node_sets",
+                    "fixed_nodes", "fixed_x_nodes", "fixed_y_nodes",
                     "void_elements", "passive_elements"]
         missing = [a for a in required if not hasattr(self, a)]
         if missing:
@@ -107,7 +130,7 @@ class RectangularProblem(BaseProblem):
     The domain is nelx × nely bilinear quad elements (Q4) spanning Lx × Ly mm.
     Holes, enforced areas, edge constraints, and point loads are all applied
     during __post_init__ and result in the void/passive element masks and the
-    fixed/free DOF arrays that the FEA solver needs.
+    node masks that a finite element solver turns into its own DOF arrays.
     """
     config: TopOptConfig
 
@@ -120,7 +143,6 @@ class RectangularProblem(BaseProblem):
         self.nelx = int(round(cfg.Lx * cfg.m))
         self.nely = max(1, int(round(cfg.Ly * cfg.m)))
         self.nn   = (self.nelx + 1) * (self.nely + 1)
-        self.ndof = 2 * self.nn
 
         self.dx = self.Lx / self.nelx
         self.dy = self.Ly / self.nely
@@ -221,23 +243,7 @@ class RectangularProblem(BaseProblem):
             self.load_nodes[self.nely // 2, self.nelx] = True
             self.load_node_sets.append(self.load_nodes.copy())
 
-        # ── Force vectors ─────────────────────────────────────────────────────
-        self.forces = [
-            (lc.weight, self._make_force_vector(lc.Fmag, lc.Fa))
-            for lc in cfg.load_cases
-        ]
-        self.force = self.forces[0][1]   # backward-compatible alias for single-load code
-
-        # ── DOF index arrays ─────────────────────────────────────────────────
-        self.fixed_dofs = self._build_fixed_dofs()
-        self.free_dofs  = np.setdiff1d(np.arange(self.ndof), self.fixed_dofs)
-
         self.validate()
-
-    def _node_ids(self):
-        """Return a (nely+1) × (nelx+1) grid of global node indices.
-        Column-major (Fortran) order matches the top88 numbering convention."""
-        return np.arange(self.nn).reshape((self.nely + 1, self.nelx + 1), order="F")
 
     def _polygon_element_mask(self, points):
         """Return an element-centre mask for a polygon in physical xy coordinates."""
@@ -257,44 +263,6 @@ class RectangularProblem(BaseProblem):
             inside ^= crosses & (x < x_intersect)
             xj, yj = xi, yi
         return inside
-
-    def _nodes_to_dofs(self, node_mask):
-        """Convert a boolean node mask to a sorted array of DOF indices."""
-        node_ids = self._node_ids()[node_mask]
-        dofs = np.empty(2 * len(node_ids), dtype=int)
-        dofs[0::2] = 2 * node_ids
-        dofs[1::2] = 2 * node_ids + 1
-        return np.unique(dofs)
-
-    def _build_fixed_dofs(self):
-        """Assemble the sorted array of constrained DOF indices from all masks."""
-        node_ids = self._node_ids()
-        parts = []
-        ids = node_ids[self.fixed_nodes]
-        if ids.size:
-            parts.append(np.concatenate([2 * ids, 2 * ids + 1]))
-        ids = node_ids[self.fixed_x_nodes]
-        if ids.size:
-            parts.append(2 * ids)
-        ids = node_ids[self.fixed_y_nodes]
-        if ids.size:
-            parts.append(2 * ids + 1)
-        if not parts:
-            return np.array([], dtype=int)
-        return np.unique(np.concatenate(parts))
-
-    def _make_force_vector(self, magnitude, angle_degrees):
-        """Build an ndof-long force vector for a given magnitude and direction."""
-        force  = np.zeros(self.ndof)
-        angle  = np.deg2rad(angle_degrees)
-        vector = magnitude * np.array([np.cos(angle), np.sin(angle)])
-        node_ids = self._node_ids()
-        for load_mask in self.load_node_sets:
-            nodes    = node_ids[load_mask]
-            per_node = vector / max(len(nodes), 1)
-            for node in nodes:
-                force[2 * node: 2 * node + 2] += per_node
-        return force
 
 
 # Backward-compatibility alias — existing user code using BracketProblem still works.

@@ -3,8 +3,8 @@ Toporia — open-source topology optimisation platform.
 
 Quickstart
 ----------
-    from toporia.problems import get_default_config
-    from toporia.core.runner import run_single
+    from toporia.library.problems import get_default_config
+    from toporia.engine.runner import run_single
 
     cfg = get_default_config()          # MBB beam by default
     density = run_single(cfg)

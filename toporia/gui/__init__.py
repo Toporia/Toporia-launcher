@@ -6,6 +6,6 @@
 # "from gui import ...".  Here we just re-export the launch function
 # so the top-level gui.py only needs one import line.
 
-from .app import launch   # the dot means "from the same package (gui/)"
+from .app import launch  # the dot means "from the same package (gui/)"
 
 __all__ = ["launch"]      # explicit list of public names
