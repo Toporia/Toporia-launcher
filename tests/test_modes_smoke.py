@@ -12,7 +12,6 @@ Configs are tiny on purpose: several of these modes run four or more full
 optimisations each.
 """
 
-from dataclasses import replace
 from pathlib import Path
 
 import matplotlib
@@ -20,7 +19,7 @@ import pytest
 
 matplotlib.use("Agg")   # never open a window during tests
 
-from toporia.core.config import LoadCase  # noqa: E402
+from toporia.core import LoadCase  # noqa: E402
 from toporia.engine.compare_load_cases import compare_load_cases  # noqa: E402
 from toporia.engine.compare_two import compare_two  # noqa: E402
 from toporia.engine.run_one import run_one  # noqa: E402
@@ -28,16 +27,13 @@ from toporia.engine.sensitivity import sensitivity_field  # noqa: E402
 from toporia.engine.sensitivity_sweep import sensitivity_sweep, sensitivity_sweep_2d  # noqa: E402
 from toporia.engine.sweep import sweep  # noqa: E402
 from toporia.engine.sweep_2d import sweep_2d  # noqa: E402
-from toporia.library.problems import get_config  # noqa: E402
+from toporia.library.problems import get_run  # noqa: E402
 
 
 @pytest.fixture
 def cfg(tmp_path):
     """The smallest configuration that still exercises the full pipeline."""
-    return replace(
-        get_config("MBB Beam"),
-        m=0.25, max_iter=3, tol=0.0, save_every=0, output_dir=tmp_path,
-    )
+    return get_run("MBB Beam").updated(m=0.25, max_iter=3, tol=0.0, save_every=0).with_output_dir(tmp_path)
 
 
 def _assert_output(path):
@@ -49,26 +45,26 @@ def _assert_output(path):
 def test_run_one(cfg):
     store, density = run_one(cfg)
     assert density.shape == (5, 15)
-    _assert_output(Path(cfg.output_dir) / "final_density.png")
-    _assert_output(Path(cfg.output_dir) / "final_density.csv")
+    _assert_output(Path(cfg.output.dir) / "final_density.png")
+    _assert_output(Path(cfg.output.dir) / "final_density.csv")
 
 
 def test_run_one_fires_iteration_callback(cfg):
     """The GUI's live canvas depends on this callback; pin its contract."""
     seen = []
     run_one(cfg, on_iteration=lambda d, objectives, it: seen.append((d.shape, it)))
-    assert len(seen) == cfg.max_iter
-    assert [it for _, it in seen] == list(range(1, cfg.max_iter + 1))
+    assert len(seen) == cfg.solver.max_iter
+    assert [it for _, it in seen] == list(range(1, cfg.solver.max_iter + 1))
 
 
 def test_sweep(cfg):
     sweep("volfrac", 0.3, 0.5, 1, 2, cfg)
-    _assert_output(Path(cfg.output_dir) / "sweep_volfrac" / "sweep_grid.png")
+    _assert_output(Path(cfg.output.dir) / "sweep_volfrac" / "sweep_grid.png")
 
 
 def test_sweep_2d(cfg):
     sweep_2d("volfrac", 0.3, 0.5, 1, "method.penal", 2.0, 3.0, 2, cfg)
-    _assert_output(Path(cfg.output_dir) / "sweep2d_volfrac_vs_method.penal" / "sweep2d_grid.png")
+    _assert_output(Path(cfg.output.dir) / "sweep2d_volfrac_vs_method.penal" / "sweep2d_grid.png")
 
 
 def test_compare_two(cfg):

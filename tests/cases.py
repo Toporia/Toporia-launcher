@@ -9,17 +9,13 @@ suite runs in seconds.  `tol=0.0` disables the early-exit convergence check,
 which makes the iteration count fixed and therefore assertable.
 """
 
-from dataclasses import replace
-
-from toporia.core.config import LoadCase, TopOptConfig
-from toporia.library.problems import get_config
+from toporia.core import LoadCase, Run
+from toporia.library.problems import get_run
 
 
-def _base(problem_name: str, **overrides) -> TopOptConfig:
+def _base(problem_name: str, **overrides) -> Run:
     """Load a problem preset and apply the shared 'make it small and fast' settings."""
-    cfg = get_config(problem_name)
-    return replace(
-        cfg,
+    return get_run(problem_name).updated(
         m=overrides.pop("m", 0.4),
         max_iter=overrides.pop("max_iter", 12),
         tol=0.0,          # never converge early -> iteration count is deterministic
@@ -28,7 +24,7 @@ def _base(problem_name: str, **overrides) -> TopOptConfig:
     )
 
 
-# name -> zero-argument builder returning a fully configured TopOptConfig.
+# name -> zero-argument builder returning a fully configured Run.
 # Chosen to cover every code path Phase 1 is going to touch:
 #   OC update, MMA update, level-set update, the FEA solver, the filter chain,
 #   passive/void masks, and the multi-load-case weighted compliance sum.

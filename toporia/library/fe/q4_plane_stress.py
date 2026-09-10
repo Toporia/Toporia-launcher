@@ -110,9 +110,9 @@ class Q4DofLayout:
         One (weight, force_vector) pair per load case, in config order.
     """
 
-    def __init__(self, problem, config):
+    def __init__(self, problem):
         self.problem = problem
-        self.load_cases = config.load_cases
+        self.load_cases = problem.scenario.load_cases
 
         self.node_ids = np.arange(problem.nn).reshape(
             (problem.nely + 1, problem.nelx + 1), order="F"
@@ -121,7 +121,7 @@ class Q4DofLayout:
         self.fixed_dofs = self._build_fixed_dofs()
         self.free_dofs = np.setdiff1d(np.arange(self.ndof), self.fixed_dofs)
         self.forces = [
-            (lc.weight, self._force_vector(lc.Fmag, lc.Fa)) for lc in config.load_cases
+            (lc.weight, self._force_vector(lc.Fmag, lc.Fa)) for lc in self.load_cases
         ]
 
     def _build_fixed_dofs(self):
@@ -157,20 +157,20 @@ class Q4DofLayout:
         return force
 
 
-def dof_layout(problem, config):
+def dof_layout(problem):
     """Return the Q4 DOF layout for a problem, building it once and caching it.
 
     solve_fea runs every iteration but the layout only depends on the geometry
     and the load cases, neither of which change during a run.
     """
     cached = getattr(problem, "_q4_dof_layout", None)
-    if cached is None or cached.load_cases is not config.load_cases:
-        cached = Q4DofLayout(problem, config)
+    if cached is None:
+        cached = Q4DofLayout(problem)
         problem._q4_dof_layout = cached
     return cached
 
 
-def solve_fea(problem, config, density, penal):
+def solve_fea(problem, density, penal):
     """Assemble and solve the global FE system for all load cases.
 
     The SIMP material model maps density ρ to stiffness:
@@ -190,15 +190,15 @@ def solve_fea(problem, config, density, penal):
     ce         : (nely × nelx) weighted element compliance energy
     compliance : scalar total weighted compliance (the objective)
     """
-    layout = dof_layout(problem, config)   # DOF indices + force vectors (cached)
+    layout = dof_layout(problem)   # DOF indices + force vectors (cached)
     # Real element size: only the aspect ratio matters in 2-D, but passing it
     # makes non-square meshes correct and mirrors what a 3-D solver must do.
-    KE     = element_stiffness(config.nu, problem.dx, problem.dy)
+    KE     = element_stiffness(problem.scenario.nu, problem.dx, problem.dy)
     edof   = element_dofs(problem)         # nelx*nely × 8 DOF index map
 
     # SIMP stiffness: flatten density to 1-D (column-major) then apply penalty.
     x         = density.reshape(-1, order="F")
-    stiffness = config.Emin + x**penal * (config.E0 - config.Emin)
+    stiffness = problem.scenario.Emin + x**penal * (problem.scenario.E0 - problem.scenario.Emin)
 
     # Assemble global sparse stiffness matrix K using triplet (COO) format.
     # iK, jK are row/col indices; sK are the values — all from the element contributions.

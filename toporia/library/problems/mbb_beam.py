@@ -26,19 +26,17 @@
 #   (0, Ly) ─── top-left    (Lx, Ly) ─── top-right
 #   (0,  0) ─── bottom-left (Lx,  0) ─── bottom-right
 
-from toporia.core.config import EdgeConstraint, LoadCase, PointConstraint, PointLoad, TopOptConfig
+from toporia.core import EdgeConstraint, LoadCase, PointConstraint, PointLoad, Scenario, Solver
+
+NAME = "MBB Beam"
+ORDER = 10
 
 
-def get_config() -> TopOptConfig:
+def scenario() -> Scenario:
     Lx, Ly = 60.0, 20.0
-
-    return TopOptConfig(
+    return Scenario(
         Lx=Lx,
         Ly=Ly,
-        m=1.0,
-
-        holes=[],
-
         edge_constraints=[
             # Left edge: x-DOF fixed — this is the symmetry plane of the full beam.
             # Nodes on the symmetry plane cannot move horizontally, but can move vertically.
@@ -52,12 +50,13 @@ def get_config() -> TopOptConfig:
             # Top-left corner: this is the centre of the full beam in the symmetric model.
             PointLoad(x=0.0, y=Ly),
         ],
-
         # Fa=270° = downward (-y direction).
         load_cases=[LoadCase(Fmag=1.0, Fa=270.0, weight=1.0)],
-
         volfrac=0.5,
-        filter_specs=[{"type": "density"}],
-        max_iter=100,
-        tol=0.01,
     )
+
+
+def solver() -> Solver:
+    # The top88 reference settings.  penal=3 and rmin=1.5 are the method and
+    # filter defaults; one element per mm gives the classic 60 x 20 mesh.
+    return Solver(method="density", filter_specs=[{"type": "density"}], m=1.0, max_iter=100, tol=0.01)

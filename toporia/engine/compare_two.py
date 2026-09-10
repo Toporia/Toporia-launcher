@@ -15,10 +15,9 @@
 #   2. from Compare_Two import compare_two
 
 
-from dataclasses import replace
 from pathlib import Path
 
-from toporia.core.config import LoadCase, TopOptConfig, apply_param
+from toporia.core import LoadCase, Run, apply_param
 from toporia.engine.compare_core import COLOR_A, COLOR_B, COLOR_BOTH, compare_core  # noqa: F401
 
 #   COLOR_* re-exported so existing  `from Compare_Two import _COLOR_A …`
@@ -34,21 +33,21 @@ def compare_two(param_key, value_a, value_b, base_config, on_iteration=None):
     param_key    : str   — parameter to vary (e.g. "volfrac", "lc0.Fmag")
     value_a      : float — parameter value for design A
     value_b      : float — parameter value for design B
-    base_config  : TopOptConfig — all other settings, shared between both runs
+    base_config  : Run — all other settings, shared between both runs
     on_iteration : callable, optional — GUI callback(density, objectives, iteration)
 
     Returns
     -------
     (Path to comparison PNG, density_a ndarray, density_b ndarray)
     """
-    output_dir = (Path(base_config.output_dir)
+    output_dir = (Path(base_config.output.dir)
                   / f"compare_{param_key}_{value_a:.4g}_vs_{value_b:.4g}")
     cfg_a = apply_param(
-        replace(base_config, output_dir=output_dir / "run_A"),
+        base_config.with_output_dir(output_dir / "run_A"),
         param_key, value_a,
     )
     cfg_b = apply_param(
-        replace(base_config, output_dir=output_dir / "run_B"),
+        base_config.with_output_dir(output_dir / "run_B"),
         param_key, value_b,
     )
     return compare_core(
@@ -60,7 +59,7 @@ def compare_two(param_key, value_a, value_b, base_config, on_iteration=None):
 
 
 if __name__ == "__main__":
-    BASE = TopOptConfig(
+    BASE = Run().updated(
         m=0.5, volfrac=0.25,
         filter_specs=[{"type": "density"}], max_iter=50, tol=0.05,
         load_cases=[LoadCase(Fmag=1.0, Fa=0.0,   weight=0.5),

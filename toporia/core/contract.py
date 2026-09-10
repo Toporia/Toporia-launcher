@@ -11,9 +11,9 @@
 #
 #     engine                                            method
 #     ------                                            ------
-#     initialize(problem, config)  ───────────────────>  build internal state,
+#     initialize(problem, solver)  ───────────────────>  build internal state,
 #                                                        reading its own values
-#                                                        from config.method_params
+#                                                        from solver.method_params
 #     step(iteration)              ───────────────────>  advance one iteration
 #     get_density()                <───────────────────  (nely, nelx) array in [0, 1]
 #     get_responses()              <───────────────────  {"objective": float, ...}
@@ -37,7 +37,7 @@ class Capabilities:
     """What a method can do, so the engine and GUI can adapt instead of warn.
 
     variable_kind   : what the design variables are, e.g. "density" or "level_set"
-    accepts_filters : whether config.filter_specs is honoured
+    accepts_filters : whether solver.filter_specs is honoured
     dims            : spatial dimensions supported
     """
     variable_kind: str = "density"
@@ -71,21 +71,26 @@ class OptimizationMethod(ABC):
     capabilities = Capabilities()
 
     @classmethod
-    def resolve_params(cls, config):
-        """Return this method's parameter values: config.method_params over the defaults.
+    def resolve_params(cls, solver):
+        """Return this method's parameter values: solver.method_params over the defaults.
 
         Raises ValueError for a key the method does not declare, so a misspelt
         or stale parameter stops the run before it starts.
         """
-        return resolve_params(f"method {cls.name!r}", cls.params, config.method_params)
+        return resolve_params(f"method {cls.name!r}", cls.params, solver.method_params)
 
     @abstractmethod
-    def initialize(self, problem, config):
+    def initialize(self, problem, solver):
         """Prepare internal state.  Called once, before the first step.
 
-        `problem` is a core.problem.BaseProblem: geometry, node masks and the
-        per-element density bounds.  It carries no degree-of-freedom numbering —
-        a method brings its own solver and its own conventions.
+        `problem` is a core.problem.BaseProblem built from the scenario:
+        geometry, node masks, per-element density bounds, and problem.scenario
+        for the material, volume target and load cases.  It carries no
+        degree-of-freedom numbering — a method brings its own conventions.
+
+        `solver` is the core.solver.Solver: this method's parameters (read them
+        with resolve_params) and, for methods that accept them, the filter
+        pipeline in solver.filter_specs.
         """
 
     @abstractmethod
@@ -121,7 +126,7 @@ class OptimizationMethod(ABC):
     def get_change(self):
         """Return a scalar measure of how much the design moved this iteration.
 
-        The engine compares this against config.tol to decide when to stop, so
+        The engine compares this against solver.tol to decide when to stop, so
         it must shrink as the design settles.  Return float("inf") before the
         first step.
         """
@@ -129,7 +134,7 @@ class OptimizationMethod(ABC):
     def is_converged(self):
         """Optional method-specific stopping criterion.
 
-        The engine's own rule — `get_change() < config.tol` — applies to every
+        The engine's own rule — `get_change() < solver.tol` — applies to every
         method and is what makes cross-method benchmarks comparable.  Override
         this only for a criterion that genuinely cannot be expressed as a design
         change (the RBF level-set's joint volume-and-compliance stability test is

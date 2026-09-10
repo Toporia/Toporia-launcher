@@ -1,57 +1,60 @@
-# problems/__init__.py — registry of available topology-optimisation problems
-#
-# To add a new problem:
-#   1. Create a file in this folder (e.g. my_bridge.py) that defines get_config()
-#      returning a TopOptConfig.
-#   2. Add an entry to PROBLEMS below: "Display Name" -> "module_name"
-#   3. If it should be the startup default, update DEFAULT_PROBLEM.
-#
-# get_config(name) loads the matching module on demand and calls its get_config().
-# This lazy import means the package can be imported before the solver is ready.
+"""library.problems — benchmark and application problems, one per module.
 
-DEFAULT_PROBLEM = "mbb_beam"
+Each module in this package defines:
 
-PROBLEMS = {
-    # ── Canonical benchmarks ──────────────────────────────────────────────────
-    "MBB Beam":             "mbb_beam",          # default — half-symmetry simply-supported beam
-    "Cantilever":           "cantilever",        # fixed left edge, midpoint right load
-    "Three-Point Bending":  "three_point_bending",
-    "Standard Bar":         "standard_bar",      # cantilever-like, fixed left, corner load
-    # ── Application example ───────────────────────────────────────────────────
-    "Drone Arm":                   "drone_arm",
-    "Drone Arm (Camera View)":     "drone_arm_camera_view",
-    "Drone Arm (Point Loads)":     "drone_arm_point_loads",
-}
+    NAME        display name, shown in the GUI and accepted by the CLI
+    ORDER       menu position (lower first)
+    scenario()  -> Scenario   what is being solved
+    solver()    -> Solver     recommended settings (optional; defaults otherwise)
 
-# GUI dropdown alias — window.py imports this name
-CONFIGURATIONS = PROBLEMS
+Modules are found automatically: adding a file adds a preset.  Modules whose
+name starts with an underscore are skipped.
+
+`toporia export PRESET DIR` writes any preset as editable JSON files.
+"""
+
+import importlib
+import pkgutil
+from functools import lru_cache
+
+from toporia.core import Run, Solver
+
+DEFAULT_PROBLEM = "MBB Beam"
 
 
-def get_config(name: str):
-    """Return a TopOptConfig for the named problem.
-
-    Parameters
-    ----------
-    name : str
-        Key from the PROBLEMS registry, e.g. ``"MBB Beam"``.
-
-    Returns
-    -------
-    TopOptConfig
-    """
-    import importlib
-    if name not in PROBLEMS:
-        raise KeyError(f"Unknown problem {name!r}. Available: {list(PROBLEMS)}")
-    mod = importlib.import_module("." + PROBLEMS[name], package=__package__)
-    return mod.get_config()
+@lru_cache(maxsize=1)
+def _modules():
+    found = {}
+    for info in pkgutil.iter_modules(__path__):
+        if info.name.startswith("_"):
+            continue
+        module = importlib.import_module(f"{__name__}.{info.name}")
+        if hasattr(module, "NAME") and hasattr(module, "scenario"):
+            if module.NAME in found:
+                raise RuntimeError(f"Two problems are named {module.NAME!r}")
+            found[module.NAME] = module
+    return found
 
 
-def get_default_config():
-    """Return a TopOptConfig for the default startup problem (MBB Beam)."""
-    for name, module_name in PROBLEMS.items():
-        if module_name == DEFAULT_PROBLEM:
-            return get_config(name)
-    raise KeyError(
-        f"DEFAULT_PROBLEM={DEFAULT_PROBLEM!r} is not registered in PROBLEMS. "
-        f"Available: {list(PROBLEMS.values())}"
-    )
+def problem_names():
+    """Display names of every problem, in menu order."""
+    modules = _modules()
+    return sorted(modules, key=lambda name: (getattr(modules[name], "ORDER", 100), name))
+
+
+def get_run(name):
+    """Return the named problem as a Run: its scenario plus its recommended solver."""
+    try:
+        module = _modules()[name]
+    except KeyError:
+        raise KeyError(f"Unknown problem {name!r}. Available: {problem_names()}") from None
+    solver = module.solver() if hasattr(module, "solver") else Solver()
+    return Run(scenario=module.scenario(), solver=solver)
+
+
+def get_default_run():
+    """Return the default startup problem (the MBB beam) as a Run."""
+    return get_run(DEFAULT_PROBLEM)
+
+
+__all__ = ["DEFAULT_PROBLEM", "get_default_run", "get_run", "problem_names"]

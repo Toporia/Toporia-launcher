@@ -12,10 +12,11 @@ import pytest
 os.environ.setdefault("QT_QPA_PLATFORM", "offscreen")
 QtWidgets = pytest.importorskip("PySide6.QtWidgets")
 
+from toporia.core import read_param  # noqa: E402
 from toporia.core.params import resolve_params  # noqa: E402
 from toporia.library.methods import METHODS  # noqa: E402
 from toporia.library.methods.filters import FILTERS  # noqa: E402
-from toporia.library.problems import PROBLEMS, get_config  # noqa: E402
+from toporia.library.problems import get_run, problem_names  # noqa: E402
 
 PLUGINS = [(f"method:{c.name}", c) for c in METHODS.classes()] + \
           [(f"filter:{c.name}", c) for c in FILTERS.classes()]
@@ -68,8 +69,8 @@ def test_selecting_a_method_adapts_the_panels(window, name):
     assert window.filters.isHidden() == (not cls.capabilities.accepts_filters)
 
     cfg = runner.build_config(window.core, window.lc, window.filters, base_cfg=window._base_cfg)
-    assert cfg.method == name
-    cls.resolve_params(cfg)   # the GUI only ever produces parameters the method declares
+    assert cfg.solver.method == name
+    cls.resolve_params(cfg.solver)   # the GUI only ever produces parameters the method declares
 
     offered = [window.sg.param.itemData(i) for i in range(window.sg.param.count())]
     for p in cls.params:
@@ -77,16 +78,17 @@ def test_selecting_a_method_adapts_the_panels(window, name):
     assert any(path.startswith("filters[") for path in offered) == cls.capabilities.accepts_filters
 
 
-@pytest.mark.parametrize("preset", list(PROBLEMS))
+@pytest.mark.parametrize("preset", problem_names())
 def test_a_preset_survives_the_round_trip_through_the_gui(window, preset):
     from toporia.gui import runner
     window._on_config_changed(preset)
     cfg = runner.build_config(window.core, window.lc, window.filters, base_cfg=window._base_cfg)
-    original = get_config(preset)
+    original = get_run(preset)
 
-    assert cfg.method == METHODS.get(original.method).name
+    assert cfg.solver.method == METHODS.get(original.solver.method).name
     for key in ("volfrac", "m", "tol"):
-        assert getattr(cfg, key) == pytest.approx(getattr(original, key)), key
-    assert cfg.max_iter == original.max_iter
+        assert read_param(cfg, key) == pytest.approx(read_param(original, key)), key
+    assert cfg.solver.max_iter == original.solver.max_iter
     # The pipeline comes back with every parameter made explicit.
-    assert [s["type"] for s in cfg.filter_specs] == [s.get("type", "density") for s in original.filter_specs]
+    assert [s["type"] for s in cfg.solver.filter_specs] == \
+        [s.get("type", "density") for s in original.solver.filter_specs]

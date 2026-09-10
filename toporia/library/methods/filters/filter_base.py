@@ -1,7 +1,7 @@
 # filter_base.py — Filter ABC and FilterChain orchestrator
 #
 # Every filter declares name, label and params (see Filter below), and implements:
-#   setup(problem, config)      — called once, precomputes expensive data
+#   setup(problem, solver)      — called once, precomputes expensive data
 #   forward(x)                  — density field transform: x → xf
 #   backward(x_in, sensitivity) — chain-rule adjoint: ds/dx given ds/dxf
 #   backward_volume(x_in, s)    — adjoint for the volume sensitivity (dv).
@@ -28,7 +28,7 @@ class Filter(ABC):
     #: one as a keyword argument of the same name.
     params = ()
 
-    def setup(self, problem, config): pass
+    def setup(self, problem, solver): pass
 
     @abstractmethod
     def forward(self, x): ...
@@ -49,9 +49,9 @@ class FilterChain:
         self.filters = list(filters)
         self._x_ins  = []   # x entering each filter, stored during forward pass
 
-    def setup(self, problem, config):
+    def setup(self, problem, solver):
         for f in self.filters:
-            f.setup(problem, config)
+            f.setup(problem, solver)
 
     # ── forward / backward ────────────────────────────────────────────────────
 

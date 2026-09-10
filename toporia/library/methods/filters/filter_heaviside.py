@@ -51,7 +51,7 @@ class HeavisideFilter(Filter):
         self.beta_max      = float(beta_max)
         self.beta_interval = int(beta_interval)
 
-    def setup(self, problem, config): pass
+    def setup(self, problem, solver): pass
 
     def forward(self, x):
         b, e = self.beta, self.eta

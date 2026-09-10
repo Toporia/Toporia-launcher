@@ -18,34 +18,26 @@
 #   (0, Ly) ─── top-left    (Lx, Ly) ─── top-right
 #   (0,  0) ─── bottom-left (Lx,  0) ─── bottom-right
 
-from toporia.core.config import EdgeConstraint, LoadCase, PointLoad, TopOptConfig
+from toporia.core import EdgeConstraint, LoadCase, PointLoad, Scenario
+
+NAME = "Cantilever"
+ORDER = 20
 
 
-def get_config() -> TopOptConfig:
+def scenario() -> Scenario:
     Lx, Ly = 60.0, 30.0   # 2:1 aspect ratio — common choice for cantilever
-
-    return TopOptConfig(
+    return Scenario(
         Lx=Lx,
         Ly=Ly,
-        m=1.0,
-
-        holes=[],
-
         edge_constraints=[
             # Left edge: both DOFs fixed — fully clamped wall.
             EdgeConstraint(edge="left", dof="both"),
         ],
-        point_constraints=[],
         point_loads=[
             # Mid-height of the right (free) end.
             PointLoad(x=Lx, y=Ly / 2.0),
         ],
-
         # Fa=270° = downward force. Change to Fa=0° for a horizontal tip load.
         load_cases=[LoadCase(Fmag=1.0, Fa=270.0, weight=1.0)],
-
         volfrac=0.4,
-        filter_specs=[{"type": "density"}],
-        max_iter=100,
-        tol=0.01,
     )

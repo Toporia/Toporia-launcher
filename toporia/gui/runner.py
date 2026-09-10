@@ -6,13 +6,12 @@
 #
 # Responsibilities:
 #   1. Redirect print() output from the optimisation scripts into the GUI log box
-#   2. Read values from the parameter widgets and build a TopOptConfig
+#   2. Read values from the parameter widgets and build a Run
 #   3. Call the real optimisation functions with the live-update callback
 
 import sys
 from pathlib import Path
 
-from toporia.core.config import TopOptConfig
 from toporia.engine.compare_load_cases import compare_load_cases as _compare_lc
 from toporia.engine.compare_two import compare_two as _compare_two
 from toporia.engine.run_one import run_one as _run_one
@@ -49,30 +48,25 @@ class _LogStream:
 
 
 def build_config(core, lc, filters=None, base_cfg=None):
-    """Read widget values and construct a TopOptConfig.
+    """Read widget values and overlay them on a Run.
 
     core     — CoreParamsGroup widget (scenario fields, method and its parameters)
     lc       — LoadCasesGroup widget (list of LoadCase objects)
     filters  — FilterPipelineGroup widget (optional explicit filter pipeline)
-    base_cfg — TopOptConfig from the selected configuration preset; provides the
-               geometry fields (Lx, Ly, holes, edge_constraints, …) that are not
-               exposed as widgets.  Widget values are overlaid on top of it.
-               Falls back to the registry default configuration if None.
+    base_cfg — Run from the selected preset; provides everything the widgets do
+               not expose (geometry, supports, material).  Falls back to the
+               default preset if None.
+
+    Each widget value is written with apply_param, so it lands in the Scenario,
+    the Solver or the Output according to which of them owns that field.
     """
-    from dataclasses import replace as _replace
-    kw = core.get_kwargs()
-    kw["load_cases"] = lc.get_load_cases()
-    if filters is not None:
-        kw["filter_specs"] = filters.get_filter_specs()
     if base_cfg is None:
-        try:
-            from toporia.library.problems import get_default_config
-            base = get_default_config()
-        except Exception:
-            base = TopOptConfig()
-    else:
-        base = base_cfg
-    return _replace(base, **kw)
+        from toporia.library.problems import get_default_run
+        base_cfg = get_default_run()
+    values = {**core.get_kwargs(), "load_cases": lc.get_load_cases()}
+    if filters is not None:
+        values["filter_specs"] = filters.get_filter_specs()
+    return base_cfg.updated(**values)
 
 
 def _redir(log_fn):
@@ -104,7 +98,7 @@ def run_sweep(config, sg, on_iter, log_fn):
     finally:
         sys.stdout = old
     # The grid PNG is always written to this predictable location by sweep.py.
-    return Path(config.output_dir) / f"sweep_{sg.key()}" / "sweep_grid.png"
+    return Path(config.output.dir) / f"sweep_{sg.key()}" / "sweep_grid.png"
 
 
 def run_sensitivity(config, sg, on_iter, log_fn):
@@ -187,6 +181,6 @@ def run_sweep_2d(config, sg, on_iter, log_fn):
                   config, on_iteration=on_iter)
     finally:
         sys.stdout = old
-    return (Path(config.output_dir)
+    return (Path(config.output.dir)
             / f"sweep2d_{sg.row_key()}_vs_{sg.col_key()}"
             / "sweep2d_grid.png")

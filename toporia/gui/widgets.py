@@ -4,7 +4,7 @@
 #
 # Method, filter and scenario inputs are not written by hand.  Each panel is a
 # ParamForm (gui/param_form.py) generated from the Param declarations on the
-# plugin classes and in core/config.py, so adding a method, a filter or a
+# plugin classes and in core/scenario.py and core/solver.py, so adding a method, a filter or a
 # parameter needs no change in this file.
 #
 # Widget hierarchy (what contains what):
@@ -158,7 +158,7 @@ class LoadCaseRow(QWidget):
 
     def get(self):
         """Read spinbox values and return a LoadCase dataclass instance."""
-        from toporia.core.config import LoadCase
+        from toporia.core import LoadCase
         return LoadCase(Fmag=self.fmag.value(), Fa=self.fa.value(), weight=self.weight.value())
 
 
@@ -205,13 +205,13 @@ class LoadCasesGroup(QWidget):
         self._section.set_title(title)
 
     def load_from_config(self, cfg):
-        """Replace all rows with the load cases from a TopOptConfig."""
+        """Replace all rows with the load cases from a Run."""
         for row in list(self._rows):
             self._vbox.removeWidget(row)
             row.hide()          # disappear now; Qt frees it on the next event-loop pass
             row.deleteLater()
         self._rows.clear()
-        for lc in cfg.load_cases:
+        for lc in cfg.scenario.load_cases:
             self._add(lc.Fmag, lc.Fa, lc.weight)
 
 
@@ -221,14 +221,15 @@ class CoreParamsGroup(QWidget):
     """Scenario fields, the method selector, and the selected method's parameters.
 
     Every input is generated from Param declarations — the scenario fields from
-    core/config.py and one panel per method from that method's `params` — so a
+    core/scenario.py and core/solver.py and one panel per method from that method's `params` — so a
     new method or parameter appears here without editing this file.
     """
     method_changed = Signal(str)   # fires with the selected method's registry name
 
     def __init__(self, parent=None):
         super().__init__(parent)
-        from toporia.core.config import CONVERGENCE_PARAMS, DESIGN_PARAMS, OUTPUT_PARAMS
+        from toporia.core import OUTPUT_PARAMS, SCENARIO_PARAMS, SOLVER_PARAMS
+        from toporia.core.params import select
         from toporia.library.methods import METHODS
 
         outer = QVBoxLayout(self)
@@ -236,7 +237,7 @@ class CoreParamsGroup(QWidget):
         outer.setSpacing(0)
 
         core = QGroupBox("Core Parameters")
-        self._design = ParamForm(DESIGN_PARAMS)
+        self._design = ParamForm(select(SOLVER_PARAMS + SCENARIO_PARAMS, "m", "volfrac"))
         QVBoxLayout(core).addWidget(self._design)
         outer.addWidget(core)
 
@@ -254,7 +255,7 @@ class CoreParamsGroup(QWidget):
             opt.body_layout.addWidget(form)
         outer.addWidget(opt)
 
-        self._convergence = ParamForm(CONVERGENCE_PARAMS)
+        self._convergence = ParamForm(select(SOLVER_PARAMS, "max_iter", "tol"))
         self._output = ParamForm(OUTPUT_PARAMS)
         for title, form in (("Convergence", self._convergence), ("Output", self._output)):
             section = _CollapsibleSection(title, expanded=False)
@@ -275,7 +276,7 @@ class CoreParamsGroup(QWidget):
         self.method_changed.emit(name)
 
     def get_kwargs(self):
-        """Return {field: value} to overlay on a TopOptConfig with dataclasses.replace."""
+        """Return {field: value} to overlay on a Run with Run.updated."""
         return {
             **self._design.get_values(),
             **self._convergence.get_values(),
@@ -285,13 +286,14 @@ class CoreParamsGroup(QWidget):
         }
 
     def load_from_config(self, cfg):
-        """Populate every panel from a TopOptConfig (called when a preset is selected)."""
+        """Populate every panel from a Run (called when a preset is selected)."""
+        from toporia.core import read_param
         from toporia.library.methods import METHODS
-        name = METHODS.get(cfg.method).name
+        name = METHODS.get(cfg.solver.method).name
         for key, form in self._method_forms.items():
-            form.set_values(cfg.method_params if key == name else {})
+            form.set_values(cfg.solver.method_params if key == name else {})
         for form in (self._design, self._convergence, self._output):
-            form.set_values({key: getattr(cfg, key) for key in form.names()})
+            form.set_values({key: read_param(cfg, key) for key in form.names()})
         self.method.setCurrentIndex(self.method.findData(name))
         self._on_method_changed()   # setCurrentIndex is silent when the index is unchanged
 
@@ -639,13 +641,13 @@ class FilterPipelineGroup(QWidget):
         return [row.get_spec() for row in self._rows]
 
     def load_from_config(self, cfg):
-        """Replace the rows with the pipeline from a TopOptConfig."""
+        """Replace the rows with the pipeline from a Run."""
         for row in list(self._rows):
             self._rows_vbox.removeWidget(row)
             row.hide()          # disappear now; Qt frees it on the next event-loop pass
             row.deleteLater()
         self._rows.clear()
-        for spec in cfg.filter_specs:
+        for spec in cfg.solver.filter_specs:
             self._add_row(spec)
         self._refresh_label()
         self.pipeline_changed.emit()

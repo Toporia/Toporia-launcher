@@ -9,13 +9,16 @@
 
 from dataclasses import replace
 
-from toporia.core.config import EnforcedArea, TopOptConfig
+from toporia.core import EnforcedArea, Scenario
 
-from .drone_arm import get_config as _get_drone_arm_config
+from . import drone_arm
+
+NAME = "Drone Arm (Camera View)"
+ORDER = 60
 
 
-def get_config() -> TopOptConfig:
-    cfg = _get_drone_arm_config()
+def scenario() -> Scenario:
+    base = drone_arm.scenario()
 
     # Symmetric about x=100. The sketch shows a wide lower opening with a
     # slightly narrower upper edge under the central body.
@@ -28,5 +31,4 @@ def get_config() -> TopOptConfig:
         ],
         kind="empty",
     )
-
-    return replace(cfg, enforced_areas=[*cfg.enforced_areas, camera_view])
+    return replace(base, enforced_areas=[*base.enforced_areas, camera_view])

@@ -102,7 +102,7 @@ class AMFilter(Filter):
             # (e.g. tan(45°) computes as 0.9999…999 → would floor to 0 without it).
             self._half = max(0, int(np.tan(np.radians(self.overhang_angle)) + 1e-9))
 
-    def setup(self, problem, config): pass
+    def setup(self, problem, solver): pass
 
     def _nrot(self):
         # CCW 90° rotations to bring the baseplate to xr[nely-1,:].

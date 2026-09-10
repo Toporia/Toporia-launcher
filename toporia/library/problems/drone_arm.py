@@ -4,15 +4,16 @@
 # Fixed:   two central mounting holes (bolted to the frame)
 # Load:    eight motor-attachment holes, equal +x and +y load cases
 
-from toporia.core.config import HoleConfig, LoadCase, TopOptConfig
+from toporia.core import HoleConfig, LoadCase, Scenario
+
+NAME = "Drone Arm"
+ORDER = 50
 
 
-def get_config() -> TopOptConfig:
-    return TopOptConfig(
+def scenario() -> Scenario:
+    return Scenario(
         Lx=200.0,
         Ly=85.0,
-        m=1.0,
-
         holes=[
             # Frame-mount holes — clamped (all DOFs fixed)
             HoleConfig(cx=85.1,  cy=75.0, r_void=3.0, r_passive=6.0, kind="fixed"),
@@ -27,14 +28,9 @@ def get_config() -> TopOptConfig:
             HoleConfig(cx=184.2, cy=24.9, r_void=3.0, r_passive=6.0, kind="load"),
             HoleConfig(cx=176.9, cy=16.2, r_void=3.0, r_passive=6.0, kind="load"),
         ],
-
         load_cases=[
             LoadCase(Fmag=1.0, Fa=0.0,  weight=0.5),
             LoadCase(Fmag=1.0, Fa=90.0, weight=0.5),
         ],
-
         volfrac=0.5,
-        filter_specs=[{"type": "density"}],
-        max_iter=100,
-        tol=0.01,
     )

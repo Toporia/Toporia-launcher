@@ -68,16 +68,12 @@ class MainWindow(QMainWindow):
         ll = QVBoxLayout(left); ll.setSpacing(6)
 
         # Configuration row: selects the problem geometry and default solver settings.
-        from toporia.library.problems import CONFIGURATIONS
-        from toporia.library.problems import DEFAULT_PROBLEM as DEFAULT_CONFIGURATION
+        from toporia.library.problems import DEFAULT_PROBLEM, problem_names
         crow = QHBoxLayout()
         crow.addWidget(QLabel("Configuration:"))
         self.config_combo = QComboBox()
-        self.config_combo.addItems(list(CONFIGURATIONS.keys()))
-        for idx, module_name in enumerate(CONFIGURATIONS.values()):
-            if module_name == DEFAULT_CONFIGURATION:
-                self.config_combo.setCurrentIndex(idx)
-                break
+        self.config_combo.addItems(problem_names())
+        self.config_combo.setCurrentText(DEFAULT_PROBLEM)
         crow.addWidget(self.config_combo, 1); ll.addLayout(crow)
 
         # Mode row: selects what kind of run to perform.
@@ -151,9 +147,9 @@ class MainWindow(QMainWindow):
 
     def _on_config_changed(self, name):
         """Load a configuration preset: update self._base_cfg and populate the widgets."""
-        from toporia.library.problems import get_config
+        from toporia.library.problems import get_run
         try:
-            cfg = get_config(name)
+            cfg = get_run(name)
         except Exception as e:
             self._log(f"[Config error] {e}")
             return

@@ -37,20 +37,20 @@ class DensityTop88Method(OptimizationMethod):
     params = (PENAL, MOVE)
     capabilities = Capabilities(variable_kind="density", accepts_filters=True)
 
-    def initialize(self, problem, config):
+    def initialize(self, problem, solver):
         self.problem   = problem
-        self.config    = config
-        self.settings  = self.resolve_params(config)   # this method's Param values
+        self.solver    = solver
+        self.settings  = self.resolve_params(solver)   # this method's Param values
         self.objective = np.inf
         self.change    = np.inf
 
         n_total   = problem.nelx * problem.nely
         n_passive = int(np.sum(problem.passive_elements))
-        if n_passive > config.volfrac * n_total:
+        if n_passive > problem.scenario.volfrac * n_total:
             raise ValueError(
                 f"Infeasible volume fraction: passive (forced-solid) elements already "
                 f"fill {n_passive / n_total:.1%} of the domain, which exceeds "
-                f"volfrac={config.volfrac:.1%}. Raise volfrac or reduce the passive region."
+                f"volfrac={problem.scenario.volfrac:.1%}. Raise volfrac or reduce the passive region."
             )
 
         # Per-element bounds replace the passive/void masks: clipping to them is
@@ -58,24 +58,25 @@ class DensityTop88Method(OptimizationMethod):
         self.lb, self.ub = problem.lower_bound, problem.upper_bound
 
         # Initialise design variables to the target volume fraction.
-        self.x = np.clip(np.full((problem.nely, problem.nelx), config.volfrac), self.lb, self.ub)
+        self.x = np.clip(np.full((problem.nely, problem.nelx), problem.scenario.volfrac), self.lb, self.ub)
 
-        self.pipeline = DensityFilterPipeline(problem, config)
+        self.pipeline = DensityFilterPipeline(problem, solver)
         self.x_phys = self.pipeline.physical_density(self.x)
 
     # ── Main optimisation step ────────────────────────────────────────────────
 
     def step(self, iteration):
-        cfg, problem = self.config, self.problem
+        problem = self.problem
+        sc = problem.scenario   # material and volume target
         # Number of iterations already completed; continuation schedules count from 0.
         completed = iteration - 1
 
         # ── 1. FEA ────────────────────────────────────────────────────────────
         penal, move = self.settings["penal"], self.settings["move"]
-        _, ce, self.objective = solve_fea(problem, cfg, self.x_phys, penal)
+        _, ce, self.objective = solve_fea(problem, self.x_phys, penal)
 
         # Raw compliance and volume sensitivities w.r.t. physical density.
-        dc = -penal * (cfg.E0 - cfg.Emin) * self.x_phys ** (penal - 1.0) * ce
+        dc = -penal * (sc.E0 - sc.Emin) * self.x_phys ** (penal - 1.0) * ce
         dv = np.ones_like(self.x)
 
         # ── 2. Sensitivity correction via the explicit filter pipeline ────────
@@ -95,7 +96,7 @@ class DensityTop88Method(OptimizationMethod):
                 ))
             ))
             candidate_phys = self.pipeline.physical_density(candidate)
-            if np.sum(candidate_phys) > cfg.volfrac * (problem.nelx * problem.nely):
+            if np.sum(candidate_phys) > sc.volfrac * (problem.nelx * problem.nely):
                 l1 = lm
             else:
                 l2 = lm

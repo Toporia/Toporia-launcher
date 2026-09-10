@@ -15,14 +15,13 @@
 
 
 import time
-from dataclasses import replace
 from pathlib import Path
 
 import matplotlib.image as mpimg
 import matplotlib.pyplot as plt
 import numpy as np
 
-from toporia.core.config import LoadCase, TopOptConfig, apply_param
+from toporia.core import LoadCase, Run, apply_param
 from toporia.engine.sensitivity import sensitivity_field as _sensitivity_field
 
 # ── 1-D sensitivity sweep ─────────────────────────────────────────────────────
@@ -41,11 +40,11 @@ def sensitivity_sweep(sweep_param, min_val, max_val, n_rows, n_cols,
     sens_param   : str   — parameter for which to compute ∂density/∂param
     base_value   : float — nominal value for the sensitivity analysis
     gap          : float — finite-difference step size
-    base_config  : TopOptConfig
+    base_config  : Run
     on_iteration : callable, optional
     """
     values     = np.linspace(min_val, max_val, n_rows * n_cols)
-    output_dir = Path(base_config.output_dir) / f"senssweep_{sweep_param}"
+    output_dir = Path(base_config.output.dir) / f"senssweep_{sweep_param}"
     output_dir.mkdir(parents=True, exist_ok=True)
 
     img_paths, t0 = [], time.perf_counter()
@@ -76,7 +75,7 @@ def sensitivity_sweep_2d(row_param, row_min, row_max, n_rows,
     """
     row_vals   = np.linspace(row_min, row_max, n_rows)
     col_vals   = np.linspace(col_min, col_max, n_cols)
-    output_dir = (Path(base_config.output_dir)
+    output_dir = (Path(base_config.output.dir)
                   / f"senssweep2d_{row_param}_vs_{col_param}")
     output_dir.mkdir(parents=True, exist_ok=True)
 
@@ -105,7 +104,7 @@ def sensitivity_sweep_2d(row_param, row_min, row_max, n_rows,
 
 def _apply_one(base_config, base_value, gap, param, value, cell_dir):
     """Return (cfg, effective_base, effective_gap) after applying one sweep value."""
-    cfg = replace(base_config, output_dir=cell_dir)
+    cfg = base_config.with_output_dir(cell_dir)
     if param == "sens.base_value":
         return cfg, float(value), gap
     if param == "sens.gap":
@@ -115,7 +114,7 @@ def _apply_one(base_config, base_value, gap, param, value, cell_dir):
 
 def _apply_two(base_config, base_value, gap, param_a, val_a, param_b, val_b, cell_dir):
     """Return (cfg, effective_base, effective_gap) after applying two sweep values."""
-    cfg = replace(base_config, output_dir=cell_dir)
+    cfg = base_config.with_output_dir(cell_dir)
     eff_base, eff_gap = base_value, gap
     for param, val in [(param_a, val_a), (param_b, val_b)]:
         if param == "sens.base_value":
@@ -172,7 +171,7 @@ def _assemble_2d(paths, row_vals, col_vals, row_param, col_param, output_dir):
 
 
 if __name__ == "__main__":
-    BASE = TopOptConfig(
+    BASE = Run().updated(
         m=0.5, volfrac=0.30,
         filter_specs=[{"type": "density"}], max_iter=50, tol=0.05,
         load_cases=[LoadCase(Fmag=1.0, Fa=0.0, weight=0.5),

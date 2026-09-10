@@ -74,13 +74,14 @@ class LevelSetRBFMethod(OptimizationMethod):
     )
     capabilities = Capabilities(variable_kind="level_set", accepts_filters=False)
 
-    def initialize(self, problem, config):
-        self.settings = self.resolve_params(config)   # this method's Param values
+    def initialize(self, problem, solver):
+        self.settings = self.resolve_params(solver)   # this method's Param values
 
         # If the mesh is too large for the dense RBF system, transparently
         # use a coarser internal mesh so "method=levelset" always runs.
-        self.problem  = self._working_problem(problem, config)
-        self.config   = config
+        self.problem  = self._working_problem(problem)
+        self.solver   = solver
+        self.scenario = self.problem.scenario
         self.iteration = 0
         self.objective = np.inf
         self.change    = np.inf
@@ -99,26 +100,24 @@ class LevelSetRBFMethod(OptimizationMethod):
         self.density       = self._element_volume() # initial element solid fractions from Phi
         self.initial_volume = float(np.mean(self.density))
 
-    def _working_problem(self, problem, config):
+    def _working_problem(self, problem):
         """Reduce mesh resolution if the dense RBF matrix would be too large.
 
         The RBF system is nNode × nNode — memory and compute scale as O(n²).
-        If the mesh has more nodes than max_nodes, this creates a coarser
-        internal problem so the method stays usable without manual tuning.
+        If the mesh has more nodes than max_nodes, this builds a coarser
+        internal problem from the same scenario, so the method stays usable
+        without manual tuning.
         """
         nnode = (problem.nelx + 1) * (problem.nely + 1)
         if nnode <= self.settings["max_nodes"]:
             return problem   # mesh is small enough; use as-is
 
-        from copy import copy
-
         from toporia.core.problem import RectangularProblem
-        cfg   = copy(config)
-        # Solve for the m that gives exactly max_nodes nodes: n = (Lx*m+1)(Ly*m+1) ≈ Lx*Ly*m²
-        cfg.m = 0.95 * np.sqrt(self.settings["max_nodes"] / (config.Lx * config.Ly))
-        print(f"levelset: using coarser internal mesh m={cfg.m:.3f} "
+        # Solve for the m that gives about max_nodes nodes: n = (Lx*m+1)(Ly*m+1) ≈ Lx*Ly*m²
+        m = 0.95 * np.sqrt(self.settings["max_nodes"] / (problem.Lx * problem.Ly))
+        print(f"levelset: using coarser internal mesh m={m:.3f} "
               f"because dense RBF would have {nnode} nodes")
-        return RectangularProblem(cfg)
+        return RectangularProblem(problem.scenario, m)
 
     def _prepare_rbf(self):
         """Build the RBF interpolation system and initialise the level-set field Phi.
@@ -133,7 +132,7 @@ class LevelSetRBFMethod(OptimizationMethod):
         nelx, nely = self.problem.nelx, self.problem.nely
         nnode = (nelx + 1) * (nely + 1)
         if nnode > self.settings["max_nodes"]:
-            raise MemoryError("Dense RBF system too large. Reduce config.m or increase method.max_nodes.")
+            raise MemoryError("Dense RBF system too large. Reduce solver.m or increase method.max_nodes.")
 
         x, y    = np.meshgrid(np.arange(nelx + 1), np.arange(nely + 1))
         self.X  = x; self.Y = y; self.nnode = nnode
@@ -233,22 +232,22 @@ class LevelSetRBFMethod(OptimizationMethod):
         self.iteration = iteration - 1
         # ── 1. Compute element volumes and run FEA (penal=1: linear stiffness) ──
         self.density = self._element_volume()
-        _, ce, self.objective = solve_fea(self.problem, self.config, self.density, penal=1.0)
-        ele_comp = ce * (self.config.Emin + self.density * (self.config.E0 - self.config.Emin))
+        _, ce, self.objective = solve_fea(self.problem, self.density, penal=1.0)
+        ele_comp = ce * (self.scenario.Emin + self.density * (self.scenario.E0 - self.scenario.Emin))
         vol      = float(np.mean(self.density))
         self.comp_history.append(self.objective)
         self.vol_history.append(vol)
 
         # ── 2. Lagrange multiplier update (volume constraint) ─────────────────
         # During the ramp phase the volume target ramps linearly from initial_volume
-        # to config.volfrac over nrelax iterations.  After that, a PI-like
+        # to scenario.volfrac over nrelax iterations.  After that, a PI-like
         # feedback law drives the volume to the target.
         if self.iteration < self.nrelax:
             self.lag = self.mu * (vol - self.initial_volume
-                                  + (self.initial_volume - self.config.volfrac)
+                                  + (self.initial_volume - self.scenario.volfrac)
                                   * (self.iteration + 1) / self.nrelax)
         else:
-            self.lag   += self.gamma * (vol - self.config.volfrac)
+            self.lag   += self.gamma * (vol - self.scenario.volfrac)
             self.gamma  = min(self.gamma + self.settings["gamma_step"],
                               self.settings["gamma_max"])
 
@@ -296,14 +295,14 @@ class LevelSetRBFMethod(OptimizationMethod):
         """Method-specific criterion: volume on target AND compliance stable.
 
         This cannot be written as a single design-change scalar, which is why the
-        contract keeps this escape hatch.  The engine's own `change < config.tol`
+        contract keeps this escape hatch.  The engine's own `change < solver.tol`
         rule still applies in addition to this one, and the iteration limit is
         the engine's business — neither is repeated here.
         """
         if self.iteration <= self.nrelax or len(self.comp_history) < 10:
             return False   # too early to judge convergence
         recent = np.array(self.comp_history[-10:-1])
-        vol_ok  = abs(self.vol_history[-1] - self.config.volfrac) / self.config.volfrac < 1e-3
+        vol_ok  = abs(self.vol_history[-1] - self.scenario.volfrac) / self.scenario.volfrac < 1e-3
         comp_ok = np.all(np.abs(self.comp_history[-1] - recent) / max(abs(self.comp_history[-1]), 1.) < 1e-3)
         return vol_ok and comp_ok
 

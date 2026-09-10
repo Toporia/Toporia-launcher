@@ -7,11 +7,10 @@
 #      → caller passes its own config and an optional per-iteration callback.
 
 
-from dataclasses import replace
 
 import matplotlib.pyplot as plt
 
-from toporia.core.config import LoadCase
+from toporia.core import LoadCase
 from toporia.core.problem import RectangularProblem as BracketProblem  # builds the FEA mesh from the config
 from toporia.engine.runner import run_single_with_store
 
@@ -21,7 +20,7 @@ def run_one(config, on_iteration=None):
 
     Parameters
     ----------
-    config       : TopOptConfig  — all settings (mesh, material, solver params)
+    config       : Run  — all settings (mesh, material, solver params)
     on_iteration : callable, optional
         Called after every solver step as on_iteration(density, objectives, iteration).
         Used by the GUI to update the live canvas.  Pass nothing for a headless run.
@@ -32,17 +31,17 @@ def run_one(config, on_iteration=None):
     """
     # Instantiate the chosen algorithm ("density" or "levelset") and hand it
     # the problem geometry so it can set up its internal data structures.
-    problem = BracketProblem(config)
-    print(f"[setup] Lx={config.Lx} Ly={config.Ly} nelx={problem.nelx} nely={problem.nely}")
-    print(f"[setup] volfrac={config.volfrac} edge_c={len(config.edge_constraints)} "
-          f"pt_c={len(config.point_constraints)} pt_l={len(config.point_loads)}")
+    problem = BracketProblem(config.scenario, config.solver.m)
+    print(f"[setup] Lx={config.scenario.Lx} Ly={config.scenario.Ly} nelx={problem.nelx} nely={problem.nely}")
+    print(f"[setup] volfrac={config.scenario.volfrac} edge_c={len(config.scenario.edge_constraints)} "
+          f"pt_c={len(config.scenario.point_constraints)} pt_l={len(config.scenario.point_loads)}")
     # Geometry-level diagnostics only.  The engine deliberately does not know how
     # a method numbers its degrees of freedom, so it reports node and element
     # counts rather than DOF indices.
     n_fixed = int((problem.fixed_nodes | problem.fixed_x_nodes | problem.fixed_y_nodes).sum())
     n_loaded = int(sum(m.sum() for m in problem.load_node_sets))
     print(f"[setup] fixed_nodes={n_fixed} loaded_nodes={n_loaded} "
-          f"load_cases={len(config.load_cases)}")
+          f"load_cases={len(config.scenario.load_cases)}")
     print(f"[setup] passive_elems={int(problem.passive_elements.sum())} "
           f"void_elems={int(problem.void_elements.sum())}")
     # The loop itself lives in engine/runner.py so there is exactly one place
@@ -55,9 +54,8 @@ def run_one(config, on_iteration=None):
 
 def main():
     # ── Edit this config to change what the standalone script runs ────────────
-    from toporia.library.problems import get_default_config
-    config = replace(
-        get_default_config(),
+    from toporia.library.problems import get_default_run
+    config = get_default_run().updated(
         method="density", m=1, volfrac=0.2,
         filter_specs=[{"type": "density"}], max_iter=50, save_every=10,
         load_cases=[LoadCase(Fmag=1.0, Fa=135, weight=0.5)],
@@ -68,7 +66,7 @@ def main():
     # Show a two-panel matplotlib window when done: density field + convergence.
     fig, axes = plt.subplots(1, 2, figsize=(10, 3.5))
     axes[0].imshow(1 - density, cmap="gray", origin="lower")  # invert: solid=dark
-    axes[0].set_title(f"Final — {config.method}"); axes[0].axis("off")
+    axes[0].set_title(f"Final — {config.solver.method}"); axes[0].axis("off")
     rel = [o - store.objectives[0] for o in store.objectives]  # relative compliance
     axes[1].plot(rel)
     axes[1].set(title="Objective", xlabel="Iteration", ylabel="ΔCompliance")

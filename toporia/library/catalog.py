@@ -1,19 +1,19 @@
 """library.catalog — every value the platform can vary, as parameter paths.
 
-A *parameter path* addresses one value in a TopOptConfig:
+A *parameter path* addresses one value in a Run:
 
-    volfrac                 a scenario field (see core.config.CONFIG_PARAMS)
+    volfrac                 a Scenario, Solver or Output field
     method.penal            a parameter of the selected method
     filters[1].beta         a parameter of the second filter in the pipeline
     load_cases[0].Fmag      a field of the first load case
 
-core.config.apply_param writes to a path.  This module lists which paths exist
+core.run.apply_param writes to a path.  This module lists which paths exist
 for a given setup, with human-readable labels — it is what the GUI's sweep,
 comparison and sensitivity dropdowns show.  Only numeric parameters are listed,
 because only numbers can be swept.
 """
 
-from toporia.core.config import CONVERGENCE_PARAMS, DESIGN_PARAMS
+from toporia.core import SCENARIO_PARAMS, SOLVER_PARAMS
 
 from .methods import METHODS
 from .methods.filters import FILTERS
@@ -28,7 +28,7 @@ def parameter_paths(method, filter_specs=(), n_load_cases=0):
     Filter paths are included only when the method accepts filters, so the list
     never offers a parameter the run would ignore.
     """
-    items = [(p.label, p.name) for p in DESIGN_PARAMS + CONVERGENCE_PARAMS if p.is_numeric]
+    items = [(p.label, p.name) for p in SCENARIO_PARAMS + SOLVER_PARAMS if p.is_numeric]
 
     method_cls = METHODS.get(method)
     items += [(f"Method · {p.label}", f"method.{p.name}") for p in method_cls.params if p.is_numeric]

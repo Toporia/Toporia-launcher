@@ -34,7 +34,7 @@ def compare_core(cfg_a, cfg_b, label_a, label_b, output_dir, on_iteration=None):
 
     Parameters
     ----------
-    cfg_a, cfg_b  : TopOptConfig — fully configured, each with their own output_dir
+    cfg_a, cfg_b  : Run — fully configured, each with their own output_dir
     label_a/b     : str          — human-readable description shown in the figure
     output_dir    : Path         — where comparison.png is written
     on_iteration  : callable, optional — GUI callback(density, objectives, iteration)

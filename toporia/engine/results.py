@@ -44,6 +44,11 @@ class ResultStore:
         if save_history:
             self.save_history()
 
+    def save_json(self, name, data):
+        """Write a JSON document — such as the run.json provenance record — to the output folder."""
+        from toporia.core.serialize import dump_json
+        (self.output_dir / name).write_text(dump_json(data) + "\n", encoding="utf-8")
+
     def save_csv(self, density):
         """Write final_density.csv: two metadata rows then the density matrix.
 

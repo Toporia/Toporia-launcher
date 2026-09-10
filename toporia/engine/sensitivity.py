@@ -26,14 +26,13 @@
 
 
 import csv
-from dataclasses import replace
 from pathlib import Path
 
 import matplotlib.pyplot as plt
 import numpy as np
 from matplotlib.colors import TwoSlopeNorm
 
-from toporia.core.config import LoadCase, TopOptConfig, apply_param
+from toporia.core import LoadCase, Run, apply_param
 from toporia.engine.runner import run_single as _run_single
 
 
@@ -45,21 +44,21 @@ def sensitivity_field(param_key, base_value, gap, base_config, on_iteration=None
     param_key    : str   — parameter to perturb (e.g. "volfrac", "lc0.Fmag")
     base_value   : float — nominal parameter value
     gap          : float — finite-difference step (positive or negative)
-    base_config  : TopOptConfig — all other settings, shared between both runs
+    base_config  : Run — all other settings, shared between both runs
     on_iteration : callable, optional — GUI callback(density, objectives, iteration)
 
     Returns
     -------
     (Path to saved PNG, sensitivity ndarray  [nely × nelx])
     """
-    output_dir = (Path(base_config.output_dir)
+    output_dir = (Path(base_config.output.dir)
                   / f"sensitivity_{param_key}_{base_value:.4g}_d{gap:+.4g}")
     output_dir.mkdir(parents=True, exist_ok=True)
 
     densities = []
     for label, value in [("base", base_value), ("perturbed", base_value + gap)]:
         cfg = apply_param(
-            replace(base_config, output_dir=output_dir / f"run_{label}"),
+            base_config.with_output_dir(output_dir / f"run_{label}"),
             param_key, value,
         )
         print(f"\n=== Run {label}: {param_key} = {value:.4g} ===")
@@ -153,7 +152,7 @@ def _save_figure(density_base, sens, param_key, base_value, gap, output_dir):
 
 
 if __name__ == "__main__":
-    BASE = TopOptConfig(
+    BASE = Run().updated(
         m=0.5, volfrac=0.30,
         filter_specs=[{"type": "density"}], max_iter=50, tol=0.05,
         load_cases=[LoadCase(Fmag=1.0, Fa=0.0, weight=0.5),

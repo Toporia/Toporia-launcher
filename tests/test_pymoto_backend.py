@@ -8,25 +8,22 @@ A failure here after a contract change is the signal that the contract has
 quietly grown a dependency on how Toporia's own methods happen to work.
 """
 
-from dataclasses import replace
 
 import numpy as np
 import pytest
 
 from toporia.core.contract import OBJECTIVE
-from toporia.core.problem import RectangularProblem
-from toporia.library.methods import make_method
-from toporia.library.problems import get_config
+from toporia.engine.runner import initialized_method
+from toporia.library.problems import get_run
 
 pymoto = pytest.importorskip("pymoto", reason="optional dependency: pip install pymoto")
 
 
 def _run(method_name, problem_name="MBB Beam", iterations=25, **overrides):
     overrides.setdefault("m", 0.5)
-    cfg = replace(get_config(problem_name), max_iter=iterations, tol=0.0, **overrides)
-    method = make_method(method_name)
-    method.initialize(RectangularProblem(cfg), cfg)
-    for iteration in range(1, cfg.max_iter + 1):
+    run = get_run(problem_name).updated(method=method_name, max_iter=iterations, tol=0.0, **overrides)
+    method = initialized_method(run)
+    for iteration in range(1, run.solver.max_iter + 1):
         method.step(iteration)
     return method
 

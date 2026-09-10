@@ -7,17 +7,16 @@
 # Coordinate convention:
 #   xy origin is the bottom-left corner, matching the displayed density fields.
 
-from toporia.core.config import LoadCase, PointConstraint, PointLoad, TopOptConfig
+from toporia.core import LoadCase, PointConstraint, PointLoad, Scenario
+
+NAME = "Drone Arm (Point Loads)"
+ORDER = 70
 
 
-def get_config() -> TopOptConfig:
-    return TopOptConfig(
+def scenario() -> Scenario:
+    return Scenario(
         Lx=200.0,
         Ly=85.0,
-        m=1.0,
-
-        holes=[],
-        edge_constraints=[],
         point_constraints=[
             PointConstraint(x=85.1,  y=75.0, dof="both"),
             PointConstraint(x=115.6, y=75.0, dof="both"),
@@ -32,16 +31,11 @@ def get_config() -> TopOptConfig:
             PointLoad(x=184.2, y=24.9),
             PointLoad(x=176.9, y=16.2),
         ],
-
         # PointLoad defines where the forces act; LoadCase defines direction.
         # Equal +x and +y load cases are combined with equal weights.
         load_cases=[
             LoadCase(Fmag=1.0, Fa=0.0,  weight=0.5),
             LoadCase(Fmag=1.0, Fa=90.0, weight=0.5),
         ],
-
         volfrac=0.5,
-        filter_specs=[{"type": "density"}],
-        max_iter=100,
-        tol=0.01,
     )

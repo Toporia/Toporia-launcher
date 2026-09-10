@@ -39,28 +39,28 @@ class DensityMMAMethod(OptimizationMethod):
     )
     capabilities = Capabilities(variable_kind="density", accepts_filters=True)
 
-    def initialize(self, problem, config):
+    def initialize(self, problem, solver):
         self.problem = problem
-        self.config = config
-        self.settings = self.resolve_params(config)   # this method's Param values
+        self.solver = solver
+        self.settings = self.resolve_params(solver)   # this method's Param values
         self.iteration = 0
         self.objective = np.inf
         self.change = np.inf
 
         n_total   = problem.nelx * problem.nely
         n_passive = int(np.sum(problem.passive_elements))
-        if n_passive > config.volfrac * n_total:
+        if n_passive > problem.scenario.volfrac * n_total:
             raise ValueError(
                 f"Infeasible volume fraction: passive (forced-solid) elements already "
                 f"fill {n_passive / n_total:.1%} of the domain, which exceeds "
-                f"volfrac={config.volfrac:.1%}. Raise volfrac or reduce the passive region."
+                f"volfrac={problem.scenario.volfrac:.1%}. Raise volfrac or reduce the passive region."
             )
 
         # Per-element bounds replace the passive/void masks (see density_top88).
         self.lb, self.ub = problem.lower_bound, problem.upper_bound
-        self.x = np.clip(np.full((problem.nely, problem.nelx), config.volfrac), self.lb, self.ub)
+        self.x = np.clip(np.full((problem.nely, problem.nelx), problem.scenario.volfrac), self.lb, self.ub)
 
-        self.pipeline = DensityFilterPipeline(problem, config)
+        self.pipeline = DensityFilterPipeline(problem, solver)
         self.x_phys = self.pipeline.physical_density(self.x)
 
         self.n = problem.nelx * problem.nely
@@ -79,16 +79,17 @@ class DensityMMAMethod(OptimizationMethod):
         self.f0fac = None
 
     def step(self, iteration):
-        cfg, problem = self.config, self.problem
+        problem = self.problem
+        sc = problem.scenario   # material and volume target
         # Completed-iteration count: MMA's warm-up tests and the filter continuation
         # schedules were both written against a zero-based counter.
         self.iteration = iteration - 1
 
         penal = self.settings["penal"]
-        _, ce, self.objective = solve_fea(problem, cfg, self.x_phys, penal)
+        _, ce, self.objective = solve_fea(problem, self.x_phys, penal)
 
-        dc = -penal * (cfg.E0 - cfg.Emin) * self.x_phys ** (penal - 1.0) * ce
-        solid_limit = max(cfg.volfrac * float(problem.nelx * problem.nely), 1e-12)
+        dc = -penal * (sc.E0 - sc.Emin) * self.x_phys ** (penal - 1.0) * ce
+        solid_limit = max(sc.volfrac * float(problem.nelx * problem.nely), 1e-12)
         volume = float(np.sum(self.x_phys) / solid_limit)
         dv = np.ones_like(self.x_phys) / solid_limit
 
@@ -196,7 +197,7 @@ class DensityMMAMethod(OptimizationMethod):
     def is_converged(self):
         """MMA uses a tighter tolerance than the platform default (method.mma_tol).
 
-        The engine's own `change < config.tol` rule still applies and still wins
+        The engine's own `change < solver.tol` rule still applies and still wins
         if it triggers first; this only adds MMA's stricter criterion.
         """
         return self.change < self.convtol

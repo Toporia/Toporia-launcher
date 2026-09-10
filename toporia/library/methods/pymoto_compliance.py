@@ -84,14 +84,14 @@ class PymotoComplianceMethod(OptimizationMethod):
     # so the Toporia filter pipeline is not used.
     capabilities = Capabilities(variable_kind="density", accepts_filters=False)
 
-    def initialize(self, problem, config):
+    def initialize(self, problem, solver):
         try:
             import pymoto as pym
         except ImportError as exc:  # pragma: no cover - exercised only without pyMOTO
             raise ImportError(_IMPORT_HINT) from exc
 
-        self.problem, self.config = problem, config
-        self.settings = self.resolve_params(config)
+        self.problem, self.solver = problem, solver
+        self.settings = self.resolve_params(solver)
         self.objective, self.change = np.inf, np.inf
         domain = self.domain = pym.VoxelDomain(problem.nelx, problem.nely)
 
@@ -103,7 +103,7 @@ class PymotoComplianceMethod(OptimizationMethod):
         # point: no translation is needed.
         lb = problem.lower_bound.ravel()
         ub = problem.upper_bound.ravel()
-        x0 = np.clip(np.full(domain.nel, config.volfrac), lb, ub)
+        x0 = np.clip(np.full(domain.nel, problem.scenario.volfrac), lb, ub)
 
         s_x = pym.Signal("x", x0, min=lb, max=ub)
         s_f = pym.Signal("f", forces)
@@ -113,17 +113,17 @@ class PymotoComplianceMethod(OptimizationMethod):
             s_smeared = pym.DensityFilter(domain, radius=self.settings["rmin"])(s_x)
             s_filtered = _enforce_bounds_module(pym)(lb, ub)(s_smeared)
             s_stiff = pym.MathExpression(
-                f"{config.Emin} + inp0^{self.settings['penal']}*({config.E0}-{config.Emin})"
+                f"{problem.scenario.Emin} + inp0^{self.settings['penal']}*({problem.scenario.E0}-{problem.scenario.Emin})"
             )(s_filtered)
             s_K = pym.AssembleStiffness(
-                domain, bc=bc, e_modulus=1.0, poisson_ratio=config.nu, plane="stress"
+                domain, bc=bc, e_modulus=1.0, poisson_ratio=problem.scenario.nu, plane="stress"
             )(s_stiff)
             s_u = pym.LinSolve()(s_K, s_f)
             s_per_case = pym.EinSum("ij,ij->j")(s_u, s_f)   # compliance per load case
             s_compliance = pym.EinSum("j,j->")(s_per_case, s_w)
             s_volume = pym.EinSum("i->")(s_filtered)
             s_constraint = pym.MathExpression(
-                f"inp0/{domain.nel * config.volfrac} - 1"
+                f"inp0/{domain.nel * problem.scenario.volfrac} - 1"
             )(s_volume)
         s_compliance.tag, s_constraint.tag = "compliance", "volume"
 
@@ -161,7 +161,7 @@ class PymotoComplianceMethod(OptimizationMethod):
 
     def _load_cases(self, domain):
         """Build the (ndof, n_load_cases) block right-hand side and its weights."""
-        load_cases = self.config.load_cases
+        load_cases = self.problem.scenario.load_cases
         forces = np.zeros((domain.nnodes * 2, len(load_cases)))
         for k, case in enumerate(load_cases):
             angle = np.deg2rad(case.Fa)

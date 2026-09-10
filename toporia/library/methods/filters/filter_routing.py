@@ -9,7 +9,7 @@
 # return after the shrink step. Thin solid ribs are intentionally not removed.
 #
 # The user-facing radius is in mm and is converted to element units with
-# radius_el = radius_mm * config.m. The filter can be delayed/ramped in because
+# radius_el = radius_mm * solver.m. The filter can be delayed/ramped in because
 # applying manufacturing morphology from iteration 0 can collapse the early OC
 # update before a load path has formed.
 #
@@ -70,9 +70,9 @@ class RoutingRadiusFilter(Filter):
         self._threshold = float(threshold)
         self._alpha = 0.0
 
-    def setup(self, problem, config):
+    def setup(self, problem, solver):
         self._shape = (problem.nely, problem.nelx)
-        self.radius_el = max(0.0, self.radius_mm * float(config.m))
+        self.radius_el = max(0.0, self.radius_mm * float(solver.m))
         self._offsets = self._make_offsets(self.radius_el)
         self._identity = self.radius_el <= 0.0 or len(self._offsets) <= 1
         self._alpha = 0.0 if self.start_iter > 0 else 1.0 / self.ramp_iters

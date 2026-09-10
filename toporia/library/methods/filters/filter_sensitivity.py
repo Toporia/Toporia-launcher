@@ -35,7 +35,7 @@ class SensitivityFilter(Filter):
     def __init__(self, rmin=1.5):
         self.rmin = rmin
 
-    def setup(self, problem, config):
+    def setup(self, problem, solver):
         rmin        = self.rmin
         nely, nelx  = problem.nely, problem.nelx
         self._shape = (nely, nelx)

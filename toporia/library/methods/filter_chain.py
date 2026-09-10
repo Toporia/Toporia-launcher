@@ -1,6 +1,6 @@
 # filter_chain.py — build a filter pipeline from spec dicts
 #
-#   build_filter_chain(filter_specs, problem, config)
+#   build_filter_chain(filter_specs, problem, solver)
 #       Looks each spec's "type" up in the FILTERS registry, validates its
 #       parameters against the filter's Param declarations, and returns a set-up
 #       FilterChain.  Empty list → caller uses no chain (raw optimiser output).
@@ -21,7 +21,7 @@ from .filters import FILTERS, FilterChain
 __all__ = ["DensityFilterPipeline", "build_filter_chain"]
 
 
-def build_filter_chain(filter_specs, problem, config):
+def build_filter_chain(filter_specs, problem, solver):
     """Instantiate a FilterChain from a list of spec dicts and call setup.
 
     Each spec is {"type": <filter name>, <param>: <value>, ...}, for example
@@ -35,7 +35,7 @@ def build_filter_chain(filter_specs, problem, config):
         cls = FILTERS.get(spec.pop("type", "density"))
         filters.append(cls(**resolve_params(f"filter {cls.name!r}", cls.params, spec)))
     chain = FilterChain(filters)
-    chain.setup(problem, config)
+    chain.setup(problem, solver)
     return chain
 
 
@@ -46,10 +46,10 @@ class DensityFilterPipeline:
     optimizer can stay focused on FEA, sensitivities, and the OC update.
     """
 
-    def __init__(self, problem, config):
-        specs = getattr(config, "filter_specs", None) or []
+    def __init__(self, problem, solver):
+        specs = solver.filter_specs
         self.problem = problem
-        self.chain = build_filter_chain(specs, problem, config) if specs else None
+        self.chain = build_filter_chain(specs, problem, solver) if specs else None
 
     def physical_density(self, design):
         """Filter the design, then clamp it to the problem's per-element bounds.

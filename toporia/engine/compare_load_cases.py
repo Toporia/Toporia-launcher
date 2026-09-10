@@ -15,10 +15,9 @@
 #   2. from CompareLoadCases import compare_load_cases
 
 
-from dataclasses import replace
 from pathlib import Path
 
-from toporia.core.config import LoadCase, TopOptConfig
+from toporia.core import LoadCase, Run, apply_param
 from toporia.engine.compare_core import compare_core
 
 
@@ -29,14 +28,14 @@ def compare_load_cases(load_cases_a, load_cases_b, base_config, on_iteration=Non
     ----------
     load_cases_a : list[LoadCase] — load cases for design A
     load_cases_b : list[LoadCase] — load cases for design B
-    base_config  : TopOptConfig  — all other settings (volfrac, mesh, …) shared
+    base_config  : Run  — all other settings (volfrac, mesh, …) shared
     on_iteration : callable, optional — GUI callback(density, objectives, iteration)
 
     Returns
     -------
     (Path to comparison PNG, density_a ndarray, density_b ndarray)
     """
-    output_dir = (Path(base_config.output_dir)
+    output_dir = (Path(base_config.output.dir)
                   / f"compare_lc_{_lc_tag(load_cases_a)}_vs_{_lc_tag(load_cases_b)}")
 
     # Print load-case breakdown upfront so the log is readable before runs start.
@@ -45,8 +44,8 @@ def compare_load_cases(load_cases_a, load_cases_b, base_config, on_iteration=Non
         for i, lc in enumerate(lcs):
             print(f"    LC{i + 1}:  Fmag={lc.Fmag:.3g}  Fa={lc.Fa:.1f}°  weight={lc.weight:.3g}")
 
-    cfg_a = replace(base_config, load_cases=load_cases_a, output_dir=output_dir / "run_A")
-    cfg_b = replace(base_config, load_cases=load_cases_b, output_dir=output_dir / "run_B")
+    cfg_a = apply_param(base_config.with_output_dir(output_dir / "run_A"), "load_cases", load_cases_a)
+    cfg_b = apply_param(base_config.with_output_dir(output_dir / "run_B"), "load_cases", load_cases_b)
     return compare_core(
         cfg_a, cfg_b,
         _lc_label(load_cases_a),
@@ -68,7 +67,7 @@ def _lc_label(lcs):
 
 
 if __name__ == "__main__":
-    BASE = TopOptConfig(
+    BASE = Run().updated(
         m=0.5, volfrac=0.25,
         filter_specs=[{"type": "density"}], max_iter=50, tol=0.05,
         save_every=0,

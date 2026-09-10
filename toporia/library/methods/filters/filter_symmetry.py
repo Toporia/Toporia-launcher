@@ -49,7 +49,7 @@ class SymmetryFilter(Filter):
             )
         self.axis = self._ALIASES[key]
 
-    def setup(self, problem, config):
+    def setup(self, problem, solver):
         pass
 
     def _apply_once(self, x, axis):

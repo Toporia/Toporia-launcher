@@ -12,7 +12,7 @@
 #   RectangularProblem — the reference implementation: a 2-D rectangle of Q4
 #                        bilinear elements with holes, edge constraints, point
 #                        loads, and enforced passive/void regions, all driven by
-#                        TopOptConfig.  This is the entry point for the bundled
+#                        a Scenario.  This is the entry point for the bundled
 #                        benchmark problems and the drone-arm example.
 #
 # The domain is a rectangle of size Lx × Ly mm divided into nelx × nely
@@ -23,7 +23,7 @@ from dataclasses import dataclass
 
 import numpy as np
 
-from .config import TopOptConfig
+from .scenario import Scenario
 
 # ── Public interface ──────────────────────────────────────────────────────────
 
@@ -47,6 +47,9 @@ class BaseProblem:
 
     Attributes
     ----------
+    scenario : core.scenario.Scenario
+        The scenario the problem was built from.  Methods read the material,
+        the volume target and the load cases from it.
     nelx : int
         Number of finite elements along the x-axis (domain width direction).
     nely : int
@@ -59,7 +62,7 @@ class BaseProblem:
         map them onto its own convention.
     load_node_sets : list[np.ndarray], each shape (nely+1, nelx+1), dtype bool
         One node mask per load application region.  The magnitude, direction
-        and weight of each load case live in TopOptConfig.load_cases; this
+        and weight of each load case live in Scenario.load_cases; this
         records only *where* the load acts.
     void_elements : np.ndarray, shape (nely, nelx), dtype bool
         True for elements forced to density 0 (holes, empty regions).
@@ -74,6 +77,7 @@ class BaseProblem:
     """
 
     # Class-level annotations — concrete subclasses must set these as instance vars.
+    scenario:         Scenario
     nelx:             int
     nely:             int
     nn:               int
@@ -107,7 +111,7 @@ class BaseProblem:
         Raises NotImplementedError immediately rather than letting the solver
         encounter a confusing AttributeError mid-run.
         """
-        required = ["nelx", "nely", "nn", "load_node_sets",
+        required = ["scenario", "nelx", "nely", "nn", "load_node_sets",
                     "fixed_nodes", "fixed_x_nodes", "fixed_y_nodes",
                     "void_elements", "passive_elements"]
         missing = [a for a in required if not hasattr(self, a)]
@@ -124,7 +128,7 @@ class BaseProblem:
 class RectangularProblem(BaseProblem):
     """Mesh and boundary conditions for a 2-D rectangular domain.
 
-    Constructed once per run from a TopOptConfig.  The optimisation algorithm
+    Constructed once per run from a Scenario and a mesh resolution m (Solver.m).  The optimisation algorithm
     reads from it but never writes back to it.
 
     The domain is nelx × nely bilinear quad elements (Q4) spanning Lx × Ly mm.
@@ -132,16 +136,17 @@ class RectangularProblem(BaseProblem):
     during __post_init__ and result in the void/passive element masks and the
     node masks that a finite element solver turns into its own DOF arrays.
     """
-    config: TopOptConfig
+    scenario: Scenario
+    m: float = 1.0   # mesh resolution in elements per mm (Solver.m)
 
     def __post_init__(self):
-        cfg = self.config
+        cfg = self.scenario
 
         # ── Mesh size ─────────────────────────────────────────────────────────
         self.Lx   = cfg.Lx
         self.Ly   = cfg.Ly
-        self.nelx = int(round(cfg.Lx * cfg.m))
-        self.nely = max(1, int(round(cfg.Ly * cfg.m)))
+        self.nelx = int(round(cfg.Lx * self.m))
+        self.nely = max(1, int(round(cfg.Ly * self.m)))
         self.nn   = (self.nelx + 1) * (self.nely + 1)
 
         self.dx = self.Lx / self.nelx

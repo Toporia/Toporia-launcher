@@ -10,14 +10,13 @@
 
 
 import time
-from dataclasses import replace  # creates a modified copy of a dataclass
 from pathlib import Path
 
 import matplotlib.image as mpimg  # reading PNG files back in for grid assembly
 import matplotlib.pyplot as plt
 import numpy as np
 
-from toporia.core.config import LoadCase, TopOptConfig, apply_param  # apply_param handles lc0.Fmag style keys
+from toporia.core import LoadCase, Run, apply_param
 from toporia.engine.runner import run_single as _run_single
 
 
@@ -33,7 +32,7 @@ def sweep(parameter, min_val, max_val, n_rows, n_cols, base_config,
     """
     # Build the list of parameter values: e.g. [0.08, 0.155, 0.23, ..., 0.60]
     values     = np.linspace(min_val, max_val, n_rows * n_cols)
-    output_dir = Path(base_config.output_dir) / f"sweep_{parameter}"
+    output_dir = Path(base_config.output.dir) / f"sweep_{parameter}"
     output_dir.mkdir(parents=True, exist_ok=True)  # create folder, ignore if exists
 
     img_paths, t_total = [], time.perf_counter()   # accumulate PNG paths + start timer
@@ -44,7 +43,7 @@ def sweep(parameter, min_val, max_val, n_rows, n_cols, base_config,
         #   - the swept parameter set to the current value
         # It handles both plain fields ("volfrac") and load-case fields ("lc0.Fmag").
         cfg = apply_param(
-            replace(base_config, output_dir=output_dir / f"{parameter}_{value:.4f}"),
+            base_config.with_output_dir(output_dir / f"{parameter}_{value:.4f}"),
             parameter, value,
         )
         print(f"[{k}/{len(values)}] {parameter}={value:.3g}  starting...")
@@ -52,7 +51,7 @@ def sweep(parameter, min_val, max_val, n_rows, n_cols, base_config,
 
         _run_single(cfg, on_iteration)
 
-        img_paths.append((cfg.output_dir / "final_density.png", value))
+        img_paths.append((cfg.output.dir / "final_density.png", value))
         print(f"[{k}/{len(values)}] done"
               f"  run {time.perf_counter()-t0:.1f}s  total {time.perf_counter()-t_total:.1f}s")
 
@@ -73,7 +72,7 @@ def sweep(parameter, min_val, max_val, n_rows, n_cols, base_config,
 
 if __name__ == "__main__":
     # ── Edit these values to configure a standalone sweep ─────────────────────
-    BASE_CONFIG = TopOptConfig(
+    BASE_CONFIG = Run().updated(
         m=0.5, volfrac=0.25,
         filter_specs=[{"type": "density"}], max_iter=50, tol=0.05,
         load_cases=[LoadCase(Fmag=1.0, Fa=0.0, weight=0.5),

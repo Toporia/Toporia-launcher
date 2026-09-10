@@ -117,3 +117,13 @@ def resolve_params(owner, declared, values=None):
         name: param.coerce(values[name]) if name in values else param.default
         for name, param in by_name.items()
     }
+
+
+def select(params, *names):
+    """Return the Params with these names, in the order given.
+
+    For building one panel from several declaration groups, e.g. the mesh
+    resolution (a Solver field) next to the volume fraction (a Scenario field).
+    """
+    by_name = {p.name: p for p in params}
+    return tuple(by_name[name] for name in names)
