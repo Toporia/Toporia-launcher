@@ -17,6 +17,7 @@ from toporia.core.params import resolve_params  # noqa: E402
 from toporia.library.filters import FILTERS  # noqa: E402
 from toporia.library.methods import METHODS  # noqa: E402
 from toporia.library.problems import get_run, problem_names  # noqa: E402
+from toporia.library.responses import OBJECTIVE_ROLE, responses_for  # noqa: E402
 
 PLUGINS = [(f"method:{c.name}", c) for c in METHODS.classes()] + \
           [(f"filter:{c.name}", c) for c in FILTERS.classes()]
@@ -92,3 +93,34 @@ def test_a_preset_survives_the_round_trip_through_the_gui(window, preset):
     # The pipeline comes back with every parameter made explicit.
     assert [s["type"] for s in cfg.solver.filter_specs] == \
         [s.get("type", "density") for s in original.solver.filter_specs]
+
+
+@pytest.mark.parametrize("name", METHODS.names())
+def test_objective_and_constraints_follow_the_method(window, name):
+    capabilities = METHODS.get(name).capabilities
+    window.core.method.setCurrentIndex(window.core.method.findData(name))
+    expected = [cls.name for cls in responses_for(OBJECTIVE_ROLE) if cls.name in capabilities.objectives]
+    assert window.objective.offered_types() == expected
+    can_constrain = bool(capabilities.constraints) and capabilities.max_constraints != 0
+    assert window.constraints.isHidden() == (not can_constrain)
+
+
+def test_a_constraint_reaches_the_run_only_when_the_method_can_enforce_it(window):
+    from toporia.gui import runner
+    window._on_config_changed("MBB Beam")
+    window.core.method.setCurrentIndex(window.core.method.findData("pymoto"))
+    window.constraints.load_specs([{"type": "stress", "limit": 7.0}])
+
+    def build():
+        return runner.build_config(window.core, window.lc, window.filters, base_cfg=window._base_cfg,
+                                   objective=window.objective, constraints=window.constraints)
+
+    assert build().scenario.constraints == [{"type": "stress", "limit": 7.0, "p": 8.0, "q": 0.5, "adaptive": True}]
+    offered = [window.sg.param.itemData(i) for i in range(window.sg.param.count())]
+    assert "constraints[0].limit" in offered
+
+    window.core.method.setCurrentIndex(window.core.method.findData("density"))
+    assert build().scenario.constraints == []          # OC cannot enforce it, so the run never sees it
+    window.core.method.setCurrentIndex(window.core.method.findData("pymoto"))
+    assert build().scenario.constraints[0]["limit"] == 7.0   # kept for when it can
+    window.constraints.load_specs([])

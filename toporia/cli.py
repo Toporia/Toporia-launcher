@@ -1,7 +1,7 @@
 """toporia command line — the whole platform without the GUI.
 
     toporia                                          launch the GUI
-    toporia list                                     presets, methods and filters
+    toporia list                                     presets, methods, filters, responses
     toporia export PRESET DIR                        write a preset as scenario + solver JSON
     toporia run SCENARIO [SOLVER]                    one optimisation
     toporia compare SCENARIO SOLVER_A SOLVER_B       same problem, two solvers
@@ -81,13 +81,15 @@ def _cmd_list(args):
     from toporia.library.methods import METHODS
     from toporia.library.models import MODELS
     from toporia.library.problems import problem_names
+    from toporia.library.responses import RESPONSES
     from toporia.library.updaters import UPDATERS
 
     print("Presets:")
     for name in problem_names():
         print(f"  {name}")
     for title, registry in (("Methods", METHODS), ("Models", MODELS),
-                            ("Updaters", UPDATERS), ("Filters", FILTERS)):
+                            ("Updaters", UPDATERS), ("Filters", FILTERS),
+                            ("Responses", RESPONSES)):
         print(f"\n{title}:")
         for cls in registry.classes():
             params = ", ".join(p.name for p in cls.params) or "-"

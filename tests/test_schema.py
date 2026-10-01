@@ -26,12 +26,14 @@ from toporia.library.filters import FILTERS
 from toporia.library.methods import METHODS, make_method
 from toporia.library.models import MODELS
 from toporia.library.problems import get_run
+from toporia.library.responses import RESPONSES
 from toporia.library.updaters import UPDATERS
 
 PLUGINS = [(f"method:{c.name}", c) for c in METHODS.classes()] + \
           [(f"filter:{c.name}", c) for c in FILTERS.classes()] + \
           [(f"model:{c.name}", c) for c in MODELS.classes()] + \
-          [(f"updater:{c.name}", c) for c in UPDATERS.classes()]
+          [(f"updater:{c.name}", c) for c in UPDATERS.classes()] + \
+          [(f"response:{c.name}", c) for c in RESPONSES.classes()]
 
 
 # ── Param ─────────────────────────────────────────────────────────────────────

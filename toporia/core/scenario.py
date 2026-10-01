@@ -136,7 +136,16 @@ class Scenario:
     )
 
     # ── Material budget ───────────────────────────────────────────────────────
+    # Enforced by every method, and the starting design.
     volfrac: float = 0.5   # fraction of the domain that may be solid
+
+    # ── What is optimised ─────────────────────────────────────────────────────
+    # The objective to minimise, and constraints on top of the volume budget,
+    # as {"type": <response name>, <param>: <value>} specs.  Response types and
+    # their parameters: toporia.library.responses.RESPONSES.
+    # Example: constraints=[{"type": "stress", "limit": 10.0}]
+    objective: dict = field(default_factory=lambda: {"type": "compliance"})
+    constraints: list = field(default_factory=list)
 
     # ── Material (linear elastic, normalised) ─────────────────────────────────
     E0:   float = 1.0     # Young's modulus of solid material

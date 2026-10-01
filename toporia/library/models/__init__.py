@@ -8,7 +8,8 @@ Every Model subclass in this package with a non-empty `name` is found by the
 MODELS registry.  Modules starting with an underscore are not scanned.
 
     q4_compliance.py      compliance with Toporia's 2-D Q4 solver and filter pipeline
-    pymoto_compliance.py  compliance with a pyMOTO module network (optional dependency)
+    pymoto_elastic.py     linear elasticity on a pyMOTO network: compliance, volume,
+                          stress constraints (optional dependency)
 """
 
 from toporia.core.composition import Model

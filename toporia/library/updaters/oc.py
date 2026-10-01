@@ -25,6 +25,11 @@ class OCUpdater(Updater):
     order = 10
     params = (MOVE,)
 
+    # OC needs objective and volume sensitivities of opposite sign, and finds a
+    # single multiplier: compliance under the volume budget and nothing more.
+    objectives = ("compliance",)
+    max_constraints = 0
+
     def initialize(self, model, settings):
         self.model = model
         self.move = settings["move"]

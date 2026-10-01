@@ -37,11 +37,12 @@ from .widgets import (
     CompareLoadCasesParamsGroup,
     CompareTwoParamsGroup,
     CoreParamsGroup,
-    FilterPipelineGroup,
     LoadCasesGroup,
+    ObjectiveGroup,
     SensitivityParamsGroup,
     SensitivitySweep2DParamsGroup,
     SensitivitySweepParamsGroup,
+    SpecListGroup,
     Sweep2DParamsGroup,
     SweepParamsGroup,
 )
@@ -99,7 +100,12 @@ class MainWindow(QMainWindow):
 
         # Instantiate all parameter group widgets and add them to the scroll area.
         self.core    = CoreParamsGroup()
-        self.filters = FilterPipelineGroup()   # collapsible, sits between core and load cases
+        from toporia.library.filters import FILTERS
+        from toporia.library.responses import CONSTRAINT_ROLE, OBJECTIVE_ROLE, responses_for
+        self.objective   = ObjectiveGroup(responses_for(OBJECTIVE_ROLE))
+        self.constraints = SpecListGroup("Constraints", responses_for(CONSTRAINT_ROLE), noun="constraint")
+        self.filters     = SpecListGroup("Filters", FILTERS.classes(),
+                                         initial=[{"type": "density"}], noun="filter")
         self.lc      = LoadCasesGroup()
         self.sg      = SweepParamsGroup()
         self.sg2     = Sweep2DParamsGroup()
@@ -108,7 +114,7 @@ class MainWindow(QMainWindow):
         self.sens    = SensitivityParamsGroup()
         self.ssg     = SensitivitySweepParamsGroup()
         self.ssg2    = SensitivitySweep2DParamsGroup()
-        for g in (self.core, self.filters, self.lc, self.sg, self.sg2,
+        for g in (self.core, self.objective, self.constraints, self.filters, self.lc, self.sg, self.sg2,
                   self.cg, self.clcg, self.sens, self.ssg, self.ssg2):
             pl.addWidget(g)
 
@@ -117,7 +123,8 @@ class MainWindow(QMainWindow):
         # pipeline or the number of load cases changes.
         self._sweep_groups = (self.sg, self.sg2, self.cg, self.sens, self.ssg, self.ssg2)
         self.lc.cases_changed.connect(self._refresh_parameter_paths)
-        self.filters.pipeline_changed.connect(self._refresh_parameter_paths)
+        for group in (self.objective, self.constraints, self.filters):
+            group.changed.connect(self._refresh_parameter_paths)
         self.core.method_changed.connect(self._on_method_changed)
 
         # Run/Stop button — the same button toggles between two roles.
@@ -155,21 +162,28 @@ class MainWindow(QMainWindow):
             return
         self._base_cfg = cfg
         self.core.load_from_config(cfg)
-        self.filters.load_from_config(cfg)
+        self.objective.load_spec(cfg.scenario.objective)
+        self.constraints.load_specs(cfg.scenario.constraints)
+        self.filters.load_specs(cfg.solver.filter_specs)
         self.lc.load_from_config(cfg)
         self._on_method_changed(self.core.method_name())
 
     def _on_method_changed(self, name):
         """Adapt the panels to what the selected method can do."""
+        from toporia.library.filters import FILTERS
         from toporia.library.methods import METHODS
-        self.filters.setVisible(METHODS.get(name).capabilities.accepts_filters)
+        capabilities = METHODS.get(name).capabilities
+        self.filters.set_allowed(FILTERS.names() if capabilities.accepts_filters else [])
+        self.objective.set_allowed(capabilities.objectives)
+        self.constraints.set_allowed(capabilities.constraints if capabilities.max_constraints != 0 else [])
         self._refresh_parameter_paths()
 
     def _refresh_parameter_paths(self, *_):
         """Rebuild every parameter dropdown from the current method, filters and load cases."""
         from toporia.library.catalog import parameter_paths
-        items = parameter_paths(self.core.method_name(), self.filters.get_filter_specs(),
-                                len(self.lc.get_load_cases()))
+        items = parameter_paths(self.core.method_name(), self.filters.get_specs(),
+                                len(self.lc.get_load_cases()),
+                                objective=self.objective.get_spec(), constraints=self.constraints.get_specs())
         for group in self._sweep_groups:
             group.refresh(items)
 
@@ -213,7 +227,8 @@ class MainWindow(QMainWindow):
 
         from . import runner  # imports SciPy-backed optimisation code only when needed
 
-        cfg = runner.build_config(self.core, self.lc, self.filters, base_cfg=self._base_cfg)
+        cfg = runner.build_config(self.core, self.lc, self.filters, base_cfg=self._base_cfg,
+                                  objective=self.objective, constraints=self.constraints)
 
         # on_iter is the per-iteration callback passed into the optimisation scripts.
         # It runs inside the optimisation loop after every solver step.

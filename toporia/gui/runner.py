@@ -47,12 +47,14 @@ class _LogStream:
             self._fn(self._buf); self._buf = ""
 
 
-def build_config(core, lc, filters=None, base_cfg=None):
+def build_config(core, lc, filters=None, base_cfg=None, objective=None, constraints=None):
     """Read widget values and overlay them on a Run.
 
     core     — CoreParamsGroup widget (scenario fields, method and its parameters)
     lc       — LoadCasesGroup widget (list of LoadCase objects)
-    filters  — FilterPipelineGroup widget (optional explicit filter pipeline)
+    filters     — SpecListGroup of filters (optional)
+    objective   — ObjectiveGroup (optional)
+    constraints — SpecListGroup of constraints (optional)
     base_cfg — Run from the selected preset; provides everything the widgets do
                not expose (geometry, supports, material).  Falls back to the
                default preset if None.
@@ -65,7 +67,11 @@ def build_config(core, lc, filters=None, base_cfg=None):
         base_cfg = get_default_run()
     values = {**core.get_kwargs(), "load_cases": lc.get_load_cases()}
     if filters is not None:
-        values["filter_specs"] = filters.get_filter_specs()
+        values["filter_specs"] = filters.get_specs()
+    if objective is not None:
+        values["objective"] = objective.get_spec()
+    if constraints is not None:
+        values["constraints"] = constraints.get_specs()
     return base_cfg.updated(**values)
 
 

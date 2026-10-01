@@ -12,7 +12,7 @@
 # tests/test_composition.py runs every pairing, registered or not.
 
 from toporia.core.composition import ComposedMethod
-from toporia.library.models.pymoto_compliance import PymotoComplianceModel
+from toporia.library.models.pymoto_elastic import PymotoElasticModel
 from toporia.library.models.q4_compliance import Q4ComplianceModel
 from toporia.library.updaters.mma import MMAUpdater
 from toporia.library.updaters.oc import OCUpdater
@@ -39,11 +39,11 @@ class DensityMMA(ComposedMethod):
 
 
 class PymotoMMA(ComposedMethod):
-    """Physics and sensitivities by a pyMOTO network, update by pyMOTO's MMA."""
+    """pyMOTO physics (compliance or volume, stress limits), updated by pyMOTO's MMA."""
     name = "pymoto"
     label = "SIMP density via pyMOTO (MMA)"
     order = 40
-    model = PymotoComplianceModel
+    model = PymotoElasticModel
     updater = PymotoMMAUpdater
 
 

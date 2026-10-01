@@ -39,10 +39,33 @@ class Capabilities:
     variable_kind   : what the design variables are, e.g. "density" or "level_set"
     accepts_filters : whether solver.filter_specs is honoured
     dims            : spatial dimensions supported
+    objectives      : response types the method can minimise (scenario.objective)
+    constraints     : response types it can enforce in scenario.constraints; the
+                      volume budget (scenario.volfrac) is always enforced as well
+    max_constraints : how many scenario.constraints at once; None means any number
     """
     variable_kind: str = "density"
     accepts_filters: bool = False
     dims: tuple = (2,)
+    objectives: tuple = ("compliance",)
+    constraints: tuple = ()
+    max_constraints: int | None = 0
+
+    def problems_with(self, scenario):
+        """Return why the method cannot solve `scenario` — an empty list when it can."""
+        reasons = []
+        objective = scenario.objective.get("type", "compliance")
+        if objective not in self.objectives:
+            reasons.append(f"it cannot minimise {objective!r} (it can minimise: {', '.join(self.objectives)})")
+        kinds = [spec.get("type") for spec in scenario.constraints]
+        unsupported = sorted({kind for kind in kinds if kind not in self.constraints}, key=str)
+        if unsupported:
+            enforceable = ", ".join(self.constraints) or "none besides the volume budget"
+            reasons.append(f"it cannot enforce {unsupported} constraints (it can enforce: {enforceable})")
+        elif self.max_constraints is not None and len(kinds) > self.max_constraints:
+            reasons.append(f"it enforces at most {self.max_constraints} constraint(s) besides the "
+                           f"volume budget, but the scenario has {len(kinds)}")
+        return reasons
 
 
 class OptimizationMethod(ABC):

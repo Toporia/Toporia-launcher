@@ -18,7 +18,7 @@ from toporia.core.contract import OBJECTIVE
 from toporia.core.problem import RectangularProblem
 from toporia.library.methods import METHODS
 from toporia.library.models import MODELS
-from toporia.library.models.pymoto_compliance import PymotoComplianceModel
+from toporia.library.models.pymoto_elastic import PymotoElasticModel
 from toporia.library.problems import get_run
 from toporia.library.updaters import UPDATERS
 from toporia.library.updaters.mma import MMAUpdater
@@ -59,7 +59,13 @@ def _run(method_cls, problem="MBB Beam", iterations=3, **values):
                          ids=lambda c: c.name)
 def test_a_registered_method_is_the_sum_of_its_parts(cls):
     assert cls.params == tuple(cls.model.params) + tuple(cls.updater.params)
-    assert cls.capabilities == cls.model.capabilities
+    method, model, updater = cls.capabilities, cls.model.capabilities, cls.updater
+    assert (method.variable_kind, method.accepts_filters) == (model.variable_kind, model.accepts_filters)
+    # A composed method can do what its model computes AND its updater handles.
+    assert set(method.objectives) <= set(model.objectives)
+    assert set(method.constraints) <= set(model.constraints)
+    if updater.max_constraints == 0:
+        assert method.constraints == ()
 
 
 def test_a_parameter_clash_between_model_and_updater_is_rejected():
@@ -92,7 +98,7 @@ def test_oc_survives_elements_whose_volume_gradient_is_zero():
     case that used to produce NaNs.
     """
     _require_pymoto()
-    method = _run(_compose(PymotoComplianceModel, OCUpdater), problem="Drone Arm", volfrac=0.4)
+    method = _run(_compose(PymotoElasticModel, OCUpdater), problem="Drone Arm", volfrac=0.4)
     assert np.all(np.isfinite(method.get_density()))
 
 

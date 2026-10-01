@@ -1,7 +1,7 @@
 """test_pymoto_backend.py — the contract canary.
 
 pyMOTO knows nothing about Toporia.  If the model in
-library/models/pymoto_compliance.py can drive it using only core.contract and
+library/models/pymoto_elastic.py can drive it using only core.contract and
 core.problem, then those two modules contain no Toporia-specific assumptions.
 
 A failure here after a contract change is the signal that the contract has
@@ -85,9 +85,42 @@ def test_importing_pymoto_leaves_the_matplotlib_backend_alone():
     """
     script = (
         "import matplotlib; matplotlib.use('Agg')\n"
-        "from toporia.library.models.pymoto_compliance import import_pymoto\n"
+        "from toporia.library.models.pymoto_elastic import import_pymoto\n"
         "import_pymoto()\n"
         "print(matplotlib.get_backend())\n"
     )
     result = subprocess.run([sys.executable, "-c", script], capture_output=True, text=True, check=True)
     assert result.stdout.strip().lower() == "agg"
+
+
+def test_pymoto_imports_inside_the_running_qt_gui():
+    """The GUI case: with Qt running, matplotlib refuses pyMOTO's switch to TkAgg.
+
+    Before the fix this made every pyMOTO method fail in the GUI with a
+    misleading "please install pyMOTO" message, while the CLI worked.
+    """
+    pytest.importorskip("PySide6")
+    script = (
+        "import os; os.environ['QT_QPA_PLATFORM'] = 'offscreen'\n"
+        "from PySide6.QtWidgets import QApplication; app = QApplication([])\n"
+        "import matplotlib; matplotlib.use('QtAgg'); import matplotlib.pyplot\n"
+        "from toporia.library.models.pymoto_elastic import import_pymoto\n"
+        "import_pymoto()\n"
+        "print(matplotlib.get_backend())\n"
+    )
+    result = subprocess.run([sys.executable, "-c", script], capture_output=True, text=True)
+    assert result.returncode == 0, result.stderr
+    assert result.stdout.strip().lower() == "qtagg"
+
+
+def test_the_install_hint_appears_only_when_pymoto_is_missing():
+    script = (
+        "import sys; sys.modules['pymoto'] = None   # make pyMOTO unimportable\n"
+        "from toporia.library.models.pymoto_elastic import import_pymoto\n"
+        "try:\n"
+        "    import_pymoto()\n"
+        "except ImportError as exc:\n"
+        "    print(exc)\n"
+    )
+    result = subprocess.run([sys.executable, "-c", script], capture_output=True, text=True, check=True)
+    assert "pip install pymoto" in result.stdout

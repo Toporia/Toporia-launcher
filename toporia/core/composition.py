@@ -3,8 +3,9 @@
 # A gradient-based topology-optimisation method is two independent choices:
 #
 #     Model    WHAT is optimised: turns a design into an objective, a material
-#              volume and the gradients of both.  The physics, the filters and
-#              the sensitivity analysis all live here.
+#              volume, the scenario's constraints, and the gradients of all of
+#              them.  The physics, the filters and the sensitivity analysis
+#              live here.
 #     Updater  HOW the design moves: turns those numbers into the next design
 #              (optimality criteria, MMA, GCMMA, ...).
 #
@@ -12,16 +13,17 @@
 # so the engine cannot tell a composed method from a hand-written one, and it
 # fixes the one ordering that matters:
 #
-#     evaluation = model.evaluate(x)             objective, volume, gradients at x
+#     evaluation = model.evaluate(x)             objective, volume, constraints, gradients
 #     model.advance(completed)                   continuation (e.g. Heaviside beta)
 #     x_new = updater.update(x, evaluation, …)   may call the model's cheap parts
 #     density = model.physical(x_new)            what is reported and drawn
 #
 # The two halves meet only through Evaluation and the Model methods below, so
-# any model works with any updater.
+# any model works with any updater — within what each can do: a composed
+# method can minimise what its model can compute AND its updater can handle.
 
 from abc import ABC, abstractmethod
-from dataclasses import dataclass
+from dataclasses import dataclass, field, replace
 
 import numpy as np
 
@@ -29,24 +31,47 @@ from .contract import OBJECTIVE, Capabilities, OptimizationMethod
 
 
 @dataclass(frozen=True)
+class ConstraintValue:
+    """One scenario constraint at one design, normalised so that value <= 0 means satisfied.
+
+    `value` is what the optimiser works with, which may be a smooth stand-in
+    (a p-norm for a maximum).  `exact`, when the model can give it, is the same
+    constraint measured exactly and normalised the same way; the engine judges
+    whether a result honours its limits on `exact` when it is available.
+    """
+    name: str
+    value: float
+    gradient: np.ndarray
+    exact: float | None = None
+
+
+@dataclass(frozen=True)
 class Evaluation:
     """Everything an updater needs to know about one design.
 
     Gradients have the shape of the design.  `volume` is the total physical
-    material of the design, in the same units as Model.volume_limit.
+    material, in the units of Model.volume_limit — the volume budget every
+    method enforces.  `constraints` holds the scenario's further constraints
+    in scenario order; `reported` holds extra scalars worth recording in the
+    run history (a peak stress, or the compliance when it is not the objective).
     """
     objective: float
     objective_gradient: np.ndarray
     volume: float
     volume_gradient: np.ndarray
+    constraints: tuple = ()
+    reported: dict = field(default_factory=dict)
 
 
 class Model(ABC):
-    """What is optimised: a design in, objective, volume and gradients out.
+    """What is optimised: a design in, objective, volume, constraints and gradients out.
 
     A design is an ndarray of whatever shape suits the model (the Q4 model uses
     (nely, nelx), the pyMOTO model a flat vector).  Updaters treat it
     element-wise and return the same shape.
+
+    `capabilities.objectives` and `capabilities.constraints` list the responses
+    (library.responses) the model can compute.
     """
 
     #: Registry key (library.models.MODELS).  An empty name means "abstract".
@@ -55,7 +80,7 @@ class Model(ABC):
     order = 100
     #: Tunable parameters (core.params.Param); they become method parameters.
     params = ()
-    #: Passed through to every method built on this model.
+    #: Passed through to every method built on this model (see ComposedMethod).
     capabilities = Capabilities()
     #: Total material the design may use, comparable with Evaluation.volume.
     volume_limit = 0.0
@@ -101,6 +126,11 @@ class Updater(ABC):
     order = 100
     #: Tunable parameters (core.params.Param); they become method parameters.
     params = ()
+    #: Objective types the update rule is valid for; None means any.
+    objectives = None
+    #: How many scenario constraints it can enforce besides the volume budget;
+    #: None means any number.  The conservative default is none.
+    max_constraints = 0
 
     @abstractmethod
     def initialize(self, model, settings):
@@ -119,6 +149,18 @@ def _subset(settings, params):
     return {p.name: settings[p.name] for p in params}
 
 
+def _combine(model_capabilities, updater):
+    """A composed method can do what its model computes AND its updater handles."""
+    objectives = model_capabilities.objectives
+    if updater.objectives is not None:
+        objectives = tuple(o for o in objectives if o in updater.objectives)
+    limits = [n for n in (model_capabilities.max_constraints, updater.max_constraints) if n is not None]
+    max_constraints = min(limits) if limits else None
+    constraints = model_capabilities.constraints if max_constraints != 0 else ()
+    return replace(model_capabilities, objectives=objectives, constraints=constraints,
+                   max_constraints=max_constraints)
+
+
 class ComposedMethod(OptimizationMethod):
     """An OptimizationMethod made of a Model and an Updater.
 
@@ -129,8 +171,8 @@ class ComposedMethod(OptimizationMethod):
             model = Q4ComplianceModel
             updater = OCUpdater
 
-    The method's parameters are the model's followed by the updater's, and its
-    capabilities are the model's.
+    The method's parameters are the model's followed by the updater's.  Its
+    capabilities are the model's, narrowed to what the updater can handle.
     """
 
     model = None
@@ -149,7 +191,7 @@ class ComposedMethod(OptimizationMethod):
                 f"{clashes}; parameter names must be unique within a method"
             )
         cls.params = combined
-        cls.capabilities = cls.model.capabilities
+        cls.capabilities = _combine(cls.model.capabilities, cls.updater)
 
     def initialize(self, problem, solver):
         if type(self).model is None or type(self).updater is None:
@@ -165,6 +207,7 @@ class ComposedMethod(OptimizationMethod):
         self.density = self._model.physical(self.x)
         self.objective = np.inf
         self.change = np.inf
+        self._evaluation = None
 
     def step(self, iteration):
         completed = iteration - 1   # continuation schedules count finished iterations
@@ -176,6 +219,7 @@ class ComposedMethod(OptimizationMethod):
         self.x = x_new
         self.density = self._model.physical(x_new)
         self.objective = evaluation.objective
+        self._evaluation = evaluation
 
     def is_converged(self):
         return self._updater.is_converged(self.change)
@@ -184,4 +228,11 @@ class ComposedMethod(OptimizationMethod):
     def get_change(self):    return self.change
 
     def get_responses(self):
-        return {OBJECTIVE: self.objective, "volume": float(self.density.mean())}
+        responses = {OBJECTIVE: self.objective, "volume": float(self.density.mean())}
+        if self._evaluation is not None:
+            responses.update(self._evaluation.reported)
+            for i, constraint in enumerate(self._evaluation.constraints):
+                responses[f"constraint_{i}_{constraint.name}"] = constraint.value
+                if constraint.exact is not None:
+                    responses[f"constraint_{i}_{constraint.name}_exact"] = constraint.exact
+        return responses

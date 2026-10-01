@@ -10,7 +10,9 @@
 #     for each iteration:  method.step(i) → density, responses, change
 #                          record · live callback · stopping rule
 #                                                                  │
-#     Run.output.dir  <── final_density.png/.csv, run.json (provenance)
+#     after the loop:      every limit checked; broken ones printed as WARNINGs
+#                                                                  │
+#     Run.output.dir  <── final_density.png/.csv, run.json (provenance + limits)
 #
 # The engine owns the iteration counter and the stopping decision.  A method
 # reports how far the design moved; the engine decides whether that is small
@@ -22,16 +24,34 @@ import time
 from toporia.core.contract import OBJECTIVE
 from toporia.core.problem import RectangularProblem
 
+from .feasibility import check_limits, describe_violations
 from .provenance import run_record
 from .results import ResultStore
 
 
 def initialized_method(run):
-    """Build the problem from the scenario and hand it, with the solver, to a new method."""
-    from toporia.library.methods import make_method
+    """Check the method can solve the scenario, then build the problem and the method.
+
+    The check comes first, so a scenario asking for something the method cannot
+    do — a stress constraint with optimality criteria, say — fails immediately
+    with a message naming the methods that can, instead of part-way through.
+    """
+    from toporia.library.methods import METHODS
+    from toporia.library.responses import check_responses
+
+    method_cls = METHODS.get(run.solver.method)
+    reasons = method_cls.capabilities.problems_with(run.scenario)
+    if reasons:
+        able = [cls.name for cls in METHODS.classes() if not cls.capabilities.problems_with(run.scenario)]
+        advice = f"Methods that can: {able}." if able else "No registered method can."
+        raise ValueError(f"Method {method_cls.name!r} cannot solve this scenario: "
+                         f"{'; '.join(reasons)}. {advice}")
+    (objective_cls, _), _ = check_responses(run.scenario)
+    if objective_cls.advice:
+        print(f"note: {objective_cls.advice}")
 
     problem = RectangularProblem(run.scenario, run.solver.m)
-    method = make_method(run.solver.method)
+    method = method_cls()
     method.initialize(problem, run.solver)
     return method
 
@@ -97,10 +117,15 @@ def run_single_with_store(run, on_iteration=None):
             break
 
     print(f"  stopped: {stop_reason}")
+    final = {name: values[-1] for name, values in store.responses.items()}
+    limits = check_limits(run.scenario, final)
+    for line in describe_violations(limits):
+        print(f"  WARNING: {line}")
+
     store.stop_reason = stop_reason
+    store.limits = limits
     store.save_final(method.get_density(), save_history=False)
     store.save_json("run.json", run_record(
-        run, iterations=iteration, stop_reason=stop_reason,
-        responses={name: values[-1] for name, values in store.responses.items()},
+        run, iterations=iteration, stop_reason=stop_reason, responses=final, limits=limits,
     ))
     return store, method.get_density()

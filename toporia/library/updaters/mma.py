@@ -41,6 +41,9 @@ class MMAUpdater(Updater):
               min=1.0, max=1e6, step=100.0, decimals=0),
     )
 
+    # The volume budget only: the subproblem's dual is solved by 1-D bisection.
+    max_constraints = 0
+
     def initialize(self, model, settings):
         self.model = model
         self.move = settings["move"]

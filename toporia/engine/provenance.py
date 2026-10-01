@@ -49,12 +49,22 @@ def software():
     }
 
 
-def run_record(run, *, iterations, stop_reason, responses):
-    """The provenance document written as run.json at the end of every run."""
+def run_record(run, *, iterations, stop_reason, responses, limits=()):
+    """The provenance document written as run.json at the end of every run.
+
+    `limits` is engine.feasibility.check_limits' report; `feasible` is False
+    when any limit is known to be broken.
+    """
     return {
         "created_utc": datetime.now(timezone.utc).isoformat(timespec="seconds"),
         "software": software(),
         "scenario": {"fingerprint": fingerprint(run.scenario), "definition": to_dict(run.scenario)},
         "solver": {"fingerprint": fingerprint(run.solver), "definition": to_dict(run.solver)},
-        "result": {"iterations": iterations, "stop_reason": stop_reason, "final": responses},
+        "result": {
+            "iterations": iterations,
+            "stop_reason": stop_reason,
+            "feasible": all(entry["satisfied"] is not False for entry in limits),
+            "limits": list(limits),
+            "final": responses,
+        },
     }

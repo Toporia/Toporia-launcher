@@ -1,13 +1,17 @@
-# library/models/pymoto_compliance.py — compliance on a pyMOTO module network.
+# library/models/pymoto_elastic.py — linear elasticity on a pyMOTO module network.
 #
 # pyMOTO (https://github.com/aatmdelissen/pyMOTO, MIT) builds a topology
 # optimisation problem as a network of modules and backpropagates through it,
 # so no sensitivity is written by hand here.  This model translates Toporia's
-# problem geometry into a pyMOTO network and reads the objective, the volume and
+# problem geometry into a pyMOTO network and reads the requested responses and
 # their gradients back out:
 #
-#     x ─DensityFilter─> pin enforced regions ─SIMP─> AssembleStiffness ─> LinSolve ─> compliance
-#                                              └──────────────────────────────────────> volume
+#     x ─DensityFilter─> pin enforced regions ─┬─SIMP─> AssembleStiffness ─> LinSolve ─> u ─> compliance
+#                                               ├───────────────────────────────────────────> volume
+#                                               └─ ρ^q · von Mises(Stress(u)) ─p-norm────> stress constraint
+#
+# Objectives: compliance or volume.  Constraints: any number of peak von Mises
+# stress limits (library/responses/stress.py), over every load case.
 #
 # It is also the contract's canary: pyMOTO knows nothing about Toporia, so if a
 # change to core/ cannot be satisfied here without conversion code, the
@@ -17,9 +21,11 @@
 
 import numpy as np
 
-from toporia.core.composition import Evaluation, Model
+from toporia.core.composition import ConstraintValue, Evaluation, Model
 from toporia.core.contract import Capabilities
+from toporia.core.responses import CONSTRAINT_ROLE, OBJECTIVE_ROLE
 from toporia.library.filters.filter_density import RMIN
+from toporia.library.responses import resolve_response
 
 from ._common import PENAL
 
@@ -28,25 +34,39 @@ IMPORT_HINT = (
     "Install it with:  pip install pymoto"
 )
 
+# 2-D plane-stress von Mises from Voigt stress s = [sxx, syy, txy]:  vm² = sᵀ V s
+_VON_MISES = np.array([[1.0, -0.5, 0.0], [-0.5, 1.0, 0.0], [0.0, 0.0, 3.0]])
+
 
 def import_pymoto():
     """Import pyMOTO, or explain how to install it.
 
-    Always import pyMOTO through this function.  pyMOTO switches matplotlib to
-    the TkAgg backend as a side effect of being imported (pymoto/modules/io.py).
-    Left alone, that would hijack plotting for the whole process: every sweep
-    and comparison figure inside the Qt GUI, or the CLI on a machine without a
-    display.  The backend in use before the import is restored straight after.
+    Always import pyMOTO through this function.  pyMOTO calls
+    matplotlib.use("TkAgg") as a side effect of being imported
+    (pymoto/modules/io.py).  That backend is only for pyMOTO's own interactive
+    plot windows, which Toporia never uses, and the switch does real harm:
+
+      - inside the Qt GUI matplotlib refuses it outright ("Cannot load backend
+        'TkAgg' ... as 'qt' is currently running"), so the import fails;
+      - elsewhere it would hijack plotting for the whole process, e.g. the CLI
+        on a machine without a display.
+
+    So the switch is suppressed for the duration of the import.  The install
+    hint is only given when pyMOTO itself is missing; any other import error
+    keeps its own message.
     """
     import matplotlib
 
-    backend = matplotlib.get_backend()
+    use = matplotlib.use
+    matplotlib.use = lambda *args, **kwargs: None   # swallow pyMOTO's matplotlib.use("TkAgg")
     try:
         import pymoto
-    except ImportError as exc:  # pragma: no cover - exercised only without pyMOTO
+    except ModuleNotFoundError as exc:
+        if exc.name != "pymoto":
+            raise
         raise ImportError(IMPORT_HINT) from exc
-    if matplotlib.get_backend() != backend:
-        matplotlib.use(backend)
+    finally:
+        matplotlib.use = use
     return pymoto
 
 
@@ -84,23 +104,28 @@ def _enforce_bounds_module(pym):
     return _enforce_bounds_class
 
 
-class PymotoComplianceModel(Model):
-    """Weighted compliance of a SIMP density design, computed by a pyMOTO network."""
+class PymotoElasticModel(Model):
+    """Linear elastic SIMP design on a pyMOTO network: compliance or volume, stress limits."""
 
-    name = "pymoto_compliance"
-    label = "Compliance, pyMOTO network"
+    name = "pymoto_elastic"
+    label = "Linear elasticity, pyMOTO network"
     order = 20
     params = (PENAL, RMIN)
     # pyMOTO applies its own density filter inside the network (radius = rmin),
     # so the Toporia filter pipeline is not used.
-    capabilities = Capabilities(variable_kind="density", accepts_filters=False)
+    capabilities = Capabilities(
+        variable_kind="density", accepts_filters=False,
+        objectives=("compliance", "volume"), constraints=("stress",), max_constraints=None,
+    )
 
     def initialize(self, problem, solver, settings):
         pym = import_pymoto()
         self.problem = problem
         scenario = problem.scenario
-        domain = pym.VoxelDomain(problem.nelx, problem.nely)
+        self.objective_name = resolve_response(scenario.objective, OBJECTIVE_ROLE)[0].name
+        stress_settings = [resolve_response(spec, CONSTRAINT_ROLE)[1] for spec in scenario.constraints]
 
+        domain = pym.VoxelDomain(problem.nelx, problem.nely)
         # pyMOTO numbers elements x-fastest, which is a C-order ravel of (nely, nelx).
         self.lb = problem.lower_bound.ravel()
         self.ub = problem.upper_bound.ravel()
@@ -126,6 +151,29 @@ class PymotoComplianceModel(Model):
             s_per_case = pym.EinSum("ij,ij->j")(s_u, s_f)   # compliance per load case
             self.s_compliance = pym.EinSum("j,j->")(s_per_case, s_w)
             self.s_volume = pym.EinSum("i->")(s_physical)
+            self._stress = [
+                self._stress_constraint(pym, domain, s_u, s_physical, forces.shape[1], values)
+                for values in stress_settings
+            ]
+        self._stress_limits = [values["limit"] for values in stress_settings]
+        self.s_objective = self.s_volume if self.objective_name == "volume" else self.s_compliance
+
+    def _stress_constraint(self, pym, domain, s_u, s_physical, n_cases, settings):
+        """Build g = ‖ρ^q · von Mises‖_p / limit − 1 over every element and load case."""
+        scenario = self.problem.scenario
+        s_v = pym.Signal("von_mises_matrix", _VON_MISES)
+        relaxed = []
+        for k in range(n_cases):
+            s_stress = pym.Stress(domain, e_modulus=scenario.E0, poisson_ratio=scenario.nu,
+                                  plane="stress")(s_u[:, k])
+            s_squared = pym.EinSum("ij,ik,kj->j")(s_stress, s_v, s_stress)
+            s_von_mises = pym.MathExpression("sqrt(inp0 + 1e-12)")(s_squared)
+            relaxed.append(pym.MathExpression(f"inp0^{settings['q']}*inp1")(s_physical, s_von_mises))
+        s_relaxed = relaxed[0] if n_cases == 1 else pym.Concatenate()(*relaxed)
+        scaling = pym.AggScaling("max") if settings["adaptive"] else None
+        s_peak = pym.PNorm(p=settings["p"], scaling=scaling)(s_relaxed)
+        s_constraint = pym.MathExpression(f"inp0/{settings['limit']} - 1")(s_peak)
+        return s_constraint, s_relaxed
 
     # ── The Model interface ───────────────────────────────────────────────────
 
@@ -144,11 +192,28 @@ class PymotoComplianceModel(Model):
     def evaluate(self, x):
         self.s_x.state = np.asarray(x, dtype=float)
         self.network.response()
+
+        # `exact` is the true peak against the limit, so the result is judged
+        # on the real stress rather than on the smooth p-norm.
+        constraints = tuple(
+            ConstraintValue("stress", float(s_constraint.state), self._gradient(s_constraint),
+                            exact=float(np.max(s_relaxed.state)) / limit - 1.0)
+            for (s_constraint, s_relaxed), limit in zip(self._stress, self._stress_limits)
+        )
+        reported = {}
+        if self.objective_name != "compliance":
+            reported["compliance"] = float(self.s_compliance.state)
+        for i, (_, s_relaxed) in enumerate(self._stress):
+            key = "max_stress" if len(self._stress) == 1 else f"max_stress_{i}"
+            reported[key] = float(np.max(s_relaxed.state))
+
         return Evaluation(
-            objective=float(self.s_compliance.state),
-            objective_gradient=self._gradient(self.s_compliance),
+            objective=float(self.s_objective.state),
+            objective_gradient=self._gradient(self.s_objective),
             volume=self.s_volume.state,
             volume_gradient=self._gradient(self.s_volume),
+            constraints=constraints,
+            reported=reported,
         )
 
     def _gradient(self, response):

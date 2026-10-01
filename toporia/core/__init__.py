@@ -7,6 +7,7 @@
     contract.py   the interface every optimisation method implements
     composition.py  a method assembled from a Model (physics) and an Updater (update rule)
     params.py     self-describing parameter declarations
+    responses.py  what a scenario can minimise or constrain (declarations)
     registry.py   plugin discovery
     serialize.py  Scenario / Solver <-> JSON, and fingerprints
 
@@ -15,10 +16,11 @@ Nothing in core imports from toporia.engine, toporia.library or toporia.gui
 rule is what keeps the data flow readable.
 """
 
-from .composition import ComposedMethod, Evaluation, Model, Updater
+from .composition import ComposedMethod, ConstraintValue, Evaluation, Model, Updater
 from .contract import Capabilities, OptimizationMethod
 from .params import Param, resolve_params
 from .problem import BaseProblem, RectangularProblem
+from .responses import CONSTRAINT_ROLE, OBJECTIVE_ROLE, Response
 from .run import OUTPUT_PARAMS, Output, Run, apply_param, read_param
 from .scenario import (
     SCENARIO_PARAMS,
@@ -39,5 +41,6 @@ __all__ = [
     "apply_param", "read_param",
     "BaseProblem", "RectangularProblem",
     "OptimizationMethod", "Capabilities", "Param", "resolve_params",
-    "ComposedMethod", "Model", "Updater", "Evaluation",
+    "ComposedMethod", "Model", "Updater", "Evaluation", "ConstraintValue",
+    "Response", "OBJECTIVE_ROLE", "CONSTRAINT_ROLE",
 ]
