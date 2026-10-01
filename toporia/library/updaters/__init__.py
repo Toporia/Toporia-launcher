@@ -9,7 +9,14 @@ UPDATERS registry.  Modules starting with an underscore are not scanned.
 
     oc.py                 optimality criteria (top88)
     mma.py                method of moving asymptotes, one volume constraint
+    simpl.py              entropic mirror descent on a latent variable (SiMPL)
+    beso.py               bi-directional evolutionary ranking, binary designs
     pymoto_optimizers.py  pyMOTO's MMA and globally convergent GCMMA (optional)
+
+Each works differently enough to be worth comparing: OC and MMA move densities
+continuously inside the box, SiMPL moves them in logit space so the bounds hold
+by construction, and BESO does not move them at all — it re-ranks and flips
+elements between solid and void.
 """
 
 from toporia.core.composition import Updater

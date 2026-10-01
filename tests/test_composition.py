@@ -23,6 +23,7 @@ from toporia.library.problems import get_run
 from toporia.library.updaters import UPDATERS
 from toporia.library.updaters.mma import MMAUpdater
 from toporia.library.updaters.oc import OCUpdater
+from toporia.library.updaters.simpl import SiMPLUpdater
 
 PAIRS = list(itertools.product(MODELS.classes(), UPDATERS.classes()))
 
@@ -116,6 +117,48 @@ def test_pyMOTO_is_given_only_the_free_variables():
     density = method.get_density()
     assert np.all(density[problem.void_elements] < 1e-6)
     assert np.all(density[problem.passive_elements] > 1 - 1e-6)
+
+
+def test_simpl_keeps_every_iterate_inside_the_bounds_without_clipping():
+    """The sigmoid maps the reals into (0, 1), so no iterate can leave the box.
+
+    Checked on a problem with holes, where the bounds are not 0 and 1 everywhere.
+    """
+    method = _run(METHODS.get("density_simpl"), problem="Drone Arm", iterations=5, volfrac=0.4)
+    problem = method.problem
+    assert np.all(method.x >= problem.lower_bound - 1e-12)
+    assert np.all(method.x <= problem.upper_bound + 1e-12)
+
+
+def test_simpl_shrinks_its_step_when_the_objective_stops_improving():
+    updater = SiMPLUpdater()
+    updater.step, updater.growth, updater.step_cap, updater.step_floor = 1.0, 2.0, 100.0, 1e-3
+    updater._previous_objective = None
+    assert updater._adapt(10.0) == 1.0     # first call: nothing to compare against
+    assert updater._adapt(9.0) == 2.0      # improved, so grow
+    assert updater._adapt(9.5) == 1.0      # worse, so halve
+
+
+def test_beso_designs_are_binary_and_respect_the_volume_budget():
+    """Every element is at the void density or solid, and the budget still holds."""
+    method = _run(METHODS.get("beso"), iterations=40, volfrac=0.5)
+    x = method.x
+    void = method._updater.void_density
+    interior = (x > void + 1e-9) & (x < 1.0 - 1e-9)
+    assert not np.any(interior), f"{int(np.sum(interior))} elements are neither void nor solid"
+    assert method.get_density().mean() <= 0.5 + 1e-6
+
+
+def test_beso_does_not_declare_convergence_while_it_is_still_shedding_volume():
+    """A run must never be called converged before it has reached its budget.
+
+    Starting from the full domain at a 2% evolution rate, 40% is many iterations
+    away, so the objective-based criterion must stay silent however flat the
+    objective happens to look.
+    """
+    method = _run(METHODS.get("beso"), iterations=12, volfrac=0.4)
+    assert method._updater.target > method._updater.limit
+    assert not method.is_converged()
 
 
 def test_the_mma_updater_adds_its_own_stricter_tolerance():

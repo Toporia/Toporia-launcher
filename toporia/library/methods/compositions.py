@@ -14,9 +14,11 @@
 from toporia.core.composition import ComposedMethod
 from toporia.library.models.pymoto_elastic import PymotoElasticModel
 from toporia.library.models.q4_compliance import Q4ComplianceModel
+from toporia.library.updaters.beso import BESOUpdater
 from toporia.library.updaters.mma import MMAUpdater
 from toporia.library.updaters.oc import OCUpdater
 from toporia.library.updaters.pymoto_optimizers import PymotoGCMMAUpdater, PymotoMMAUpdater
+from toporia.library.updaters.simpl import SiMPLUpdater
 
 
 class DensityOC(ComposedMethod):
@@ -38,6 +40,15 @@ class DensityMMA(ComposedMethod):
     updater = MMAUpdater
 
 
+class DensitySiMPL(ComposedMethod):
+    """Q4 compliance, updated by entropic mirror descent on the latent variable."""
+    name = "density_simpl"
+    label = "SIMP density (SiMPL mirror descent)"
+    order = 25
+    model = Q4ComplianceModel
+    updater = SiMPLUpdater
+
+
 class PymotoMMA(ComposedMethod):
     """pyMOTO physics (compliance or volume, stress limits), updated by pyMOTO's MMA."""
     name = "pymoto"
@@ -54,3 +65,17 @@ class DensityGCMMA(ComposedMethod):
     order = 50
     model = Q4ComplianceModel
     updater = PymotoGCMMAUpdater
+
+
+class BESO(ComposedMethod):
+    """Binary designs on the Q4 physics: evolutionary volume schedule, threshold ranking.
+
+    Needs a filter in the chain — the ranking is only meaningful on filtered
+    sensitivities — and more iterations than the density methods, because it
+    walks the volume down from a full domain at the evolution rate.
+    """
+    name = "beso"
+    label = "BESO (soft kill)"
+    order = 60
+    model = Q4ComplianceModel
+    updater = BESOUpdater
