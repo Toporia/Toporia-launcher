@@ -216,3 +216,6 @@ __marimo__/
 
 # Streamlit
 .streamlit/secrets.toml
+
+# Toporia run output (density images, CSVs, run.json); every run writes here
+results/
