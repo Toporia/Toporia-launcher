@@ -55,11 +55,9 @@ def _check_gradient(value, gradient, x, free, n=8, h=1e-5, seed=2):
 
 @pytest.mark.parametrize("problem", ["MBB Beam", "Drone Arm"])       # one and two load cases
 @pytest.mark.parametrize("filters", [(), ({"type": "density"},)], ids=["raw", "filtered"])
-def test_compliance_and_stress_gradients_match_finite_differences(problem, filters, request):
-    if problem == "Drone Arm" and filters:
-        request.applymarker(pytest.mark.xfail(strict=True, reason=(
-            "The filter pipeline clips pinned elements after filtering, but its adjoint "
-            "does not zero their sensitivity, so gradients near holes are off by ~6%.")))
+def test_compliance_and_stress_gradients_match_finite_differences(problem, filters):
+    # "filtered-Drone Arm" is the case that caught the filter adjoint passing the
+    # sensitivity of pinned elements on to their free neighbours (6 % off near holes).
     model = _model(problem, filters=filters, constraints=[dict(STRESS)])
     x = _perturbed_design(model)
     evaluation = model.evaluate(x)

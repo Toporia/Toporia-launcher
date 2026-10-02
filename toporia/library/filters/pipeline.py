@@ -51,6 +51,9 @@ class DensityFilterPipeline:
         specs = solver.filter_specs
         self.problem = problem
         self.chain = build_filter_chain(specs, problem, solver) if specs else None
+        # Elements whose bounds coincide are overwritten after filtering, so the
+        # physical density there does not depend on the design at all.
+        self.pinned = problem.upper_bound <= problem.lower_bound
 
     def physical_density(self, design):
         """Filter the design, then clamp it to the problem's per-element bounds.
@@ -63,13 +66,24 @@ class DensityFilterPipeline:
         return np.clip(x_phys, self.problem.lower_bound, self.problem.upper_bound)
 
     def sensitivities(self, dc, dv):
+        """Map the objective and volume sensitivities (w.r.t. the physical density) to the design.
+
+        The pinned elements' entries are dropped before the filter adjoint:
+        physical_density overwrites them after filtering, so a change of the
+        design reaches them only through that overwrite, which is constant.
+        Passing them through the adjoint spread their sensitivity onto the
+        free neighbours and made gradients near holes and solid rings wrong.
+        """
         if self.chain is None:
             return dc, dv
-        return self.chain.backward(dc), self.chain.backward_volume(dv)
+        return self.chain.backward(self._unpinned(dc)), self.chain.backward_volume(self._unpinned(dv))
 
     def sensitivity(self, ds):
         """Map one more response's sensitivity (a constraint's) back to the design."""
-        return ds if self.chain is None else self.chain.backward(ds)
+        return ds if self.chain is None else self.chain.backward(self._unpinned(ds))
+
+    def _unpinned(self, sensitivity):
+        return np.where(self.pinned, 0.0, sensitivity)
 
     def step(self, iteration):
         if self.chain is not None:
