@@ -15,12 +15,17 @@ QtWidgets = pytest.importorskip("PySide6.QtWidgets")
 from toporia.core import read_param  # noqa: E402
 from toporia.core.params import resolve_params  # noqa: E402
 from toporia.library.filters import FILTERS  # noqa: E402
-from toporia.library.methods import METHODS  # noqa: E402
+from toporia.library.methods import METHODS, method_class, method_classes  # noqa: E402
+from toporia.library.models import MODELS  # noqa: E402
 from toporia.library.problems import get_run, problem_names  # noqa: E402
 from toporia.library.responses import OBJECTIVE_ROLE, responses_for  # noqa: E402
+from toporia.library.updaters import UPDATERS  # noqa: E402
 
 PLUGINS = [(f"method:{c.name}", c) for c in METHODS.classes()] + \
+          [(f"model:{c.name}", c) for c in MODELS.classes()] + \
+          [(f"updater:{c.name}", c) for c in UPDATERS.classes()] + \
           [(f"filter:{c.name}", c) for c in FILTERS.classes()]
+METHOD_NAMES = [c.name for c in method_classes()]
 
 
 def _assert_same(actual, expected):
@@ -60,14 +65,17 @@ def test_param_form_round_trips(app, cls):
     _assert_same(form.get_values(), resolve_params(cls.name, cls.params, extremes))
 
 
-@pytest.mark.parametrize("name", METHODS.names())
+@pytest.mark.parametrize("name", METHOD_NAMES)
 def test_selecting_a_method_adapts_the_panels(window, name):
     from toporia.gui import runner
-    cls = METHODS.get(name)
-    window.core.method.setCurrentIndex(window.core.method.findData(name))
+    cls = method_class(name)
+    window.core.select_method(name)
+    assert window.core.method_name() == name
 
-    # Filters are shown exactly when the method uses them — no warning label.
+    # Filters are shown exactly when the method uses them; the pipeline says why when not.
     assert window.filters.isHidden() == (not cls.capabilities.accepts_filters)
+    if not cls.capabilities.accepts_filters:
+        assert any("Filters list" in note for note in window.pipeline.notes())
 
     cfg = runner.build_config(window.core, window.lc, window.filters, base_cfg=window._base_cfg)
     assert cfg.solver.method == name
@@ -79,6 +87,28 @@ def test_selecting_a_method_adapts_the_panels(window, name):
     assert any(path.startswith("filters[") for path in offered) == cls.capabilities.accepts_filters
 
 
+def test_the_pipeline_names_every_part_of_the_selection(window):
+    window._on_config_changed("MBB Beam")
+    window.core.select_method("q4+mma")
+    stages = dict(window.pipeline.stages())
+    assert stages["Physics"] == MODELS.get("q4").label
+    assert stages["Updater"] == UPDATERS.get("mma").label
+    assert stages["Filters"] == FILTERS.get("density").label
+
+    window.core.select_method("q4+pymoto_mma")
+    assert dict(window.pipeline.stages())["Updater"] == UPDATERS.get("pymoto_mma").label
+    assert window.pipeline.notes() == []          # nothing is lost with this pairing
+
+    window.core.select_method("q4+oc")
+    assert any("enforces only the volume budget" in note for note in window.pipeline.notes())
+
+
+def test_older_method_names_select_the_parts_they_stand_for(window):
+    window.core.select_method("density_mma")
+    assert window.core.method_name() == "q4+mma"
+    assert (window.core.model.currentData(), window.core.updater.currentData()) == ("q4", "mma")
+
+
 @pytest.mark.parametrize("preset", problem_names())
 def test_a_preset_survives_the_round_trip_through_the_gui(window, preset):
     from toporia.gui import runner
@@ -86,7 +116,7 @@ def test_a_preset_survives_the_round_trip_through_the_gui(window, preset):
     cfg = runner.build_config(window.core, window.lc, window.filters, base_cfg=window._base_cfg)
     original = get_run(preset)
 
-    assert cfg.solver.method == METHODS.get(original.solver.method).name
+    assert cfg.solver.method == method_class(original.solver.method).name
     for key in ("volfrac", "m", "tol"):
         assert read_param(cfg, key) == pytest.approx(read_param(original, key)), key
     assert cfg.solver.max_iter == original.solver.max_iter
@@ -95,10 +125,10 @@ def test_a_preset_survives_the_round_trip_through_the_gui(window, preset):
         [s.get("type", "density") for s in original.solver.filter_specs]
 
 
-@pytest.mark.parametrize("name", METHODS.names())
+@pytest.mark.parametrize("name", METHOD_NAMES)
 def test_objective_and_constraints_follow_the_method(window, name):
-    capabilities = METHODS.get(name).capabilities
-    window.core.method.setCurrentIndex(window.core.method.findData(name))
+    capabilities = method_class(name).capabilities
+    window.core.select_method(name)
     expected = [cls.name for cls in responses_for(OBJECTIVE_ROLE) if cls.name in capabilities.objectives]
     assert window.objective.offered_types() == expected
     can_constrain = bool(capabilities.constraints) and capabilities.max_constraints != 0
@@ -108,7 +138,7 @@ def test_objective_and_constraints_follow_the_method(window, name):
 def test_a_constraint_reaches_the_run_only_when_the_method_can_enforce_it(window):
     from toporia.gui import runner
     window._on_config_changed("MBB Beam")
-    window.core.method.setCurrentIndex(window.core.method.findData("pymoto"))
+    window.core.select_method("q4+pymoto_mma")
     window.constraints.load_specs([{"type": "stress", "limit": 7.0}])
 
     def build():
@@ -119,8 +149,8 @@ def test_a_constraint_reaches_the_run_only_when_the_method_can_enforce_it(window
     offered = [window.sg.param.itemData(i) for i in range(window.sg.param.count())]
     assert "constraints[0].limit" in offered
 
-    window.core.method.setCurrentIndex(window.core.method.findData("density"))
+    window.core.select_method("q4+oc")
     assert build().scenario.constraints == []          # OC cannot enforce it, so the run never sees it
-    window.core.method.setCurrentIndex(window.core.method.findData("pymoto"))
+    window.core.select_method("pymoto")
     assert build().scenario.constraints[0]["limit"] == 7.0   # kept for when it can
     window.constraints.load_specs([])

@@ -14,7 +14,7 @@ defaults) is used.
 Every command that runs accepts --out DIR and any number of --set PATH=VALUE,
 where PATH is a parameter path:
 
-    toporia run "MBB Beam" --set method=density_mma --set method.penal=4 --set volfrac=0.3
+    toporia run "MBB Beam" --set method=q4+mma --set method.penal=4 --set volfrac=0.3
 
 VALUE is parsed as JSON when it can be (numbers, lists, objects) and taken as a
 plain string otherwise.
@@ -78,7 +78,7 @@ def _label(solver_path):
 
 def _cmd_list(args):
     from toporia.library.filters import FILTERS
-    from toporia.library.methods import METHODS
+    from toporia.library.methods import METHODS, PRESETS
     from toporia.library.models import MODELS
     from toporia.library.problems import problem_names
     from toporia.library.responses import RESPONSES
@@ -87,13 +87,16 @@ def _cmd_list(args):
     print("Presets:")
     for name in problem_names():
         print(f"  {name}")
-    for title, registry in (("Methods", METHODS), ("Models", MODELS),
-                            ("Updaters", UPDATERS), ("Filters", FILTERS),
-                            ("Responses", RESPONSES)):
+    print("\nA method is '<model>+<updater>' (any pair), or a whole method.")
+    for title, registry in (("Models", MODELS), ("Updaters", UPDATERS), ("Whole methods", METHODS),
+                            ("Filters", FILTERS), ("Responses", RESPONSES)):
         print(f"\n{title}:")
         for cls in registry.classes():
             params = ", ".join(p.name for p in cls.params) or "-"
             print(f"  {cls.name:<18} {cls.label:<32} params: {params}")
+    print("\nOlder method names:")
+    for old, new in PRESETS.items():
+        print(f"  {old:<18} = {new}")
     return 0
 
 

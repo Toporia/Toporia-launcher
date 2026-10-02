@@ -10,14 +10,17 @@
 # Widget hierarchy (what contains what):
 #   MainWindow
 #     └─ left panel
-#          ├─ CoreParamsGroup      (scenario fields, method + its parameters)
+#          ├─ PipelineView         (the selected chain, stage by stage, and why parts are missing)
+#          ├─ CoreParamsGroup      (scenario fields; method as physics model + updater, or whole)
 #          ├─ ObjectiveGroup       (what to minimise, as the method allows)
 #          ├─ SpecListGroup        constraints (hidden when the method enforces none)
 #          ├─ SpecListGroup        filters (hidden when the method takes no filters)
 #          ├─ LoadCasesGroup       (one LoadCaseRow per force)
 #          └─ one group per analysis mode (sweep, compare, sensitivity, ...)
 
-from PySide6.QtCore import Signal  # Qt signal/slot system (see python_primer.py §11)
+import html
+
+from PySide6.QtCore import Qt, Signal  # Qt signal/slot system (see python_primer.py §11)
 from PySide6.QtWidgets import (
     QComboBox,
     QDoubleSpinBox,
@@ -220,19 +223,26 @@ class LoadCasesGroup(QWidget):
 # ── Core and sweep parameter groups ──────────────────────────────────────────
 
 class CoreParamsGroup(QWidget):
-    """Scenario fields, the method selector, and the selected method's parameters.
+    """Scenario fields, the optimisation method as explicit parts, and convergence/output.
 
-    Every input is generated from Param declarations — the scenario fields from
-    core/scenario.py and core/solver.py and one panel per method from that method's `params` — so a
-    new method or parameter appears here without editing this file.
+    The method is chosen part by part: a physics model and an updater, any
+    pair of them — or a whole method that does not split into parts (the RBF
+    level set).  Each part shows its own parameters.  Every input is generated
+    from Param declarations and the plugin registries, so a new model, updater
+    or method appears here without editing this file.
     """
-    method_changed = Signal(str)   # fires with the selected method's registry name
+    method_changed = Signal(str)   # fires with the method name: "<model>+<updater>" or a whole method
+
+    #: The "Method" selector's entry for a method assembled from a model and an updater.
+    PARTS = ""
 
     def __init__(self, parent=None):
         super().__init__(parent)
         from toporia.core import OUTPUT_PARAMS, SCENARIO_PARAMS, SOLVER_PARAMS
         from toporia.core.params import select
         from toporia.library.methods import METHODS
+        from toporia.library.models import MODELS
+        from toporia.library.updaters import UPDATERS
 
         outer = QVBoxLayout(self)
         outer.setContentsMargins(0, 0, 0, 0)
@@ -243,15 +253,27 @@ class CoreParamsGroup(QWidget):
         QVBoxLayout(core).addWidget(self._design)
         outer.addWidget(core)
 
-        opt = _CollapsibleSection("Optimizer", expanded=False)
+        opt = _CollapsibleSection("Method", expanded=True)
         selector = QFormLayout()
-        self.method = QComboBox()
-        _add_tooltip_row(selector, "Method", self.method,
-                         "Optimisation algorithm. Its own parameters are listed below.")
+        self.approach = QComboBox()
+        self.approach.addItem("Physics model + updater", userData=self.PARTS)
+        for cls in METHODS.classes():
+            self.approach.addItem(f"{cls.label} (whole method)", userData=cls.name)
+        _add_tooltip_row(selector, "Method", self.approach,
+                         "Pick a physics model and an updater separately (any pair works), or a whole "
+                         "method that brings its own design representation and update.")
         opt.body_layout.addLayout(selector)
+
+        # One selector and one parameter panel per part; whole methods get a panel each.
+        self.model, self._model_forms, self._model_row = self._part_selector(
+            opt, "Physics model", MODELS.classes(),
+            "What is solved: the physics engine, and with it which objectives and constraints "
+            "can be computed.")
+        self.updater, self._updater_forms, self._updater_row = self._part_selector(
+            opt, "Updater", UPDATERS.classes(),
+            "How the design moves from one iteration to the next.")
         self._method_forms = {}
         for cls in METHODS.classes():
-            self.method.addItem(cls.label, userData=cls.name)
             form = ParamForm(cls.params)
             self._method_forms[cls.name] = form
             opt.body_layout.addWidget(form)
@@ -264,40 +286,136 @@ class CoreParamsGroup(QWidget):
             section.body_layout.addWidget(form)
             outer.addWidget(section)
 
-        self.method.currentIndexChanged.connect(self._on_method_changed)
+        for combo in (self.approach, self.model, self.updater):
+            combo.currentIndexChanged.connect(self._on_method_changed)
         self._on_method_changed()
 
+    @staticmethod
+    def _part_selector(section, title, classes, tooltip):
+        """A titled selector for one part, with that part's parameter panel under it."""
+        box = QWidget()
+        layout = QVBoxLayout(box)
+        layout.setContentsMargins(0, 4, 0, 0)
+        layout.setSpacing(2)
+        row = QFormLayout()
+        combo = QComboBox()
+        _add_tooltip_row(row, title, combo, tooltip)
+        layout.addLayout(row)
+        forms = {}
+        for cls in classes:
+            combo.addItem(cls.label, userData=cls.name)
+            forms[cls.name] = ParamForm(cls.params)
+            layout.addWidget(forms[cls.name])
+        section.body_layout.addWidget(box)
+        return combo, forms, box
+
+    def _composed(self):
+        return self.approach.currentData() == self.PARTS
+
     def method_name(self):
-        """Registry name of the selected method."""
-        return self.method.currentData()
+        """The selected method: "<model>+<updater>", or a whole method's name."""
+        from toporia.core.composition import SEPARATOR
+        if self._composed():
+            return f"{self.model.currentData()}{SEPARATOR}{self.updater.currentData()}"
+        return self.approach.currentData()
+
+    def select_method(self, name):
+        """Show the method `name`, in either form; older names such as "density" are accepted."""
+        from toporia.core.composition import ComposedMethod
+        from toporia.library.methods import method_class
+        cls = method_class(name)
+        combos = (self.approach, self.model, self.updater)
+        for combo in combos:
+            combo.blockSignals(True)
+        if issubclass(cls, ComposedMethod):
+            self.approach.setCurrentIndex(self.approach.findData(self.PARTS))
+            self.model.setCurrentIndex(self.model.findData(cls.model.name))
+            self.updater.setCurrentIndex(self.updater.findData(cls.updater.name))
+        else:
+            self.approach.setCurrentIndex(self.approach.findData(cls.name))
+        for combo in combos:
+            combo.blockSignals(False)
+        self._on_method_changed()
+
+    def _all_forms(self):
+        return [*self._model_forms.values(), *self._updater_forms.values(), *self._method_forms.values()]
+
+    def _visible_forms(self):
+        if self._composed():
+            return [self._model_forms[self.model.currentData()], self._updater_forms[self.updater.currentData()]]
+        return [self._method_forms[self.approach.currentData()]]
 
     def _on_method_changed(self, *_):
-        name = self.method_name()
-        for key, form in self._method_forms.items():
-            form.setVisible(key == name)
-        self.method_changed.emit(name)
+        composed = self._composed()
+        self._model_row.setVisible(composed)
+        self._updater_row.setVisible(composed)
+        visible = self._visible_forms()
+        for form in self._all_forms():
+            form.setVisible(form in visible)
+        self.method_changed.emit(self.method_name())
 
     def get_kwargs(self):
         """Return {field: value} to overlay on a Run with Run.updated."""
+        method_params = {}
+        for form in self._visible_forms():
+            method_params.update(form.get_values())
         return {
             **self._design.get_values(),
             **self._convergence.get_values(),
             **self._output.get_values(),
             "method": self.method_name(),
-            "method_params": self._method_forms[self.method_name()].get_values(),
+            "method_params": method_params,
         }
 
     def load_from_config(self, cfg):
         """Populate every panel from a Run (called when a preset is selected)."""
         from toporia.core import read_param
-        from toporia.library.methods import METHODS
-        name = METHODS.get(cfg.solver.method).name
-        for key, form in self._method_forms.items():
-            form.set_values(cfg.solver.method_params if key == name else {})
+        self.select_method(cfg.solver.method)
+        visible = self._visible_forms()
+        for form in self._all_forms():
+            mine = {k: v for k, v in cfg.solver.method_params.items() if k in form.names()}
+            form.set_values(mine if form in visible else {})
         for form in (self._design, self._convergence, self._output):
             form.set_values({key: read_param(cfg, key) for key in form.names()})
-        self.method.setCurrentIndex(self.method.findData(name))
-        self._on_method_changed()   # setCurrentIndex is silent when the index is unchanged
+
+
+class PipelineView(QGroupBox):
+    """The selected pipeline, stage by stage, and why any part of it is unavailable.
+
+    It shows what the run will actually do (which filters, which physics,
+    which responses, which updater), so swapping one part is visible at once,
+    and a hidden panel (no filters, no constraints) is explained, not just gone.
+    """
+
+    def __init__(self, parent=None):
+        super().__init__("Pipeline", parent)
+        layout = QVBoxLayout(self)
+        layout.setContentsMargins(6, 4, 6, 4)
+        self._stages = QLabel()
+        self._stages.setWordWrap(True)
+        self._stages.setTextFormat(Qt.RichText)
+        self._notes = QLabel()
+        self._notes.setWordWrap(True)
+        self._notes.setTextFormat(Qt.RichText)
+        layout.addWidget(self._stages)
+        layout.addWidget(self._notes)
+        self._plain_stages, self._plain_notes = [], []
+
+    def show_pipeline(self, stages, notes):
+        """Show [(stage, text), ...] top to bottom, then the notes in grey."""
+        self._plain_stages, self._plain_notes = list(stages), list(notes)
+        rows = [f"<b>{html.escape(stage)}</b>: {html.escape(text)}" for stage, text in stages]
+        self._stages.setText("<br>&nbsp;&nbsp;↓ ".join(rows) + "<br>&nbsp;&nbsp;↺ <i>next design</i>")
+        self._notes.setVisible(bool(notes))
+        self._notes.setText("<br>".join(f"<span style='color:gray'>• {html.escape(n)}</span>" for n in notes))
+
+    def stages(self):
+        """The displayed [(stage, text), ...]."""
+        return list(self._plain_stages)
+
+    def notes(self):
+        """The displayed notes."""
+        return list(self._plain_notes)
 
 
 class CompareLoadCasesParamsGroup(QGroupBox):

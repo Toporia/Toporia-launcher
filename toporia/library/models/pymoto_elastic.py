@@ -13,6 +13,11 @@
 # Objectives: compliance or volume.  Constraints: any number of peak von Mises
 # stress limits (library/responses/stress.py), over every load case.
 #
+# It computes its responses itself, by backpropagation through its own network,
+# so it is a whole model rather than a physics engine for library/models/assembled.py:
+# its responses are listed by name in its Capabilities, and Toporia's filter
+# pipeline does not apply.
+#
 # It is also the contract's canary: pyMOTO knows nothing about Toporia, so if a
 # change to core/ cannot be satisfied here without conversion code, the
 # contract has grown a Toporia-specific assumption.
@@ -26,6 +31,7 @@ from toporia.core.contract import Capabilities
 from toporia.core.responses import CONSTRAINT_ROLE, OBJECTIVE_ROLE
 from toporia.library.filters.filter_density import RMIN
 from toporia.library.responses import resolve_response
+from toporia.library.responses.stress import VON_MISES_2D
 
 from ._common import PENAL
 
@@ -33,9 +39,6 @@ IMPORT_HINT = (
     "This requires the optional pyMOTO dependency.\n"
     "Install it with:  pip install pymoto"
 )
-
-# 2-D plane-stress von Mises from Voigt stress s = [sxx, syy, txy]:  vm² = sᵀ V s
-_VON_MISES = np.array([[1.0, -0.5, 0.0], [-0.5, 1.0, 0.0], [0.0, 0.0, 3.0]])
 
 
 def import_pymoto():
@@ -116,6 +119,7 @@ class PymotoElasticModel(Model):
     capabilities = Capabilities(
         variable_kind="density", accepts_filters=False,
         objectives=("compliance", "volume"), constraints=("stress",), max_constraints=None,
+        needs_constraint=("volume",),
     )
 
     def initialize(self, problem, solver, settings):
@@ -161,7 +165,7 @@ class PymotoElasticModel(Model):
     def _stress_constraint(self, pym, domain, s_u, s_physical, n_cases, settings):
         """Build g = ‖ρ^q · von Mises‖_p / limit − 1 over every element and load case."""
         scenario = self.problem.scenario
-        s_v = pym.Signal("von_mises_matrix", _VON_MISES)
+        s_v = pym.Signal("von_mises_matrix", VON_MISES_2D)
         relaxed = []
         for k in range(n_cases):
             s_stress = pym.Stress(domain, e_modulus=scenario.E0, poisson_ratio=scenario.nu,

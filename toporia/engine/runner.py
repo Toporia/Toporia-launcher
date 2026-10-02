@@ -25,6 +25,7 @@ from toporia.core.contract import OBJECTIVE
 from toporia.core.problem import RectangularProblem
 
 from .feasibility import check_limits, describe_violations
+from .pipeline import describe_pipeline
 from .provenance import run_record
 from .results import ResultStore
 
@@ -36,19 +37,20 @@ def initialized_method(run):
     do — a stress constraint with optimality criteria, say — fails immediately
     with a message naming the methods that can, instead of part-way through.
     """
-    from toporia.library.methods import METHODS
+    from toporia.library.methods import method_class, method_classes
     from toporia.library.responses import check_responses
 
-    method_cls = METHODS.get(run.solver.method)
+    method_cls = method_class(run.solver.method)
     reasons = method_cls.capabilities.problems_with(run.scenario)
     if reasons:
-        able = [cls.name for cls in METHODS.classes() if not cls.capabilities.problems_with(run.scenario)]
+        able = [cls.name for cls in method_classes() if not cls.capabilities.problems_with(run.scenario)]
         advice = f"Methods that can: {able}." if able else "No registered method can."
         raise ValueError(f"Method {method_cls.name!r} cannot solve this scenario: "
                          f"{'; '.join(reasons)}. {advice}")
     (objective_cls, _), _ = check_responses(run.scenario)
     if objective_cls.advice:
         print(f"note: {objective_cls.advice}")
+    print(f"  pipeline: {describe_pipeline(run)}")
 
     problem = RectangularProblem(run.scenario, run.solver.m)
     method = method_cls()

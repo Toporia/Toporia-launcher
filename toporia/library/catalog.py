@@ -18,7 +18,7 @@ because only numbers can be swept.
 from toporia.core import SCENARIO_PARAMS, SOLVER_PARAMS
 
 from .filters import FILTERS
-from .methods import METHODS
+from .methods import method_class
 from .responses import RESPONSES
 
 # The LoadCase fields a sweep may vary, with their display labels.
@@ -37,7 +37,7 @@ def parameter_paths(method, filter_specs=(), n_load_cases=0, objective=None, con
     """
     items = [(p.label, p.name) for p in SCENARIO_PARAMS + SOLVER_PARAMS if p.is_numeric]
 
-    method_cls = METHODS.get(method)
+    method_cls = method_class(method)
     capabilities = method_cls.capabilities
     items += _numeric("Method", "method.", method_cls.params)
 

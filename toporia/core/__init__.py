@@ -6,8 +6,9 @@
     problem.py    the geometric problem built from a Scenario at a mesh resolution
     contract.py   the interface every optimisation method implements
     composition.py  a method assembled from a Model (physics) and an Updater (update rule)
+    physics.py    the questions a physics engine answers, so responses work on any engine
     params.py     self-describing parameter declarations
-    responses.py  what a scenario can minimise or constrain (declarations)
+    responses.py  what a scenario can minimise or constrain, and how it computes itself
     registry.py   plugin discovery
     serialize.py  Scenario / Solver <-> JSON, and fingerprints
 
@@ -16,11 +17,12 @@ Nothing in core imports from toporia.engine, toporia.library or toporia.gui
 rule is what keeps the data flow readable.
 """
 
-from .composition import ComposedMethod, ConstraintValue, Evaluation, Model, Updater
+from .composition import ComposedMethod, ConstraintValue, Evaluation, Model, Updater, compose
 from .contract import Capabilities, OptimizationMethod
 from .params import Param, resolve_params
+from .physics import ELASTIC_ENERGY, STRESS, Physics
 from .problem import BaseProblem, RectangularProblem
-from .responses import CONSTRAINT_ROLE, OBJECTIVE_ROLE, Response
+from .responses import CONSTRAINT_ROLE, OBJECTIVE_ROLE, Response, ResponseValue
 from .run import OUTPUT_PARAMS, Output, Run, apply_param, read_param
 from .scenario import (
     SCENARIO_PARAMS,
@@ -41,6 +43,7 @@ __all__ = [
     "apply_param", "read_param",
     "BaseProblem", "RectangularProblem",
     "OptimizationMethod", "Capabilities", "Param", "resolve_params",
-    "ComposedMethod", "Model", "Updater", "Evaluation", "ConstraintValue",
-    "Response", "OBJECTIVE_ROLE", "CONSTRAINT_ROLE",
+    "ComposedMethod", "Model", "Updater", "Evaluation", "ConstraintValue", "compose",
+    "Physics", "ELASTIC_ENERGY", "STRESS",
+    "Response", "ResponseValue", "OBJECTIVE_ROLE", "CONSTRAINT_ROLE",
 ]

@@ -43,6 +43,9 @@ class Capabilities:
     constraints     : response types it can enforce in scenario.constraints; the
                       volume budget (scenario.volfrac) is always enforced as well
     max_constraints : how many scenario.constraints at once; None means any number
+    needs_constraint: objectives that are only meaningful with a further constraint
+                      (minimising volume alone gives an empty design), so a method
+                      that can enforce none does not offer them
     """
     variable_kind: str = "density"
     accepts_filters: bool = False
@@ -50,6 +53,7 @@ class Capabilities:
     objectives: tuple = ("compliance",)
     constraints: tuple = ()
     max_constraints: int | None = 0
+    needs_constraint: tuple = ()
 
     def problems_with(self, scenario):
         """Return why the method cannot solve `scenario` — an empty list when it can."""

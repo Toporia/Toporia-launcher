@@ -18,13 +18,15 @@ class Solver:
     """The method, its parameters, its filters, the discretisation and the stopping rule."""
 
     # ── Method ────────────────────────────────────────────────────────────────
-    # Name of a registered method (see toporia.library.methods.METHODS), e.g.
-    # "density", "density_mma", "levelset" or "pymoto".
-    method: str = "density"
+    # Either "<model>+<updater>" — any model with any updater, e.g. "q4+oc",
+    # "q4+mma" or "pymoto_elastic+pymoto_gcmma" — or a whole method such as
+    # "levelset".  See toporia.library.methods.  The names used before the
+    # split ("density", "density_mma", "pymoto", ...) are still accepted.
+    method: str = "q4+oc"
 
-    # The method's own parameters, keyed by Param name.  Anything left out uses
-    # the default declared on the method class; an unknown key is an error.
-    # Example: {"penal": 3.5, "move": 0.1}
+    # The parameters of the method's parts — the model's and the updater's
+    # together — keyed by Param name.  Anything left out uses the declared
+    # default; an unknown key is an error.  Example: {"penal": 3.5, "move": 0.1}
     method_params: dict = field(default_factory=dict)
 
     # Filters applied in order, each {"type": <filter name>, <param>: <value>}.

@@ -24,9 +24,39 @@
 # the next and its gradient is not the exact derivative of that shifting
 # function.  In practice this converged well; switch adaptive off when an
 # exactly consistent gradient matters more than the limit's meaning.
+#
+# The sensitivity needs one adjoint solve per load case.  With r_e = ρ_e^q σvm_e
+# and P = ‖r‖_p:
+#
+#     ∂P/∂r_e = (r_e / P)^(p−1)
+#     explicit    ∂P/∂ρ_e  via  q ρ_e^(q−1) σvm_e
+#     adjoint     K λ = Σ_e ∂P/∂r_e · ρ_e^q · ∂σvm_e/∂u          (physics.stress_load)
+#                 dP/dρ_e −= dE/dρ_e · λ_eᵀ K_e u_e              (physics.mutual_energy)
+#
+# Everything engine-specific — element stresses, the adjoint solve — comes from
+# the physics engine (core/physics.py), so this one file serves every engine
+# that provides the STRESS feature.
+#
+# Stresses are measured with the true element size, so a limit means the same
+# at every mesh resolution.  The pyMOTO model's stresses differ from these in
+# two ways, both pinned by tests/test_physics.py:
+#   * pyMOTO measures on unit elements, so its strains are m times smaller
+#     than the true ones at a mesh of m el/mm (equal at m = 1);
+#   * pyMOTO 2.0.1 doubles the shear stress: its strain-displacement matrix
+#     already gives the engineering shear γ = ∂u/∂y + ∂v/∂x, and Strain(voigt=True)
+#     doubles that row again.  Its von Mises stress is therefore too high
+#     wherever there is shear (by 22 % on a random MBB design).
+
+import numpy as np
 
 from toporia.core.params import Param
-from toporia.core.responses import CONSTRAINT_ROLE, Response
+from toporia.core.physics import STRESS
+from toporia.core.responses import CONSTRAINT_ROLE, Response, ResponseValue
+
+# 2-D plane-stress von Mises from Voigt stress s = [sxx, syy, txy]:  vm² = sᵀ V s
+VON_MISES_2D = np.array([[1.0, -0.5, 0.0], [-0.5, 1.0, 0.0], [0.0, 0.0, 3.0]])
+# Keeps the square root differentiable where an element carries no stress.
+_EPSILON = 1e-12
 
 
 class VonMisesStress(Response):
@@ -52,3 +82,43 @@ class VonMisesStress(Response):
               "what it says. Without it the p-norm overestimates the peak and the effective limit "
               "is much stricter than the number entered."),
     )
+
+    requires = (STRESS,)
+
+    def evaluate(self, state, gradient=True):
+        physics, settings = self.physics, self.settings
+        p, q, limit = settings["p"], settings["q"], settings["limit"]
+        density = state.density
+        relaxation = density ** q
+
+        cases = []   # (stress, von Mises, relaxed von Mises) per load case
+        for case in range(len(state.weights)):
+            stress = physics.element_stress(state, case)
+            von_mises = np.sqrt(np.einsum("...i,ij,...j->...", stress, VON_MISES_2D, stress) + _EPSILON)
+            cases.append((stress, von_mises, relaxation * von_mises))
+
+        peak = float(max(np.max(relaxed) for *_, relaxed in cases))
+        # The p-norm, computed relative to the peak so that r^p cannot overflow.
+        norm = peak * float(sum(np.sum((relaxed / peak) ** p) for *_, relaxed in cases)) ** (1.0 / p)
+        scale = peak / norm if settings["adaptive"] else 1.0
+        value = scale * norm / limit - 1.0
+        exact = peak / limit - 1.0
+        reported = {"max_stress": peak}
+        if not gradient:
+            return ResponseValue(value, None, exact, reported)
+
+        # d(ρ^q)/dρ, taken as 0 where the density is exactly 0 (its limit is
+        # infinite for q < 1, and such an element carries no stress anyway).
+        d_relaxation = np.zeros_like(density, dtype=float)
+        solid = density > 0
+        d_relaxation[solid] = q * density[solid] ** (q - 1.0)
+        slope = physics.stiffness_slope(state)
+
+        sensitivity = np.zeros_like(density, dtype=float)
+        for case, (stress, von_mises, relaxed) in enumerate(cases):
+            d_norm = (relaxed / norm) ** (p - 1.0)
+            sensitivity += d_norm * d_relaxation * von_mises
+            d_stress = (d_norm * relaxation / von_mises)[..., None] * (stress @ VON_MISES_2D)
+            adjoint = physics.adjoint(state, physics.stress_load(state, case, d_stress))
+            sensitivity -= slope * physics.mutual_energy(state, case, adjoint)
+        return ResponseValue(value, scale / limit * sensitivity, exact, reported)

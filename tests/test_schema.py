@@ -23,7 +23,7 @@ from toporia.core import (
 from toporia.core.params import Param, resolve_params, select
 from toporia.library.catalog import parameter_paths
 from toporia.library.filters import FILTERS
-from toporia.library.methods import METHODS, make_method
+from toporia.library.methods import METHODS, make_method, method_class, method_classes
 from toporia.library.models import MODELS
 from toporia.library.problems import get_run
 from toporia.library.responses import RESPONSES
@@ -87,7 +87,9 @@ def test_field_param_defaults_match_the_dataclass(declared, cls):
 # ── Registries ────────────────────────────────────────────────────────────────
 
 def test_every_method_is_discovered_in_menu_order():
-    assert METHODS.names() == ["density", "density_mma", "levelset", "pymoto", "density_gcmma"]
+    assert METHODS.names() == ["levelset"]       # whole methods; everything else is model+updater
+    assert MODELS.names() == ["q4", "pymoto_elastic"]
+    assert len(method_classes()) == len(MODELS.names()) * len(UPDATERS.names()) + 1
 
 
 def test_every_filter_is_discovered_in_menu_order():
@@ -95,12 +97,13 @@ def test_every_filter_is_discovered_in_menu_order():
 
 
 def test_aliases_and_case_are_accepted():
-    assert METHODS.get("mma") is METHODS.get("density_mma")
-    assert METHODS.get("DENSITY") is METHODS.get("density")
+    assert method_class("mma") is method_class("density_mma") is method_class("Q4+MMA")
+    assert method_class("DENSITY").name == "q4+oc"
+    assert method_class("q4_compliance+oc") is method_class("q4+oc")
 
 
 def test_an_unknown_name_lists_the_alternatives():
-    with pytest.raises(ValueError, match=r"Unknown method 'nope'.*density_mma"):
+    with pytest.raises(ValueError, match=r"Unknown method 'nope'.*<model>\+<updater>"):
         make_method("nope")
 
 
@@ -167,7 +170,7 @@ def test_apply_param_rejects_unknown_paths():
 def test_a_misspelt_method_parameter_fails_before_computing():
     run = apply_param(get_run("MBB Beam"), "method.pnal", 4.0)
     with pytest.raises(ValueError, match="pnal"):
-        METHODS.get(run.solver.method).resolve_params(run.solver)
+        method_class(run.solver.method).resolve_params(run.solver)
 
 
 def test_paths_follow_the_method_capabilities():
@@ -184,20 +187,20 @@ def _current_value(run, path):
     if value is not None:
         return value
     if path.startswith("method."):
-        cls = METHODS.get(run.solver.method)
+        cls = method_class(run.solver.method)
     else:
         index = int(path[len("filters["):path.index("]")])
         cls = FILTERS.get(run.solver.filter_specs[index]["type"])
     return {p.name: p.default for p in cls.params}[path.rsplit(".", 1)[1]]
 
 
-@pytest.mark.parametrize("method", METHODS.names())
+@pytest.mark.parametrize("method", [c.name for c in method_classes()])
 def test_every_offered_path_round_trips_through_validation(method):
     """Every path the GUI offers must be writable and must still validate."""
     run = get_run("MBB Beam").updated(method=method, filter_specs=[{"type": "density"}, {"type": "heaviside"}])
     for _, path in parameter_paths(method, run.solver.filter_specs, len(run.scenario.load_cases)):
         updated = apply_param(run, path, _current_value(run, path))
-        METHODS.get(method).resolve_params(updated.solver)
+        method_class(method).resolve_params(updated.solver)
         for spec in updated.solver.filter_specs:
             spec = dict(spec)
             cls = FILTERS.get(spec.pop("type"))

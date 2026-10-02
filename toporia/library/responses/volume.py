@@ -11,8 +11,12 @@
 # the stress constraint never recovers (peak stress 10^4 x the limit); from
 # volfrac 1.0 with move 0.05 the same problem converges to 55 % material with
 # the peak stress under the limit.  pyMOTO's own stress example also starts full.
+#
+# It needs no physics at all, so every model can offer it.
 
-from toporia.core.responses import OBJECTIVE_ROLE, Response
+import numpy as np
+
+from toporia.core.responses import OBJECTIVE_ROLE, Response, ResponseValue
 
 
 class Volume(Response):
@@ -21,6 +25,11 @@ class Volume(Response):
     order = 20
     roles = (OBJECTIVE_ROLE,)
     needs_constraint = True
+    requires = ()
     advice = ("Minimising volume works best from a full design: set the volume fraction to 1.0 "
               "and use a small move limit (about 0.05). From a partly empty start, large steps "
               "can empty the domain before the constraints take hold.")
+
+    def evaluate(self, state, gradient=True):
+        density = state.density
+        return ResponseValue(float(np.sum(density)), np.ones_like(density, dtype=float) if gradient else None)

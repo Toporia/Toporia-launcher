@@ -59,4 +59,4 @@ def scenario() -> Scenario:
 def solver() -> Solver:
     # The top88 reference settings.  penal=3 and rmin=1.5 are the method and
     # filter defaults; one element per mm gives the classic 60 x 20 mesh.
-    return Solver(method="density", filter_specs=[{"type": "density"}], m=1.0, max_iter=100, tol=0.01)
+    return Solver(method="q4+oc", filter_specs=[{"type": "density"}], m=1.0, max_iter=100, tol=0.01)

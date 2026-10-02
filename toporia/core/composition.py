@@ -21,6 +21,9 @@
 # The two halves meet only through Evaluation and the Model methods below, so
 # any model works with any updater — within what each can do: a composed
 # method can minimise what its model can compute AND its updater can handle.
+#
+# A model is itself usually assembled from parts — filters, a physics engine
+# (core/physics.py) and responses — see library/models/assembled.py.
 
 from abc import ABC, abstractmethod
 from dataclasses import dataclass, field, replace
@@ -157,6 +160,8 @@ def _combine(model_capabilities, updater):
     limits = [n for n in (model_capabilities.max_constraints, updater.max_constraints) if n is not None]
     max_constraints = min(limits) if limits else None
     constraints = model_capabilities.constraints if max_constraints != 0 else ()
+    if not constraints:
+        objectives = tuple(o for o in objectives if o not in model_capabilities.needs_constraint)
     return replace(model_capabilities, objectives=objectives, constraints=constraints,
                    max_constraints=max_constraints)
 
@@ -164,11 +169,14 @@ def _combine(model_capabilities, updater):
 class ComposedMethod(OptimizationMethod):
     """An OptimizationMethod made of a Model and an Updater.
 
-    Subclasses set two class attributes and nothing else:
+    Pairings are not declared one by one: compose(model, updater) builds the
+    method for any pair, named "<model>+<updater>" (e.g. "q4+mma"), and
+    library.methods.method_class turns such a name into it.  A subclass may
+    still be written by hand:
 
-        class DensityOC(ComposedMethod):
-            name, label = "density", "SIMP density (OC)"
-            model = Q4ComplianceModel
+        class MyPairing(ComposedMethod):
+            name, label = "mine", "My pairing"
+            model = Q4Model
             updater = OCUpdater
 
     The method's parameters are the model's followed by the updater's.  Its
@@ -236,3 +244,51 @@ class ComposedMethod(OptimizationMethod):
                 if constraint.exact is not None:
                     responses[f"constraint_{i}_{constraint.name}_exact"] = constraint.exact
         return responses
+
+
+#: Separates the model from the updater in a composed method's name: "q4+mma".
+SEPARATOR = "+"
+
+_composed = {}
+
+
+def compose(model_cls, updater_cls):
+    """Return the method made of this model and this updater, built once per pair."""
+    key = (model_cls, updater_cls)
+    if key not in _composed:
+        _composed[key] = type(
+            f"{model_cls.__name__}_{updater_cls.__name__}", (ComposedMethod,),
+            {"name": f"{model_cls.name}{SEPARATOR}{updater_cls.name}",
+             "label": f"{model_cls.label} · {updater_cls.label}",
+             "model": model_cls, "updater": updater_cls},
+        )
+    return _composed[key]
+
+
+def explain(model_cls, updater_cls):
+    """Plain-language reasons why this pairing offers less than one of its parts could.
+
+    Empty when nothing is lost.  The GUI shows these next to the selectors, so a
+    missing objective, constraint or filter list is explained, not just absent.
+    """
+    notes = []
+    model = model_cls.capabilities
+    combined = _combine(model, updater_cls)
+    lost = [name for name in model.objectives if name not in combined.objectives]
+    rule = updater_cls.objectives
+    outside_rule = [name for name in lost if rule is not None and name not in rule]
+    unconstrained = [name for name in lost if name not in outside_rule]
+    if outside_rule:
+        notes.append(f"{updater_cls.label} can only minimise {', '.join(rule)}; "
+                     f"the model could also minimise {', '.join(outside_rule)}.")
+    if unconstrained:
+        notes.append(f"Minimising {', '.join(unconstrained)} needs a constraint besides the volume budget, "
+                     f"which {updater_cls.label} cannot enforce.")
+    if model.constraints and not combined.constraints:
+        notes.append(f"{updater_cls.label} enforces only the volume budget, so the model's "
+                     f"{', '.join(model.constraints)} constraint is not available.")
+    if not model.constraints:
+        notes.append(f"{model_cls.label} computes no constraint besides the volume budget.")
+    if not model.accepts_filters:
+        notes.append(f"{model_cls.label} filters the design itself, so the Filters list is not used.")
+    return notes

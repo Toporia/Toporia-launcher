@@ -67,6 +67,10 @@ class DensityFilterPipeline:
             return dc, dv
         return self.chain.backward(dc), self.chain.backward_volume(dv)
 
+    def sensitivity(self, ds):
+        """Map one more response's sensitivity (a constraint's) back to the design."""
+        return ds if self.chain is None else self.chain.backward(ds)
+
     def step(self, iteration):
         if self.chain is not None:
             self.chain.step(iteration)

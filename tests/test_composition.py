@@ -13,10 +13,10 @@ import numpy as np
 import pytest
 
 from toporia.core import Param
-from toporia.core.composition import ComposedMethod, Model
+from toporia.core.composition import ComposedMethod, Model, compose
 from toporia.core.contract import OBJECTIVE
 from toporia.core.problem import RectangularProblem
-from toporia.library.methods import METHODS
+from toporia.library.methods import method_class, method_classes
 from toporia.library.models import MODELS
 from toporia.library.models.pymoto_elastic import PymotoElasticModel
 from toporia.library.problems import get_run
@@ -47,6 +47,13 @@ def _compose(model_cls, updater_cls):
                 {"model": model_cls, "updater": updater_cls})
 
 
+def test_any_pair_is_named_model_plus_updater_and_built_once():
+    for model_cls, updater_cls in PAIRS:
+        cls = method_class(f"{model_cls.name}+{updater_cls.name}")
+        assert (cls.model, cls.updater) == (model_cls, updater_cls)
+        assert cls is compose(model_cls, updater_cls)
+
+
 def _run(method_cls, problem="MBB Beam", iterations=3, **values):
     run = get_run(problem).updated(m=0.3, max_iter=iterations, tol=0.0, **values)
     method = method_cls()
@@ -56,7 +63,7 @@ def _run(method_cls, problem="MBB Beam", iterations=3, **values):
     return method
 
 
-@pytest.mark.parametrize("cls", [c for c in METHODS.classes() if issubclass(c, ComposedMethod)],
+@pytest.mark.parametrize("cls", [c for c in method_classes() if issubclass(c, ComposedMethod)],
                          ids=lambda c: c.name)
 def test_a_registered_method_is_the_sum_of_its_parts(cls):
     assert cls.params == tuple(cls.model.params) + tuple(cls.updater.params)
@@ -112,7 +119,7 @@ def test_pyMOTO_is_given_only_the_free_variables():
     _require_pymoto()
     with warnings.catch_warnings():
         warnings.simplefilter("error", RuntimeWarning)
-        method = _run(METHODS.get("pymoto"), problem="Drone Arm", volfrac=0.4)
+        method = _run(method_class("pymoto"), problem="Drone Arm", volfrac=0.4)
     problem = method.problem
     density = method.get_density()
     assert np.all(density[problem.void_elements] < 1e-6)
@@ -124,7 +131,7 @@ def test_simpl_keeps_every_iterate_inside_the_bounds_without_clipping():
 
     Checked on a problem with holes, where the bounds are not 0 and 1 everywhere.
     """
-    method = _run(METHODS.get("density_simpl"), problem="Drone Arm", iterations=5, volfrac=0.4)
+    method = _run(method_class("density_simpl"), problem="Drone Arm", iterations=5, volfrac=0.4)
     problem = method.problem
     assert np.all(method.x >= problem.lower_bound - 1e-12)
     assert np.all(method.x <= problem.upper_bound + 1e-12)
@@ -141,7 +148,7 @@ def test_simpl_shrinks_its_step_when_the_objective_stops_improving():
 
 def test_beso_designs_are_binary_and_respect_the_volume_budget():
     """Every element is at the void density or solid, and the budget still holds."""
-    method = _run(METHODS.get("beso"), iterations=40, volfrac=0.5)
+    method = _run(method_class("beso"), iterations=40, volfrac=0.5)
     x = method.x
     void = method._updater.void_density
     interior = (x > void + 1e-9) & (x < 1.0 - 1e-9)
@@ -156,7 +163,7 @@ def test_beso_does_not_declare_convergence_while_it_is_still_shedding_volume():
     away, so the objective-based criterion must stay silent however flat the
     objective happens to look.
     """
-    method = _run(METHODS.get("beso"), iterations=12, volfrac=0.4)
+    method = _run(method_class("beso"), iterations=12, volfrac=0.4)
     assert method._updater.target > method._updater.limit
     assert not method.is_converged()
 

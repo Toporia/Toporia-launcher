@@ -4,7 +4,8 @@
 #
 #   ┌─────────────────────┬──────────────────────────────────────────┐
 #   │  Mode dropdown      │                                          │
-#   │  CoreParamsGroup    │   LiveCanvas (density + convergence)     │
+#   │  PipelineView       │   LiveCanvas (density + convergence)     │
+#   │  CoreParamsGroup    │                                          │
 #   │  LoadCasesGroup     │                                          │
 #   │  SweepParamsGroup   ├──────────────────────────────────────────┤
 #   │  Sweep2DParamsGroup │   Console log (QTextEdit, read-only)     │
@@ -39,6 +40,7 @@ from .widgets import (
     CoreParamsGroup,
     LoadCasesGroup,
     ObjectiveGroup,
+    PipelineView,
     SensitivityParamsGroup,
     SensitivitySweep2DParamsGroup,
     SensitivitySweepParamsGroup,
@@ -99,6 +101,7 @@ class MainWindow(QMainWindow):
         scroll.setWidget(pw); ll.addWidget(scroll, 1)   # stretch=1 so it takes available space
 
         # Instantiate all parameter group widgets and add them to the scroll area.
+        self.pipeline = PipelineView()   # what the run is made of, kept in view above the controls
         self.core    = CoreParamsGroup()
         from toporia.library.filters import FILTERS
         from toporia.library.responses import CONSTRAINT_ROLE, OBJECTIVE_ROLE, responses_for
@@ -114,7 +117,7 @@ class MainWindow(QMainWindow):
         self.sens    = SensitivityParamsGroup()
         self.ssg     = SensitivitySweepParamsGroup()
         self.ssg2    = SensitivitySweep2DParamsGroup()
-        for g in (self.core, self.objective, self.constraints, self.filters, self.lc, self.sg, self.sg2,
+        for g in (self.pipeline, self.core, self.objective, self.constraints, self.filters, self.lc, self.sg, self.sg2,
                   self.cg, self.clcg, self.sens, self.ssg, self.ssg2):
             pl.addWidget(g)
 
@@ -171,8 +174,8 @@ class MainWindow(QMainWindow):
     def _on_method_changed(self, name):
         """Adapt the panels to what the selected method can do."""
         from toporia.library.filters import FILTERS
-        from toporia.library.methods import METHODS
-        capabilities = METHODS.get(name).capabilities
+        from toporia.library.methods import method_class
+        capabilities = method_class(name).capabilities
         self.filters.set_allowed(FILTERS.names() if capabilities.accepts_filters else [])
         self.objective.set_allowed(capabilities.objectives)
         self.constraints.set_allowed(capabilities.constraints if capabilities.max_constraints != 0 else [])
@@ -186,6 +189,19 @@ class MainWindow(QMainWindow):
                                 objective=self.objective.get_spec(), constraints=self.constraints.get_specs())
         for group in self._sweep_groups:
             group.refresh(items)
+        self._refresh_pipeline()
+
+    def _refresh_pipeline(self):
+        """Show the chain the current selections describe, and why any part is unavailable."""
+        from toporia.engine.pipeline import pipeline_notes, pipeline_stages
+
+        from .config import build_config
+        try:
+            cfg = build_config(self.core, self.lc, self.filters, base_cfg=self._base_cfg,
+                               objective=self.objective, constraints=self.constraints)
+            self.pipeline.show_pipeline(pipeline_stages(cfg), pipeline_notes(cfg.solver.method))
+        except (ValueError, KeyError) as error:
+            self.pipeline.show_pipeline([], [f"Cannot describe this selection: {error}"])
 
     def _on_mode(self, m):
         """Show only the parameter groups relevant to the selected mode."""

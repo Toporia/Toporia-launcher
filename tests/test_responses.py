@@ -17,7 +17,7 @@ from toporia.core.problem import RectangularProblem
 from toporia.core.serialize import load, save
 from toporia.engine.runner import initialized_method
 from toporia.library.catalog import parameter_paths
-from toporia.library.methods import METHODS
+from toporia.library.methods import method_class
 from toporia.library.problems import get_run
 from toporia.library.responses import RESPONSES, check_responses, responses_for
 
@@ -65,19 +65,21 @@ def test_constraint_paths_are_offered_only_to_methods_that_can_enforce_them():
 # ── The capability check ──────────────────────────────────────────────────────
 
 def test_capabilities_say_what_each_method_can_do():
-    density = METHODS.get("density").capabilities
+    density = method_class("q4+oc").capabilities
     assert (density.objectives, density.constraints, density.max_constraints) == (("compliance",), (), 0)
-    pymoto = METHODS.get("pymoto").capabilities
+    pymoto = method_class("pymoto").capabilities
     assert set(pymoto.objectives) == {"compliance", "volume"}
     assert pymoto.constraints == ("stress",) and pymoto.max_constraints is None
-    # pyMOTO's GCMMA could take constraints, but the Q4 model cannot compute stress.
-    assert METHODS.get("density_gcmma").capabilities.constraints == ()
+    # The Q4 model computes stress through the physics interface, so an updater
+    # that takes constraints can now enforce it on Toporia's own solver.
+    gcmma = method_class("q4+pymoto_gcmma").capabilities
+    assert set(gcmma.objectives) == {"compliance", "volume"} and gcmma.constraints == ("stress",)
 
 
-@pytest.mark.parametrize("method", ["density", "density_mma", "levelset", "density_gcmma"])
+@pytest.mark.parametrize("method", ["q4+oc", "q4+mma", "q4+simpl", "levelset"])
 def test_a_method_refuses_a_constraint_it_cannot_enforce_and_names_one_that_can(method):
     run = get_run("MBB Beam").updated(method=method, constraints=[dict(STRESS)], m=0.3)
-    with pytest.raises(ValueError, match=r"cannot enforce \['stress'\].*Methods that can: \['pymoto'\]"):
+    with pytest.raises(ValueError, match=r"cannot enforce \['stress'\].*Methods that can: .*'q4\+pymoto_mma'"):
         initialized_method(run)
 
 

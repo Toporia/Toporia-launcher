@@ -6,8 +6,7 @@
 #
 # Responsibilities:
 #   1. Redirect print() output from the optimisation scripts into the GUI log box
-#   2. Read values from the parameter widgets and build a Run
-#   3. Call the real optimisation functions with the live-update callback
+#   2. Call the real optimisation functions with the live-update callback
 
 import sys
 from pathlib import Path
@@ -20,6 +19,8 @@ from toporia.engine.sensitivity_sweep import sensitivity_sweep as _sens_sweep
 from toporia.engine.sensitivity_sweep import sensitivity_sweep_2d as _sens_sweep_2d
 from toporia.engine.sweep import sweep as _sweep
 from toporia.engine.sweep_2d import sweep_2d as _sweep_2d
+
+from .config import build_config  # noqa: F401  (re-exported: callers use runner.build_config)
 
 
 class _LogStream:
@@ -45,34 +46,6 @@ class _LogStream:
         # Called by Python when it wants to ensure all output is delivered.
         if self._buf:
             self._fn(self._buf); self._buf = ""
-
-
-def build_config(core, lc, filters=None, base_cfg=None, objective=None, constraints=None):
-    """Read widget values and overlay them on a Run.
-
-    core     — CoreParamsGroup widget (scenario fields, method and its parameters)
-    lc       — LoadCasesGroup widget (list of LoadCase objects)
-    filters     — SpecListGroup of filters (optional)
-    objective   — ObjectiveGroup (optional)
-    constraints — SpecListGroup of constraints (optional)
-    base_cfg — Run from the selected preset; provides everything the widgets do
-               not expose (geometry, supports, material).  Falls back to the
-               default preset if None.
-
-    Each widget value is written with apply_param, so it lands in the Scenario,
-    the Solver or the Output according to which of them owns that field.
-    """
-    if base_cfg is None:
-        from toporia.library.problems import get_default_run
-        base_cfg = get_default_run()
-    values = {**core.get_kwargs(), "load_cases": lc.get_load_cases()}
-    if filters is not None:
-        values["filter_specs"] = filters.get_specs()
-    if objective is not None:
-        values["objective"] = objective.get_spec()
-    if constraints is not None:
-        values["constraints"] = constraints.get_specs()
-    return base_cfg.updated(**values)
 
 
 def _redir(log_fn):
