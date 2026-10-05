@@ -4,7 +4,7 @@ An updater turns a model's `Evaluation` (objective, volume, gradients) into the 
 design. It knows nothing about the physics that produced the numbers, so **every updater
 works with every model** — see [`core/composition.py`](../../core/composition.py).
 
-**Status: 6 in Toporia · 9 with open code · 3 paper only**
+**Status: 7 in Toporia · 8 with open code · 3 paper only**
 
 | Label | Meaning |
 | :-- | :-- |
@@ -22,6 +22,7 @@ works with every model** — see [`core/composition.py`](../../core/composition.
 | ✅ BESO, soft kill | [`beso.py`](beso.py) | `beso` | volume only | Binary designs by sensitivity ranking and an evolutionary volume schedule. Brings its own convergence test, because a binary design's max design change never settles. |
 | ✅ MMA (pyMOTO) | [`pymoto_optimizers.py`](pymoto_optimizers.py) | `pymoto_mma` | any number | pyMOTO's implementation, for cross-checking ours. Optional dependency. |
 | ✅ GCMMA (pyMOTO) | [`pymoto_optimizers.py`](pymoto_optimizers.py) | `pymoto_gcmma` | any number | Globally convergent MMA with an inner loop, for strongly non-linear responses. Optional dependency. |
+| ✅ SLSQP (SciPy) | [`scipy_slsqp.py`](scipy_slsqp.py) | `scipy_slsqp` | any number | Sequential quadratic programming (Kraft 1988). Runs its own loop in the background; **the worked example in [`docs/writing-plugins.md`](../../../docs/writing-plugins.md)**. Dense quasi-Newton matrix, so coarse meshes only. Within 3 % of OC on the MBB benchmark. |
 
 Every updater enforces the volume budget. Only the two pyMOTO updaters can enforce a
 **second** constraint, such as a stress limit: `q4+pymoto_mma` runs a stress-limited
@@ -29,6 +30,9 @@ design on Toporia's own solver. **None of Toporia's own updaters can yet** — s
 augmented Lagrangian entry below.
 
 ## Writing one for an outside optimiser
+
+The full guide, with a worked example of every plugin kind, is
+[`docs/writing-plugins.md`](../../../docs/writing-plugins.md).
 
 Almost every optimiser from a library wants a vector, bounds and callbacks. Set
 `flat_view = True` on the updater and call `self.flat_problem(model)` in `initialize`:
@@ -56,7 +60,7 @@ any other updater, and its own verdict (success, message, its counts) is written
 | Augmented Lagrangian | 🔗 [PolyStress](https://link.springer.com/article/10.1007/s00158-020-02760-8) | Giraldo-Londoño & Paulino, *PRSA* 2020; *SMO* 2021 | **The missing piece for local constraints.** Turns thousands of local stress limits into a sequence of bound-constrained subproblems; proven to hundreds of millions of constraints. Would let Toporia's own updaters enforce [`responses/stress.py`](../responses/README.md). Subproblem-solver comparison: Silva et al., *IJNME* 2025. |
 | Sequential integer linear programming (TOBS) | 🔗 [101-line MATLAB](https://link.springer.com/article/10.1007/s00158-020-02719-9) | Sivapuram & Picelli, *FEAD* 2018; Picelli et al., *SMO* 2021 | Strict {0,1} variables with multiple constraints handled explicitly. `scipy.optimize.milp` ships HiGHS, so no new dependency. |
 | CONLIN | 📄 | Fleury, *Struct. Optim.* 1989 | MMA's predecessor: convex linearisation without moving asymptotes. Cheap to write, and the clean way to show what the asymptotes actually buy. |
-| SLP / SQP with trust region | 🔗 `scipy.optimize` | standard | Linearise and solve with move limits. The usual choice for level-set and feature-mapping problems: few variables, many constraints. |
+| SLP with trust region | 🔗 `scipy.optimize` | standard | Linearise and solve with move limits. The usual choice for level-set and feature-mapping problems: few variables, many constraints. (SQP is in Toporia as `scipy_slsqp`.) |
 | Interior point (IPOPT) | 🔗 IPOPT | Wächter & Biegler, *Math. Prog.* 2006 | General NLP for small-variable, many-constraint formulations. Used by GPTO and GGP. |
 | Modified OC for several constraints | 📄 | Zhou & Rozvany, *Struct. Optim.* 1991 | Extends the OC multiplier search beyond one constraint; historically the alternative to MMA. |
 

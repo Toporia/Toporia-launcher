@@ -10,7 +10,7 @@ evolves its own representation with its own volume control — implements
 This is the layer that decides which shapes are reachable at all. Everything below is a
 different answer to "what *is* the design?".
 
-**Status: 13 selectable in Toporia · 14 with open code · 3 paper only**
+**Status: 15 selectable in Toporia · 14 with open code · 3 paper only**
 
 | Label | Meaning |
 | :-- | :-- |
@@ -20,12 +20,12 @@ different answer to "what *is* the design?".
 
 ## ✅ In Toporia
 
-**12 pairings**, every model with every updater — `2 models × 6 updaters`:
+**14 pairings**, every model with every updater — `2 models × 7 updaters`:
 
-| | [`oc`](../updaters/oc.py) | [`mma`](../updaters/mma.py) | [`simpl`](../updaters/simpl.py) | [`beso`](../updaters/beso.py) | `pymoto_mma` | `pymoto_gcmma` |
-| :-- | :-: | :-: | :-: | :-: | :-: | :-: |
-| [`q4`](../models/q4.py) | ✅ | ✅ | ✅ | ✅ | ✅ | ✅ |
-| [`pymoto_elastic`](../models/pymoto_elastic.py) | ✅ | ✅ | ✅ | ✅ | ✅ | ✅ |
+| | [`oc`](../updaters/oc.py) | [`mma`](../updaters/mma.py) | [`simpl`](../updaters/simpl.py) | [`beso`](../updaters/beso.py) | `pymoto_mma` | `pymoto_gcmma` | [`scipy_slsqp`](../updaters/scipy_slsqp.py) |
+| :-- | :-: | :-: | :-: | :-: | :-: | :-: | :-: |
+| [`q4`](../models/q4.py) | ✅ | ✅ | ✅ | ✅ | ✅ | ✅ | ✅ |
+| [`pymoto_elastic`](../models/pymoto_elastic.py) | ✅ | ✅ | ✅ | ✅ | ✅ | ✅ | ✅ |
 
 **1 whole method**, which does not split into parts:
 

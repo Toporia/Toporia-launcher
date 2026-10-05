@@ -243,9 +243,14 @@ def _random_design(model, seed=0):
     return np.clip(x, np.maximum(lower, 0.05), np.maximum(np.minimum(upper, 0.95), lower))
 
 
-def _no_threads_left(report):
+def _optimiser_threads():
+    return {t for t in threading.enumerate() if t.name.startswith("toporia-")}
+
+
+def _no_threads_left(report, before):
+    """Fail if the plugin left an optimiser thread running; threads from before the check don't count."""
     with report.step("no background thread left running"):
-        alive = [t.name for t in threading.enumerate() if t.name.startswith("toporia-")]
+        alive = sorted(t.name for t in _optimiser_threads() - before)
         assert not alive, f"still running: {alive}"
 
 
@@ -277,6 +282,7 @@ def check_updater(cls, model="q4", benchmark=True, tolerance=0.10, m=0.4, max_it
     _declaration(report, cls)
     if not report.ok:
         return report
+    before = _optimiser_threads()
     with _registered(UPDATERS, cls):
         method_cls = method_class(f"{model}+{cls.name}")
         with report.step(f"short run on the {WITH_HOLES} with {model}") as check:
@@ -293,7 +299,7 @@ def check_updater(cls, model="q4", benchmark=True, tolerance=0.10, m=0.4, max_it
             assert np.all(x >= lower - 1e-9) and np.all(x <= upper + 1e-9), "a design variable left its bounds"
             assert np.isfinite(method.get_responses()[OBJECTIVE]), "the objective is not finite"
             check.detail = f"{method.get_responses().get('solves', '?')} solves in 4 iterations, bounds respected"
-        _no_threads_left(report)
+        _no_threads_left(report, before)
 
         with report.step(f"benchmark: {BENCHMARK}, compliance within {tolerance:.0%} of OC") as check:
             if not benchmark:
@@ -317,7 +323,7 @@ def check_updater(cls, model="q4", benchmark=True, tolerance=0.10, m=0.4, max_it
             assert ratio <= 1 + tolerance, f"compliance {compliance:.4g} is {ratio - 1:.1%} above OC's {reference:.4g}"
             check.detail = (f"compliance {compliance:.4g} vs OC {reference:.4g} ({ratio - 1:+.1%}), "
                             f"volume {volume:.3f}")
-        _no_threads_left(report)
+        _no_threads_left(report, before)
     return report
 
 

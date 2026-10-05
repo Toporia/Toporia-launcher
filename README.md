@@ -22,14 +22,14 @@ any doubt about what this repository actually does today:
 | [Models](toporia/library/models/README.md) — physics and gradients | 2-D Q4, pyMOTO elasticity | 24 | 3 |
 | [Elements](toporia/library/fe/README.md) — discretisation | Q4 plane stress | 6 | 3 |
 | [Responses](toporia/library/responses/README.md) — objectives and constraints | compliance, volume, von Mises stress | 4 | 14 |
-| [Updaters](toporia/library/updaters/README.md) — optimisers | OC, MMA, GCMMA, SiMPL, BESO | 9 | 3 |
+| [Updaters](toporia/library/updaters/README.md) — optimisers | OC, MMA, GCMMA, SiMPL, BESO, SLSQP | 8 | 3 |
 | [Problems](toporia/library/problems/README.md) — benchmarks | MBB, cantilever, 3-point bending, bar, 3× drone arm | 6 | 3 |
 
-**38 implemented · 64 with open code elsewhere · 44 from papers only.**
+**41 implemented · 63 with open code elsewhere · 44 from papers only.**
 
 Short version of where this sits in the field: Toporia is 2-D, structured-grid, linear
 elastic today, and it covers three of the field's parameterisation families (density/SIMP,
-parameterised level set, discrete evolutionary) with six optimisers. The lists above are
+parameterised level set, discrete evolutionary) with seven optimisers. The lists above are
 the honest map of everything it does not cover yet.
 
 ### The idea
@@ -42,3 +42,9 @@ six so a comparison can change one and only one of them.
 That is the gap worth filling: **no open-source package holds the problem, the mesh and the
 constraints fixed while swapping the parameterisation, the filter and the updater.** Start
 at [`toporia/library/README.md`](toporia/library/README.md).
+
+### Adding to it
+
+An algorithm, filter or response from a paper is one small file and one passing check —
+or one installed package, without touching this repository. The guide, with a worked
+example of every kind: [`docs/writing-plugins.md`](docs/writing-plugins.md).

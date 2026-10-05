@@ -58,8 +58,11 @@ def _run(method_cls, problem="MBB Beam", iterations=3, **values):
     run = get_run(problem).updated(m=0.3, max_iter=iterations, tol=0.0, **values)
     method = method_cls()
     method.initialize(RectangularProblem(run.scenario, run.solver.m), run.solver)
-    for iteration in range(1, iterations + 1):
-        method.step(iteration)
+    try:
+        for iteration in range(1, iterations + 1):
+            method.step(iteration)
+    finally:
+        method.close()   # an updater may run its optimiser in a background thread
     return method
 
 

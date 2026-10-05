@@ -25,18 +25,18 @@ Nothing is ever labelled ✅ until it is registered, tested, and reachable from 
 
 | Folder | Layer | ✅ In Toporia | 🔗 Open code | 📄 Paper only |
 | :-- | :-- | --: | --: | --: |
-| [`methods/`](methods/README.md) | How the design is described | 13 | 14 | 3 |
+| [`methods/`](methods/README.md) | How the design is described | 15 | 14 | 3 |
 | [`filters/`](filters/README.md) | How it is smoothed, projected, made manufacturable | 6 | 1 | 15 |
 | [`models/`](models/README.md) | What computes the physics and the gradients | 2 | 24 | 3 |
 | [`fe/`](fe/README.md) | Element formulations and discretisation | 1 | 6 | 3 |
 | [`responses/`](responses/README.md) | What is minimised or constrained | 3 | 4 | 14 |
-| [`updaters/`](updaters/README.md) | How the design moves each iteration | 6 | 9 | 3 |
+| [`updaters/`](updaters/README.md) | How the design moves each iteration | 7 | 8 | 3 |
 | [`problems/`](problems/README.md) | Benchmark problems and datasets | 7 | 6 | 3 |
-| **Total** | | **38** | **64** | **44** |
+| **Total** | | **41** | **63** | **44** |
 
-The 13 selectable methods are the 12 `model+updater` pairings plus the one whole
-method; those pairings are built from the 2 models and 6 updaters counted in their own
-rows, so they are not 13 separate implementations.
+The 15 selectable methods are the 14 `model+updater` pairings plus the one whole
+method; those pairings are built from the 2 models and 7 updaters counted in their own
+rows, so they are not 15 separate implementations.
 
 ## The six choices
 
@@ -70,6 +70,9 @@ either: implement [`core.physics.Physics`](../core/physics.py) and every respons
 filter in the library applies to it unchanged.
 
 ## Adding one
+
+**The guide is [`docs/writing-plugins.md`](../../docs/writing-plugins.md)**: a worked
+example of every plugin kind, each one run and checked by the test suite.
 
 There is no decorator and no list to maintain: a class in the right package, subclassing
 the right base, with a non-empty `name`, **is** registered
