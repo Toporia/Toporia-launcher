@@ -28,6 +28,18 @@ Every updater enforces the volume budget. Only the two pyMOTO updaters can enfor
 design on Toporia's own solver. **None of Toporia's own updaters can yet** — see the
 augmented Lagrangian entry below.
 
+## Writing one for an outside optimiser
+
+Almost every optimiser from a library wants a vector, bounds and callbacks. Set
+`flat_view = True` on the updater and call `self.flat_problem(model)` in `initialize`:
+the [`FlatProblem`](../../core/flat.py) it returns gives `x0`, `lower`, `upper`, `f`,
+`df`, `g`, `dg` (and `g_geq`, `dg_geq` for SciPy's sign convention), with the fixed
+elements left out, the volume budget as the first constraint, an optional objective
+scaling (`flat_objective_scale`), and a cache so one point costs one physics solve.
+[`mma.py`](mma.py) and [`pymoto_optimizers.py`](pymoto_optimizers.py) are both built on
+it. Every run counts its physics solves itself (`solves` in the history and the
+console), so an updater that re-evaluates trial designs is compared fairly.
+
 ## Candidates — mathematical programming
 
 | Updater | Status | Reference | Why it matters |

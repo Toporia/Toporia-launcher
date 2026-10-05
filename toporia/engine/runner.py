@@ -55,6 +55,9 @@ def initialized_method(run):
     problem = RectangularProblem(run.scenario, run.solver.m)
     method = method_cls()
     method.initialize(problem, run.solver)
+    view = method.describe_view() if hasattr(method, "describe_view") else None
+    if view:
+        print(f"  optimiser sees: {view}")
     return method
 
 
@@ -103,8 +106,9 @@ def run_single_with_store(run, on_iteration=None):
         store.record(iteration=iteration, objective=objective,
                      volume=float(density.mean()), density=density,
                      save_every=run.output.save_every, responses=responses)
+        solves = f"  solves={responses['solves']:d}" if "solves" in responses else ""
         print(f"  it={iteration:03d}  obj={objective - obj0:+.4e}  vol={density.mean():.3f}"
-              f"  t={time.perf_counter() - t0:.2f}s")
+              f"{solves}  t={time.perf_counter() - t0:.2f}s")
         if on_iteration:
             on_iteration(density, store.objectives, iteration)
 

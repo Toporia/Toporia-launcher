@@ -44,7 +44,7 @@ class ConstraintValue:
     """
     name: str
     value: float
-    gradient: np.ndarray
+    gradient: np.ndarray | None
     exact: float | None = None
 
 
@@ -52,16 +52,17 @@ class ConstraintValue:
 class Evaluation:
     """Everything an updater needs to know about one design.
 
-    Gradients have the shape of the design.  `volume` is the total physical
+    Gradients have the shape of the design, or are None when the evaluation
+    was asked for values only (Model.evaluate(x, gradients=False)).  `volume` is the total physical
     material, in the units of Model.volume_limit — the volume budget every
     method enforces.  `constraints` holds the scenario's further constraints
     in scenario order; `reported` holds extra scalars worth recording in the
     run history (a peak stress, or the compliance when it is not the objective).
     """
     objective: float
-    objective_gradient: np.ndarray
+    objective_gradient: np.ndarray | None
     volume: float
-    volume_gradient: np.ndarray
+    volume_gradient: np.ndarray | None
     constraints: tuple = ()
     reported: dict = field(default_factory=dict)
 
@@ -105,8 +106,13 @@ class Model(ABC):
         """Return the (nely, nelx) physical density of design x.  Cheap: no FEA."""
 
     @abstractmethod
-    def evaluate(self, x):
-        """Return the Evaluation of design x.  Expensive: this is the FE solve."""
+    def evaluate(self, x, gradients=True):
+        """Return the Evaluation of design x.  Expensive: this is the FE solve.
+
+        With gradients=False only the values are needed (a line search, a
+        gradient-free optimiser), so the sensitivity analysis may be skipped and
+        the gradient fields left None.
+        """
 
     def volume_of(self, x):
         """Total physical material of design x, without an FE solve.
@@ -121,7 +127,13 @@ class Model(ABC):
 
 
 class Updater(ABC):
-    """How the design moves: an Evaluation in, the next design out."""
+    """How the design moves: an Evaluation in, the next design out.
+
+    An updater that works on a flat vector, as almost every optimiser from a
+    library does, sets `flat_view = True` and builds its view with
+    self.flat_problem(model) (core/flat.py): free variables only, the volume
+    budget as the first constraint, both sign conventions, caching.
+    """
 
     #: Registry key (library.updaters.UPDATERS).  An empty name means "abstract".
     name = ""
@@ -134,6 +146,16 @@ class Updater(ABC):
     #: How many scenario constraints it can enforce besides the volume budget;
     #: None means any number.  The conservative default is none.
     max_constraints = 0
+    #: True when it works on core.flat.FlatProblem rather than on the design array.
+    flat_view = False
+    #: The flat view's objective rescaling (see FlatProblem); None leaves it unscaled.
+    flat_objective_scale = None
+
+    def flat_problem(self, model):
+        """This updater's flat view of `model`, with the declared objective scaling."""
+        from .flat import FlatProblem
+        self.flat = FlatProblem(model, scale_objective_to=self.flat_objective_scale)
+        return self.flat
 
     @abstractmethod
     def initialize(self, model, settings):
@@ -209,6 +231,7 @@ class ComposedMethod(OptimizationMethod):
         self._model = type(self).model()
         self._updater = type(self).updater()
         self._model.initialize(problem, solver, _subset(settings, self._model.params))
+        self._count_solves(self._model)
         self._updater.initialize(self._model, _subset(settings, self._updater.params))
 
         self.x = self._model.initial_design()
@@ -229,6 +252,27 @@ class ComposedMethod(OptimizationMethod):
         self.objective = evaluation.objective
         self._evaluation = evaluation
 
+    def _count_solves(self, model):
+        """Count every model evaluation — the engine's, and any an updater makes itself.
+
+        Updaters differ in how many physics solves an iteration costs (GCMMA
+        re-evaluates trial designs), so iterations alone do not compare them
+        fairly.  The count is Toporia's own, whatever the updater reports.
+        """
+        self.solves = 0
+        evaluate = model.evaluate
+
+        def counted(x, gradients=True):
+            self.solves += 1
+            return evaluate(x, gradients=gradients)
+
+        model.evaluate = counted
+
+    def describe_view(self):
+        """What the updater's optimiser sees, when it works on a flat view; else None."""
+        flat = getattr(self._updater, "flat", None)
+        return flat.describe() if flat is not None else None
+
     def is_converged(self):
         return self._updater.is_converged(self.change)
 
@@ -236,7 +280,8 @@ class ComposedMethod(OptimizationMethod):
     def get_change(self):    return self.change
 
     def get_responses(self):
-        responses = {OBJECTIVE: self.objective, "volume": float(self.density.mean())}
+        responses = {OBJECTIVE: self.objective, "volume": float(self.density.mean()),
+                     "solves": self.solves}
         if self._evaluation is not None:
             responses.update(self._evaluation.reported)
             for i, constraint in enumerate(self._evaluation.constraints):

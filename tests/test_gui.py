@@ -94,6 +94,7 @@ def test_the_pipeline_names_every_part_of_the_selection(window):
     assert stages["Physics"] == MODELS.get("q4").label
     assert stages["Updater"] == UPDATERS.get("mma").label
     assert stages["Filters"] == FILTERS.get("density").label
+    assert "free variables" in stages["Optimiser sees"]      # MMA works on the flat view
 
     window.core.select_method("q4+pymoto_mma")
     assert dict(window.pipeline.stages())["Updater"] == UPDATERS.get("pymoto_mma").label
@@ -101,6 +102,7 @@ def test_the_pipeline_names_every_part_of_the_selection(window):
 
     window.core.select_method("q4+oc")
     assert any("enforces only the volume budget" in note for note in window.pipeline.notes())
+    assert dict(window.pipeline.stages())["Optimiser sees"] == "the design field itself"
 
 
 def test_older_method_names_select_the_parts_they_stand_for(window):

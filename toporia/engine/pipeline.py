@@ -36,14 +36,24 @@ def pipeline_stages(run):
         filters = " -> ".join(FILTERS.get(spec.get("type", "density")).label for spec in run.solver.filter_specs)
     else:
         filters = "none"
-    return [
+    stages = [
         ("Design", f"{capabilities.variable_kind} per element"),
         ("Filters", filters),
         ("Physics", method_cls.model.label),
         ("Objective", objective),
         ("Constraints", ", ".join(limits)),
-        ("Updater", method_cls.updater.label),
     ]
+    updater = method_cls.updater
+    if updater.flat_view:
+        scale = updater.flat_objective_scale
+        stages.append(("Optimiser sees", (
+            "one vector of the free variables (fixed elements left out); "
+            "f(x) and g(x) <= 0 with the volume budget first"
+            + (f"; objective scaled to start at {scale:g}" if scale is not None else ""))))
+    else:
+        stages.append(("Optimiser sees", "the design field itself"))
+    stages.append(("Updater", updater.label))
+    return stages
 
 
 def describe_pipeline(run):

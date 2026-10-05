@@ -193,14 +193,15 @@ class PymotoElasticModel(Model):
         density = self._pin(self._filter(np.asarray(x, dtype=float)))
         return density.reshape(self.problem.nely, self.problem.nelx)
 
-    def evaluate(self, x):
+    def evaluate(self, x, gradients=True):
         self.s_x.state = np.asarray(x, dtype=float)
         self.network.response()
+        gradient = self._gradient if gradients else (lambda response: None)
 
         # `exact` is the true peak against the limit, so the result is judged
         # on the real stress rather than on the smooth p-norm.
         constraints = tuple(
-            ConstraintValue("stress", float(s_constraint.state), self._gradient(s_constraint),
+            ConstraintValue("stress", float(s_constraint.state), gradient(s_constraint),
                             exact=float(np.max(s_relaxed.state)) / limit - 1.0)
             for (s_constraint, s_relaxed), limit in zip(self._stress, self._stress_limits)
         )
@@ -213,9 +214,9 @@ class PymotoElasticModel(Model):
 
         return Evaluation(
             objective=float(self.s_objective.state),
-            objective_gradient=self._gradient(self.s_objective),
+            objective_gradient=gradient(self.s_objective),
             volume=self.s_volume.state,
-            volume_gradient=self._gradient(self.s_volume),
+            volume_gradient=gradient(self.s_volume),
             constraints=constraints,
             reported=reported,
         )

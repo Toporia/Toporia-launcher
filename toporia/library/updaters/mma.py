@@ -8,8 +8,9 @@
 # solved through its dual by bisection on the single multiplier.  The objective
 # is rescaled by f0fac so its magnitude is comparable with the constraint.
 #
-# Design variables are flattened column-major (order="F") for the subproblem,
-# matching the top88 element numbering, and reshaped back afterwards.
+# The subproblem works on the model's flat view (core/flat.py): the free design
+# variables, column-major as in top88, with the volume budget as g_0.  Elements
+# pinned by holes or solid rings are left out rather than moved and clipped back.
 
 import numpy as np
 
@@ -43,6 +44,7 @@ class MMAUpdater(Updater):
 
     # The volume budget only: the subproblem's dual is solved by 1-D bisection.
     max_constraints = 0
+    flat_view = True   # unscaled: f0fac below is MMA's own, iteration-dependent scaling
 
     def initialize(self, model, settings):
         self.model = model
@@ -53,15 +55,13 @@ class MMAUpdater(Updater):
         self.asydecr = settings["asydecr"]
         self.c_mma = settings["c"]
 
-        self.lb, self.ub = model.bounds()
-        self.limit = max(model.volume_limit, 1e-12)
-        x0 = model.initial_design()
-        self.n = x0.size
-        self.xmin = np.zeros(self.n)
-        self.xmax = np.ones(self.n)
+        flat = self.flat_problem(model)
+        self.n = flat.n
+        self.xmin = flat.lower
+        self.xmax = flat.upper
         self.low = self.xmin.copy()
         self.upp = self.xmax.copy()
-        self.xold1 = x0.reshape(-1, order="F").copy()
+        self.xold1 = flat.x0.copy()
         self.xold2 = self.xold1.copy()
         self.f0fac = None
 
@@ -72,17 +72,18 @@ class MMAUpdater(Updater):
         elif completed >= 19 and self.f0fac * objective < 0.1:
             self.f0fac = 1.0 / max(abs(objective), 1e-12)
 
-        xval = x.reshape(-1, order="F")
-        df0dx = evaluation.objective_gradient.reshape(-1, order="F") * self.f0fac
-        fval = float(evaluation.volume / self.limit) - 1.0
-        dfdx = (evaluation.volume_gradient / self.limit).reshape(-1, order="F")
+        flat = self.flat
+        flat.remember(x, evaluation)
+        xval = flat.reduce(x)
+        df0dx = flat.df(xval) * self.f0fac
+        fval = flat.g(xval)[0]        # the volume budget; MMA here enforces nothing else
+        dfdx = flat.dg(xval)[0]
 
         xmma, self.low, self.upp = self._subproblem(xval, df0dx, fval, dfdx, completed)
-        xnew = np.clip(xmma.reshape(x.shape, order="F"), self.lb, self.ub)
 
         self.xold2 = self.xold1
         self.xold1 = xval.copy()
-        return np.clip(xnew, 0.0, 1.0)
+        return flat.expand(np.clip(xmma, self.xmin, self.xmax))
 
     def is_converged(self, change):
         """MMA's own, tighter tolerance (method.mma_tol), in addition to the engine's."""

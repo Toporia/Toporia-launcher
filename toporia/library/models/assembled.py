@@ -106,21 +106,23 @@ class AssembledModel(Model):
     def physical(self, x):
         return self.pipeline.physical_density(x)
 
-    def evaluate(self, x):
+    def evaluate(self, x, gradients=True):
         x_phys = self.physical(x)
         state = self.engine.solve(x_phys)
 
-        objective = self.objective.evaluate(state)
+        objective = self.objective.evaluate(state, gradient=gradients)
         # Gradients come back with respect to the physical density; the filter
         # pipeline's adjoint maps them to the design.
-        dc, dv = self.pipeline.sensitivities(objective.gradient, np.ones_like(x))
+        dc = dv = None
+        if gradients:
+            dc, dv = self.pipeline.sensitivities(objective.gradient, np.ones_like(x))
 
         reported = dict(objective.reported)
         constraints = []
         for i, response in enumerate(self.constraints):
-            result = response.evaluate(state)
-            constraints.append(ConstraintValue(response.name, result.value,
-                                               self.pipeline.sensitivity(result.gradient), exact=result.exact))
+            result = response.evaluate(state, gradient=gradients)
+            gradient = self.pipeline.sensitivity(result.gradient) if gradients else None
+            constraints.append(ConstraintValue(response.name, result.value, gradient, exact=result.exact))
             for key, value in result.reported.items():
                 reported[key if len(self.constraints) == 1 else f"{key}_{i}"] = value
         if self.compliance is not None:

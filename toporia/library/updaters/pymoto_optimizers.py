@@ -1,20 +1,24 @@
 # library/updaters/pymoto_optimizers.py — pyMOTO's MMA and GCMMA as updaters.
 #
 # pyMOTO's optimisers expect a pyMOTO network.  To drive ANY Toporia model with
-# them, the model is presented to pyMOTO as a single module:
+# them, the model's flat view (core/flat.py) is presented to pyMOTO as a
+# single module:
 #
-#     pyMOTO Signal x_free ──[_ToporiaModel]──> objective, volume budget, constraint 1, …
-#                               │
-#                               └─ calls model.evaluate() and hands back its gradients
+#     pyMOTO Signal x ──[_FlatModule]──> f, g_volume, g_1, …     (FlatProblem.f, .g)
+#                           │
+#                           └─ sensitivities: FlatProblem.df, .dg
 #
 # so pyMOTO's MMA — or its globally convergent GCMMA, which re-evaluates the
 # model at trial designs inside an iteration — can move a design whose physics
 # it knows nothing about, under any number of constraints.
 #
-# Only the free variables are handed to pyMOTO.  Elements pinned by passive or
-# void regions have equal lower and upper bounds, and pyMOTO's MMA divides by
-# that range; leaving them out keeps it well defined and changes nothing,
-# because a pinned variable cannot move anyway.
+# The flat view does all the translation: only the free variables are handed
+# over (pinned elements have equal bounds, and pyMOTO's MMA divides by the
+# bound range), the volume budget is the first constraint, and the objective
+# is scaled to start at 10, because MMA's subproblem assumes objective and
+# constraints of similar magnitude — without it pyMOTO's subsolver stalled at
+# its iteration cap every step (a volume objective near 100 beside constraints
+# near 1 did exactly that).
 #
 # Requires the optional dependency:  pip install "toporia[pymoto]"
 
@@ -28,29 +32,32 @@ from ._common import MOVE
 _module_class = None
 
 
-def _model_module(pym):
-    """Build (once) the pyMOTO Module that wraps a Toporia model.  Lazy: pyMOTO is optional."""
+def _flat_module(pym):
+    """Build (once) the pyMOTO Module that wraps a FlatProblem.  Lazy: pyMOTO is optional."""
     global _module_class
     if _module_class is None:
 
-        class _ToporiaModel(pym.Module):
-            """A Toporia model seen by pyMOTO: free design -> (objective, constraints...)."""
+        class _FlatModule(pym.Module):
+            """A FlatProblem seen by pyMOTO: x -> (f, g_0, g_1, ...)."""
 
-            def __init__(self, updater):
-                self.updater = updater
+            def __init__(self, flat):
+                self.flat = flat
 
-            def __call__(self, x_free):
-                return self.updater._evaluate_free(x_free)
+            def __call__(self, x):
+                # The flat view computes gradients along with the values, so the
+                # sensitivity pass below needs no second solve.
+                self.x = np.array(x, dtype=float)
+                return (self.flat.f(self.x), *self.flat.g(self.x))
 
             def _sensitivity(self, *seeds):
-                gradients = self.updater._gradients
+                gradients = [self.flat.df(self.x), *self.flat.dg(self.x)]
                 total = np.zeros_like(gradients[0])
                 for seed, gradient in zip(seeds, gradients):
                     if seed is not None:
                         total = total + seed * gradient
                 return total
 
-        _module_class = _ToporiaModel
+        _module_class = _FlatModule
     return _module_class
 
 
@@ -62,72 +69,32 @@ class PymotoMMAUpdater(Updater):
     order = 30
     params = (MOVE,)
     max_constraints = None   # pyMOTO's MMA takes any number of constraints
+    flat_view = True
+    flat_objective_scale = 10.0
     version = "MMA2007"      # pyMOTO's mmaversion: "MMA1987", "MMA2007" or "GCMMA"
 
     def initialize(self, model, settings):
         pym = import_pymoto()
-        self.model = model
-        lower, upper = model.bounds()
-        self.shape = lower.shape
-        lower, upper = lower.reshape(-1, order="F"), upper.reshape(-1, order="F")
-        self.free = upper > lower
-        self.pinned = lower.copy()   # a pinned element sits at its (equal) bounds
-        self._objective_scale = None   # fixed from the first evaluation; see _responses
-
-        start = model.initial_design().reshape(-1, order="F")[self.free]
-        self.s_x = pym.Signal("x", start.copy(), min=lower[self.free], max=upper[self.free])
+        flat = self.flat_problem(model)
+        self.s_x = pym.Signal("x", flat.x0.copy(), min=flat.lower, max=flat.upper)
         with pym.Network() as network:
-            outputs = _model_module(pym)(self)(self.s_x)
+            outputs = _flat_module(pym)(flat)(self.s_x)
         self.optimizer = pym.MMA(
             self.s_x, list(outputs), network,
-            move=settings["move"], xmin=lower[self.free], xmax=upper[self.free],
+            move=settings["move"], xmin=flat.lower, xmax=flat.upper,
             verbosity=0, mmaversion=self.version,
         )
-
-    # ── Translation between the full design and pyMOTO's free variables ───────
-
-    def _free(self, array):
-        return np.asarray(array).reshape(-1, order="F")[self.free]
-
-    def _expand(self, x_free):
-        full = self.pinned.copy()
-        full[self.free] = x_free
-        return full.reshape(self.shape, order="F")
-
-    def _responses(self, evaluation):
-        """Objective, the volume budget, then each scenario constraint — as pyMOTO sees them.
-
-        The objective is scaled to start at 10, whatever its units.  MMA's
-        subproblem assumes objective and constraints of similar magnitude;
-        without this, pyMOTO's subsolver stalls at its iteration cap every step
-        (a volume objective near 100 beside constraints near 1 did exactly that).
-        Toporia's own MMA scales the same way.  The factor is fixed from the
-        first evaluation, so the problem does not change between iterations.
-        """
-        if self._objective_scale is None:
-            self._objective_scale = 10.0 / max(abs(evaluation.objective), 1e-12)
-        scale = self._objective_scale
-        limit = self.model.volume_limit
-        values = [scale * evaluation.objective, float(evaluation.volume / limit) - 1.0,
-                  *(c.value for c in evaluation.constraints)]
-        gradients = [scale * self._free(evaluation.objective_gradient),
-                     self._free(evaluation.volume_gradient / limit),
-                     *(self._free(c.gradient) for c in evaluation.constraints)]
-        return values, gradients
-
-    def _evaluate_free(self, x_free):
-        """Evaluate the model at a free design; keep gradients for the adjoint pass."""
-        values, self._gradients = self._responses(self.model.evaluate(self._expand(x_free)))
-        return tuple(values)
-
-    # ── The Updater interface ─────────────────────────────────────────────────
 
     def update(self, x, evaluation, completed):
         # The design has just been evaluated, so hand pyMOTO those numbers
         # rather than letting it evaluate the model a second time.
-        values, gradients = self._responses(evaluation)
-        x_free, _, _ = self.optimizer.step(x=self._free(x), g=np.array(values), dg=np.vstack(gradients))
-        return self._expand(x_free)
+        flat = self.flat
+        flat.remember(x, evaluation)
+        x_free = flat.reduce(x)
+        values = np.array([flat.f(x_free), *flat.g(x_free)])
+        gradients = np.vstack([flat.df(x_free), flat.dg(x_free)])
+        x_new, _, _ = self.optimizer.step(x=x_free, g=values, dg=gradients)
+        return flat.expand(x_new)
 
 
 class PymotoGCMMAUpdater(PymotoMMAUpdater):
