@@ -84,6 +84,9 @@ class VonMisesStress(Response):
     )
 
     requires = (STRESS,)
+    #: The adaptive scale is held constant in the gradient on purpose (see above),
+    #: so the gradient is checked against finite differences with it switched off.
+    gradient_check_settings = {"adaptive": False}
 
     def evaluate(self, state, gradient=True):
         physics, settings = self.physics, self.settings

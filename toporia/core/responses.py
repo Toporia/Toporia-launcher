@@ -69,6 +69,9 @@ class Response:
     #: none — it is computed from the density alone.  None means it cannot
     #: compute itself and only a model that computes it can offer it.
     requires = None
+    #: Parameter values for checking the gradient against finite differences
+    #: (toporia.testing), when the defaults make the gradient deliberately inexact.
+    gradient_check_settings = {}
 
     @classmethod
     def computable_on(cls, physics):

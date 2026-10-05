@@ -6,6 +6,7 @@
     toporia run SCENARIO [SOLVER]                    one optimisation
     toporia compare SCENARIO SOLVER_A SOLVER_B       same problem, two solvers
     toporia sweep SCENARIO [SOLVER] --param PATH --range MIN MAX [--grid ROWS COLS]
+    toporia check [KIND:NAME ...] [--quick]          conformance test of plugins (all by default)
 
 SCENARIO is a scenario JSON file or a preset name such as "MBB Beam".
 SOLVER is a solver JSON file; without one, a preset's recommended solver (or the
@@ -147,6 +148,22 @@ def _cmd_sweep(args):
     return 0
 
 
+def _cmd_check(args):
+    from toporia.testing import all_plugins, conformance
+
+    targets = args.plugins or all_plugins()
+    failed = []
+    for target in targets:
+        quick = {"benchmark": False} if args.quick and target.startswith("updater:") else {}
+        report = conformance(target, **quick)
+        print(report, end="\n\n")
+        if not report.ok:
+            failed.append(target)
+    print(f"{len(targets) - len(failed)} of {len(targets)} conform" +
+          (f"; failed: {', '.join(failed)}" if failed else ""))
+    return 1 if failed else 0
+
+
 # ── Argument parsing ──────────────────────────────────────────────────────────
 
 def _parser():
@@ -157,6 +174,11 @@ def _parser():
     commands = parser.add_subparsers(dest="command")
     commands.add_parser("gui", help="launch the GUI (the default)")
     commands.add_parser("list", help="show presets, methods and filters").set_defaults(handler=_cmd_list)
+
+    check = commands.add_parser("check", help="conformance test of plugins, as kind:name (all by default)")
+    check.add_argument("plugins", nargs="*", metavar="KIND:NAME", help="e.g. updater:mma filter:density")
+    check.add_argument("--quick", action="store_true", help="skip the updater benchmark")
+    check.set_defaults(handler=_cmd_check)
 
     export = commands.add_parser("export", help="write a preset as scenario + solver JSON files")
     export.add_argument("preset")

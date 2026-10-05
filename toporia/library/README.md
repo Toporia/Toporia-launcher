@@ -77,6 +77,12 @@ the right base, with a non-empty `name`, **is** registered
 [`Param`](../core/params.py) objects next to the code that uses them, and the GUI, the
 sweeps and the config validation are all generated from those declarations.
 
+Then run the conformance test on it — `toporia check updater:my_updater` on the command
+line, **Check Parts** in the GUI's mode menu, or `toporia.testing.conformance(MyClass)` in a
+test. It checks the interface, every gradient against finite differences, the adjoint of a
+filter, and, for an updater, a benchmark run on the MBB beam within 10 % of optimality
+criteria. Nothing is ✅ until it passes.
+
 When you add one, change its row's marker from 🔗 or 📄 to ✅ in the folder's README, link
 the file, and update the counts in the table above. Every table row carries exactly one
 marker, so what is implemented here is never ambiguous. A list that is not maintained is

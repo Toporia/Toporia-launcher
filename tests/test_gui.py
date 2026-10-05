@@ -156,3 +156,18 @@ def test_a_constraint_reaches_the_run_only_when_the_method_can_enforce_it(window
     window.core.select_method("pymoto")
     assert build().scenario.constraints[0]["limit"] == 7.0   # kept for when it can
     window.constraints.load_specs([])
+
+
+def test_check_parts_runs_the_conformance_test_on_the_selected_pipeline(window):
+    from toporia.gui import runner
+    window._on_config_changed("MBB Beam")
+    window.core.select_method("q4+oc")
+    cfg = runner.build_config(window.core, window.lc, window.filters, base_cfg=window._base_cfg,
+                              objective=window.objective, constraints=window.constraints)
+    lines = []
+    assert runner.run_check(cfg, lines.append)
+    text = "\n".join(lines)
+    for part in ("model:q4", "updater:oc", "filter:density", "response:compliance"):
+        assert part in text
+    assert "4 of 4 parts conform" in text
+    assert window.mode.findText("Check Parts") >= 0

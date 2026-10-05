@@ -87,6 +87,7 @@ class MainWindow(QMainWindow):
             "Run One", "Sweep", "Sweep 2D",
             "Compare Two", "Compare Load Cases",
             "Sensitivity", "Sensitivity Sweep", "Sensitivity Sweep 2D",
+            "Check Parts",
         ])
         self.mode.currentTextChanged.connect(self._on_mode)  # call _on_mode when selection changes
         mrow.addWidget(self.mode, 1); ll.addLayout(mrow)
@@ -262,6 +263,10 @@ class MainWindow(QMainWindow):
             self.canvas.reset()
             if mode == "Run One":
                 runner.run_one(cfg, on_iter, self._log)
+            elif mode == "Check Parts":
+                # The conformance test (toporia.testing) on every part of the
+                # pipeline above: interfaces, gradients, and the benchmark.
+                runner.run_check(cfg, self._log)
             elif mode == "Sweep":
                 grid = runner.run_sweep(cfg, self.sg, on_iter, self._log)
                 self.canvas.show_grid(grid, f"Sweep: {self.sg.key()}")

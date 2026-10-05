@@ -62,3 +62,11 @@ def test_sweep(tmp_path):
 def test_an_unknown_scenario_is_a_clear_error():
     with pytest.raises(SystemExit, match="neither a scenario file nor a preset"):
         main(["run", "No Such Problem"])
+
+
+def test_check_reports_each_plugin_and_fails_on_an_unknown_one(capsys):
+    assert main(["check", "filter:symmetry", "response:volume"]) == 0
+    out = capsys.readouterr().out
+    assert "filter SymmetryFilter (symmetry): conforms" in out and "2 of 2 conform" in out
+    with pytest.raises(ValueError, match="Unknown filter"):
+        main(["check", "filter:nope"])

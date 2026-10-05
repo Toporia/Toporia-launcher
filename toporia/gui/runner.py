@@ -48,6 +48,24 @@ class _LogStream:
             self._fn(self._buf); self._buf = ""
 
 
+def run_check(config, log_fn):
+    """Run the conformance test on every part of the selected pipeline; return True if all conform."""
+    from toporia.testing import conformance, parts_of
+    old = _redir(log_fn)
+    try:
+        parts = parts_of(config)
+        print(f"Checking {len(parts)} parts: {', '.join(parts)}\n")
+        results = []
+        for part in parts:
+            report = conformance(part)
+            results.append(report.ok)
+            print(report, end="\n\n")
+        print(f"{sum(results)} of {len(results)} parts conform")
+        return all(results)
+    finally:
+        sys.stdout = old
+
+
 def _redir(log_fn):
     """Swap sys.stdout for a _LogStream and return the original stdout."""
     old = sys.stdout

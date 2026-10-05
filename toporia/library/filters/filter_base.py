@@ -27,6 +27,10 @@ class Filter(ABC):
     #: Tunable parameters (core.params.Param).  The constructor must accept each
     #: one as a keyword argument of the same name.
     params = ()
+    #: True when backward() is the exact chain rule of forward().  The
+    #: conformance test checks it against finite differences; a heuristic
+    #: (the classic sensitivity filter) declares False and is not checked.
+    exact_adjoint = True
 
     def setup(self, problem, solver): pass
 

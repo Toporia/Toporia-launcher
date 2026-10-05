@@ -31,6 +31,7 @@ class SensitivityFilter(Filter):
     label = "Sensitivity filter"
     order = 20
     params = (RMIN,)
+    exact_adjoint = False   # a heuristic: backward() is not the derivative of forward()
 
     def __init__(self, rmin=1.5):
         self.rmin = rmin
