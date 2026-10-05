@@ -1,0 +1,90 @@
+# Toporia library — the plug-in catalogue
+
+Everything in `toporia/library/` is a plug-in. `toporia/core/` defines the contracts;
+this folder holds the implementations, and each sub-folder has its own README listing
+**what is implemented here, what exists as open-source code elsewhere, and what only
+exists as a paper.**
+
+Those lists are a map of the field, not a promise. They exist so that anyone opening this
+repository can see at a glance where Toporia sits in topology optimisation as a whole, and
+what the next honest step is.
+
+## Status labels
+
+Every entry in every table in this library carries exactly one of these:
+
+| Label | Meaning |
+| :-- | :-- |
+| ✅ **In Toporia** | Implemented in this repository. The table links the file. |
+| 🔗 **Open code** | Not in Toporia. A public reference implementation exists — port it, or validate against it. A 🔗 entry with no link means the code ships with the paper as supplementary material; follow the reference. |
+| 📄 **Paper only** | Not in Toporia, and no public implementation found. Would be written from the paper, with the citation in the module docstring. |
+
+Nothing is ever labelled ✅ until it is registered, tested, and reachable from the GUI.
+
+## Where things live
+
+| Folder | Layer | ✅ In Toporia | 🔗 Open code | 📄 Paper only |
+| :-- | :-- | --: | --: | --: |
+| [`methods/`](methods/README.md) | How the design is described | 13 | 14 | 3 |
+| [`filters/`](filters/README.md) | How it is smoothed, projected, made manufacturable | 6 | 1 | 15 |
+| [`models/`](models/README.md) | What computes the physics and the gradients | 2 | 24 | 3 |
+| [`fe/`](fe/README.md) | Element formulations and discretisation | 1 | 6 | 3 |
+| [`responses/`](responses/README.md) | What is minimised or constrained | 3 | 4 | 14 |
+| [`updaters/`](updaters/README.md) | How the design moves each iteration | 6 | 9 | 3 |
+| [`problems/`](problems/README.md) | Benchmark problems and datasets | 7 | 6 | 3 |
+| **Total** | | **38** | **64** | **44** |
+
+The 13 selectable methods are the 12 `model+updater` pairings plus the one whole
+method; those pairings are built from the 2 models and 6 updaters counted in their own
+rows, so they are not 13 separate implementations.
+
+## The six choices
+
+A topology optimisation method is not one algorithm. It is six mostly independent choices,
+and almost every paper in the field changes exactly one of them and holds the rest fixed:
+
+```
+design variables  ──filter──>  physical density  ──engine──>  state  ──response──>  objective
+       ^                                                                                 │
+       └──────────────── updater <──── gradients <──── adjoint / backprop ───────────────┘
+                                                              │
+                                        fabrication rules ────┘
+```
+
+Toporia separates all six so a comparison can change one and only one:
+
+| Choice | Contract | Registry |
+| :-- | :-- | :-- |
+| Parameterisation | [`core.contract.OptimizationMethod`](../core/contract.py) | `METHODS` + any `model+updater` pair |
+| Regularisation | [`filters.filter_base.Filter`](filters/filter_base.py) | `FILTERS` |
+| What is optimised | [`core.composition.Model`](../core/composition.py) | `MODELS` |
+| Physics engine | [`core.physics.Physics`](../core/physics.py) | declared by a model |
+| Response | [`core.responses.Response`](../core/responses.py) | `RESPONSES` |
+| Updater | [`core.composition.Updater`](../core/composition.py) | `UPDATERS` |
+| Problem | [`core.scenario.Scenario`](../core/scenario.py) | `problems/` |
+
+Most methods are not written by hand. A method is named `"<model>+<updater>"` and built on
+demand, so any physics works with any update rule and **a new combination costs nothing at
+all** — see [`methods/__init__.py`](methods/__init__.py). A new *engine* is not a new model
+either: implement [`core.physics.Physics`](../core/physics.py) and every response and
+filter in the library applies to it unchanged.
+
+## Adding one
+
+There is no decorator and no list to maintain: a class in the right package, subclassing
+the right base, with a non-empty `name`, **is** registered
+([`core/registry.py`](../core/registry.py)). Parameters are declared as
+[`Param`](../core/params.py) objects next to the code that uses them, and the GUI, the
+sweeps and the config validation are all generated from those declarations.
+
+When you add one, change its row's marker from 🔗 or 📄 to ✅ in the folder's README, link
+the file, and update the counts in the table above. Every table row carries exactly one
+marker, so what is implemented here is never ambiguous. A list that is not maintained is
+worse than no list.
+
+## Why the lists are worth keeping
+
+No open-source package holds the problem, the mesh and the constraints fixed while
+swapping the parameterisation, the filter and the updater. That comparison — not another
+SIMP implementation — is what Toporia is for, and these lists are how the gaps in it stay
+visible.
