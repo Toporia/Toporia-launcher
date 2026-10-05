@@ -49,13 +49,15 @@ def software():
     }
 
 
-def run_record(run, *, iterations, stop_reason, responses, limits=()):
+def run_record(run, *, iterations, stop_reason, responses, limits=(), optimiser=None):
     """The provenance document written as run.json at the end of every run.
 
     `limits` is engine.feasibility.check_limits' report; `feasible` is False
-    when any limit is known to be broken.
+    when any limit is known to be broken.  `optimiser` is the optimiser's own
+    verdict (method.report()), for libraries that run their own loop: their
+    success flag, message and counts sit next to Toporia's stop reason.
     """
-    return {
+    record = {
         "created_utc": datetime.now(timezone.utc).isoformat(timespec="seconds"),
         "software": software(),
         "scenario": {"fingerprint": fingerprint(run.scenario), "definition": to_dict(run.scenario)},
@@ -68,3 +70,6 @@ def run_record(run, *, iterations, stop_reason, responses, limits=()):
             "final": responses,
         },
     }
+    if optimiser:
+        record["result"]["optimiser"] = optimiser
+    return record

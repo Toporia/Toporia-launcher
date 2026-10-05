@@ -40,6 +40,15 @@ scaling (`flat_objective_scale`), and a cache so one point costs one physics sol
 it. Every run counts its physics solves itself (`solves` in the history and the
 console), so an updater that re-evaluates trial designs is compared fairly.
 
+If the library insists on running its own loop (SciPy's `minimize`, NLopt, IPOPT),
+subclass [`ExternalOptimizer`](../../core/external.py) instead and write one method,
+`run(flat, x0, iterate)`: call the library, call `iterate(x)` wherever it reports a new
+design (its per-iteration callback, or its objective if it has no callback), and return
+a `Verdict`. The library then runs in a background thread and hands the engine one
+design at a time, so the live display, the stopping rule and the Stop button work as for
+any other updater, and its own verdict (success, message, its counts) is written to
+`run.json`. Set `reports = "evaluation"` or `"final"` when that is all the library can do.
+
 ## Candidates — mathematical programming
 
 | Updater | Status | Reference | Why it matters |

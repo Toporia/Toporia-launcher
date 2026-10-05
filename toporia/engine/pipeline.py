@@ -50,6 +50,11 @@ def pipeline_stages(run):
             "one vector of the free variables (fixed elements left out); "
             "f(x) and g(x) <= 0 with the volume budget first"
             + (f"; objective scaled to start at {scale:g}" if scale is not None else ""))))
+        if updater.own_loop:
+            handed_over = {"iteration": "each of its iterations", "evaluation": "each evaluation",
+                           "final": "only its final design"}[updater.reports]
+            stages[-1] = (stages[-1][0], stages[-1][1] + "; runs its own loop in the background "
+                          f"and hands Toporia {handed_over}")
     else:
         stages.append(("Optimiser sees", "the design field itself"))
     stages.append(("Updater", updater.label))

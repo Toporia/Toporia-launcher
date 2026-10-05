@@ -52,6 +52,31 @@ class Registry:
         aliases = {alias: cls.name for cls in by_name.values() for alias in getattr(cls, "aliases", ())}
         self._by_name, self._aliases = by_name, aliases
 
+    def register(self, cls):
+        """Add a plugin class by hand — from a notebook, a script or a test — and return it.
+
+        Usable as a decorator.  The class must subclass the registry's base and
+        have a name no other plugin uses.
+        """
+        self._discover()
+        if not (isinstance(cls, type) and issubclass(cls, self.base) and getattr(cls, "name", "")):
+            raise TypeError(f"A {self.kind} must subclass {self.base.__name__} and set a non-empty name")
+        other = self._by_name.get(cls.name)
+        if other is not None and other is not cls:
+            raise RuntimeError(f"Two {self.kind}s are named {cls.name!r}: "
+                               f"{other.__module__}.{other.__name__} and {cls.__module__}.{cls.__name__}")
+        self._by_name[cls.name] = cls
+        for alias in getattr(cls, "aliases", ()):
+            self._aliases[alias] = cls.name
+        return cls
+
+    def unregister(self, name):
+        """Remove a plugin added with register()."""
+        self._discover()
+        cls = self._by_name.pop(name)
+        for alias in getattr(cls, "aliases", ()):
+            self._aliases.pop(alias, None)
+
     def classes(self):
         """All registered classes, in menu order."""
         self._discover()

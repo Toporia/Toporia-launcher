@@ -175,3 +175,18 @@ class OptimizationMethod(ABC):
         rules.
         """
         return False
+
+    def convergence_reason(self):
+        """Why is_converged() returned True, in words; None for a generic message."""
+        return None
+
+    def report(self):
+        """The optimiser's own account of how it ended (success, message, counts), or None.
+
+        Recorded in run.json next to the engine's stop reason.  Libraries that
+        run their own loop report one; Toporia's own updaters do not need to.
+        """
+        return None
+
+    def close(self):
+        """Release anything still running.  The engine calls this once, however the run ends."""

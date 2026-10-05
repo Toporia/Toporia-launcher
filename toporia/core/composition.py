@@ -148,6 +148,8 @@ class Updater(ABC):
     max_constraints = 0
     #: True when it works on core.flat.FlatProblem rather than on the design array.
     flat_view = False
+    #: True when it runs its own loop in the background (core/external.py).
+    own_loop = False
     #: The flat view's objective rescaling (see FlatProblem); None leaves it unscaled.
     flat_objective_scale = None
 
@@ -168,6 +170,21 @@ class Updater(ABC):
     def is_converged(self, change):
         """Optional stricter stopping criterion; see OptimizationMethod.is_converged."""
         return False
+
+    def convergence_reason(self):
+        """Why is_converged() said so, in words; None for the generic message."""
+        return None
+
+    def cached_evaluation(self, design):
+        """An Evaluation of `design` the updater already has, to spare the engine a solve; or None."""
+        return None
+
+    def report(self):
+        """The optimiser's own verdict (success, message, its counts) for run.json; or None."""
+        return None
+
+    def close(self):
+        """Release anything still running (a background optimiser thread).  Called once, at the end."""
 
 
 def _subset(settings, params):
@@ -242,7 +259,7 @@ class ComposedMethod(OptimizationMethod):
 
     def step(self, iteration):
         completed = iteration - 1   # continuation schedules count finished iterations
-        evaluation = self._model.evaluate(self.x)
+        evaluation = self._updater.cached_evaluation(self.x) or self._model.evaluate(self.x)
         self._model.advance(completed)
         x_new = self._updater.update(self.x, evaluation, completed)
 
@@ -275,6 +292,15 @@ class ComposedMethod(OptimizationMethod):
 
     def is_converged(self):
         return self._updater.is_converged(self.change)
+
+    def convergence_reason(self):
+        return self._updater.convergence_reason()
+
+    def report(self):
+        return self._updater.report()
+
+    def close(self):
+        self._updater.close()
 
     def get_density(self):   return self.density
     def get_change(self):    return self.change

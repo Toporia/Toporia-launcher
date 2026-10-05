@@ -8,6 +8,7 @@
     composition.py  a method assembled from a Model (physics) and an Updater (update rule)
     physics.py    the questions a physics engine answers, so responses work on any engine
     flat.py       a Model as an optimiser library sees it: x0, bounds, f, df, g, dg
+    external.py   an Updater for a library that runs its own loop, in a background thread
     params.py     self-describing parameter declarations
     responses.py  what a scenario can minimise or constrain, and how it computes itself
     registry.py   plugin discovery
@@ -20,6 +21,7 @@ rule is what keeps the data flow readable.
 
 from .composition import ComposedMethod, ConstraintValue, Evaluation, Model, Updater, compose
 from .contract import Capabilities, OptimizationMethod
+from .external import ExternalOptimizer, Verdict
 from .flat import FlatProblem
 from .params import Param, resolve_params
 from .physics import ELASTIC_ENERGY, STRESS, Physics
@@ -46,6 +48,7 @@ __all__ = [
     "BaseProblem", "RectangularProblem",
     "OptimizationMethod", "Capabilities", "Param", "resolve_params",
     "ComposedMethod", "Model", "Updater", "Evaluation", "ConstraintValue", "compose", "FlatProblem",
+    "ExternalOptimizer", "Verdict",
     "Physics", "ELASTIC_ENERGY", "STRESS",
     "Response", "ResponseValue", "OBJECTIVE_ROLE", "CONSTRAINT_ROLE",
 ]

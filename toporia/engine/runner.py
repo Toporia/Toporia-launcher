@@ -85,13 +85,40 @@ def run_single_with_store(run, on_iteration=None):
     (store, density) : (ResultStore, np.ndarray)
         The recorded history, and the final (nely, nelx) density field in [0, 1].
     """
-    solver = run.solver
     method = initialized_method(run)
     store = ResultStore(run.output.dir)
+    try:
+        iteration, stop_reason = _loop(run, method, store, on_iteration)
+    finally:
+        method.close()   # however the run ends: limit, tolerance, Stop button, error
+
+    print(f"  stopped: {stop_reason}")
+    optimiser = method.report()
+    if optimiser:
+        verdict = "finished" if optimiser.get("finished") else "did not finish"
+        print(f"  optimiser {verdict}: {optimiser.get('message')}")
+    final = {name: values[-1] for name, values in store.responses.items()}
+    limits = check_limits(run.scenario, final)
+    for line in describe_violations(limits):
+        print(f"  WARNING: {line}")
+
+    store.stop_reason = stop_reason
+    store.limits = limits
+    store.optimiser = optimiser
+    store.save_final(method.get_density(), save_history=False)
+    store.save_json("run.json", run_record(
+        run, iterations=iteration, stop_reason=stop_reason, responses=final, limits=limits,
+        optimiser=optimiser,
+    ))
+    return store, method.get_density()
+
+
+def _loop(run, method, store, on_iteration):
+    """The iterations themselves; returns (last iteration, stop reason)."""
+    solver = run.solver
     obj0 = None
     iteration = 0
     stop_reason = f"iteration limit ({solver.max_iter})"
-
     for iteration in range(1, solver.max_iter + 1):
         t0 = time.perf_counter()
         method.step(iteration)
@@ -119,19 +146,7 @@ def run_single_with_store(run, on_iteration=None):
             break
         # Escape hatch for criteria that cannot be written as a design change.
         if method.is_converged():
-            stop_reason = f"{type(method).__name__} reported its own convergence criterion"
+            stop_reason = (method.convergence_reason()
+                           or f"{type(method).__name__} reported its own convergence criterion")
             break
-
-    print(f"  stopped: {stop_reason}")
-    final = {name: values[-1] for name, values in store.responses.items()}
-    limits = check_limits(run.scenario, final)
-    for line in describe_violations(limits):
-        print(f"  WARNING: {line}")
-
-    store.stop_reason = stop_reason
-    store.limits = limits
-    store.save_final(method.get_density(), save_history=False)
-    store.save_json("run.json", run_record(
-        run, iterations=iteration, stop_reason=stop_reason, responses=final, limits=limits,
-    ))
-    return store, method.get_density()
+    return iteration, stop_reason

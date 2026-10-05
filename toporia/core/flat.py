@@ -104,6 +104,12 @@ class FlatProblem:
         self._store(x, evaluation)
         return evaluation
 
+    def cached(self, x):
+        """The cached Evaluation if it is for exactly x (free variables), else None."""
+        if self._cached is not None and self._cached[0] == np.asarray(x, dtype=float).tobytes():
+            return self._cached[1]
+        return None
+
     def _store(self, x, evaluation):
         self._cached = (np.asarray(x, dtype=float).tobytes(), evaluation)
         if self.objective_scale is None:
