@@ -103,6 +103,26 @@ class _CollapsibleSection(QWidget):
 
 # ── Sweep dropdown helpers ────────────────────────────────────────────────────
 
+def _mark_availability(combo, classes):
+    """Grey out every entry whose plugin needs a package that is not installed.
+
+    The entry stays visible, says what it needs, and its tooltip gives the
+    install command, so a missing optional dependency is explained up front
+    instead of failing when a run starts.
+    """
+    from toporia.core.registry import install_hint, missing_dependencies
+    by_name = {cls.name: cls for cls in classes}
+    for index in range(combo.count()):
+        cls = by_name.get(combo.itemData(index))
+        missing = missing_dependencies(cls) if cls is not None else []
+        if not missing:
+            continue
+        item = combo.model().item(index)
+        item.setEnabled(False)
+        item.setText(f"{cls.label}  (needs {', '.join(missing)})")
+        item.setToolTip(f"Not installed here. Install with:  {install_hint(missing)}")
+
+
 def _fill_combo(combo, items, prefer=""):
     """Rebuild a parameter dropdown from (label, parameter_path) pairs.
 
@@ -259,6 +279,7 @@ class CoreParamsGroup(QWidget):
         self.approach.addItem("Physics model + updater", userData=self.PARTS)
         for cls in METHODS.classes():
             self.approach.addItem(f"{cls.label} (whole method)", userData=cls.name)
+        _mark_availability(self.approach, METHODS.classes())
         _add_tooltip_row(selector, "Method", self.approach,
                          "Pick a physics model and an updater separately (any pair works), or a whole "
                          "method that brings its own design representation and update.")
@@ -306,6 +327,7 @@ class CoreParamsGroup(QWidget):
             combo.addItem(cls.label, userData=cls.name)
             forms[cls.name] = ParamForm(cls.params)
             layout.addWidget(forms[cls.name])
+        _mark_availability(combo, classes)
         section.body_layout.addWidget(box)
         return combo, forms, box
 
@@ -680,6 +702,7 @@ class _SpecRow(QWidget):
         for cls in self._classes:
             if cls.name in names:
                 self._type.addItem(cls.label, userData=cls.name)
+        _mark_availability(self._type, self._classes)
         self._type.setCurrentIndex(max(self._type.findData(current), 0))
         self._type.blockSignals(False)
 

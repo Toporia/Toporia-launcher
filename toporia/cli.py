@@ -89,12 +89,23 @@ def _cmd_list(args):
     for name in problem_names():
         print(f"  {name}")
     print("\nA method is '<model>+<updater>' (any pair), or a whole method.")
+    from toporia.core.registry import BUILT_IN, missing_dependencies
+
     for title, registry in (("Models", MODELS), ("Updaters", UPDATERS), ("Whole methods", METHODS),
                             ("Filters", FILTERS), ("Responses", RESPONSES)):
         print(f"\n{title}:")
         for cls in registry.classes():
             params = ", ".join(p.name for p in cls.params) or "-"
-            print(f"  {cls.name:<18} {cls.label:<32} params: {params}")
+            notes = []
+            if registry.source(cls.name) != BUILT_IN:
+                notes.append(f"from {registry.source(cls.name)}")
+            missing = missing_dependencies(cls)
+            if missing:
+                notes.append(f"NOT INSTALLED: needs {', '.join(missing)}")
+            extra = f"  [{'; '.join(notes)}]" if notes else ""
+            print(f"  {cls.name:<18} {cls.label:<32} params: {params}{extra}")
+        for where, message in registry.errors:
+            print(f"  NOT LOADED  {where}: {message}")
     print("\nOlder method names:")
     for old, new in PRESETS.items():
         print(f"  {old:<18} = {new}")

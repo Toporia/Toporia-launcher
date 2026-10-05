@@ -113,6 +113,7 @@ class PymotoElasticModel(Model):
     name = "pymoto_elastic"
     label = "Linear elasticity, pyMOTO network"
     order = 20
+    dependencies = ("pymoto",)
     params = (PENAL, RMIN)
     # pyMOTO applies its own density filter inside the network (radius = rmin),
     # so the Toporia filter pipeline is not used.

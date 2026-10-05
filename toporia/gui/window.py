@@ -153,6 +153,13 @@ class MainWindow(QMainWindow):
         self._on_config_changed(self.config_combo.currentText())  # populate widgets from first config
 
         self._on_mode("Run One")   # hide sweep-specific groups on startup
+        self._report_plugin_errors()
+
+    def _report_plugin_errors(self):
+        """Log every plugin that failed to load; the others are all usable."""
+        from toporia.api import plugin_errors
+        for kind, where, message in plugin_errors():
+            self._log(f"[Plugin not loaded] {kind} {where}: {message}")
 
     # ── Slots — methods connected to UI signals ───────────────────────────────
 

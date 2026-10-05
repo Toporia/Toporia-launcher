@@ -23,6 +23,7 @@ import time
 
 from toporia.core.contract import OBJECTIVE
 from toporia.core.problem import RectangularProblem
+from toporia.core.registry import install_hint, missing_dependencies
 
 from .feasibility import check_limits, describe_violations
 from .pipeline import describe_pipeline
@@ -41,6 +42,10 @@ def initialized_method(run):
     from toporia.library.responses import check_responses
 
     method_cls = method_class(run.solver.method)
+    missing = missing_dependencies(method_cls)
+    if missing:
+        raise ImportError(f"Method {method_cls.name!r} needs {', '.join(missing)}, which is not installed. "
+                          f"Install it with:  {install_hint(missing)}")
     reasons = method_cls.capabilities.problems_with(run.scenario)
     if reasons:
         able = [cls.name for cls in method_classes() if not cls.capabilities.problems_with(run.scenario)]

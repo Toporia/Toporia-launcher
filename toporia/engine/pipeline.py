@@ -11,6 +11,7 @@
 # chain is the method itself.
 
 from toporia.core.composition import ComposedMethod, explain
+from toporia.core.registry import install_hint, missing_dependencies
 
 
 def pipeline_stages(run):
@@ -71,8 +72,11 @@ def pipeline_notes(method):
     from toporia.library.methods import method_class
 
     method_cls = method_class(method)
+    missing = missing_dependencies(method_cls)
+    unavailable = ([f"Not installed here: {', '.join(missing)}. A run would stop at once; "
+                    f"install it with: {install_hint(missing)}"] if missing else [])
     if issubclass(method_cls, ComposedMethod):
-        notes = explain(method_cls.model, method_cls.updater)
+        notes = unavailable + explain(method_cls.model, method_cls.updater)
         if method_cls.model.capabilities.constraints and not method_cls.capabilities.constraints:
             from toporia.library.updaters import UPDATERS
             able = [cls.label for cls in UPDATERS.classes() if cls.max_constraints != 0]
@@ -80,7 +84,7 @@ def pipeline_notes(method):
                 notes.append(f"Updaters that enforce constraints: {', '.join(able)}.")
         return notes
     capabilities = method_cls.capabilities
-    notes = [f"{method_cls.label} is a whole method: it evolves its own design representation "
+    notes = unavailable + [f"{method_cls.label} is a whole method: it evolves its own design representation "
              f"({capabilities.variable_kind.replace('_', ' ')}) with its own update rule."]
     if not capabilities.accepts_filters:
         notes.append("It does not use the Filters list.")

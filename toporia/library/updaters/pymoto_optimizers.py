@@ -69,6 +69,7 @@ class PymotoMMAUpdater(Updater):
     order = 30
     params = (MOVE,)
     max_constraints = None   # pyMOTO's MMA takes any number of constraints
+    dependencies = ("pymoto",)
     flat_view = True
     flat_objective_scale = 10.0
     version = "MMA2007"      # pyMOTO's mmaversion: "MMA1987", "MMA2007" or "GCMMA"

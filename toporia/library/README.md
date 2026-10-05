@@ -77,6 +77,26 @@ the right base, with a non-empty `name`, **is** registered
 [`Param`](../core/params.py) objects next to the code that uses them, and the GUI, the
 sweeps and the config validation are all generated from those declarations.
 
+### From another package
+
+A plugin does not have to live in this repository. Put it in your own package, import
+only from [`toporia.api`](../api.py), and declare it with a standard entry point in your
+`pyproject.toml`:
+
+```toml
+[project.entry-points."toporia.updaters"]
+my_optimisers = "my_package.optimisers"            # every plugin class in a module
+my_slsqp      = "my_package.optimisers:MySLSQP"    # or a single class
+```
+
+After `pip install my_package` it appears in the GUI menus, the CLI (`toporia list` shows
+where each plugin comes from) and the configs. The groups are `toporia.models`,
+`toporia.updaters`, `toporia.filters`, `toporia.responses` and `toporia.methods`. A plugin
+that fails to import is reported in the GUI's log and by `toporia list`, and every other
+plugin still loads. A plugin that needs an optional package declares
+`dependencies = ("package",)`: where the package is missing it is greyed out in the menus
+with the install command, and a run asking for it stops at once with that command.
+
 Then run the conformance test on it — `toporia check updater:my_updater` on the command
 line, **Check Parts** in the GUI's mode menu, or `toporia.testing.conformance(MyClass)` in a
 test. It checks the interface, every gradient against finite differences, the adjoint of a
