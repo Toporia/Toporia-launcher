@@ -137,14 +137,14 @@ def _cmd_run(args):
 
 
 def _cmd_compare(args):
-    from toporia.engine.modes.compare_core import compare_core
+    from toporia.engine.modes.compare import compare_runs
 
     label_a, label_b = _label(args.solver_a), _label(args.solver_b)
     base = _build_run(args.scenario, None, (), args.out)
     out_dir = Path(base.output.dir) / f"compare_{label_a}_vs_{label_b}"
     run_a = _build_run(args.scenario, args.solver_a, args.set).with_output_dir(out_dir / "run_A")
     run_b = _build_run(args.scenario, args.solver_b, args.set).with_output_dir(out_dir / "run_B")
-    image, _, _ = compare_core(run_a, run_b, label_a, label_b, out_dir)
+    image, _, _ = compare_runs(run_a, run_b, label_a, label_b, out_dir)
     print(f"comparison in {image}")
     return 0
 

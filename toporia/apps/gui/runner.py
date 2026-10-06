@@ -11,14 +11,15 @@
 import sys
 from pathlib import Path
 
-from toporia.engine.modes.compare_load_cases import compare_load_cases as _compare_lc
-from toporia.engine.modes.compare_two import compare_two as _compare_two
+from toporia.engine.modes.check import check_parts as _check_parts
+from toporia.engine.modes.compare import compare_load_cases as _compare_lc
+from toporia.engine.modes.compare import compare_two as _compare_two
 from toporia.engine.modes.sensitivity import sensitivity_field as _sensitivity_field
-from toporia.engine.modes.sensitivity_sweep import sensitivity_sweep as _sens_sweep
-from toporia.engine.modes.sensitivity_sweep import sensitivity_sweep_2d as _sens_sweep_2d
+from toporia.engine.modes.sensitivity import sensitivity_sweep as _sens_sweep
+from toporia.engine.modes.sensitivity import sensitivity_sweep_2d as _sens_sweep_2d
 from toporia.engine.modes.single import run_one as _run_one
 from toporia.engine.modes.sweep import sweep as _sweep
-from toporia.engine.modes.sweep_2d import sweep_2d as _sweep_2d
+from toporia.engine.modes.sweep import sweep_2d as _sweep_2d
 
 from .config import build_config  # noqa: F401  (re-exported: callers use runner.build_config)
 
@@ -49,19 +50,10 @@ class _LogStream:
 
 
 def run_check(config, log_fn):
-    """Run the conformance test on every part of the selected pipeline; return True if all conform."""
-    from toporia.checks import conformance, parts_of
+    """The Check Parts mode; returns True when every part conforms."""
     old = _redir(log_fn)
     try:
-        parts = parts_of(config)
-        print(f"Checking {len(parts)} parts: {', '.join(parts)}\n")
-        results = []
-        for part in parts:
-            report = conformance(part)
-            results.append(report.ok)
-            print(report, end="\n\n")
-        print(f"{sum(results)} of {len(results)} parts conform")
-        return all(results)
+        return _check_parts(config)
     finally:
         sys.stdout = old
 

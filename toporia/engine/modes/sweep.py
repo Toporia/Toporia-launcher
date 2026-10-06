@@ -1,82 +1,53 @@
-# sweep.py — 1-D parameter sweep
+# engine/modes/sweep.py — run a grid of optimisations, varying one or two parameters.
 #
-# Runs the optimisation repeatedly while linearly varying one config parameter
-# (e.g. volfrac from 0.08 to 0.60 across a 3×3 image grid).
-# Results are saved to disk and assembled into a single summary PNG.
+#   sweep     one parameter, linearly spaced over an n_rows × n_cols grid
+#             (e.g. volfrac from 0.08 to 0.60 in a 3 × 3 grid)
+#   sweep_2d  two parameters, one along the rows and one along the columns,
+#             to see how they interact (e.g. volfrac × mesh resolution m)
 #
-# Two ways to use:
-#   1. python sweep.py          → uses the config at the bottom of this file
-#   2. from toporia.engine.modes.sweep import sweep  → call sweep() from the GUI with any config
+# Any parameter path works ("volfrac", "method.penal", "filters[1].beta",
+# "load_cases[0].Fa"; see framework/problem/run.py).  Each cell is a complete
+# run with its own output folder; the final designs are then laid out as one
+# image, sweep_grid.png or sweep2d_grid.png.
 
-
-import time
-from pathlib import Path
-
-import matplotlib.image as mpimg  # reading PNG files back in for grid assembly
-import matplotlib.pyplot as plt
 import numpy as np
 
-from toporia.engine.loop import run_single as _run_single
-from toporia.framework import LoadCase, Run, apply_param
+from .grids import DESIGNS, mode_folder, run_cells, save_grid
 
 
-def sweep(parameter, min_val, max_val, n_rows, n_cols, base_config,
-          on_iteration=None):
-    """Sweep one parameter over an n_rows × n_cols grid of linearly spaced values.
+def sweep(parameter, min_val, max_val, n_rows, n_cols, base_config, on_iteration=None):
+    """Sweep one parameter over n_rows × n_cols linearly spaced values.
 
-    Each cell in the grid is one full optimisation run.  Results are saved under
-    output_dir/sweep_<parameter>/ and assembled into sweep_grid.png.
-
-    on_iteration(density, objectives, iteration) — optional GUI callback fired
-    after every solver step so the live canvas can update between cells.
+    Results go to <output>/sweep_<parameter>/, one sub-folder per value, and
+    the grid image to sweep_grid.png there.  `on_iteration(density,
+    objectives, iteration)` is the GUI's live callback.
     """
-    # Build the list of parameter values: e.g. [0.08, 0.155, 0.23, ..., 0.60]
-    values     = np.linspace(min_val, max_val, n_rows * n_cols)
-    output_dir = Path(base_config.output.dir) / f"sweep_{parameter}"
-    output_dir.mkdir(parents=True, exist_ok=True)  # create folder, ignore if exists
+    folder = mode_folder(base_config, f"sweep_{parameter}")
+    values = np.linspace(min_val, max_val, n_rows * n_cols)
+    cells = [([(parameter, value)], folder / f"{parameter}_{value:.4f}") for value in values]
+    run_cells(base_config, cells, on_iteration)
 
-    img_paths, t_total = [], time.perf_counter()   # accumulate PNG paths + start timer
-
-    for k, value in enumerate(values, 1):          # k goes 1, 2, 3, ...
-        # apply_param returns a NEW config with:
-        #   - a unique output_dir for this cell's results
-        #   - the swept parameter set to the current value
-        # It handles both plain fields ("volfrac") and load-case fields ("lc0.Fmag").
-        cfg = apply_param(
-            base_config.with_output_dir(output_dir / f"{parameter}_{value:.4f}"),
-            parameter, value,
-        )
-        print(f"[{k}/{len(values)}] {parameter}={value:.3g}  starting...")
-        t0 = time.perf_counter()
-
-        _run_single(cfg, on_iteration)
-
-        img_paths.append((cfg.output.dir / "final_density.png", value))
-        print(f"[{k}/{len(values)}] done"
-              f"  run {time.perf_counter()-t0:.1f}s  total {time.perf_counter()-t_total:.1f}s")
-
-    # ── Assemble the individual PNGs into one summary grid image ──────────────
-    sample         = mpimg.imread(str(img_paths[0][0]))     # read one to get pixel dims
-    ih, iw         = sample.shape[:2]
-    cell_w, cell_h = max(3.0, iw/100), max(2.0, ih/100)    # subplot size in inches
-    fig, axes      = plt.subplots(n_rows, n_cols, figsize=(cell_w*n_cols, cell_h*n_rows))
-    for ax, (img_path, value) in zip(np.array(axes).flat, img_paths):
-        ax.imshow(mpimg.imread(str(img_path)), cmap="gray", vmin=0, vmax=1)
-        ax.set_title(f"{parameter} = {value:.3g}", fontsize=9)
-        ax.axis("off"); ax.axis("equal")
-    fig.tight_layout()
-    fig.savefig(output_dir / "sweep_grid.png", dpi=180)
-    plt.close(fig)    # close so it doesn't pop up as an interactive window
-    print(f"total: {time.perf_counter()-t_total:.1f}s")
+    images = [(cell_folder / "final_density.png", f"{parameter} = {value:.3g}")
+              for value, (_, cell_folder) in zip(values, cells)]
+    return save_grid(images, n_rows, n_cols, folder / "sweep_grid.png", DESIGNS, fontsize=9)
 
 
-if __name__ == "__main__":
-    # ── Edit these values to configure a standalone sweep ─────────────────────
-    BASE_CONFIG = Run().updated(
-        m=0.5, volfrac=0.25,
-        filter_specs=[{"type": "density"}], max_iter=50, tol=0.05,
-        load_cases=[LoadCase(Fmag=1.0, Fa=0.0, weight=0.5),
-                    LoadCase(Fmag=1.0, Fa=270.0, weight=0.5)],
-        save_every=0,
-    )
-    sweep("volfrac", 0.08, 0.60, 3, 3, BASE_CONFIG)
+def sweep_2d(row_param, row_min, row_max, n_rows,
+             col_param, col_min, col_max, n_cols,
+             base_config, on_iteration=None):
+    """Sweep two parameters at once: `row_param` down the rows, `col_param` across the columns.
+
+    Results go to <output>/sweep2d_<row>_vs_<col>/, and the grid image to
+    sweep2d_grid.png there.
+    """
+    folder = mode_folder(base_config, f"sweep2d_{row_param}_vs_{col_param}")
+    pairs = [(row_value, col_value)
+             for row_value in np.linspace(row_min, row_max, n_rows)
+             for col_value in np.linspace(col_min, col_max, n_cols)]
+    cells = [([(row_param, rv), (col_param, cv)], folder / f"{row_param}_{rv:.4f}__{col_param}_{cv:.4f}")
+             for rv, cv in pairs]
+    run_cells(base_config, cells, on_iteration)
+
+    images = [(cell_folder / "final_density.png", f"{row_param}={rv:.3g}  {col_param}={cv:.3g}")
+              for (rv, cv), (_, cell_folder) in zip(pairs, cells)]
+    return save_grid(images, n_rows, n_cols, folder / "sweep2d_grid.png", DESIGNS, fontsize=8)

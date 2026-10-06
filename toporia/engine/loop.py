@@ -25,10 +25,8 @@ from toporia.framework.parts.method import OBJECTIVE
 from toporia.framework.problem.mesh import RectangularProblem
 from toporia.framework.registry import install_hint, missing_dependencies
 
-from .feasibility import check_limits, describe_violations
 from .pipeline import describe_pipeline
-from .provenance import run_record
-from .results import ResultStore
+from .records import ResultStore, check_limits, describe_violations, run_record
 
 
 def initialized_method(run):

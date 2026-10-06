@@ -1,162 +1,160 @@
-# Sensitivity.py — finite-difference sensitivity field for one parameter
+# engine/modes/sensitivity.py — where in the design does a parameter matter?
 #
-# Runs two optimisations: one at `base_value`, one at `base_value + gap`.
-# The per-element sensitivity is:
+#   sensitivity_field     two runs, at base and base + gap, and per element
+#                         (ρ_perturbed − ρ_base) / gap, drawn over the base design
+#   sensitivity_sweep     that field for every cell of a one-parameter sweep
+#   sensitivity_sweep_2d  ... of a two-parameter sweep
 #
-#   sensitivity[i,j] = (density_perturbed[i,j] − density_base[i,j]) / gap
+# A sweep may also vary the sensitivity study itself, through two special
+# paths: "sens.base_value" (where the derivative is taken) and "sens.gap"
+# (the finite-difference step).
 #
-# Output: a single image showing the sensitivity overlaid on the base design.
+# The figure, sensitivity.png, shows the base design as a faint grey ghost
+# with the sensitivity on top in blue–white–red:
 #
-#   Background layer  — base design in standard grayscale (solid = dark)
-#   Overlay layer     — blue–white–red sensitivity, semi-transparent so the
-#                       base design stays legible through the colours
+#   red    more material where the parameter increases
+#   blue   less material where the parameter increases
+#   white  no change
 #
-#   red   → positive sensitivity  (more material when parameter increases)
-#   white → near-zero sensitivity (element is insensitive)
-#   blue  → negative sensitivity  (less material when parameter increases)
-#
-# Alpha strategy (keeps the base always visible):
-#   α = material_presence × sensitivity_magnitude × 0.75
-#   → elements with zero sensitivity show only the base design
-#   → elements with high sensitivity are ≤75 % opaque, base still shows at ≥25 %
-#
-# Two ways to use:
-#   1. python Sensitivity.py           → uses config in main()
-#   2. from toporia.engine.modes.sensitivity import sensitivity_field  → call from GUI
-
+# The overlay's opacity is material presence × sensitivity magnitude, capped
+# at 75 %, so elements that do not respond show the base design unchanged and
+# the base always shows through.  sensitivity.csv holds the raw numbers.
 
 import csv
-from pathlib import Path
+import time
 
 import matplotlib.pyplot as plt
 import numpy as np
 from matplotlib.colors import TwoSlopeNorm
 
-from toporia.engine.loop import run_single as _run_single
-from toporia.framework import LoadCase, Run, apply_param
+from toporia.engine.loop import run_single
+from toporia.framework import apply_param
+
+from .grids import FIGURES, mode_folder, save_grid
+
+#: Sweep paths that change the sensitivity study instead of the run.
+BASE_VALUE, GAP = "sens.base_value", "sens.gap"
 
 
 def sensitivity_field(param_key, base_value, gap, base_config, on_iteration=None):
-    """Compute and visualise the per-element density sensitivity to one parameter.
+    """The per-element sensitivity of the final density to one parameter path.
 
-    Parameters
-    ----------
-    param_key    : str   — parameter to perturb (e.g. "volfrac", "lc0.Fmag")
-    base_value   : float — nominal parameter value
-    gap          : float — finite-difference step (positive or negative)
-    base_config  : Run — all other settings, shared between both runs
-    on_iteration : callable, optional — GUI callback(density, objectives, iteration)
-
-    Returns
-    -------
-    (Path to saved PNG, sensitivity ndarray  [nely × nelx])
+    Returns (path of sensitivity.png, the sensitivity array, shaped like the design).
     """
-    output_dir = (Path(base_config.output.dir)
-                  / f"sensitivity_{param_key}_{base_value:.4g}_d{gap:+.4g}")
-    output_dir.mkdir(parents=True, exist_ok=True)
-
+    folder = mode_folder(base_config, f"sensitivity_{param_key}_{base_value:.4g}_d{gap:+.4g}")
     densities = []
-    for label, value in [("base", base_value), ("perturbed", base_value + gap)]:
-        cfg = apply_param(
-            base_config.with_output_dir(output_dir / f"run_{label}"),
-            param_key, value,
-        )
+    for label, value in (("base", base_value), ("perturbed", base_value + gap)):
+        run = apply_param(base_config.with_output_dir(folder / f"run_{label}"), param_key, value)
         print(f"\n=== Run {label}: {param_key} = {value:.4g} ===")
-        density = _run_single(cfg, on_iteration)
-        densities.append(density)
+        densities.append(run_single(run, on_iteration))
 
-    density_base, density_pert = densities
-    sens = (density_pert - density_base) / gap
-
-    _save_csv(sens, param_key, base_value, gap, output_dir)
-    img_path = _save_figure(density_base, sens, param_key, base_value, gap, output_dir)
-    return img_path, sens
+    density_base, density_perturbed = densities
+    sensitivity = (density_perturbed - density_base) / gap
+    _save_csv(sensitivity, param_key, base_value, gap, folder)
+    return _save_figure(density_base, sensitivity, param_key, base_value, gap, folder), sensitivity
 
 
-def _save_csv(sens, param_key, base_value, gap, output_dir):
-    """Write sensitivity.csv — metadata header rows then the raw 2-D sensitivity array.
+def sensitivity_sweep(sweep_param, min_val, max_val, n_rows, n_cols,
+                      sens_param, base_value, gap, base_config, on_iteration=None):
+    """The sensitivity to `sens_param` across a sweep of `sweep_param`; returns senssweep_grid.png's path."""
+    folder = mode_folder(base_config, f"senssweep_{sweep_param}")
+    values = np.linspace(min_val, max_val, n_rows * n_cols)
+    cells = [([(sweep_param, value)], folder / f"cell_{k:03d}") for k, value in enumerate(values, 1)]
+    titles = [f"{sweep_param} = {value:.3g}" for value in values]
+    images = _sensitivity_cells(cells, titles, sens_param, base_value, gap, base_config, on_iteration)
+    path = save_grid(images, n_rows, n_cols, folder / "senssweep_grid.png", FIGURES, fontsize=8)
+    print(f"Saved grid -> {path}")
+    return path
 
-    Row ordering matches the PNG (row 0 = top of image, i.e. flipud applied).
-    Values are the unscaled finite-difference sensitivities in units of
-    Δdensity / Δ(param_key).
+
+def sensitivity_sweep_2d(row_param, row_min, row_max, n_rows,
+                         col_param, col_min, col_max, n_cols,
+                         sens_param, base_value, gap, base_config, on_iteration=None):
+    """The sensitivity to `sens_param` across a two-parameter sweep; returns senssweep2d_grid.png's path."""
+    folder = mode_folder(base_config, f"senssweep2d_{row_param}_vs_{col_param}")
+    cells, titles = [], []
+    for r, row_value in enumerate(np.linspace(row_min, row_max, n_rows)):
+        for c, col_value in enumerate(np.linspace(col_min, col_max, n_cols)):
+            cells.append(([(row_param, row_value), (col_param, col_value)], folder / f"cell_r{r + 1}_c{c + 1}"))
+            titles.append(f"{row_param} = {row_value:.3g}\n{col_param} = {col_value:.3g}")
+    images = _sensitivity_cells(cells, titles, sens_param, base_value, gap, base_config, on_iteration)
+    path = save_grid(images, n_rows, n_cols, folder / "senssweep2d_grid.png", FIGURES, fontsize=7)
+    print(f"Saved 2D grid -> {path}")
+    return path
+
+
+def _sensitivity_cells(cells, titles, sens_param, base_value, gap, base_config, on_iteration):
+    """Run a sensitivity study per cell; return [(sensitivity.png, title)] in cell order."""
+    images, start = [], time.perf_counter()
+    for k, ((assignments, cell_folder), title) in enumerate(zip(cells, titles), 1):
+        run, cell_base, cell_gap = base_config.with_output_dir(cell_folder), base_value, gap
+        for path, value in assignments:
+            if path == BASE_VALUE:
+                cell_base = float(value)
+            elif path == GAP:
+                cell_gap = float(value)
+            else:
+                run = apply_param(run, path, value)
+        label = "   ".join(f"{path} = {value:.3g}" for path, value in assignments)
+        print(f"\n[{k}/{len(cells)}]  {label}  |  sens_base = {cell_base:.3g}   gap = {cell_gap:+.3g}")
+        image, _ = sensitivity_field(sens_param, cell_base, cell_gap, run, on_iteration)
+        images.append((image, title))
+        print(f"[{k}/{len(cells)}] done — total {time.perf_counter() - start:.1f}s")
+    return images
+
+
+# ── Output ────────────────────────────────────────────────────────────────────
+
+def _save_csv(sensitivity, param_key, base_value, gap, folder):
+    """sensitivity.csv: five metadata rows, then the field (row 0 = image top, as in the PNG).
+
+    Values are raw finite-difference sensitivities, in Δdensity / Δ(param_key).
     """
-    out = np.flipud(sens)   # row 0 = image top, consistent with the PNG
-    csv_path = output_dir / "sensitivity.csv"
-    with open(csv_path, "w", newline="") as f:
-        w = csv.writer(f)
-        w.writerow(["param_key",   param_key])
-        w.writerow(["base_value",  f"{base_value:.6g}"])
-        w.writerow(["gap",         f"{gap:+.6g}"])
-        w.writerow(["max_abs",     f"{float(np.max(np.abs(sens))):.6g}"])
-        w.writerow(["nely_nelx",   f"{sens.shape[0]}x{sens.shape[1]}"])
-        for row in out:
-            w.writerow([f"{v:.6g}" for v in row])
-    print(f"Saved sensitivity CSV  → {csv_path}")
+    path = folder / "sensitivity.csv"
+    with open(path, "w", newline="") as file:
+        writer = csv.writer(file)
+        writer.writerow(["param_key", param_key])
+        writer.writerow(["base_value", f"{base_value:.6g}"])
+        writer.writerow(["gap", f"{gap:+.6g}"])
+        writer.writerow(["max_abs", f"{float(np.max(np.abs(sensitivity))):.6g}"])
+        writer.writerow(["nely_nelx", f"{sensitivity.shape[0]}x{sensitivity.shape[1]}"])
+        for row in np.flipud(sensitivity):
+            writer.writerow([f"{value:.6g}" for value in row])
+    print(f"Saved sensitivity CSV  -> {path}")
 
 
-def _save_figure(density_base, sens, param_key, base_value, gap, output_dir):
-    """Single-panel figure: sensitivity overlay on the base design."""
-    max_abs = float(np.max(np.abs(sens)))
+def _save_figure(density_base, sensitivity, param_key, base_value, gap, folder):
+    """The sensitivity over a faint image of the base design, with a colour bar; returns the PNG's path."""
+    max_abs = float(np.max(np.abs(sensitivity)))
     if max_abs < 1e-9:
         max_abs = 1.0
-
     cmap = plt.cm.bwr
     norm = TwoSlopeNorm(vcenter=0.0, vmin=-max_abs, vmax=max_abs)
 
-    # ── Background: base design as a very light ghost (solid ≈ 10 % gray) ─────
-    # density 0 → white (1.0),  density 1 → near-white (0.90)
-    # This keeps the structural shape readable without competing with the colours.
-    bg = np.flipud(1.0 - density_base * 0.10)
+    # The base design as a ghost: void white, solid only 10 % grey.
+    background = np.flipud(1.0 - density_base * 0.10)
+    overlay = cmap(norm(np.flipud(sensitivity)))
+    material = np.flipud(np.clip(density_base * 2.0, 0.0, 1.0))
+    strength = np.flipud(np.clip(np.abs(sensitivity) / max_abs * 3.0, 0.0, 1.0))
+    overlay[..., 3] = material * strength * 0.75
 
-    # ── Sensitivity overlay (RGBA) ─────────────────────────────────────────────
-    sens_disp  = np.flipud(sens)
-    sens_rgba  = cmap(norm(sens_disp))                  # shape (ny, nx, 4)
-
-    # Alpha: proportional to material presence × sensitivity magnitude.
-    # Zero-sensitivity elements are fully transparent — base design unchanged.
-    # Maximum opacity is 0.75 so the base structure always shows through.
-    material  = np.flipud(np.clip(density_base * 2.0, 0.0, 1.0))
-    sens_str  = np.flipud(np.clip(np.abs(sens) / max_abs * 3.0, 0.0, 1.0))
-    sens_rgba[..., 3] = material * sens_str * 0.75
-
-    # ── Single-panel figure ────────────────────────────────────────────────────
     fig, ax = plt.subplots(figsize=(11, 5))
-
-    ax.imshow(bg, cmap="gray", vmin=0, vmax=1,
-              interpolation="nearest", aspect="equal")
-    ax.imshow(sens_rgba, interpolation="nearest", aspect="equal")
-
+    ax.imshow(background, cmap="gray", vmin=0, vmax=1, interpolation="nearest", aspect="equal")
+    ax.imshow(overlay, interpolation="nearest", aspect="equal")
     ax.axis("off")
-    ax.set_title(
-        f"Sensitivity  ∂density/∂({param_key})"
-        f"   base = {base_value:.4g},   Δ = {gap:+.4g}",
-        fontsize=10,
-    )
-
-    # Colorbar
-    sm = plt.cm.ScalarMappable(cmap=cmap, norm=norm)
-    sm.set_array([])
-    cbar = fig.colorbar(sm, ax=ax, fraction=0.020, pad=0.02)
-    cbar.set_label(f"Δdensity / Δ{param_key}", fontsize=8)
-    cbar.ax.tick_params(labelsize=7)
-
+    ax.set_title(f"Sensitivity  ∂density/∂({param_key})   base = {base_value:.4g},   Δ = {gap:+.4g}",
+                 fontsize=10)
+    scale = plt.cm.ScalarMappable(cmap=cmap, norm=norm)
+    scale.set_array([])
+    colorbar = fig.colorbar(scale, ax=ax, fraction=0.020, pad=0.02)
+    colorbar.set_label(f"Δdensity / Δ{param_key}", fontsize=8)
+    colorbar.ax.tick_params(labelsize=7)
     ax.text(0.01, 0.01, f"range  [{-max_abs:.3g},  +{max_abs:.3g}]",
             transform=ax.transAxes, fontsize=7, va="bottom", color="#555")
 
     fig.tight_layout()
-    out_path = output_dir / "sensitivity.png"
-    fig.savefig(out_path, dpi=180, bbox_inches="tight")
+    path = folder / "sensitivity.png"
+    fig.savefig(path, dpi=180, bbox_inches="tight")
     plt.close(fig)
-    print(f"\nSaved sensitivity figure → {out_path}")
-    return out_path
-
-
-if __name__ == "__main__":
-    BASE = Run().updated(
-        m=0.5, volfrac=0.30,
-        filter_specs=[{"type": "density"}], max_iter=50, tol=0.05,
-        load_cases=[LoadCase(Fmag=1.0, Fa=0.0, weight=0.5),
-                    LoadCase(Fmag=1.0, Fa=270.0, weight=0.5)],
-        save_every=0,
-    )
-    sensitivity_field("volfrac", base_value=0.30, gap=0.05, base_config=BASE)
+    print(f"\nSaved sensitivity figure -> {path}")
+    return path

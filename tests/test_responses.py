@@ -219,7 +219,7 @@ def test_an_impossible_stress_limit_is_reported_not_hidden(tmp_path, capsys):
 
 
 def test_limits_are_judged_on_the_exact_value_when_one_is_reported():
-    from toporia.engine.feasibility import check_limits
+    from toporia.engine.records import check_limits
     scenario = replace(get_run("MBB Beam").scenario, constraints=[{"type": "stress", "limit": 4.0}])
     # The p-norm says 10 % over; the true peak is 2 % under: the limit is met.
     report = check_limits(scenario, {"volume": 0.5, "constraint_0_stress": 0.10,
