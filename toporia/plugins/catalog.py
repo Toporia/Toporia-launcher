@@ -3,10 +3,11 @@
 A *parameter path* addresses one value in a Run:
 
     volfrac                 a Scenario, Solver or Output field
-    method.penal            a parameter of the selected method
+    method.move             a parameter of the selected method
     filters[1].beta         a parameter of the second filter in the pipeline
     objective.<param>       a parameter of the scenario's objective
     constraints[0].limit    a parameter of the first scenario constraint
+    interpolation.penal     a parameter of the material law
     load_cases[0].Fmag      a field of the first load case
 
 framework.problem.run.apply_param writes to a path.  This module lists which paths exist
@@ -29,7 +30,8 @@ def _numeric(label_prefix, path_prefix, params):
     return [(f"{label_prefix} · {p.label}", f"{path_prefix}{p.name}") for p in params if p.is_numeric]
 
 
-def parameter_paths(method, filter_specs=(), n_load_cases=0, objective=None, constraints=()):
+def parameter_paths(method, filter_specs=(), n_load_cases=0, objective=None, constraints=(),
+                    interpolation=None):
     """Return [(label, path), ...] for every numeric value of this setup.
 
     Filter and constraint paths are included only when the method can use
@@ -40,6 +42,11 @@ def parameter_paths(method, filter_specs=(), n_load_cases=0, objective=None, con
     method_cls = method_class(method)
     capabilities = method_cls.capabilities
     items += _numeric("Method", "method.", method_cls.params)
+
+    if capabilities.accepts_interpolation and interpolation:
+        from .interpolations import INTERPOLATIONS
+        law = INTERPOLATIONS.get(interpolation.get("type", "simp"))
+        items += _numeric(f"Material ({law.label})", "interpolation.", law.params)
 
     if capabilities.accepts_filters:
         for i, spec in enumerate(filter_specs):

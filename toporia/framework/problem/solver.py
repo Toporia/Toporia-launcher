@@ -26,8 +26,14 @@ class Solver:
 
     # The parameters of the method's parts — the model's and the updater's
     # together — keyed by Param name.  Anything left out uses the declared
-    # default; an unknown key is an error.  Example: {"penal": 3.5, "move": 0.1}
+    # default; an unknown key is an error.  Example: {"move": 0.1, "mma_tol": 1e-5}
     method_params: dict = field(default_factory=dict)
+
+    # The material law for models whose physics interpolates stiffness from
+    # density, {"type": <interpolation name>, <param>: <value>}; see
+    # framework/parts/interpolation.py.  Other models (pyMOTO's, the level
+    # set) bring their own and ignore it.
+    interpolation: dict = field(default_factory=lambda: {"type": "simp"})
 
     # Filters applied in order, each {"type": <filter name>, <param>: <value>}.
     # Only honoured by methods whose capabilities say accepts_filters=True.

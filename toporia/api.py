@@ -19,6 +19,7 @@
 #   model      Model (or AssembledModel)     toporia.models
 #   updater    Updater (or ExternalOptimizer) toporia.updaters
 #   filter     Filter                        toporia.filters
+#   interpolation  Interpolation             toporia.interpolations
 #   response   Response                      toporia.responses
 #   method     OptimizationMethod            toporia.methods
 #
@@ -31,6 +32,7 @@ from toporia.framework.optimisers.flat_view import VOLUME_BUDGET, FlatProblem
 from toporia.framework.params import Param
 from toporia.framework.parts.composition import compose
 from toporia.framework.parts.filter import Filter
+from toporia.framework.parts.interpolation import Interpolation
 from toporia.framework.parts.method import OBJECTIVE, Capabilities, OptimizationMethod
 from toporia.framework.parts.model import ConstraintValue, Evaluation, Model
 from toporia.framework.parts.physics import ELASTIC_ENERGY, STRESS, Physics
@@ -38,6 +40,7 @@ from toporia.framework.parts.response import CONSTRAINT_ROLE, OBJECTIVE_ROLE, Re
 from toporia.framework.parts.updater import Updater
 from toporia.framework.registry import install_hint, missing_dependencies
 from toporia.plugins.filters import FILTERS
+from toporia.plugins.interpolations import INTERPOLATIONS
 from toporia.plugins.methods import METHODS, method_class
 from toporia.plugins.models import MODELS
 from toporia.plugins.models.assembled import AssembledModel
@@ -45,7 +48,7 @@ from toporia.plugins.responses import RESPONSES
 from toporia.plugins.updaters import UPDATERS
 
 #: Every registry, by plugin kind.
-REGISTRIES = {"model": MODELS, "updater": UPDATERS, "filter": FILTERS,
+REGISTRIES = {"model": MODELS, "updater": UPDATERS, "filter": FILTERS, "interpolation": INTERPOLATIONS,
               "response": RESPONSES, "method": METHODS}
 
 
@@ -62,11 +65,11 @@ __all__ = [
     "Model", "AssembledModel", "Physics", "ELASTIC_ENERGY", "STRESS", "Evaluation", "ConstraintValue",
     # how the design moves
     "Updater", "ExternalOptimizer", "Verdict", "FlatProblem", "VOLUME_BUDGET",
-    # regularisation and responses
-    "Filter", "Response", "ResponseValue", "OBJECTIVE_ROLE", "CONSTRAINT_ROLE",
+    # regularisation, material law and responses
+    "Filter", "Interpolation", "Response", "ResponseValue", "OBJECTIVE_ROLE", "CONSTRAINT_ROLE",
     # whole methods
     "OptimizationMethod", "Capabilities", "OBJECTIVE", "compose", "method_class",
     # declarations, discovery, checking
-    "Param", "REGISTRIES", "METHODS", "MODELS", "UPDATERS", "FILTERS", "RESPONSES",
+    "Param", "REGISTRIES", "METHODS", "MODELS", "UPDATERS", "FILTERS", "INTERPOLATIONS", "RESPONSES",
     "missing_dependencies", "install_hint", "plugin_errors", "conformance",
 ]

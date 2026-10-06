@@ -8,10 +8,11 @@
 # Parameter paths address single values inside it:
 #
 #     "volfrac"             a field of the Scenario, Solver or Output
-#     "method.penal"        a parameter of the selected method
+#     "method.move"         a parameter of the selected method
 #     "filters[1].beta"     a parameter of the second filter
 #     "load_cases[0].Fmag"  a field of the first load case
 #     "objective.<param>"   a parameter of the scenario's objective
+#     "interpolation.<param>"  a parameter of the material law (e.g. interpolation.penal)
 #     "constraints[0].limit" a parameter of the first scenario constraint
 #
 # apply_param writes one; read_param reads one.  Plain field names are unique
@@ -79,6 +80,7 @@ if len(_OWNER) != sum(len(fields(cls)) for cls in _PARTS.values()):
 _INDEXED_PATH = re.compile(r"^(?P<collection>\w+)\[(?P<index>\d+)\]\.(?P<field>\w+)$")
 _METHOD_PREFIX = "method."
 _OBJECTIVE_PREFIX = "objective."
+_INTERPOLATION_PREFIX = "interpolation."
 
 
 def _owner(path):
@@ -119,6 +121,9 @@ def apply_param(run, path: str, value):
     if path.startswith(_OBJECTIVE_PREFIX):
         name = path[len(_OBJECTIVE_PREFIX):]
         return replace(run, scenario=replace(run.scenario, objective={**run.scenario.objective, name: value}))
+    if path.startswith(_INTERPOLATION_PREFIX):
+        name = path[len(_INTERPOLATION_PREFIX):]
+        return replace(run, solver=replace(run.solver, interpolation={**run.solver.interpolation, name: value}))
 
     match = _INDEXED_PATH.match(path)
     if match:
@@ -153,6 +158,8 @@ def read_param(run, path: str):
         return run.solver.method_params.get(path[len(_METHOD_PREFIX):])
     if path.startswith(_OBJECTIVE_PREFIX):
         return run.scenario.objective.get(path[len(_OBJECTIVE_PREFIX):])
+    if path.startswith(_INTERPOLATION_PREFIX):
+        return run.solver.interpolation.get(path[len(_INTERPOLATION_PREFIX):])
 
     match = _INDEXED_PATH.match(path)
     if match:

@@ -43,6 +43,7 @@ from toporia.framework.parts.response import Response
 from toporia.framework.parts.updater import Updater
 
 from .filter import check_filter
+from .interpolation import check_interpolation
 from .method import check_method
 from .model import check_model, check_physics
 from .report import Check, Report
@@ -75,37 +76,29 @@ def _conformance(plugin, **options):
         if isinstance(plugin, type) and issubclass(plugin, base):
             return check(plugin, **options)
     from toporia.framework.parts.filter import Filter
+    from toporia.framework.parts.interpolation import Interpolation
     if isinstance(plugin, type) and issubclass(plugin, Filter):
         return check_filter(plugin, **options)
+    if isinstance(plugin, type) and issubclass(plugin, Interpolation):
+        return check_interpolation(plugin, **options)
     raise TypeError(f"{plugin!r} is not a Toporia plugin class")
 
 
 def all_plugins():
     """Every registered plugin, as "kind:name" strings."""
-    from toporia.plugins.filters import FILTERS
-    from toporia.plugins.methods import METHODS
-    from toporia.plugins.models import MODELS
-    from toporia.plugins.responses import RESPONSES
-    from toporia.plugins.updaters import UPDATERS
-    return [f"{kind}:{name}" for kind, registry in (("model", MODELS), ("updater", UPDATERS),
-                                                    ("filter", FILTERS), ("response", RESPONSES),
-                                                    ("method", METHODS))
-            for name in registry.names()]
+    from toporia.engine.pipeline import registries
+    return [f"{kind}:{name}" for kind, registry in registries().items() for name in registry.names()]
 
 
 def _lookup(text):
-    from toporia.plugins.filters import FILTERS
-    from toporia.plugins.methods import METHODS
-    from toporia.plugins.models import MODELS
-    from toporia.plugins.responses import RESPONSES
-    from toporia.plugins.updaters import UPDATERS
-    registries = {"model": MODELS, "updater": UPDATERS, "filter": FILTERS,
-                  "response": RESPONSES, "method": METHODS}
+    from toporia.engine.pipeline import registries
+    found = registries()
     kind, _, name = text.partition(":")
-    if kind not in registries or not name:
-        raise ValueError(f"Name a plugin as kind:name with kind one of {sorted(registries)}, got {text!r}")
-    return registries[kind].get(name)
+    if kind not in found or not name:
+        raise ValueError(f"Name a plugin as kind:name with kind one of {sorted(found)}, got {text!r}")
+    return found[kind].get(name)
 
 
 __all__ = ["Check", "Report", "conformance", "all_plugins", "parts_of", "check_updater",
-           "check_model", "check_physics", "check_filter", "check_response", "check_method"]
+           "check_model", "check_physics", "check_filter", "check_interpolation", "check_response",
+           "check_method"]

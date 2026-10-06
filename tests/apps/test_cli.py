@@ -40,10 +40,10 @@ def test_export_then_run_from_the_files(tmp_path):
 
 def test_run_a_preset_with_overrides(tmp_path):
     assert main(["run", "Cantilever", "--out", str(tmp_path), *SMALL,
-                 "--set", "method=density_mma", "--set", "method.penal=4"]) == 0
+                 "--set", "method=density_mma", "--set", "interpolation.penal=4"]) == 0
     solver = json.loads((tmp_path / "run.json").read_text())["solver"]["definition"]
     assert solver["method"] == "density_mma"
-    assert solver["method_params"] == {"penal": 4}
+    assert solver["interpolation"] == {"type": "simp", "penal": 4}
 
 
 def test_compare_two_solvers_on_one_scenario(tmp_path):

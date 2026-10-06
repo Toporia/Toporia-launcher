@@ -75,7 +75,7 @@ def benchmark(methods, problems, overrides=None, output_dir=None, on_iteration=N
     """compare_methods on every named problem preset; returns all rows.
 
     `overrides` ({parameter path: value}) are applied to every problem, e.g.
-    {"m": 0.5, "max_iter": 80, "method.penal": 4}; the
+    {"m": 0.5, "max_iter": 80, "interpolation.penal": 4}; the
     results go to <output_dir>/<problem>/compare_methods/, and the combined
     table to <output_dir>/benchmark.csv.
     """
@@ -145,10 +145,11 @@ def referee_compliance(run, density):
     scenario's load cases and weights; the density is clipped to the
     problem's bounds so holes stay holes.
     """
+    from toporia.plugins.interpolations.simp import SIMP
     from toporia.plugins.physics.q4_plane_stress import Q4PlaneStress
     problem = RectangularProblem(run.scenario, run.solver.m)
     engine = Q4PlaneStress()
-    engine.initialize(problem, {"penal": REFEREE_PENAL})
+    engine.initialize(problem, {}, SIMP(REFEREE_PENAL))
     state = engine.solve(np.clip(density, problem.lower_bound, problem.upper_bound))
     return float(sum(weight * engine.compliance(state, case) for case, weight in enumerate(state.weights)))
 

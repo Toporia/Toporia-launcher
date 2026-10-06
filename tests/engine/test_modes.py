@@ -64,8 +64,8 @@ def test_sweep(cfg):
 
 
 def test_sweep_2d(cfg):
-    sweep_2d("volfrac", 0.3, 0.5, 1, "method.penal", 2.0, 3.0, 2, cfg)
-    _assert_output(Path(cfg.output.dir) / "sweep2d_volfrac_vs_method.penal" / "sweep2d_grid.png")
+    sweep_2d("volfrac", 0.3, 0.5, 1, "interpolation.penal", 2.0, 3.0, 2, cfg)
+    _assert_output(Path(cfg.output.dir) / "sweep2d_volfrac_vs_interpolation.penal" / "sweep2d_grid.png")
 
 
 def test_compare_two(cfg):
@@ -91,11 +91,11 @@ def test_sensitivity(cfg):
 
 
 def test_sensitivity_sweep(cfg):
-    grid = sensitivity_sweep("method.penal", 2.0, 3.0, 1, 2, "volfrac", 0.4, 0.05, cfg)
+    grid = sensitivity_sweep("interpolation.penal", 2.0, 3.0, 1, 2, "volfrac", 0.4, 0.05, cfg)
     _assert_output(grid)
 
 
 def test_sensitivity_sweep_2d(cfg):
-    grid = sensitivity_sweep_2d("method.penal", 2.0, 3.0, 1, "filters[0].rmin", 1.5, 2.0, 2,
+    grid = sensitivity_sweep_2d("interpolation.penal", 2.0, 3.0, 1, "filters[0].rmin", 1.5, 2.0, 2,
                                 "volfrac", 0.4, 0.05, cfg)
     _assert_output(grid)

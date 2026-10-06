@@ -29,7 +29,7 @@ from dataclasses import replace
 
 import numpy as np
 
-from toporia.framework.parts.method import OBJECTIVE, Capabilities, OptimizationMethod
+from toporia.framework.parts.method import OBJECTIVE, OptimizationMethod
 
 
 def _subset(settings, params):

@@ -5,7 +5,7 @@
 # updater moves the design.  This module names each part for a given Run, so
 # the console and the GUI show exactly the same chain:
 #
-#     design -> filters -> physics -> objective, constraints -> updater -> design
+#     design -> filters -> physics (material law) -> objective, constraints -> updater -> design
 #
 # Whole methods (the RBF level set) do not split into parts; for those the
 # chain is the method itself.
@@ -22,18 +22,20 @@ from toporia.framework.registry import install_hint, missing_dependencies
 def registries():
     """Every plugin registry, by plugin kind."""
     from toporia.plugins.filters import FILTERS
+    from toporia.plugins.interpolations import INTERPOLATIONS
     from toporia.plugins.methods import METHODS
     from toporia.plugins.models import MODELS
     from toporia.plugins.responses import RESPONSES
     from toporia.plugins.updaters import UPDATERS
-    return {"model": MODELS, "updater": UPDATERS, "filter": FILTERS, "response": RESPONSES, "method": METHODS}
+    return {"model": MODELS, "updater": UPDATERS, "filter": FILTERS, "interpolation": INTERPOLATIONS,
+            "response": RESPONSES, "method": METHODS}
 
 
 def pipeline_parts(run):
     """Every plugin the run uses, as [(kind, class)], each once, in pipeline order.
 
-    The model and the updater (or the whole method), the filters when the
-    method uses them, then the objective and each constraint.
+    The model and the updater (or the whole method), the material law and the
+    filters when the method uses them, then the objective and each constraint.
     """
     from toporia.plugins.methods import method_class
     found = registries()
@@ -42,6 +44,8 @@ def pipeline_parts(run):
         parts = [("model", method_cls.model), ("updater", method_cls.updater)]
     else:
         parts = [("method", method_cls)]
+    if method_cls.capabilities.accepts_interpolation:
+        parts.append(("interpolation", found["interpolation"].get(run.solver.interpolation.get("type", "simp"))))
     if method_cls.capabilities.accepts_filters:
         parts += [("filter", found["filter"].get(spec.get("type", "density"))) for spec in run.solver.filter_specs]
     parts.append(("response", found["response"].get(run.scenario.objective.get("type", "compliance"))))
@@ -108,6 +112,8 @@ def pipeline_stages(run):
         ("Design", f"{capabilities.variable_kind} per element"),
         ("Filters", filters),
         ("Physics", _labelled("model", method_cls.model)),
+        ("Material", next((_labelled(kind, cls) for kind, cls in parts if kind == "interpolation"),
+                          "inside the model")),
         ("Objective", objective),
         ("Constraints", ", ".join(limits)),
     ]

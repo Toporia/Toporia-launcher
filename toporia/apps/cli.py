@@ -17,7 +17,7 @@ defaults) is used.
 Every command that runs accepts --out DIR and any number of --set PATH=VALUE,
 where PATH is a parameter path:
 
-    toporia run "MBB Beam" --set method=q4+mma --set method.penal=4 --set volfrac=0.3
+    toporia run "MBB Beam" --set method=q4+mma --set interpolation.penal=4 --set volfrac=0.3
 
 VALUE is parsed as JSON when it can be (numbers, lists, objects) and taken as a
 plain string otherwise.

@@ -6,6 +6,8 @@
 #     dx <─filter adjoint── dρ <─────────── gradients ─────────────┘
 #
 #   Filters    solver.filter_specs                    (plugins/filters)
+#   Material   solver.interpolation                   (plugins/interpolations), for an
+#              engine that interpolates stiffness from density
 #   Physics    the model's `physics` class            (framework/parts/physics.py, plugins/physics)
 #   Responses  scenario.objective and .constraints    (plugins/responses)
 #
@@ -35,10 +37,20 @@ def _capabilities(physics):
         return [cls for cls in responses_for(role) if cls.computable_on(physics)]
     objectives = computable(OBJECTIVE_ROLE)
     return Capabilities(variable_kind="density", accepts_filters=True,
+                        accepts_interpolation=physics.uses_interpolation,
                         objectives=tuple(cls.name for cls in objectives),
                         constraints=tuple(cls.name for cls in computable(CONSTRAINT_ROLE)),
                         max_constraints=None,
                         needs_constraint=tuple(cls.name for cls in objectives if cls.needs_constraint))
+
+
+def material_law(solver):
+    """The Interpolation named by solver.interpolation, with its parameters validated."""
+    from toporia.framework.params import resolve_params
+    from toporia.plugins.interpolations import INTERPOLATIONS
+    spec = dict(solver.interpolation)
+    cls = INTERPOLATIONS.get(spec.pop("type", "simp"))
+    return cls(**resolve_params(f"interpolation {cls.name!r}", cls.params, spec))
 
 
 class AssembledModel(Model):
@@ -71,7 +83,7 @@ class AssembledModel(Model):
             )
 
         self.engine = type(self).physics()
-        self.engine.initialize(problem, settings)
+        self.engine.initialize(problem, settings, material_law(solver) if self.physics.uses_interpolation else None)
         self.lb, self.ub = problem.lower_bound, problem.upper_bound
         self.volume_limit = scenario.volfrac * n_total
         self.pipeline = DensityFilterPipeline(problem, solver)

@@ -26,9 +26,9 @@ which every response and filter in the library applies to it unchanged.
 
 Two consequences worth knowing before adding anything here:
 
-- **The SIMP interpolation is hard-coded** in `solve_fea`, as
-  `E = Emin + ρᵖ(E₀ − Emin)`. Making it a choice is what RAMP and multi-material need —
-  see [`methods/`](../methods/README.md).
+- **The material law is a part of its own.** The engine declares `uses_interpolation`, so
+  SIMP, RAMP or any law in [`interpolations/`](../interpolations/README.md) can be chosen
+  in the solver; it no longer has a `penal` of its own.
 - **Q4 under-integrates bending and produces checkerboards**, which is the historical
   reason the filters in [`filters/`](../filters/README.md) exist at all. A higher-order or
   mixed element changes that story, so "which element" is a legitimate comparison axis and

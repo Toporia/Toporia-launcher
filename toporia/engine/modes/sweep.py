@@ -5,7 +5,7 @@
 #   sweep_2d  two parameters, one along the rows and one along the columns,
 #             to see how they interact (e.g. volfrac × mesh resolution m)
 #
-# Any parameter path works ("volfrac", "method.penal", "filters[1].beta",
+# Any parameter path works ("volfrac", "interpolation.penal", "filters[1].beta",
 # "load_cases[0].Fa"; see framework/problem/run.py).  Each cell is a complete
 # run with its own output folder; the final designs are then laid out as one
 # image, sweep_grid.png or sweep2d_grid.png.

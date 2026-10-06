@@ -8,7 +8,6 @@
 from abc import ABC, abstractmethod
 
 
-
 class Updater(ABC):
     """How the design moves: an Evaluation in, the next design out.
 

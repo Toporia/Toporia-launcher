@@ -10,7 +10,7 @@ evolves its own representation with its own volume control — implements
 This is the layer that decides which shapes are reachable at all. Everything below is a
 different answer to "what *is* the design?".
 
-**Status: 15 selectable in Toporia · 14 with open code · 3 paper only**
+**Status: 15 selectable in Toporia · 14 with open code · 2 paper only**
 
 | Label | Meaning |
 | :-- | :-- |
@@ -46,7 +46,6 @@ family (`beso`). The families below are not.
 
 | Family | Status | Reference | What it adds |
 | :-- | :-- | :-- | :-- |
-| RAMP interpolation | 📄 | Stolpe & Svanberg, *SMO* 2001 | Rational interpolation with non-vanishing sensitivity at ρ=0. Better behaved for design-dependent loads and some non-linear problems, and a prerequisite for pressure loads. Our SIMP law is hard-coded in [`fe/q4_plane_stress.py`](../physics/q4_plane_stress.py); making the interpolation a choice is a small change and a real comparison axis. |
 | Homogenisation | 📄 | Bendsøe & Kikuchi, *CMAME* 1988 | The original formulation: microstructure density and orientation as variables. Now mainly a route into multiscale work. |
 | TOBS — binary + integer programming | 🔗 [101-line MATLAB](https://link.springer.com/article/10.1007/s00158-020-02719-9) | Sivapuram & Picelli 2018; Picelli et al., *SMO* 2021 | Strictly {0,1} variables with several constraints handled explicitly. Needs the ILP updater in [`updaters/`](../updaters/README.md). |
 | Multi-material | 🔗 [PolyMat](https://dl.acm.org/doi/abs/10.1007/s00158-018-2094-0) | Stegmann & Lund 2005 (DMO); Tavakoli & Mohseni, *SMO* 2014; Zuo & Saitou, *SMO* 2017 (ordered SIMP) | Three competing schemes: ordered SIMP (one variable, cost-scaled), DMO/SFP (one variable per material), alternating active phase (a sequence of two-phase problems). |

@@ -16,7 +16,7 @@ from scipy.sparse import coo_matrix  # sparse matrix in coordinate format
 from scipy.sparse.linalg import spsolve  # sparse direct linear solver
 
 from toporia.framework.parts.physics import ELASTIC_ENERGY, STRESS, Physics
-from toporia.plugins.shared_params import PENAL
+from toporia.plugins.interpolations.simp import SIMP
 
 # ── Finite element utilities ──────────────────────────────────────────────────
 
@@ -224,17 +224,20 @@ class Q4Solution:
         self.compliances = compliances
 
 
-def _solve(problem, density, penal):
-    """Assemble and solve the global FE system for all load cases."""
+def _solve(problem, density, material):
+    """Assemble and solve the global FE system for all load cases.
+
+    `material` is the material law (an Interpolation): E(ρ) per element.
+    """
     layout = dof_layout(problem)   # DOF indices + force vectors (cached)
     # Real element size: only the aspect ratio matters in 2-D, but passing it
     # makes non-square meshes correct and mirrors what a 3-D solver must do.
     KE     = element_stiffness(problem.scenario.nu, problem.dx, problem.dy)
     edof   = element_dofs(problem)         # nelx*nely × 8 DOF index map
 
-    # SIMP stiffness: flatten density to 1-D (column-major) then apply penalty.
+    # Element stiffness from the material law, on the density flattened column-major.
     x         = density.reshape(-1, order="F")
-    stiffness = problem.scenario.Emin + x**penal * (problem.scenario.E0 - problem.scenario.Emin)
+    stiffness = material.stiffness(x, problem.scenario.E0, problem.scenario.Emin)
 
     # Assemble global sparse stiffness matrix K using triplet (COO) format.
     # iK, jK are row/col indices; sK are the values — all from the element contributions.
@@ -283,7 +286,7 @@ def solve_fea(problem, density, penal):
     ce         : (nely × nelx) weighted element compliance energy
     compliance : scalar total weighted compliance (the objective)
     """
-    solution = _solve(problem, density, penal)
+    solution = _solve(problem, density, SIMP(penal))
     ce         = np.zeros((problem.nely, problem.nelx))
     compliance = 0.0
     for weight, ce_k, C_k in zip(solution.weights, solution.energies, solution.compliances):
@@ -299,19 +302,21 @@ class Q4PlaneStress(Physics):
     """Linear elasticity, 2-D plane stress, bilinear Q4 elements, SIMP material.
 
     Answers every question of framework.parts.physics: the compliance and strain energies,
-    and the element stresses and adjoint solves a stress response needs.
+    and the element stresses and adjoint solves a stress response needs.  The
+    material law is the solver's interpolation (SIMP p = 3 by default).
     """
 
     name = "q4_plane_stress"
     label = "2-D Q4 plane stress (Toporia)"
     order = 10
-    params = (PENAL,)
     provides = (ELASTIC_ENERGY, STRESS)
+    uses_interpolation = True
 
-    def initialize(self, problem, settings):
+    def initialize(self, problem, settings, interpolation=None):
         scenario = problem.scenario
         self.problem = problem
-        self.penal = settings["penal"]
+        # The material law; SIMP with p = 3 unless the solver chose another.
+        self.material = interpolation if interpolation is not None else SIMP()
         self.layout = dof_layout(problem)
         self.edof = element_dofs(problem)
         self.KE = element_stiffness(scenario.nu, problem.dx, problem.dy)
@@ -319,7 +324,7 @@ class Q4PlaneStress(Physics):
         self.shape = (problem.nely, problem.nelx)
 
     def solve(self, density):
-        return _solve(self.problem, density, self.penal)
+        return _solve(self.problem, density, self.material)
 
     # Per-element arrays follow the column-major element numbering of edof;
     # these two convert them to and from fields shaped like the density.
@@ -332,7 +337,7 @@ class Q4PlaneStress(Physics):
 
     def stiffness_slope(self, state):
         scenario = self.problem.scenario
-        return self.penal * (scenario.E0 - scenario.Emin) * state.density ** (self.penal - 1.0)
+        return self.material.slope(state.density, scenario.E0, scenario.Emin)
 
     def compliance(self, state, case):
         return state.compliances[case]

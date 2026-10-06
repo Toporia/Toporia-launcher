@@ -36,8 +36,10 @@ class Physics(ABC):
     Class attributes describe the engine, as for every other plugin:
 
         name, label, order   registry key, menu text, menu position
-        params               tunable parameters (framework.params.Param), e.g. a SIMP penalty
+        params               tunable parameters (framework.params.Param)
         provides             the feature names (ELASTIC_ENERGY, STRESS, ...) it answers
+        uses_interpolation   True when material stiffness comes from a material law
+                             (framework/parts/interpolation.py) chosen in the solver
 
     Only `initialize` and `solve` are required.  The other methods belong to a
     feature; implement the ones of every feature listed in `provides`.
@@ -48,10 +50,16 @@ class Physics(ABC):
     order = 100
     params = ()
     provides = ()
+    uses_interpolation = False
 
     @abstractmethod
-    def initialize(self, problem, settings):
-        """Prepare for a run.  `settings` holds this engine's own Param values."""
+    def initialize(self, problem, settings, interpolation=None):
+        """Prepare for a run.
+
+        `settings` holds this engine's own Param values.  `interpolation` is the
+        material law (framework.parts.interpolation.Interpolation) for an engine
+        that declares uses_interpolation; None means the engine's default.
+        """
 
     @abstractmethod
     def solve(self, density):

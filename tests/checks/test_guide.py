@@ -28,7 +28,7 @@ def _plugins(block):
 
 def test_the_guide_has_an_example_of_every_kind_it_teaches():
     kinds = [re.search(r"# example: (\w+)", block).group(1) for block in BLOCKS]
-    assert kinds == ["updater", "external", "filter", "response"]
+    assert kinds == ["updater", "external", "filter", "interpolation", "response"]
 
 
 @pytest.mark.parametrize("block", BLOCKS, ids=[re.search(r"# example: (\w+)", b).group(1) for b in BLOCKS])

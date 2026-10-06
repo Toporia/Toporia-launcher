@@ -167,9 +167,9 @@ def test_check_parts_runs_the_conformance_test_on_the_selected_pipeline(window):
     lines = []
     assert runner.run_check(cfg, lines.append)
     text = "\n".join(lines)
-    for part in ("model:q4", "updater:oc", "filter:density", "response:compliance"):
+    for part in ("model:q4", "updater:oc", "interpolation:simp", "filter:density", "response:compliance"):
         assert part in text
-    assert "4 of 4 parts conform" in text
+    assert "5 of 5 parts conform" in text
     assert window.mode.findText("Check Parts") >= 0
 
 
@@ -190,3 +190,24 @@ def test_compare_methods_lists_every_method_and_runs_the_ticked_ones(window, tmp
     log = "\n".join(lines)
     assert "referee_compliance" in log and "q4+oc" in log and "levelset" in log
     window.cmg.set_selected(window.cmg.DEFAULT)
+
+
+def test_the_material_law_panel_follows_the_method(window):
+    from toporia.apps.gui import runner
+    window._on_config_changed("MBB Beam")
+    window.core.select_method("q4+oc")
+    assert not window.material.isHidden()
+    window.material.load_spec({"type": "ramp", "q": 5.0})
+    cfg = runner.build_config(window.core, window.lc, window.filters, base_cfg=window._base_cfg,
+                              objective=window.objective, constraints=window.constraints,
+                              interpolation=window.material)
+    assert cfg.solver.interpolation == {"type": "ramp", "q": 5.0}
+    offered = [window.sg.param.itemData(i) for i in range(window.sg.param.count())]
+    assert "interpolation.q" in offered
+    assert dict(window.pipeline.stages())["Material"] == "RAMP (rational)"
+
+    window.core.select_method("pymoto")     # brings its own SIMP inside its network
+    assert window.material.isHidden()
+    assert dict(window.pipeline.stages())["Material"] == "inside the model"
+    window.material.load_spec({"type": "simp"})
+    window.core.select_method("q4+oc")

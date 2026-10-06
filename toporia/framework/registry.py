@@ -16,8 +16,8 @@
 #
 #      and after `pip install my_package` its plugins appear in the menus,
 #      the CLI and the configs, without touching Toporia.  The groups are
-#      toporia.methods, toporia.models, toporia.updaters, toporia.filters and
-#      toporia.responses.
+#      toporia.methods, toporia.models, toporia.updaters, toporia.filters,
+#      toporia.interpolations and toporia.responses.
 #   3. By hand, with register() — from a notebook, a script or a test.
 #
 # A plugin that fails to import does not take the others down with it: the

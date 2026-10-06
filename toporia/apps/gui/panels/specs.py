@@ -197,15 +197,16 @@ class SpecListGroup(QWidget):
         self.changed.emit()
 
 
-class ObjectiveGroup(QWidget):
-    """What the scenario minimises: one spec row generated from the response declarations."""
+class SingleSpecGroup(QWidget):
+    """One spec row in a titled, folding section: the objective, the material law."""
     changed = Signal()
+    title = ""
 
     def __init__(self, classes, parent=None):
         super().__init__(parent)
         outer = QVBoxLayout(self)
         outer.setContentsMargins(0, 0, 0, 0)
-        section = CollapsibleSection("Objective", expanded=False)
+        section = CollapsibleSection(self.title, expanded=False)
         self._row = _SpecRow(classes)
         self._row.changed.connect(self.changed.emit)
         section.body_layout.addWidget(self._row)
@@ -215,3 +216,17 @@ class ObjectiveGroup(QWidget):
     def set_allowed(self, names): self._row.set_allowed(names)
     def get_spec(self):       return self._row.get_spec()
     def load_spec(self, spec):    self._row.load_spec(spec)
+
+
+class ObjectiveGroup(SingleSpecGroup):
+    """What the scenario minimises, from the response declarations."""
+    title = "Objective"
+
+
+class MaterialGroup(SingleSpecGroup):
+    """The material law (SIMP, RAMP, ...), from the interpolation declarations.
+
+    Hidden when the selected method brings its own (the pyMOTO model) or has
+    none (the level set); the Pipeline box then says "Material: inside the model".
+    """
+    title = "Material law"

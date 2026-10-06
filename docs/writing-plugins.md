@@ -19,6 +19,7 @@ design x ──Filter──> density ρ ──Physics──> state ──Respons
 | an update rule (OC, MMA, BESO, a new idea)       | updater                  | `Updater`                   | `plugins/updaters/` · `toporia.updaters` |
 | a library that runs its own loop (SciPy, NLopt)  | updater                  | `ExternalOptimizer`         | `plugins/updaters/` · `toporia.updaters` |
 | a smoothing, projection or fabrication rule      | filter                   | `Filter`                    | `plugins/filters/` · `toporia.filters` |
+| a material law (density → stiffness)             | interpolation            | `Interpolation`             | `plugins/interpolations/` · `toporia.interpolations` |
 | an objective or constraint                       | response                 | `Response`                  | `plugins/responses/` · `toporia.responses` |
 | a finite-element solver or other physics         | physics engine + model   | `Physics`, `AssembledModel` | `plugins/physics/`, `plugins/models/` · `toporia.models` |
 | a method that does not split into the above      | whole method             | `OptimizationMethod`        | `plugins/methods/` · `toporia.methods` |
@@ -228,6 +229,35 @@ class BoxAverage(Filter):
 A filter whose `backward` is deliberately not the derivative (the classic sensitivity
 filter) sets `exact_adjoint = False`; one with a continuation schedule implements
 `step(iteration)`. Constructor keyword arguments are its `params`.
+
+## A material law
+
+How density becomes stiffness is a part of its own: `stiffness(density, E0, Emin)` and its
+`slope`, element-wise. Every physics engine that declares `uses_interpolation` takes it,
+and the solver chooses it, `{"type": "linear"}`. The variable-thickness sheet — no
+penalisation at all, the problem Rossow and Taylor solved before topology optimisation
+had a name — is the baseline every penalised law is measured against:
+
+```python
+# example: interpolation
+from toporia.api import Interpolation
+
+
+class Linear(Interpolation):
+    """E = Emin + ρ (E0 − Emin): the variable-thickness sheet (Rossow & Taylor 1973)."""
+
+    name = "guide_linear"
+    label = "Linear (guide example)"
+
+    def stiffness(self, density, E0, Emin):
+        return Emin + density * (E0 - Emin)
+
+    def slope(self, density, E0, Emin):
+        return (E0 - Emin) + 0.0 * density      # shaped like the density
+```
+
+`toporia check interpolation:<name>` checks E(0) = Emin, E(1) = E0, that E increases, the
+slope against finite differences, and a short run.
 
 ## A response
 
