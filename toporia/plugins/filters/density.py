@@ -1,4 +1,4 @@
-# filter_density.py — DensityFilter (spatial averaging filter)
+# plugins/filters/density.py — DensityFilter (spatial averaging filter)
 #
 # Weighted-average filter over a circular neighbourhood of radius rmin.
 # Enforces a minimum length scale and prevents checkerboard patterns.
@@ -11,16 +11,8 @@
 import numpy as np
 from scipy.sparse import coo_matrix
 
-from toporia.framework.params import Param
 from toporia.framework.parts.filter import Filter
-
-# Shared by the sensitivity filter and the pyMOTO method, which apply the same
-# neighbourhood radius and should present it identically.
-RMIN = Param(
-    "rmin", 1.5, "Radius",
-    "Filter radius in elements. Sets the minimum member size and suppresses checkerboarding.",
-    min=0.5, max=20.0, step=0.5, decimals=2, units="el",
-)
+from toporia.plugins.shared_params import RMIN
 
 
 class DensityFilter(Filter):

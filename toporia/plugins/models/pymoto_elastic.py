@@ -29,11 +29,9 @@ import numpy as np
 from toporia.framework.parts.method import Capabilities
 from toporia.framework.parts.model import ConstraintValue, Evaluation, Model
 from toporia.framework.parts.response import CONSTRAINT_ROLE, OBJECTIVE_ROLE
-from toporia.plugins.filters.filter_density import RMIN
 from toporia.plugins.responses import resolve_response
 from toporia.plugins.responses.stress import VON_MISES_2D
-
-from ._common import PENAL
+from toporia.plugins.shared_params import PENAL, RMIN
 
 IMPORT_HINT = (
     "This requires the optional pyMOTO dependency.\n"

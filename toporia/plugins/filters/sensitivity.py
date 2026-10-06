@@ -1,4 +1,4 @@
-# filter_sensitivity.py — SensitivityFilter (heuristic sensitivity filter)
+# plugins/filters/sensitivity.py — SensitivityFilter (heuristic sensitivity filter)
 #
 # This implements the classic sensitivity-filter approach from the top88 MATLAB code:
 #   - Physical density = design variable (no spatial smoothing of densities)
@@ -10,14 +10,13 @@
 # OC update uses dv=1 exactly, matching the original top88 behaviour.
 #
 # NOTE: this is a heuristic, not a proper chain-rule adjoint.  The density
-# filter (filter_density.py) with adjoint propagation is recommended for new work.
+# filter (density.py) with adjoint propagation is recommended for new work.
 
 import numpy as np
 from scipy.sparse import coo_matrix
 
 from toporia.framework.parts.filter import Filter
-
-from .filter_density import RMIN
+from toporia.plugins.shared_params import RMIN
 
 
 class SensitivityFilter(Filter):

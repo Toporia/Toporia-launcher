@@ -1,4 +1,4 @@
-# filter_am.py — AMFilter (additive manufacturing overhang constraint)
+# plugins/filters/am.py — AMFilter (additive manufacturing overhang constraint)
 #
 # Direct port of AMfilter.m by Langelaar (2016),
 # DOI: 10.1007/s00158-016-1522-2
@@ -100,8 +100,6 @@ class AMFilter(Filter):
             # Add 1e-9 before truncating to avoid floating-point edge cases
             # (e.g. tan(45°) computes as 0.9999…999 → would floor to 0 without it).
             self._half = max(0, int(np.tan(np.radians(self.overhang_angle)) + 1e-9))
-
-    def setup(self, problem, solver): pass
 
     def _nrot(self):
         # CCW 90° rotations to bring the baseplate to xr[nely-1,:].

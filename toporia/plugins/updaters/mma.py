@@ -16,8 +16,7 @@ import numpy as np
 
 from toporia.framework.params import Param
 from toporia.framework.parts.updater import Updater
-
-from ._common import MOVE
+from toporia.plugins.shared_params import MOVE
 
 
 class MMAUpdater(Updater):

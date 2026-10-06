@@ -13,8 +13,7 @@
 import numpy as np
 
 from toporia.framework.parts.updater import Updater
-
-from ._common import MOVE
+from toporia.plugins.shared_params import MOVE
 
 
 class OCUpdater(Updater):

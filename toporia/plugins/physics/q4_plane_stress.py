@@ -16,7 +16,7 @@ from scipy.sparse import coo_matrix  # sparse matrix in coordinate format
 from scipy.sparse.linalg import spsolve  # sparse direct linear solver
 
 from toporia.framework.parts.physics import ELASTIC_ENERGY, STRESS, Physics
-from toporia.plugins.models._common import PENAL
+from toporia.plugins.shared_params import PENAL
 
 # ── Finite element utilities ──────────────────────────────────────────────────
 

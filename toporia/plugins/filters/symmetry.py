@@ -1,4 +1,4 @@
-# filter_symmetry.py - SymmetryFilter (mirror-average density constraint)
+# plugins/filters/symmetry.py - SymmetryFilter (mirror-average density constraint)
 #
 # Enforces geometric symmetry by replacing the incoming density field with the
 # average of itself and its mirrored copy. The operation is linear and

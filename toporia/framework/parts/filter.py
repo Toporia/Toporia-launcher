@@ -1,98 +1,99 @@
-# filter_base.py — Filter ABC and FilterChain orchestrator
+# framework/parts/filter.py — a filter, and a chain of them.
 #
-# Every filter declares name, label and params (see Filter below), and implements:
-#   setup(problem, solver)      — called once, precomputes expensive data
-#   forward(x)                  — density field transform: x → xf
-#   backward(x_in, sensitivity) — chain-rule adjoint: ds/dx given ds/dxf
-#   backward_volume(x_in, s)    — adjoint for the volume sensitivity (dv).
-#                                 Defaults to the same as backward().
-#                                 SensitivityFilter overrides this to identity
-#                                 because dv is not filtered by SensitivityFilter.
+# A filter maps design variables to physical densities and carries the chain
+# rule back the other way.  Filters stack into a FilterChain, so a density
+# filter, a projection and a fabrication rule can be combined and the
+# sensitivities stay consistent through all of them:
 #
-# FilterChain wires N filters together:
-#   forward  applies them left-to-right, storing the x entering each filter
-#            so nonlinear backward passes have access to those intermediates.
-#   backward applies them right-to-left using the stored intermediates.
+#     x ──f1.forward──> x1 ──f2.forward──> x2 ── ... ──> physical density
+#     dx <─f1.backward── dx1 <─f2.backward── dx2 <── ... ── sensitivity
+#
+# A filter implements:
+#
+#   setup(problem, solver)        once, before the run: precompute what is expensive
+#   forward(x)                    the design → the filtered field
+#   backward(x_in, sensitivity)   the chain rule: d/dx given d/d(forward(x)); x_in is
+#                                 the field that entered forward(), for nonlinear filters
+#   step(iteration)               once per iteration: advance a continuation schedule
+#                                 (Heaviside's β doubling); does nothing by default
+#   backward_volume(x_in, s)      the chain rule for the volume's sensitivity; the
+#                                 same as backward() unless a filter deliberately
+#                                 treats volume differently (the sensitivity filter)
+#
+# The conformance test (toporia/checks) checks backward() against finite
+# differences, unless the filter declares exact_adjoint = False.
 
 from abc import ABC, abstractmethod
 
 
 class Filter(ABC):
+    """Design variables → physical density, and the chain rule back."""
+
     #: Registry key used in filter specs: {"type": name, ...}.  Empty = abstract.
     name = ""
     #: Human-readable name for menus.
     label = ""
     #: Menu position; lower comes first.
     order = 100
-    #: Tunable parameters (core.params.Param).  The constructor must accept each
-    #: one as a keyword argument of the same name.
+    #: Tunable parameters (framework.params.Param).  The constructor must accept
+    #: each one as a keyword argument of the same name.
     params = ()
     #: True when backward() is the exact chain rule of forward().  The
     #: conformance test checks it against finite differences; a heuristic
     #: (the classic sensitivity filter) declares False and is not checked.
     exact_adjoint = True
 
-    def setup(self, problem, solver): pass
+    def setup(self, problem, solver):
+        """Prepare for a run (neighbour weights, masks, ...).  Called once."""
 
     @abstractmethod
-    def forward(self, x): ...
+    def forward(self, x):
+        """Return the filtered field for design field x."""
 
     @abstractmethod
-    def backward(self, x_in, sensitivity): ...
+    def backward(self, x_in, sensitivity):
+        """Return d(objective)/dx, given `sensitivity` = d(objective)/d(forward(x_in))."""
+
+    def step(self, iteration):
+        """Advance a continuation schedule, once per iteration.  Does nothing by default."""
 
     def backward_volume(self, x_in, sensitivity):
-        """Adjoint for volume sensitivity.  Defaults to the same as backward().
-        Override in filters where volume sensitivity should NOT be filtered."""
+        """The chain rule for the volume's sensitivity.  The same as backward() by default."""
         return self.backward(x_in, sensitivity)
 
 
 class FilterChain:
-    """Ordered sequence of filters with a shared forward / backward pass."""
+    """Filters applied in order, with one forward and one backward pass through all of them."""
 
     def __init__(self, filters):
         self.filters = list(filters)
-        self._x_ins  = []   # x entering each filter, stored during forward pass
+        self._inputs = []   # the field entering each filter, kept from the last forward pass
 
     def setup(self, problem, solver):
-        for f in self.filters:
-            f.setup(problem, solver)
-
-    # ── forward / backward ────────────────────────────────────────────────────
+        for filt in self.filters:
+            filt.setup(problem, solver)
 
     def forward(self, x):
-        """Apply all filters left-to-right; store input at each stage."""
-        self._x_ins = []
-        out = x
-        for f in self.filters:
-            self._x_ins.append(out)
-            out = f.forward(out)
-        return out
+        """Apply every filter left to right, remembering what entered each."""
+        self._inputs = []
+        for filt in self.filters:
+            self._inputs.append(x)
+            x = filt.forward(x)
+        return x
 
     def backward(self, sensitivity):
-        """Compliance sensitivity: apply adjoints right-to-left."""
-        s = sensitivity
-        for i in range(len(self.filters) - 1, -1, -1):
-            s = self.filters[i].backward(self._x_ins[i], s)
-        return s
+        """Carry a sensitivity back through every filter, right to left."""
+        for filt, x_in in zip(reversed(self.filters), reversed(self._inputs)):
+            sensitivity = filt.backward(x_in, sensitivity)
+        return sensitivity
 
     def backward_volume(self, sensitivity):
-        """Volume sensitivity: apply adjoints right-to-left via backward_volume.
-        For SensitivityFilter this leaves dv unchanged; for all other
-        filters it is identical to backward()."""
-        s = sensitivity
-        for i in range(len(self.filters) - 1, -1, -1):
-            s = self.filters[i].backward_volume(self._x_ins[i], s)
-        return s
-
-    # ── convenience helpers ───────────────────────────────────────────────────
+        """Carry the volume's sensitivity back, through each filter's backward_volume."""
+        for filt, x_in in zip(reversed(self.filters), reversed(self._inputs)):
+            sensitivity = filt.backward_volume(x_in, sensitivity)
+        return sensitivity
 
     def step(self, iteration):
-        """Per-iteration hook — used by HeavisideFilter for beta continuation."""
-        for f in self.filters:
-            if hasattr(f, "step"):
-                f.step(iteration)
-
-    @property
-    def heaviside_filters(self):
-        from .filter_heaviside import HeavisideFilter
-        return [f for f in self.filters if isinstance(f, HeavisideFilter)]
+        """Let every filter advance its continuation schedule."""
+        for filt in self.filters:
+            filt.step(iteration)

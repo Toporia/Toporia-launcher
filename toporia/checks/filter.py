@@ -32,8 +32,7 @@ def check_filter(cls):
     filt = cls(**resolve_params(cls.name, cls.params, {}))
     with report.step("forward: shape and range"):
         filt.setup(problem, run.solver)
-        if hasattr(filt, "step"):
-            filt.step(10_000)        # end of any continuation: the sharpest, least linear state
+        filt.step(10_000)        # end of any continuation: the sharpest, least linear state
         rng = np.random.default_rng(0)
         x = rng.uniform(0.05, 0.95, (problem.nely, problem.nelx))
         y = filt.forward(x)

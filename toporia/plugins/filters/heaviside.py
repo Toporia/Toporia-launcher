@@ -1,4 +1,4 @@
-# filter_heaviside.py — HeavisideFilter (projection, binarisation with beta continuation)
+# plugins/filters/heaviside.py — HeavisideFilter (projection, binarisation with beta continuation)
 #
 # Maps intermediate densities toward crisp 0/1 values using:
 #   xf = (tanh(β·η) + tanh(β·(x − η))) / (tanh(β·η) + tanh(β·(1 − η)))
@@ -49,8 +49,6 @@ class HeavisideFilter(Filter):
         self.eta           = float(eta)
         self.beta_max      = float(beta_max)
         self.beta_interval = int(beta_interval)
-
-    def setup(self, problem, solver): pass
 
     def forward(self, x):
         b, e = self.beta, self.eta
