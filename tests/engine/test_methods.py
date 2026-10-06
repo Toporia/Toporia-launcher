@@ -53,6 +53,15 @@ def test_a_method_that_cannot_take_part_is_listed_with_its_reason(tmp_path):
     assert ran["status"] == "ran"
 
 
+def test_a_method_that_cannot_move_the_chosen_design_is_skipped_with_its_reason(tmp_path):
+    run = _small(representation={"type": "mmc"}, max_iter=2,
+                 method_params={"move": 0.02}).with_output_dir(tmp_path)
+    _, rows = compare_methods(["q4+oc", "q4+mma"], run)
+    skipped, ran = rows
+    assert skipped["status"] == "skipped" and "one density per element" in skipped["stop_reason"]
+    assert ran["status"] == "ran"
+
+
 def test_one_methods_settings_do_not_stop_another(tmp_path):
     """The GUI passes the selected method's parameters; a different method must ignore them."""
     run = _small(method_params={"move": 0.1, "mma_tol": 1e-3}).with_output_dir(tmp_path)

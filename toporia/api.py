@@ -18,6 +18,7 @@
 #   kind       base                          entry-point group
 #   model      Model (or AssembledModel)     toporia.models
 #   updater    Updater (or ExternalOptimizer) toporia.updaters
+#   representation  Representation           toporia.representations
 #   filter     Filter                        toporia.filters
 #   interpolation  Interpolation             toporia.interpolations
 #   response   Response                      toporia.responses
@@ -36,6 +37,7 @@ from toporia.framework.parts.interpolation import Interpolation
 from toporia.framework.parts.method import OBJECTIVE, Capabilities, OptimizationMethod
 from toporia.framework.parts.model import ConstraintValue, Evaluation, Model
 from toporia.framework.parts.physics import ELASTIC_ENERGY, STRESS, Physics
+from toporia.framework.parts.representation import Representation
 from toporia.framework.parts.response import CONSTRAINT_ROLE, OBJECTIVE_ROLE, Response, ResponseValue
 from toporia.framework.parts.updater import Updater
 from toporia.framework.registry import install_hint, missing_dependencies
@@ -44,12 +46,13 @@ from toporia.plugins.interpolations import INTERPOLATIONS
 from toporia.plugins.methods import METHODS, method_class
 from toporia.plugins.models import MODELS
 from toporia.plugins.models.assembled import AssembledModel
+from toporia.plugins.representations import REPRESENTATIONS
 from toporia.plugins.responses import RESPONSES
 from toporia.plugins.updaters import UPDATERS
 
 #: Every registry, by plugin kind.
-REGISTRIES = {"model": MODELS, "updater": UPDATERS, "filter": FILTERS, "interpolation": INTERPOLATIONS,
-              "response": RESPONSES, "method": METHODS}
+REGISTRIES = {"model": MODELS, "updater": UPDATERS, "representation": REPRESENTATIONS, "filter": FILTERS,
+              "interpolation": INTERPOLATIONS, "response": RESPONSES, "method": METHODS}
 
 
 def plugin_errors():
@@ -65,11 +68,12 @@ __all__ = [
     "Model", "AssembledModel", "Physics", "ELASTIC_ENERGY", "STRESS", "Evaluation", "ConstraintValue",
     # how the design moves
     "Updater", "ExternalOptimizer", "Verdict", "FlatProblem", "VOLUME_BUDGET",
-    # regularisation, material law and responses
-    "Filter", "Interpolation", "Response", "ResponseValue", "OBJECTIVE_ROLE", "CONSTRAINT_ROLE",
+    # design variables, regularisation, material law and responses
+    "Representation", "Filter", "Interpolation", "Response", "ResponseValue", "OBJECTIVE_ROLE", "CONSTRAINT_ROLE",
     # whole methods
     "OptimizationMethod", "Capabilities", "OBJECTIVE", "compose", "method_class",
     # declarations, discovery, checking
-    "Param", "REGISTRIES", "METHODS", "MODELS", "UPDATERS", "FILTERS", "INTERPOLATIONS", "RESPONSES",
+    "Param", "REGISTRIES", "METHODS", "MODELS", "UPDATERS", "REPRESENTATIONS", "FILTERS", "INTERPOLATIONS",
+    "RESPONSES",
     "missing_dependencies", "install_hint", "plugin_errors", "conformance",
 ]

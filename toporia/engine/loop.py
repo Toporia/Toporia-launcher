@@ -25,7 +25,7 @@ from toporia.framework.parts.method import OBJECTIVE
 from toporia.framework.problem.mesh import RectangularProblem
 from toporia.framework.registry import install_hint, missing_dependencies
 
-from .pipeline import describe_pipeline
+from .pipeline import describe_pipeline, representation_used, solver_problems
 from .records import ResultStore, check_limits, describe_violations, run_record
 
 
@@ -50,9 +50,15 @@ def initialized_method(run):
         advice = f"Methods that can: {able}." if able else "No registered method can."
         raise ValueError(f"Method {method_cls.name!r} cannot solve this scenario: "
                          f"{'; '.join(reasons)}. {advice}")
+    reasons = solver_problems(method_cls, run.solver)
+    if reasons:
+        raise ValueError(f"Method {method_cls.name!r} cannot run with these parts: {'; '.join(reasons)}.")
     (objective_cls, _), _ = check_responses(run.scenario)
     if objective_cls.advice:
         print(f"note: {objective_cls.advice}")
+    representation = representation_used(method_cls, run.solver)
+    if representation is not None and representation.advice:
+        print(f"note: {representation.label}: {representation.advice}")
     print(f"  pipeline: {describe_pipeline(run)}")
 
     problem = RectangularProblem(run.scenario, run.solver.m)

@@ -43,6 +43,7 @@ from .panels import (
     MaterialGroup,
     ObjectiveGroup,
     PipelineView,
+    RepresentationGroup,
     SensitivityParamsGroup,
     SensitivitySweep2DParamsGroup,
     SensitivitySweepParamsGroup,
@@ -109,7 +110,9 @@ class MainWindow(QMainWindow):
         self.core    = CoreParamsGroup()
         from toporia.plugins.filters import FILTERS
         from toporia.plugins.interpolations import INTERPOLATIONS
+        from toporia.plugins.representations import REPRESENTATIONS
         from toporia.plugins.responses import CONSTRAINT_ROLE, OBJECTIVE_ROLE, responses_for
+        self.design      = RepresentationGroup(REPRESENTATIONS.classes())
         self.material    = MaterialGroup(INTERPOLATIONS.classes())
         self.objective   = ObjectiveGroup(responses_for(OBJECTIVE_ROLE))
         self.constraints = SpecListGroup("Constraints", responses_for(CONSTRAINT_ROLE), noun="constraint")
@@ -124,7 +127,7 @@ class MainWindow(QMainWindow):
         self.sens    = SensitivityParamsGroup()
         self.ssg     = SensitivitySweepParamsGroup()
         self.ssg2    = SensitivitySweep2DParamsGroup()
-        for g in (self.pipeline, self.core, self.material, self.objective, self.constraints, self.filters, self.lc, self.sg, self.sg2,
+        for g in (self.pipeline, self.core, self.design, self.material, self.objective, self.constraints, self.filters, self.lc, self.sg, self.sg2,
                   self.cg, self.clcg, self.cmg, self.sens, self.ssg, self.ssg2):
             pl.addWidget(g)
 
@@ -133,7 +136,7 @@ class MainWindow(QMainWindow):
         # pipeline or the number of load cases changes.
         self._sweep_groups = (self.sg, self.sg2, self.cg, self.sens, self.ssg, self.ssg2)
         self.lc.cases_changed.connect(self._refresh_parameter_paths)
-        for group in (self.material, self.objective, self.constraints, self.filters):
+        for group in (self.design, self.material, self.objective, self.constraints, self.filters):
             group.changed.connect(self._refresh_parameter_paths)
         self.core.method_changed.connect(self._on_method_changed)
 
@@ -179,6 +182,7 @@ class MainWindow(QMainWindow):
             return
         self._base_cfg = cfg
         self.core.load_from_config(cfg)
+        self.design.load_spec(cfg.solver.representation)
         self.material.load_spec(cfg.solver.interpolation)
         self.objective.load_spec(cfg.scenario.objective)
         self.constraints.load_specs(cfg.scenario.constraints)
@@ -192,6 +196,7 @@ class MainWindow(QMainWindow):
         from toporia.plugins.methods import method_class
         capabilities = method_class(name).capabilities
         self.filters.set_allowed(FILTERS.names() if capabilities.accepts_filters else [])
+        self.design.setVisible(capabilities.accepts_representation)
         self.material.setVisible(capabilities.accepts_interpolation)
         self.objective.set_allowed(capabilities.objectives)
         self.constraints.set_allowed(capabilities.constraints if capabilities.max_constraints != 0 else [])
@@ -203,7 +208,8 @@ class MainWindow(QMainWindow):
         items = parameter_paths(self.core.method_name(), self.filters.get_specs(),
                                 len(self.lc.get_load_cases()),
                                 objective=self.objective.get_spec(), constraints=self.constraints.get_specs(),
-                                interpolation=self.material.get_spec())
+                                interpolation=self.material.get_spec(),
+                                representation=self.design.get_spec())
         for group in self._sweep_groups:
             group.refresh(items)
         self._refresh_pipeline()
@@ -216,8 +222,8 @@ class MainWindow(QMainWindow):
         try:
             cfg = build_config(self.core, self.lc, self.filters, base_cfg=self._base_cfg,
                                objective=self.objective, constraints=self.constraints,
-                               interpolation=self.material)
-            self.pipeline.show_pipeline(pipeline_stages(cfg), pipeline_notes(cfg.solver.method))
+                               interpolation=self.material, representation=self.design)
+            self.pipeline.show_pipeline(pipeline_stages(cfg), pipeline_notes(cfg.solver.method, cfg.solver))
         except (ValueError, KeyError) as error:
             self.pipeline.show_pipeline([], [f"Cannot describe this selection: {error}"])
 
@@ -264,7 +270,7 @@ class MainWindow(QMainWindow):
 
         cfg = runner.build_config(self.core, self.lc, self.filters, base_cfg=self._base_cfg,
                                   objective=self.objective, constraints=self.constraints,
-                               interpolation=self.material)
+                               interpolation=self.material, representation=self.design)
 
         # on_iter is the per-iteration callback passed into the optimisation scripts.
         # It runs inside the optimisation loop after every solver step.

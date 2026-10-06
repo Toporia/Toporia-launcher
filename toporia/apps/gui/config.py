@@ -5,7 +5,8 @@
 # it describes, and that must stay cheap.
 
 
-def build_config(core, lc, filters=None, base_cfg=None, objective=None, constraints=None, interpolation=None):
+def build_config(core, lc, filters=None, base_cfg=None, objective=None, constraints=None, interpolation=None,
+                 representation=None):
     """Read widget values and overlay them on a Run.
 
     core     — CoreParamsGroup widget (scenario fields, method and its parameters)
@@ -14,6 +15,7 @@ def build_config(core, lc, filters=None, base_cfg=None, objective=None, constrai
     objective   — ObjectiveGroup (optional)
     constraints — SpecListGroup of constraints (optional)
     interpolation — MaterialGroup, the material law (optional)
+    representation — RepresentationGroup, what the design variables are (optional)
     base_cfg — Run from the selected preset; provides everything the widgets do
                not expose (geometry, supports, material).  Falls back to the
                default preset if None.
@@ -33,4 +35,6 @@ def build_config(core, lc, filters=None, base_cfg=None, objective=None, constrai
         values["constraints"] = constraints.get_specs()
     if interpolation is not None:
         values["interpolation"] = interpolation.get_spec()
+    if representation is not None:
+        values["representation"] = representation.get_spec()
     return base_cfg.updated(**values)

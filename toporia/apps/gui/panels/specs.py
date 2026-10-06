@@ -198,7 +198,7 @@ class SpecListGroup(QWidget):
 
 
 class SingleSpecGroup(QWidget):
-    """One spec row in a titled, folding section: the objective, the material law."""
+    """One spec row in a titled, folding section: the objective, the material law, the design representation."""
     changed = Signal()
     title = ""
 
@@ -230,3 +230,12 @@ class MaterialGroup(SingleSpecGroup):
     none (the level set); the Pipeline box then says "Material: inside the model".
     """
     title = "Material law"
+
+
+class RepresentationGroup(SingleSpecGroup):
+    """What the design variables are (element densities, moving morphable components, ...).
+
+    Hidden when the selected method keeps its own variables (the pyMOTO model,
+    the level set); the Pipeline box then names the design it uses.
+    """
+    title = "Design representation"

@@ -1,10 +1,12 @@
 # plugins/models/assembled.py — a model assembled from swappable parts.
 #
-# Every density model does the same four things, so they are written once:
+# Every density model does the same five things, so they are written once:
 #
-#     x ──Filters──> ρ ──Physics.solve──> state ──Responses──> objective, constraints
-#     dx <─filter adjoint── dρ <─────────── gradients ─────────────┘
+#     z ──Representation──> x ──Filters──> ρ ──Physics.solve──> state ──Responses──> objective, constraints
+#     dz <──backward─────── dx <─filter adjoint── dρ <─────────── gradients ─────────────┘
 #
+#   Representation  solver.representation         (plugins/representations): what the
+#              design variables z are, and where they start; usually one density per element
 #   Filters    solver.filter_specs                    (plugins/filters)
 #   Material   solver.interpolation                   (plugins/interpolations), for an
 #              engine that interpolates stiffness from density
@@ -37,7 +39,7 @@ def _capabilities(physics):
         return [cls for cls in responses_for(role) if cls.computable_on(physics)]
     objectives = computable(OBJECTIVE_ROLE)
     return Capabilities(variable_kind="density", accepts_filters=True,
-                        accepts_interpolation=physics.uses_interpolation,
+                        accepts_interpolation=physics.uses_interpolation, accepts_representation=True,
                         objectives=tuple(cls.name for cls in objectives),
                         constraints=tuple(cls.name for cls in computable(CONSTRAINT_ROLE)),
                         max_constraints=None,
@@ -51,6 +53,15 @@ def material_law(solver):
     spec = dict(solver.interpolation)
     cls = INTERPOLATIONS.get(spec.pop("type", "simp"))
     return cls(**resolve_params(f"interpolation {cls.name!r}", cls.params, spec))
+
+
+def design_representation(solver):
+    """The Representation named by solver.representation, with its parameters validated."""
+    from toporia.framework.params import resolve_params
+    from toporia.plugins.representations import REPRESENTATIONS
+    spec = dict(solver.representation)
+    cls = REPRESENTATIONS.get(spec.pop("type", "element_density"))
+    return cls(**resolve_params(f"representation {cls.name!r}", cls.params, spec))
 
 
 class AssembledModel(Model):
@@ -84,7 +95,9 @@ class AssembledModel(Model):
 
         self.engine = type(self).physics()
         self.engine.initialize(problem, settings, material_law(solver) if self.physics.uses_interpolation else None)
-        self.lb, self.ub = problem.lower_bound, problem.upper_bound
+        self.representation = design_representation(solver)
+        self.representation.setup(problem)
+        self.lb, self.ub = self.representation.bounds()
         self.volume_limit = scenario.volfrac * n_total
         self.pipeline = DensityFilterPipeline(problem, solver)
 
@@ -109,32 +122,42 @@ class AssembledModel(Model):
         return response
 
     def initial_design(self):
-        problem = self.problem
-        full = np.full((problem.nely, problem.nelx), problem.scenario.volfrac)
-        return np.clip(full, self.lb, self.ub)
+        return self.representation.initial()
 
     def bounds(self):
         return self.lb, self.ub
 
-    def physical(self, x):
-        return self.pipeline.physical_density(x)
+    def physical(self, z):
+        return self.pipeline.physical_density(self.representation.density(z))
 
-    def evaluate(self, x, gradients=True):
-        x_phys = self.physical(x)
+    def _backward(self, z, sensitivity):
+        """A sensitivity w.r.t. the element field x, carried back to the variables z."""
+        if self.representation.element_wise:
+            return sensitivity
+        # Elements in holes and solid rings are overwritten after filtering; with
+        # element densities the flat view leaves them out, here they must not
+        # steer the variables either.
+        return self.representation.backward(z, np.where(self.pipeline.pinned, 0.0, sensitivity))
+
+    def evaluate(self, z, gradients=True):
+        x = self.representation.density(z)
+        x_phys = self.pipeline.physical_density(x)
         state = self.engine.solve(x_phys)
 
         objective = self.objective.evaluate(state, gradient=gradients)
         # Gradients come back with respect to the physical density; the filter
-        # pipeline's adjoint maps them to the design.
+        # pipeline's adjoint maps them to the element field, and the
+        # representation's to the design variables.
         dc = dv = None
         if gradients:
             dc, dv = self.pipeline.sensitivities(objective.gradient, np.ones_like(x))
+            dc, dv = self._backward(z, dc), self._backward(z, dv)
 
         reported = dict(objective.reported)
         constraints = []
         for i, response in enumerate(self.constraints):
             result = response.evaluate(state, gradient=gradients)
-            gradient = self.pipeline.sensitivity(result.gradient) if gradients else None
+            gradient = self._backward(z, self.pipeline.sensitivity(result.gradient)) if gradients else None
             constraints.append(ConstraintValue(response.name, result.value, gradient, exact=result.exact))
             for key, value in result.reported.items():
                 reported[key if len(self.constraints) == 1 else f"{key}_{i}"] = value

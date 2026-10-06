@@ -23,6 +23,7 @@ def test_list_shows_every_registry(capsys):
     assert main(["list"]) == 0
     out = capsys.readouterr().out
     assert "MBB Beam" in out and "density_mma" in out and "heaviside" in out
+    assert "mmc" in out and "ramp" in out          # design representations and material laws too
 
 
 def test_export_then_run_from_the_files(tmp_path):

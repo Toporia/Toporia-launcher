@@ -62,12 +62,14 @@ toporia/
 ├── api.py               the stable imports for plugin authors
 ├── framework/           THE RULES — no mathematics
 │   ├── problem/         scenario · mesh · solver · run · files
-│   ├── parts/           method · model · updater · composition · physics · response · filter · interpolation
+│   ├── parts/           method · model · updater · composition · physics · response · representation ·
+│   │                    filter · interpolation
 │   ├── optimisers/      flat_view · external_loop
 │   ├── params.py        every tunable value, declared once
 │   └── registry.py      finds plugins: here, in installed packages, or by hand
 ├── plugins/             THE PARTS — one folder per kind, each with a README
 │   ├── problems/        benchmark presets
+│   ├── representations/ what the design variables are: element densities, moving morphable components
 │   ├── filters/         design → physical density, and back
 │   ├── interpolations/  the material law: SIMP, RAMP
 │   ├── physics/         finite-element solvers and the engines built on them
@@ -139,6 +141,7 @@ background thread (SciPy's SLSQP); to the engine they look the same.
 | :--- | :--- | :--- |
 | an update rule, or wrap an optimiser library | an updater in `plugins/updaters/` | [docs/writing-plugins.md](../docs/writing-plugins.md) |
 | a filter or fabrication rule | a filter in `plugins/filters/` | 〃 |
+| a new kind of design variable (bars, splines, a network) | a representation in `plugins/representations/` | [plugins/representations/README.md](plugins/representations/README.md) |
 | a material law (density to stiffness) | an interpolation in `plugins/interpolations/` | [plugins/interpolations/README.md](plugins/interpolations/README.md) |
 | an objective or constraint | a response in `plugins/responses/` | 〃 |
 | a new physics or element | a physics engine in `plugins/physics/` and a three-line model | 〃 |

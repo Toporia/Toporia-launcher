@@ -106,7 +106,9 @@ def _run_method(name, base_config, folder, on_iteration):
     row = dict.fromkeys(COLUMNS)
     row.update(method=method_cls.name, label=method_cls.label)
     missing = missing_dependencies(method_cls)
-    reasons = method_cls.capabilities.problems_with(base_config.scenario)
+    from toporia.engine.pipeline import solver_problems
+    reasons = (method_cls.capabilities.problems_with(base_config.scenario)
+               + solver_problems(method_cls, base_config.solver))
     if missing:
         reasons = [f"not installed: {install_hint(missing)}"]
     if reasons:

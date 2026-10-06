@@ -167,9 +167,10 @@ def test_check_parts_runs_the_conformance_test_on_the_selected_pipeline(window):
     lines = []
     assert runner.run_check(cfg, lines.append)
     text = "\n".join(lines)
-    for part in ("model:q4", "updater:oc", "interpolation:simp", "filter:density", "response:compliance"):
+    for part in ("model:q4", "updater:oc", "representation:element_density", "interpolation:simp",
+                 "filter:density", "response:compliance"):
         assert part in text
-    assert "5 of 5 parts conform" in text
+    assert "6 of 6 parts conform" in text
     assert window.mode.findText("Check Parts") >= 0
 
 
@@ -210,4 +211,27 @@ def test_the_material_law_panel_follows_the_method(window):
     assert window.material.isHidden()
     assert dict(window.pipeline.stages())["Material"] == "inside the model"
     window.material.load_spec({"type": "simp"})
+    window.core.select_method("q4+oc")
+
+
+def test_the_design_representation_panel_follows_the_method(window):
+    from toporia.apps.gui import runner
+    window._on_config_changed("MBB Beam")
+    window.core.select_method("q4+mma")
+    assert not window.design.isHidden()
+    window.design.load_spec({"type": "mmc", "n_x": 3})
+    cfg = runner.build_config(window.core, window.lc, window.filters, base_cfg=window._base_cfg,
+                              objective=window.objective, constraints=window.constraints,
+                              interpolation=window.material, representation=window.design)
+    assert cfg.solver.representation["type"] == "mmc" and cfg.solver.representation["n_x"] == 3
+    offered = [window.sg.param.itemData(i) for i in range(window.sg.param.count())]
+    assert "representation.n_x" in offered
+    assert dict(window.pipeline.stages())["Design"].startswith("Moving morphable components")
+
+    window.core.select_method("q4+oc")      # cannot move bars: said before the run
+    assert any("would be refused" in note for note in window.pipeline.notes())
+
+    window.core.select_method("levelset")   # keeps its own variables
+    assert window.design.isHidden()
+    window.design.load_spec({"type": "element_density"})
     window.core.select_method("q4+oc")

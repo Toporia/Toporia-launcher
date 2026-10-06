@@ -9,15 +9,16 @@ file and one passing check**. This guide shows how, kind by kind. Every code blo
 A topology-optimisation method is a chain of independent choices. Each is a plugin kind:
 
 ```
-design x ──Filter──> density ρ ──Physics──> state ──Response──> objective, constraints
-   ^                                                                   │
-   └──────────── Updater <──────── gradients (adjoint, filter adjoint) ┘
+variables z ──Representation──> design x ──Filter──> density ρ ──Physics──> state ──Response──> objective, constraints
+   ^                                                                                                │
+   └──────────── Updater <──────── gradients (adjoint, filter adjoint, representation backward) ────┘
 ```
 
 | You have…                                        | Write a…                 | Subclass                    | Folder / entry-point group       |
 | :----------------------------------------------- | :----------------------- | :-------------------------- | :------------------------------- |
 | an update rule (OC, MMA, BESO, a new idea)       | updater                  | `Updater`                   | `plugins/updaters/` · `toporia.updaters` |
 | a library that runs its own loop (SciPy, NLopt)  | updater                  | `ExternalOptimizer`         | `plugins/updaters/` · `toporia.updaters` |
+| a new kind of design variable (bars, splines)    | representation           | `Representation`            | `plugins/representations/` · `toporia.representations` |
 | a smoothing, projection or fabrication rule      | filter                   | `Filter`                    | `plugins/filters/` · `toporia.filters` |
 | a material law (density → stiffness)             | interpolation            | `Interpolation`             | `plugins/interpolations/` · `toporia.interpolations` |
 | an objective or constraint                       | response                 | `Response`                  | `plugins/responses/` · `toporia.responses` |
@@ -258,6 +259,67 @@ class Linear(Interpolation):
 
 `toporia check interpolation:<name>` checks E(0) = Emin, E(1) = E0, that E increases, the
 slope against finite differences, and a short run.
+
+## A design representation
+
+What the optimiser moves need not be one density per element. A representation turns its
+variables `z` into the element density field, `density(z)`, and carries a sensitivity
+back, `backward(z, sensitivity)`. It also gives the start design, `initial()`, and the
+range of each variable, `bounds()`. The solver chooses it,
+`{"type": "guide_mirror"}`, and the model does the rest.
+
+The example is a design that is mirror-symmetric about the vertical centre line.
+Only the left half is a variable, so the optimiser sees half as many variables.
+The symmetry filter gets the same designs, but it keeps all the variables.
+
+```python
+# example: representation
+import numpy as np
+
+from toporia.api import Representation
+
+
+class Mirror(Representation):
+    """The left half of the element densities; the right half is its mirror image."""
+
+    name = "guide_mirror"
+    label = "Mirror-symmetric (guide example)"
+    # One variable sets two elements, so an update rule that moves each element's
+    # density on its own (OC, BESO) cannot use it; MMA, GCMMA and SLSQP can.
+    element_wise = False
+
+    def setup(self, problem):
+        self.problem = problem
+        columns = np.arange(problem.nelx)
+        self.column = np.minimum(columns, problem.nelx - 1 - columns)   # element column -> variable column
+        self.shape = (problem.nely, (problem.nelx + 1) // 2)
+
+    def initial(self):
+        lower, upper = self.bounds()
+        return np.clip(np.full(self.shape, self.problem.scenario.volfrac), lower, upper)
+
+    def bounds(self):
+        # A variable may go only where both of its elements may.
+        lower, upper = np.zeros(self.shape), np.ones(self.shape)
+        np.maximum.at(lower.T, self.column, self.problem.lower_bound.T)
+        np.minimum.at(upper.T, self.column, self.problem.upper_bound.T)
+        return lower, np.maximum(lower, upper)
+
+    def density(self, z):
+        return z[:, self.column]
+
+    def backward(self, z, sensitivity):
+        gradient = np.zeros(self.shape)
+        np.add.at(gradient.T, self.column, sensitivity.T)   # each variable collects both its elements
+        return gradient
+```
+
+Set `element_wise = True` only when the variables *are* the element densities. Every
+updater that declares `needs_element_densities` (OC, BESO, SiMPL) is then allowed;
+otherwise such a pairing is refused before the run, with the reason.
+`toporia check representation:<name>` checks the field's shape and range, that the start
+design lies within the bounds, `backward` against finite differences, and a short run with
+`q4+mma`.
 
 ## A response
 

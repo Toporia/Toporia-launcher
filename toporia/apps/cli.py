@@ -82,9 +82,11 @@ def _label(solver_path):
 
 def _cmd_list(args):
     from toporia.plugins.filters import FILTERS
+    from toporia.plugins.interpolations import INTERPOLATIONS
     from toporia.plugins.methods import METHODS, PRESETS
     from toporia.plugins.models import MODELS
     from toporia.plugins.problems import problem_names
+    from toporia.plugins.representations import REPRESENTATIONS
     from toporia.plugins.responses import RESPONSES
     from toporia.plugins.updaters import UPDATERS
 
@@ -95,7 +97,8 @@ def _cmd_list(args):
     from toporia.framework.registry import BUILT_IN, missing_dependencies
 
     for title, registry in (("Models", MODELS), ("Updaters", UPDATERS), ("Whole methods", METHODS),
-                            ("Filters", FILTERS), ("Responses", RESPONSES)):
+                            ("Design representations", REPRESENTATIONS), ("Filters", FILTERS),
+                            ("Material laws", INTERPOLATIONS), ("Responses", RESPONSES)):
         print(f"\n{title}:")
         for cls in registry.classes():
             params = ", ".join(p.name for p in cls.params) or "-"

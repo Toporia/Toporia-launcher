@@ -8,6 +8,7 @@ A *parameter path* addresses one value in a Run:
     objective.<param>       a parameter of the scenario's objective
     constraints[0].limit    a parameter of the first scenario constraint
     interpolation.penal     a parameter of the material law
+    representation.n_x      a parameter of the design representation
     load_cases[0].Fmag      a field of the first load case
 
 framework.problem.run.apply_param writes to a path.  This module lists which paths exist
@@ -31,7 +32,7 @@ def _numeric(label_prefix, path_prefix, params):
 
 
 def parameter_paths(method, filter_specs=(), n_load_cases=0, objective=None, constraints=(),
-                    interpolation=None):
+                    interpolation=None, representation=None):
     """Return [(label, path), ...] for every numeric value of this setup.
 
     Filter and constraint paths are included only when the method can use
@@ -47,6 +48,11 @@ def parameter_paths(method, filter_specs=(), n_load_cases=0, objective=None, con
         from .interpolations import INTERPOLATIONS
         law = INTERPOLATIONS.get(interpolation.get("type", "simp"))
         items += _numeric(f"Material ({law.label})", "interpolation.", law.params)
+
+    if capabilities.accepts_representation and representation:
+        from .representations import REPRESENTATIONS
+        design = REPRESENTATIONS.get(representation.get("type", "element_density"))
+        items += _numeric(f"Design ({design.label})", "representation.", design.params)
 
     if capabilities.accepts_filters:
         for i, spec in enumerate(filter_specs):

@@ -35,6 +35,13 @@ class Solver:
     # set) bring their own and ignore it.
     interpolation: dict = field(default_factory=lambda: {"type": "simp"})
 
+    # What the design variables are, {"type": <representation name>, <param>: <value>}:
+    # one density per element (the default), or e.g. the bars of moving
+    # morphable components; see framework/parts/representation.py.  It also
+    # sets the start design.  Models that keep their own variables (pyMOTO's,
+    # the level set) ignore it.
+    representation: dict = field(default_factory=lambda: {"type": "element_density"})
+
     # Filters applied in order, each {"type": <filter name>, <param>: <value>}.
     # Only honoured by methods whose capabilities say accepts_filters=True.
     # Empty list means raw optimiser output with no filtering.

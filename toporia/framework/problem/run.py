@@ -13,6 +13,7 @@
 #     "load_cases[0].Fmag"  a field of the first load case
 #     "objective.<param>"   a parameter of the scenario's objective
 #     "interpolation.<param>"  a parameter of the material law (e.g. interpolation.penal)
+#     "representation.<param>" a parameter of the design representation (e.g. representation.n_x)
 #     "constraints[0].limit" a parameter of the first scenario constraint
 #
 # apply_param writes one; read_param reads one.  Plain field names are unique
@@ -81,6 +82,7 @@ _INDEXED_PATH = re.compile(r"^(?P<collection>\w+)\[(?P<index>\d+)\]\.(?P<field>\
 _METHOD_PREFIX = "method."
 _OBJECTIVE_PREFIX = "objective."
 _INTERPOLATION_PREFIX = "interpolation."
+_REPRESENTATION_PREFIX = "representation."
 
 
 def _owner(path):
@@ -124,6 +126,9 @@ def apply_param(run, path: str, value):
     if path.startswith(_INTERPOLATION_PREFIX):
         name = path[len(_INTERPOLATION_PREFIX):]
         return replace(run, solver=replace(run.solver, interpolation={**run.solver.interpolation, name: value}))
+    if path.startswith(_REPRESENTATION_PREFIX):
+        name = path[len(_REPRESENTATION_PREFIX):]
+        return replace(run, solver=replace(run.solver, representation={**run.solver.representation, name: value}))
 
     match = _INDEXED_PATH.match(path)
     if match:
@@ -160,6 +165,8 @@ def read_param(run, path: str):
         return run.scenario.objective.get(path[len(_OBJECTIVE_PREFIX):])
     if path.startswith(_INTERPOLATION_PREFIX):
         return run.solver.interpolation.get(path[len(_INTERPOLATION_PREFIX):])
+    if path.startswith(_REPRESENTATION_PREFIX):
+        return run.solver.representation.get(path[len(_REPRESENTATION_PREFIX):])
 
     match = _INDEXED_PATH.match(path)
     if match:

@@ -39,6 +39,7 @@ class Capabilities:
     variable_kind   : what the design variables are, e.g. "density" or "level_set"
     accepts_filters : whether solver.filter_specs is honoured
     accepts_interpolation : whether solver.interpolation (the material law) is honoured
+    accepts_representation : whether solver.representation (what the design variables are) is honoured
     dims            : spatial dimensions supported
     objectives      : response types the method can minimise (scenario.objective)
     constraints     : response types it can enforce in scenario.constraints; the
@@ -51,6 +52,7 @@ class Capabilities:
     variable_kind: str = "density"
     accepts_filters: bool = False
     accepts_interpolation: bool = False
+    accepts_representation: bool = False
     dims: tuple = (2,)
     objectives: tuple = ("compliance",)
     constraints: tuple = ()

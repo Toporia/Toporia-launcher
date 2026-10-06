@@ -10,7 +10,7 @@ evolves its own representation with its own volume control — implements
 This is the layer that decides which shapes are reachable at all. Everything below is a
 different answer to "what *is* the design?".
 
-**Status: 15 selectable in Toporia · 14 with open code · 2 paper only**
+**Status: 15 selectable in Toporia · 12 with open code · 2 paper only**
 
 | Label | Meaning |
 | :-- | :-- |
@@ -62,10 +62,13 @@ family (`beso`). The families below are not.
 
 ## Candidates — explicit geometry
 
+Explicit bars and projected geometric features (moving morphable components, geometry
+projection) are not whole methods any more: they are
+[design representations](../representations/README.md), and run through the same model
+and updaters as element densities. Moving morphable components are in Toporia.
+
 | Family | Status | Reference | What it adds |
 | :-- | :-- | :-- | :-- |
-| MMC / MMV — moving morphable components and voids | 🔗 MMC188, MMC3D256 (with the papers) | Guo, Zhang & Zhong, *JAM* 2014; Zhang et al., *SMO* 2016; Zhang et al. 2017 | Explicit bars and blobs whose position, length, thickness and angle are the only variables: a few hundred instead of a million, and CAD-ready geometry by construction. |
-| Geometry projection / feature mapping | 🔗 [GPTO](https://github.com/jnorato/GPTO), [GGP](https://github.com/topggp/GGP-Matlab) | Norato et al., *CMAME* 2015; Smith & Norato, *SMO* 2020; review: Wein, Dunning & Norato, *SMO* 2020 | A high-level geometric description (bars, plates, primitives, NURBS) smoothly projected onto a fixed analysis grid, so real geometric features can be constrained directly. |
 | Ground structure / truss layout | 🔗 [GRAND, GRAND3](https://paulino.princeton.edu/journal_papers/2014/SMO_14_GRAND.pdf) | Michell 1904; Zegard & Paulino, *SMO* 2014, 2015; He, Gilbert et al., *SMO* 2019 | A dense candidate bar network sized by LP/NLP. **A genuinely different design space from a density field**, converging to Michell layouts; the natural formulation for frames. |
 | Isogeometric TO | 🔗 IgaTop (with the paper) | Gao et al. (IgaTop) | NURBS basis shared by geometry, analysis and density: no re-meshing, smooth boundaries straight into CAD. |
 | Stiffness spreading | 🔗 [SSM](https://github.com/PengWeiScut/SSM) | Wei et al. 2010 | Explicit-geometry precursor to the projection methods above. |

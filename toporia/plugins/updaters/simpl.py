@@ -117,6 +117,8 @@ class SiMPLUpdater(Updater):
     # advertises.  Widen this list when a second objective is actually exercised.
     objectives = ("compliance",)
     max_constraints = 0
+    # The rule moves each element's density on its own (see needs_element_densities).
+    needs_element_densities = True
 
     def initialize(self, model, settings):
         self.model = model

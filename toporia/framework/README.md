@@ -24,6 +24,7 @@ framework/
 │   ├── composition.py ComposedMethod = Model + Updater, for any pair
 │   ├── physics.py     Physics: an engine that solves a density and answers questions
 │   ├── response.py    Response: an objective or constraint, value and gradient
+│   ├── representation.py  Representation: design variables → element densities (MMC, ...)
 │   ├── filter.py      Filter: design → physical density, and the chain rule back
 │   └── interpolation.py  Interpolation: density → stiffness (SIMP, RAMP, ...)
 ├── optimisers/    HOW OPTIMISERS WRITTEN FOR VECTORS CONNECT
@@ -107,6 +108,7 @@ outside library that runs its own loop.
 | [`composition.py`](parts/composition.py) | `ComposedMethod` joins any model with any updater, in the one order that matters (evaluate → advance → update → physical), and counts every physics solve. `compose(model, updater)` builds the pair named `"<model>+<updater>"`; `explain()` says in words what a pairing cannot do and why. | — |
 | [`physics.py`](parts/physics.py) | `Physics` — a physics engine: `solve(density)` → state, plus the questions responses ask, grouped into features: `ELASTIC_ENERGY` (compliance, strain energy) and `STRESS` (element stress, adjoint solve, mutual energy). Displacements stay opaque, so responses never depend on a DOF numbering. | `plugins/physics` |
 | [`response.py`](parts/response.py) | `Response` — a quantity to minimise (`OBJECTIVE_ROLE`) or limit (`CONSTRAINT_ROLE`): a declaration (name, roles, params) that usually also computes itself, `evaluate(state, gradient=True)` → `ResponseValue`, on every engine that `provides` the features it `requires`. | `plugins/responses` |
+| [`representation.py`](parts/representation.py) | `Representation` — what the design variables are: `density(z)` gives the element density field and `backward(z, sensitivity)` carries the gradient back; `initial()` and `bounds()` give the start design and the variables' range. Chosen in the solver (`solver.representation`); `element_wise` says whether the variables are the element densities themselves, and an updater that needs them (`needs_element_densities`: OC, BESO, SiMPL) is refused with any other. | `plugins/representations` |
 | [`interpolation.py`](parts/interpolation.py) | `Interpolation` — the material law: `stiffness(ρ, E0, Emin)` and its `slope`, element-wise. Chosen in the solver (`solver.interpolation`) like the filters, and handed to every physics engine that declares `uses_interpolation`. | `plugins/interpolations` |
 | [`filter.py`](parts/filter.py) | `Filter` — `forward(x)`, `backward(x_in, sensitivity)`, `step(iteration)` for continuation, and `FilterChain`, which runs several in order with one consistent backward pass. | `plugins/filters` |
 
@@ -122,7 +124,7 @@ outside library that runs its own loop.
 | File | Holds | Used by |
 | :--- | :--- | :--- |
 | [`params.py`](params.py) | `Param` — one tunable value, declared once next to the code that uses it (default, label, help, range, units). The GUI forms, the sweep menus and the config validation (`resolve_params`, which rejects unknown names) are all generated from these. | every plugin, apps, engine |
-| [`registry.py`](registry.py) | `Registry` — finds plugins in three ways: by scanning Toporia's own package, through the entry-point groups `toporia.models`, `.updaters`, `.filters`, `.interpolations`, `.responses`, `.methods` of installed packages, and by `register()`. A plugin that fails to load is recorded in `errors` while the rest still load. `missing_dependencies()` / `install_hint()` handle optional packages. | `plugins/*/__init__.py`, apps, engine |
+| [`registry.py`](registry.py) | `Registry` — finds plugins in three ways: by scanning Toporia's own package, through the entry-point groups `toporia.models`, `.updaters`, `.representations`, `.filters`, `.interpolations`, `.responses`, `.methods` of installed packages, and by `register()`. A plugin that fails to load is recorded in `errors` while the rest still load. `missing_dependencies()` / `install_hint()` handle optional packages. | `plugins/*/__init__.py`, apps, engine |
 | [`__init__.py`](__init__.py) | Re-exports the most used names, so `from toporia.framework import Run, Scenario, …` works. Plugins import from [`toporia.api`](../api.py) instead. | everywhere |
 
 ## How a method is built from these pieces

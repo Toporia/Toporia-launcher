@@ -9,6 +9,7 @@ What contains what, top to bottom in the left panel:
 
     PipelineView        pipeline.py   the selected chain, and why any part is unavailable
     CoreParamsGroup     method.py     mesh, volume; physics model + updater, or a whole method
+    RepresentationGroup specs.py      what the design variables are (element densities, MMC)
     MaterialGroup       specs.py      the material law (SIMP, RAMP), when the method takes one
     ObjectiveGroup      specs.py      what to minimise, as the method allows
     SpecListGroup       specs.py      constraints (hidden when the method enforces none)
@@ -31,11 +32,11 @@ from .modes import (
     SweepParamsGroup,
 )
 from .pipeline import PipelineView
-from .specs import MaterialGroup, ObjectiveGroup, SpecListGroup
+from .specs import MaterialGroup, ObjectiveGroup, RepresentationGroup, SpecListGroup
 
 __all__ = [
     "ParamForm", "LoadCaseRow", "LoadCasesGroup", "CoreParamsGroup", "PipelineView",
-    "ObjectiveGroup", "MaterialGroup", "SpecListGroup", "CompareLoadCasesParamsGroup", "CompareMethodsParamsGroup",
+    "ObjectiveGroup", "MaterialGroup", "RepresentationGroup", "SpecListGroup", "CompareLoadCasesParamsGroup", "CompareMethodsParamsGroup",
     "CompareTwoParamsGroup",
     "SensitivityParamsGroup", "SensitivitySweepParamsGroup", "SensitivitySweep2DParamsGroup",
     "SweepParamsGroup", "Sweep2DParamsGroup",

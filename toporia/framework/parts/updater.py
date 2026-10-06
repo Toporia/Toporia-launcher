@@ -34,6 +34,10 @@ class Updater(ABC):
     own_loop = False
     #: The flat view's objective rescaling (see FlatProblem); None leaves it unscaled.
     flat_objective_scale = None
+    #: True when the update rule only makes sense on one density per element
+    #: (OC, BESO): it is then refused with any other design representation
+    #: (framework/parts/representation.py).
+    needs_element_densities = False
 
     def flat_problem(self, model):
         """This updater's flat view of `model`, with the declared objective scaling."""

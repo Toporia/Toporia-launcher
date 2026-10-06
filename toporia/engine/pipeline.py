@@ -5,7 +5,7 @@
 # updater moves the design.  This module names each part for a given Run, so
 # the console and the GUI show exactly the same chain:
 #
-#     design -> filters -> physics (material law) -> objective, constraints -> updater -> design
+#     variables -> representation -> filters -> physics (material law) -> objective, constraints -> updater
 #
 # Whole methods (the RBF level set) do not split into parts; for those the
 # chain is the method itself.
@@ -25,17 +25,49 @@ def registries():
     from toporia.plugins.interpolations import INTERPOLATIONS
     from toporia.plugins.methods import METHODS
     from toporia.plugins.models import MODELS
+    from toporia.plugins.representations import REPRESENTATIONS
     from toporia.plugins.responses import RESPONSES
     from toporia.plugins.updaters import UPDATERS
-    return {"model": MODELS, "updater": UPDATERS, "filter": FILTERS, "interpolation": INTERPOLATIONS,
-            "response": RESPONSES, "method": METHODS}
+    return {"model": MODELS, "updater": UPDATERS, "representation": REPRESENTATIONS, "filter": FILTERS,
+            "interpolation": INTERPOLATIONS, "response": RESPONSES, "method": METHODS}
+
+
+def _representation(found, solver):
+    return found["representation"].get(solver.representation.get("type", "element_density"))
+
+
+def representation_used(method_cls, solver):
+    """The Representation class this method uses with this solver, or None when it keeps its own variables."""
+    if not method_cls.capabilities.accepts_representation:
+        return None
+    return _representation(registries(), solver)
+
+
+def solver_problems(method_cls, solver):
+    """Why this method cannot run with the parts the solver chooses — an empty list when it can.
+
+    Capabilities.problems_with answers the same question for the scenario.  Here:
+    an updater that moves one density per element (optimality criteria, BESO)
+    cannot move the variables of any other design representation.
+    """
+    representation = representation_used(method_cls, solver)
+    if representation is None or not issubclass(method_cls, ComposedMethod):
+        return []
+    updater = method_cls.updater
+    if updater.needs_element_densities and not representation.element_wise:
+        from toporia.plugins.updaters import UPDATERS
+        able = [cls.label for cls in UPDATERS.classes() if not cls.needs_element_densities]
+        return [f"{updater.label} moves one density per element, so it cannot move the variables of "
+                f"{representation.label!r} (updaters that can: {', '.join(able)})"]
+    return []
 
 
 def pipeline_parts(run):
     """Every plugin the run uses, as [(kind, class)], each once, in pipeline order.
 
-    The model and the updater (or the whole method), the material law and the
-    filters when the method uses them, then the objective and each constraint.
+    The model and the updater (or the whole method), the design representation,
+    the material law and the filters when the method uses them, then the
+    objective and each constraint.
     """
     from toporia.plugins.methods import method_class
     found = registries()
@@ -44,6 +76,8 @@ def pipeline_parts(run):
         parts = [("model", method_cls.model), ("updater", method_cls.updater)]
     else:
         parts = [("method", method_cls)]
+    if method_cls.capabilities.accepts_representation:
+        parts.append(("representation", _representation(found, run.solver)))
     if method_cls.capabilities.accepts_interpolation:
         parts.append(("interpolation", found["interpolation"].get(run.solver.interpolation.get("type", "simp"))))
     if method_cls.capabilities.accepts_filters:
@@ -108,8 +142,12 @@ def pipeline_stages(run):
                               for spec in run.solver.filter_specs)
     else:
         filters = "none"
+    representation = next((cls for kind, cls in parts if kind == "representation"), None)
+    design = (f"{capabilities.variable_kind} per element" if representation is None
+              else _labelled("representation", representation)
+              + ("" if representation.element_wise else ", projected onto the elements"))
     stages = [
-        ("Design", f"{capabilities.variable_kind} per element"),
+        ("Design", design),
         ("Filters", filters),
         ("Physics", _labelled("model", method_cls.model)),
         ("Material", next((_labelled(kind, cls) for kind, cls in parts if kind == "interpolation"),
@@ -140,14 +178,22 @@ def describe_pipeline(run):
     return "  ->  ".join(f"{stage}: {text}" for stage, text in pipeline_stages(run))
 
 
-def pipeline_notes(method):
-    """Why the selected parts offer less than one of them could (see framework.parts.composition.explain)."""
+def pipeline_notes(method, solver=None):
+    """Why the selected parts offer less than one of them could (see framework.parts.composition.explain).
+
+    With the solver, also why its choice of parts would be refused (solver_problems).
+    """
     from toporia.plugins.methods import method_class
 
     method_cls = method_class(method)
     missing = missing_dependencies(method_cls)
     unavailable = ([f"Not installed here: {', '.join(missing)}. A run would stop at once; "
                     f"install it with: {install_hint(missing)}"] if missing else [])
+    if solver is not None:
+        unavailable += [f"A run would be refused: {reason}." for reason in solver_problems(method_cls, solver)]
+        representation = representation_used(method_cls, solver)
+        if representation is not None and representation.advice:
+            unavailable.append(f"{representation.label}: {representation.advice}")
     if issubclass(method_cls, ComposedMethod):
         notes = unavailable + explain(method_cls.model, method_cls.updater)
         if method_cls.model.capabilities.constraints and not method_cls.capabilities.constraints:

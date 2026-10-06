@@ -25,7 +25,8 @@ Nothing is ever labelled ✅ until it is registered, tested, and reachable from 
 
 | Folder | Layer | ✅ In Toporia | 🔗 Open code | 📄 Paper only |
 | :-- | :-- | --: | --: | --: |
-| [`methods/`](methods/README.md) | How the design is described | 15 | 14 | 2 |
+| [`methods/`](methods/README.md) | How the design is described | 15 | 12 | 2 |
+| [`representations/`](representations/README.md) | What the design variables are | 2 | 2 | 3 |
 | [`filters/`](filters/README.md) | How it is smoothed, projected, made manufacturable | 6 | 1 | 15 |
 | [`interpolations/`](interpolations/README.md) | How density becomes stiffness (the material law) | 2 | 0 | 4 |
 | [`models/`](models/README.md) | What computes the physics and the gradients | 2 | 24 | 3 |
@@ -33,31 +34,33 @@ Nothing is ever labelled ✅ until it is registered, tested, and reachable from 
 | [`responses/`](responses/README.md) | What is minimised or constrained | 3 | 4 | 14 |
 | [`updaters/`](updaters/README.md) | How the design moves each iteration | 7 | 8 | 3 |
 | [`problems/`](problems/README.md) | Benchmark problems and datasets | 8 | 6 | 2 |
-| **Total** | | **44** | **63** | **46** |
+| **Total** | | **46** | **63** | **49** |
 
 The 15 selectable methods are the 14 `model+updater` pairings plus the one whole
 method; those pairings are built from the 2 models and 7 updaters counted in their own
 rows, so they are not 15 separate implementations.
 
-## The six choices
+## The choices
 
-A topology optimisation method is not one algorithm. It is six mostly independent choices,
-and almost every paper in the field changes exactly one of them and holds the rest fixed:
+A topology optimisation method is not one algorithm. It is a handful of mostly independent
+choices, and almost every paper in the field changes exactly one of them and holds the rest
+fixed:
 
 ```
-design variables  ──filter──>  physical density  ──engine──>  state  ──response──>  objective
+design variables ──representation──> element field ──filter──> physical density ──engine──> state ──response──> objective
        ^                                                                                 │
        └──────────────── updater <──── gradients <──── adjoint / backprop ───────────────┘
                                                               │
                                         fabrication rules ────┘
 ```
 
-Toporia separates all six so a comparison can change one and only one:
+Toporia separates them all so a comparison can change one and only one:
 
 | Choice | Contract | Registry |
 | :-- | :-- | :-- |
 | Parameterisation | [`framework.parts.method.OptimizationMethod`](../framework/parts/method.py) | `METHODS` + any `model+updater` pair |
 | Regularisation | [`framework.parts.filter.Filter`](../framework/parts/filter.py) | `FILTERS` |
+| Design variables | [`framework.parts.representation.Representation`](../framework/parts/representation.py) | `REPRESENTATIONS` |
 | Material law | [`framework.parts.interpolation.Interpolation`](../framework/parts/interpolation.py) | `INTERPOLATIONS` |
 | What is optimised | [`framework.parts.model.Model`](../framework/parts/model.py) | `MODELS` |
 | Physics engine | [`framework.parts.physics.Physics`](../framework/parts/physics.py) | declared by a model |
@@ -96,7 +99,8 @@ my_slsqp      = "my_package.optimisers:MySLSQP"    # or a single class
 
 After `pip install my_package` it appears in the GUI menus, the CLI (`toporia list` shows
 where each plugin comes from) and the configs. The groups are `toporia.models`,
-`toporia.updaters`, `toporia.filters`, `toporia.interpolations`, `toporia.responses` and
+`toporia.updaters`, `toporia.representations`, `toporia.filters`, `toporia.interpolations`,
+`toporia.responses` and
 `toporia.methods`. A plugin
 that fails to import is reported in the GUI's log and by `toporia list`, and every other
 plugin still loads. A plugin that needs an optional package declares
