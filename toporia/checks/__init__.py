@@ -23,6 +23,7 @@
 #   Filter         output shape and range; the adjoint against finite
 #                  differences (unless the filter declares exact_adjoint = False)
 #   Interpolation  E(0) = Emin, E(1) = E0, increasing; slope() against finite differences
+#   Schedule       finite values, a finish it keeps, a short run driving a projection
 #   Response       its gradient against finite differences, on every engine
 #                  that provides the features it requires
 #   whole method   a short run (finite, inside the bounds)
@@ -34,7 +35,8 @@
 #
 #     report.py    Report and Check: what a check returns
 #     common.py    the benchmark problems, finite differences, threads
-#     updater.py · model.py · representation.py · filter.py · interpolation.py · response.py · method.py
+#     updater.py · model.py · representation.py · filter.py · interpolation.py · response.py ·
+#     schedule.py · method.py
 
 import contextlib
 import io
@@ -52,6 +54,7 @@ from .model import check_model, check_physics
 from .report import Check, Report
 from .representation import check_representation
 from .response import check_response
+from .schedule import check_schedule
 from .updater import check_updater
 
 # ── Entry point ───────────────────────────────────────────────────────────────
@@ -88,6 +91,9 @@ def _conformance(plugin, **options):
     from toporia.framework.parts.representation import Representation
     if isinstance(plugin, type) and issubclass(plugin, Representation):
         return check_representation(plugin, **options)
+    from toporia.framework.parts.schedule import Schedule
+    if isinstance(plugin, type) and issubclass(plugin, Schedule):
+        return check_schedule(plugin, **options)
     raise TypeError(f"{plugin!r} is not a Toporia plugin class")
 
 
@@ -108,4 +114,4 @@ def _lookup(text):
 
 __all__ = ["Check", "Report", "conformance", "all_plugins", "parts_of", "check_updater",
            "check_model", "check_physics", "check_filter", "check_interpolation", "check_representation",
-           "check_response", "check_method"]
+           "check_schedule", "check_response", "check_method"]

@@ -15,6 +15,7 @@
 #     "interpolation.<param>"  a parameter of the material law (e.g. interpolation.penal)
 #     "representation.<param>" a parameter of the design representation (e.g. representation.n_x)
 #     "constraints[0].limit" a parameter of the first scenario constraint
+#     "schedules[0].end"     a value of the first continuation schedule
 #
 # apply_param writes one; read_param reads one.  Plain field names are unique
 # across Scenario, Solver and Output (checked below), so a path never needs to
@@ -141,6 +142,10 @@ def apply_param(run, path: str, value):
             specs = [dict(spec) for spec in run.scenario.constraints]
             specs[index][field_name] = value
             return replace(run, scenario=replace(run.scenario, constraints=specs))
+        if collection == "schedules":
+            specs = [dict(spec) for spec in run.solver.schedules]
+            specs[index][field_name] = value
+            return replace(run, solver=replace(run.solver, schedules=specs))
         if collection == "load_cases":
             cases = list(run.scenario.load_cases)
             cases[index] = replace(cases[index], **{field_name: value})
@@ -175,6 +180,8 @@ def read_param(run, path: str):
             return run.solver.filter_specs[index].get(field_name)
         if collection == "constraints":
             return run.scenario.constraints[index].get(field_name)
+        if collection == "schedules":
+            return run.solver.schedules[index].get(field_name)
         if collection == "load_cases":
             return getattr(run.scenario.load_cases[index], field_name)
         raise KeyError(f"Unknown parameter collection {collection!r} in path {path!r}")

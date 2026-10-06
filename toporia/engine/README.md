@@ -107,6 +107,14 @@ or at `solver.max_iter`. A method may add its own criterion (`is_converged()`, e
 objective-based test, or an outside library that has finished), and the reason is then
 recorded instead of a generic message. Whatever ended the run is written to `run.json`.
 
+**Continuation holds the stop.** Before each iteration the loop applies every schedule in
+`solver.schedules` (`method.set_parameter(path, value)`) and records the values with the
+history. Neither the tolerance nor a method's own criterion ends the run while a schedule
+has not reached its end, or while a part's own continuation is still moving
+(`method.continuing()`, e.g. the Heaviside β doubling). A design that has settled at p = 1
+is not the answer at p = 3. A run that hits `max_iter` first names the unfinished schedules
+in its stop reason.
+
 **Every run writes**, in its output folder:
 
 | File | Contents |

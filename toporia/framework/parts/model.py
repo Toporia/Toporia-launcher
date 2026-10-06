@@ -105,5 +105,13 @@ class Model(ABC):
         """
         return np.sum(self.physical(x))
 
+    def set_parameter(self, path, value):
+        """Change the value at a parameter path during a run (a schedule).  None can by default."""
+        raise ValueError(f"{self.label or type(self).__name__} cannot change {path!r} during a run")
+
+    def continuing(self):
+        """True while a continuation of the model's own (a filter's) is still moving."""
+        return False
+
     def advance(self, completed):
         """Called once per iteration, after evaluate: advance any continuation schedule."""

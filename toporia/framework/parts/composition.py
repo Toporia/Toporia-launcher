@@ -90,9 +90,10 @@ class ComposedMethod(OptimizationMethod):
             raise TypeError(f"{type(self).__name__} must set both `model` and `updater`")
         settings = self.resolve_params(solver)
         self.problem = problem
-        self._model = type(self).model()
+        self._model = self._build_model(problem, solver) if solver.variants else type(self).model()
         self._updater = type(self).updater()
-        self._model.initialize(problem, solver, _subset(settings, self._model.params))
+        if not solver.variants:
+            self._model.initialize(problem, solver, _subset(settings, self._model.params))
         self._count_solves(self._model)
         self._updater.initialize(self._model, _subset(settings, self._updater.params))
 
@@ -101,6 +102,24 @@ class ComposedMethod(OptimizationMethod):
         self.objective = np.inf
         self.change = np.inf
         self._evaluation = None
+
+    def _build_model(self, problem, solver):
+        """One model per value of solver.variants, joined into a VariantModel (framework/parts/variants.py)."""
+        from toporia.framework.parts.variants import VariantModel
+        from toporia.framework.problem.run import Run, apply_param
+        spec = solver.variants
+        base = Run(scenario=problem.scenario, solver=replace(solver, variants={}))
+        models = []
+        for value in spec["values"]:
+            varied = apply_param(base, spec["path"], value)
+            # A solver path leaves the scenario object as it was; a scenario path
+            # (a load case, a constraint limit) needs its own problem.
+            mesh = problem if varied.scenario is problem.scenario else type(problem)(varied.scenario, solver.m)
+            model = type(self).model()
+            model.initialize(mesh, varied.solver, _subset(self.resolve_params(varied.solver), model.params))
+            models.append(model)
+        return VariantModel(models, spec["path"], spec["values"], combine=spec.get("combine", "worst"),
+                            nominal=spec.get("nominal"), sharpness=spec.get("sharpness", 50.0))
 
     def step(self, iteration):
         completed = iteration - 1   # continuation schedules count finished iterations
@@ -122,6 +141,10 @@ class ComposedMethod(OptimizationMethod):
         fairly.  The count is Toporia's own, whatever the updater reports.
         """
         self.solves = 0
+        for part in getattr(model, "models", [model]):     # each variant solves on its own
+            self._count(part)
+
+    def _count(self, model):
         evaluate = model.evaluate
 
         def counted(x, gradients=True):
@@ -129,6 +152,23 @@ class ComposedMethod(OptimizationMethod):
             return evaluate(x, gradients=gradients)
 
         model.evaluate = counted
+
+    def set_parameter(self, path, value):
+        """Route a parameter path to the part that owns it: "method.<name>" to the model or the updater."""
+        from toporia.framework.parts.schedule import change_parameter
+        prefix, _, name = path.rpartition(".")
+        flat = getattr(self._updater, "flat", None)
+        if flat is not None:
+            flat.forget()          # the same design now has other values
+        if prefix != "method":
+            self._model.set_parameter(path, value)
+        elif name in {p.name for p in self._updater.params}:
+            change_parameter(self._updater, name, value)
+        else:
+            change_parameter(self._model, name, value)
+
+    def continuing(self):
+        return self._model.continuing()
 
     def describe_view(self):
         """What the updater's optimiser sees, when it works on a flat view; else None."""

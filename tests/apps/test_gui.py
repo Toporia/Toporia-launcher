@@ -235,3 +235,44 @@ def test_the_design_representation_panel_follows_the_method(window):
     assert window.design.isHidden()
     window.design.load_spec({"type": "element_density"})
     window.core.select_method("q4+oc")
+
+
+def _built(window):
+    from toporia.apps.gui import runner
+    return runner.build_config(window.core, window.lc, window.filters, base_cfg=window._base_cfg,
+                               objective=window.objective, constraints=window.constraints,
+                               interpolation=window.material, representation=window.design,
+                               schedules=window.schedules, variants=window.variants)
+
+
+def test_a_schedule_offers_only_what_can_change_and_reaches_the_run(window):
+    window._on_config_changed("MBB Beam")
+    window.core.select_method("q4+oc")
+    penal = {"path": "interpolation.penal", "type": "steps", "start": 1.0, "end": 3.0, "step": 0.5, "every": 20}
+    window.schedules.load_specs([penal])
+    assert _built(window).solver.schedules == [penal]
+    row = window.schedules._rows[0]
+    offered = [row._path.itemData(i) for i in range(row._path.count())]
+    assert "interpolation.penal" in offered and "filters[0].rmin" not in offered
+    assert dict(window.pipeline.stages())["Schedules"].startswith("interpolation.penal 1 -> 3")
+    assert "schedules[0].end" in [window.sg.param.itemData(i) for i in range(window.sg.param.count())]
+    window.schedules.load_specs([])
+
+
+def test_the_robust_button_adds_a_projection_and_three_variants(window):
+    window._on_config_changed("MBB Beam")
+    window.core.select_method("q4+mma")
+    window._use_robust_projection()
+    cfg = _built(window)
+    assert [spec["type"] for spec in cfg.solver.filter_specs] == ["density", "heaviside"]
+    assert cfg.solver.variants["path"] == "filters[1].eta"
+    assert cfg.solver.variants["values"] == [0.75, 0.5, 0.25]
+    assert "Variants" in dict(window.pipeline.stages())
+
+    window.core.select_method("levelset")   # evaluates itself: no variants, and nothing is lost
+    assert window.variants.isHidden() and _built(window).solver.variants == {}
+    window.core.select_method("q4+mma")
+    cfg = _built(window)
+    assert cfg.solver.filter_specs[1]["type"] == "heaviside" and cfg.solver.variants["path"] == "filters[1].eta"
+    window.variants.load_spec({})
+    window.filters.load_specs([{"type": "density"}])

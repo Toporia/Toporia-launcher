@@ -14,6 +14,8 @@ What contains what, top to bottom in the left panel:
     ObjectiveGroup      specs.py      what to minimise, as the method allows
     SpecListGroup       specs.py      constraints (hidden when the method enforces none)
     SpecListGroup       specs.py      filters (hidden when the method takes no filters)
+    ScheduleListGroup   specs.py      continuation: parameters that change during the run
+    VariantsGroup       variants.py   several versions of every design (robust design)
     LoadCasesGroup      loads.py      one LoadCaseRow per force
     one group per mode  modes.py      sweep, compare, sensitivity, ...
 """
@@ -32,11 +34,12 @@ from .modes import (
     SweepParamsGroup,
 )
 from .pipeline import PipelineView
-from .specs import MaterialGroup, ObjectiveGroup, RepresentationGroup, SpecListGroup
+from .specs import MaterialGroup, ObjectiveGroup, RepresentationGroup, ScheduleListGroup, SpecListGroup
+from .variants import VariantsGroup
 
 __all__ = [
     "ParamForm", "LoadCaseRow", "LoadCasesGroup", "CoreParamsGroup", "PipelineView",
-    "ObjectiveGroup", "MaterialGroup", "RepresentationGroup", "SpecListGroup", "CompareLoadCasesParamsGroup", "CompareMethodsParamsGroup",
+    "ObjectiveGroup", "MaterialGroup", "RepresentationGroup", "ScheduleListGroup", "SpecListGroup", "VariantsGroup", "CompareLoadCasesParamsGroup", "CompareMethodsParamsGroup",
     "CompareTwoParamsGroup",
     "SensitivityParamsGroup", "SensitivitySweepParamsGroup", "SensitivitySweep2DParamsGroup",
     "SweepParamsGroup", "Sweep2DParamsGroup",

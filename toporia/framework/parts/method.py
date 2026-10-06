@@ -103,6 +103,8 @@ class OptimizationMethod(ABC):
     #: Tunable parameters, as framework.params.Param declarations.
     params = ()
     capabilities = Capabilities()
+    #: Method parameters a schedule may change during a run (framework/parts/schedule.py).
+    schedulable = ()
 
     @classmethod
     def resolve_params(cls, solver):
@@ -164,6 +166,23 @@ class OptimizationMethod(ABC):
         it must shrink as the design settles.  Return float("inf") before the
         first step.
         """
+
+    def set_parameter(self, path, value):
+        """Change the value at a parameter path during a run, as a schedule does before each iteration.
+
+        A whole method changes its own declared `schedulable` parameters
+        ("method.<name>") by attribute; a composed method routes any path to
+        the part that owns it.
+        """
+        from toporia.framework.parts.schedule import change_parameter
+        prefix, _, name = path.rpartition(".")
+        if prefix != "method":
+            raise ValueError(f"{self.label or type(self).__name__} cannot change {path!r} during a run")
+        change_parameter(self, name, value)
+
+    def continuing(self):
+        """True while a continuation of the method's own is still moving; the engine then does not stop."""
+        return False
 
     def is_converged(self):
         """Optional method-specific stopping criterion.

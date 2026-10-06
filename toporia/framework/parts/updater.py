@@ -38,6 +38,8 @@ class Updater(ABC):
     #: (OC, BESO): it is then refused with any other design representation
     #: (framework/parts/representation.py).
     needs_element_densities = False
+    #: Parameters a schedule may change during a run (framework/parts/schedule.py).
+    schedulable = ()
 
     def flat_problem(self, model):
         """This updater's flat view of `model`, with the declared objective scaling."""

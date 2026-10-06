@@ -22,6 +22,7 @@
 #   filter     Filter                        toporia.filters
 #   interpolation  Interpolation             toporia.interpolations
 #   response   Response                      toporia.responses
+#   schedule   Schedule                      toporia.schedules
 #   method     OptimizationMethod            toporia.methods
 #
 # A physics engine (Physics) is not registered on its own: declare a model on
@@ -39,7 +40,9 @@ from toporia.framework.parts.model import ConstraintValue, Evaluation, Model
 from toporia.framework.parts.physics import ELASTIC_ENERGY, STRESS, Physics
 from toporia.framework.parts.representation import Representation
 from toporia.framework.parts.response import CONSTRAINT_ROLE, OBJECTIVE_ROLE, Response, ResponseValue
+from toporia.framework.parts.schedule import Schedule, change_parameter
 from toporia.framework.parts.updater import Updater
+from toporia.framework.parts.variants import VariantModel
 from toporia.framework.registry import install_hint, missing_dependencies
 from toporia.plugins.filters import FILTERS
 from toporia.plugins.interpolations import INTERPOLATIONS
@@ -48,11 +51,12 @@ from toporia.plugins.models import MODELS
 from toporia.plugins.models.assembled import AssembledModel
 from toporia.plugins.representations import REPRESENTATIONS
 from toporia.plugins.responses import RESPONSES
+from toporia.plugins.schedules import SCHEDULES
 from toporia.plugins.updaters import UPDATERS
 
 #: Every registry, by plugin kind.
 REGISTRIES = {"model": MODELS, "updater": UPDATERS, "representation": REPRESENTATIONS, "filter": FILTERS,
-              "interpolation": INTERPOLATIONS, "response": RESPONSES, "method": METHODS}
+              "interpolation": INTERPOLATIONS, "response": RESPONSES, "schedule": SCHEDULES, "method": METHODS}
 
 
 def plugin_errors():
@@ -70,10 +74,12 @@ __all__ = [
     "Updater", "ExternalOptimizer", "Verdict", "FlatProblem", "VOLUME_BUDGET",
     # design variables, regularisation, material law and responses
     "Representation", "Filter", "Interpolation", "Response", "ResponseValue", "OBJECTIVE_ROLE", "CONSTRAINT_ROLE",
+    # what changes during a run, and several versions of one design
+    "Schedule", "change_parameter", "VariantModel",
     # whole methods
     "OptimizationMethod", "Capabilities", "OBJECTIVE", "compose", "method_class",
     # declarations, discovery, checking
     "Param", "REGISTRIES", "METHODS", "MODELS", "UPDATERS", "REPRESENTATIONS", "FILTERS", "INTERPOLATIONS",
-    "RESPONSES",
+    "RESPONSES", "SCHEDULES",
     "missing_dependencies", "install_hint", "plugin_errors", "conformance",
 ]

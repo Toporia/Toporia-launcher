@@ -42,6 +42,8 @@ class Filter(ABC):
     #: conformance test checks it against finite differences; a heuristic
     #: (the classic sensitivity filter) declares False and is not checked.
     exact_adjoint = True
+    #: Parameters a schedule may change during a run (framework/parts/schedule.py).
+    schedulable = ()
 
     def setup(self, problem, solver):
         """Prepare for a run (neighbour weights, masks, ...).  Called once."""
@@ -56,6 +58,10 @@ class Filter(ABC):
 
     def step(self, iteration):
         """Advance a continuation schedule, once per iteration.  Does nothing by default."""
+
+    def continuing(self):
+        """True while a continuation of the filter's own is still moving (the engine then does not stop)."""
+        return False
 
     def backward_volume(self, x_in, sensitivity):
         """The chain rule for the volume's sensitivity.  The same as backward() by default."""
@@ -97,3 +103,7 @@ class FilterChain:
         """Let every filter advance its continuation schedule."""
         for filt in self.filters:
             filt.step(iteration)
+
+    def continuing(self):
+        """True while any filter's own continuation is still moving."""
+        return any(filt.continuing() for filt in self.filters)

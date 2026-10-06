@@ -88,6 +88,7 @@ def _cmd_list(args):
     from toporia.plugins.problems import problem_names
     from toporia.plugins.representations import REPRESENTATIONS
     from toporia.plugins.responses import RESPONSES
+    from toporia.plugins.schedules import SCHEDULES
     from toporia.plugins.updaters import UPDATERS
 
     print("Presets:")
@@ -98,7 +99,8 @@ def _cmd_list(args):
 
     for title, registry in (("Models", MODELS), ("Updaters", UPDATERS), ("Whole methods", METHODS),
                             ("Design representations", REPRESENTATIONS), ("Filters", FILTERS),
-                            ("Material laws", INTERPOLATIONS), ("Responses", RESPONSES)):
+                            ("Material laws", INTERPOLATIONS), ("Responses", RESPONSES),
+                            ("Schedules", SCHEDULES)):
         print(f"\n{title}:")
         for cls in registry.classes():
             params = ", ".join(p.name for p in cls.params) or "-"

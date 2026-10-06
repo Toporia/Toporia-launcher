@@ -44,6 +44,7 @@ class _SpecRow(QWidget):
             header.addWidget(remove)
         outer.addLayout(header)
 
+        self._wanted = self._classes[0].name if self._classes else None   # kept while it is not offered
         self._forms = {}
         for cls in self._classes:
             self._forms[cls.name] = ParamForm(cls.params, self)
@@ -52,7 +53,7 @@ class _SpecRow(QWidget):
 
         if spec:
             self.load_spec(spec)
-        self._type.currentIndexChanged.connect(self._on_type_changed)
+        self._type.currentIndexChanged.connect(self._on_chosen)
         self._on_type_changed()
 
         if on_remove is not None:
@@ -60,15 +61,22 @@ class _SpecRow(QWidget):
             outer.addWidget(line)
 
     def _fill_types(self, names):
-        current = self._type.currentData()
+        # The type chosen last is remembered, not the one shown: while a method
+        # allows no type at all the row is empty, and switching back must restore it.
         self._type.blockSignals(True)
         self._type.clear()
         for cls in self._classes:
             if cls.name in names:
                 self._type.addItem(cls.label, userData=cls.name)
         mark_availability(self._type, self._classes)
-        self._type.setCurrentIndex(max(self._type.findData(current), 0))
+        self._type.setCurrentIndex(max(self._type.findData(self._wanted), 0))
         self._type.blockSignals(False)
+
+    def _on_chosen(self, *_):
+        """The person picked a type (refills block this signal, so a fallback never counts)."""
+        if self._type.currentData() is not None:
+            self._wanted = self._type.currentData()
+        self._on_type_changed()
 
     def _on_type_changed(self, *_):
         key = self._type.currentData()
@@ -86,12 +94,14 @@ class _SpecRow(QWidget):
         self._on_type_changed()
 
     def get_spec(self):
-        key = self._type.currentData()
+        key = self._type.currentData() or self._wanted
         return {"type": key, **self._forms[key].get_values()}
 
     def load_spec(self, spec):
         values = dict(spec)
         key = values.pop("type", self._classes[0].name)
+        if key in self._forms:
+            self._wanted = key
         index = self._type.findData(key)
         if index >= 0:
             self._type.setCurrentIndex(index)
@@ -153,8 +163,11 @@ class SpecListGroup(QWidget):
         suffix = f"({n} active)" if n else "(none active)"
         self._toggle.setText(f"{'▼' if self._toggle.isChecked() else '▶'}  {self._title}  {suffix}")
 
+    def _make_row(self, spec):
+        return _SpecRow(self._classes, on_remove=self._remove_row, parent=self._rows_container, spec=spec)
+
     def _add_row(self, spec=None):
-        row = _SpecRow(self._classes, on_remove=self._remove_row, parent=self._rows_container, spec=spec)
+        row = self._make_row(spec)
         row.set_allowed(self._allowed)
         row.changed.connect(self.changed.emit)
         self._rows.append(row)
@@ -195,6 +208,70 @@ class SpecListGroup(QWidget):
             self._add_row(spec)
         self._refresh_label()
         self.changed.emit()
+
+
+class _ScheduleRow(_SpecRow):
+    """A schedule: which parameter it drives, then the schedule type and its values."""
+
+    def __init__(self, classes, paths, on_remove=None, parent=None, spec=None):
+        super().__init__(classes, on_remove=on_remove, parent=parent)
+        self._path = QComboBox()
+        self._path.setToolTip("The parameter this schedule changes during the run. Only parameters "
+                              "their part allows to change mid-run are offered.")
+        self.layout().insertWidget(0, self._path)
+        self.set_paths(paths)
+        if spec:
+            self.load_spec(spec)
+        self._path.currentIndexChanged.connect(lambda *_: self.changed.emit())
+
+    def set_paths(self, items):
+        """Offer these (label, path) items; a path set before stays, marked, when it is no longer offered."""
+        current = self._path.currentData()
+        self._path.blockSignals(True)
+        self._path.clear()
+        for label, path in items:
+            self._path.addItem(label, userData=path)
+        if current and self._path.findData(current) < 0:
+            self._path.addItem(f"{current} (not changeable with this setup)", userData=current)
+        self._path.setCurrentIndex(max(self._path.findData(current), 0))
+        self._path.blockSignals(False)
+
+    def get_spec(self):
+        return {"path": self._path.currentData(), **super().get_spec()}
+
+    def load_spec(self, spec):
+        values = dict(spec)
+        path = values.pop("path", None)
+        if path is not None and hasattr(self, "_path"):
+            if self._path.findData(path) < 0:
+                self._path.addItem(path, userData=path)
+            self._path.setCurrentIndex(self._path.findData(path))
+        super().load_spec(values)
+
+
+class ScheduleListGroup(SpecListGroup):
+    """Continuation schedules: each drives one parameter during the run (framework/parts/schedule.py).
+
+    The parameter choices follow the method, the filters and the material
+    law; with nothing that can change in this setup the group hides.
+    """
+
+    def __init__(self, classes, parent=None):
+        self._paths = []
+        super().__init__("Schedules", classes, noun="schedule", parent=parent)
+
+    def _make_row(self, spec):
+        return _ScheduleRow(self._classes, self._paths, on_remove=self._remove_row,
+                            parent=self._rows_container, spec=spec)
+
+    def set_paths(self, items):
+        """The parameters the rows may drive, as (label, path); hide the group when there are none."""
+        self._paths = list(items)
+        for row in self._rows:
+            row.set_paths(self._paths)
+        allowed = [cls.name for cls in self._classes] if self._paths else []
+        if allowed != self._allowed:
+            self.set_allowed(allowed)
 
 
 class SingleSpecGroup(QWidget):

@@ -23,6 +23,7 @@ class OCUpdater(Updater):
     label = "Optimality criteria"
     order = 10
     params = (MOVE,)
+    schedulable = ("move",)
 
     # OC needs objective and volume sensitivities of opposite sign, and finds a
     # single multiplier: compliance under the volume budget and nothing more.

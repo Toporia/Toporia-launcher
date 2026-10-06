@@ -44,12 +44,14 @@ from .panels import (
     ObjectiveGroup,
     PipelineView,
     RepresentationGroup,
+    ScheduleListGroup,
     SensitivityParamsGroup,
     SensitivitySweep2DParamsGroup,
     SensitivitySweepParamsGroup,
     SpecListGroup,
     Sweep2DParamsGroup,
     SweepParamsGroup,
+    VariantsGroup,
 )
 
 
@@ -118,6 +120,9 @@ class MainWindow(QMainWindow):
         self.constraints = SpecListGroup("Constraints", responses_for(CONSTRAINT_ROLE), noun="constraint")
         self.filters     = SpecListGroup("Filters", FILTERS.classes(),
                                          initial=[{"type": "density"}], noun="filter")
+        from toporia.plugins.schedules import SCHEDULES
+        self.schedules   = ScheduleListGroup(SCHEDULES.classes())
+        self.variants    = VariantsGroup()
         self.lc      = LoadCasesGroup()
         self.sg      = SweepParamsGroup()
         self.sg2     = Sweep2DParamsGroup()
@@ -127,7 +132,7 @@ class MainWindow(QMainWindow):
         self.sens    = SensitivityParamsGroup()
         self.ssg     = SensitivitySweepParamsGroup()
         self.ssg2    = SensitivitySweep2DParamsGroup()
-        for g in (self.pipeline, self.core, self.design, self.material, self.objective, self.constraints, self.filters, self.lc, self.sg, self.sg2,
+        for g in (self.pipeline, self.core, self.design, self.material, self.objective, self.constraints, self.filters, self.schedules, self.variants, self.lc, self.sg, self.sg2,
                   self.cg, self.clcg, self.cmg, self.sens, self.ssg, self.ssg2):
             pl.addWidget(g)
 
@@ -136,9 +141,11 @@ class MainWindow(QMainWindow):
         # pipeline or the number of load cases changes.
         self._sweep_groups = (self.sg, self.sg2, self.cg, self.sens, self.ssg, self.ssg2)
         self.lc.cases_changed.connect(self._refresh_parameter_paths)
-        for group in (self.design, self.material, self.objective, self.constraints, self.filters):
+        for group in (self.design, self.material, self.objective, self.constraints, self.filters, self.schedules):
             group.changed.connect(self._refresh_parameter_paths)
         self.core.method_changed.connect(self._on_method_changed)
+        self.variants.changed.connect(self._refresh_pipeline)
+        self.variants.robust_requested.connect(self._use_robust_projection)
 
         # Run/Stop button — the same button toggles between two roles.
         self._stop = False   # flag checked inside on_iter to interrupt the loop
@@ -187,6 +194,8 @@ class MainWindow(QMainWindow):
         self.objective.load_spec(cfg.scenario.objective)
         self.constraints.load_specs(cfg.scenario.constraints)
         self.filters.load_specs(cfg.solver.filter_specs)
+        self.schedules.load_specs(cfg.solver.schedules)
+        self.variants.load_spec(cfg.solver.variants)
         self.lc.load_from_config(cfg)
         self._on_method_changed(self.core.method_name())
 
@@ -197,6 +206,8 @@ class MainWindow(QMainWindow):
         capabilities = method_class(name).capabilities
         self.filters.set_allowed(FILTERS.names() if capabilities.accepts_filters else [])
         self.design.setVisible(capabilities.accepts_representation)
+        from toporia.framework.parts.composition import ComposedMethod
+        self.variants.setVisible(issubclass(method_class(name), ComposedMethod))   # a whole method evaluates itself
         self.material.setVisible(capabilities.accepts_interpolation)
         self.objective.set_allowed(capabilities.objectives)
         self.constraints.set_allowed(capabilities.constraints if capabilities.max_constraints != 0 else [])
@@ -204,15 +215,25 @@ class MainWindow(QMainWindow):
 
     def _refresh_parameter_paths(self, *_):
         """Rebuild every parameter dropdown from the current method, filters and load cases."""
-        from toporia.plugins.catalog import parameter_paths
+        from toporia.plugins.catalog import parameter_paths, schedulable_paths
+        setup = dict(objective=self.objective.get_spec(), constraints=self.constraints.get_specs(),
+                     interpolation=self.material.get_spec(), representation=self.design.get_spec())
+        self.schedules.set_paths(schedulable_paths(self.core.method_name(), self.filters.get_specs(), **setup))
         items = parameter_paths(self.core.method_name(), self.filters.get_specs(),
-                                len(self.lc.get_load_cases()),
-                                objective=self.objective.get_spec(), constraints=self.constraints.get_specs(),
-                                interpolation=self.material.get_spec(),
-                                representation=self.design.get_spec())
+                                len(self.lc.get_load_cases()), schedules=self.schedules.get_specs(), **setup)
         for group in self._sweep_groups:
             group.refresh(items)
+        self.variants.set_paths(items)
         self._refresh_pipeline()
+
+    def _use_robust_projection(self):
+        """Eroded / intermediate / dilated on the first Heaviside filter, adding one when there is none."""
+        types = [spec.get("type") for spec in self.filters.get_specs()]
+        if "heaviside" not in types:
+            self.filters.load_specs([*self.filters.get_specs(), {"type": "heaviside"}])
+            types.append("heaviside")
+        self._refresh_parameter_paths()
+        self.variants.use_robust_projection(types.index("heaviside"))
 
     def _refresh_pipeline(self):
         """Show the chain the current selections describe, and why any part is unavailable."""
@@ -222,8 +243,9 @@ class MainWindow(QMainWindow):
         try:
             cfg = build_config(self.core, self.lc, self.filters, base_cfg=self._base_cfg,
                                objective=self.objective, constraints=self.constraints,
-                               interpolation=self.material, representation=self.design)
-            self.pipeline.show_pipeline(pipeline_stages(cfg), pipeline_notes(cfg.solver.method, cfg.solver))
+                               interpolation=self.material, representation=self.design,
+                               schedules=self.schedules, variants=self.variants)
+            self.pipeline.show_pipeline(pipeline_stages(cfg), pipeline_notes(cfg.solver.method, cfg))
         except (ValueError, KeyError) as error:
             self.pipeline.show_pipeline([], [f"Cannot describe this selection: {error}"])
 
@@ -270,7 +292,8 @@ class MainWindow(QMainWindow):
 
         cfg = runner.build_config(self.core, self.lc, self.filters, base_cfg=self._base_cfg,
                                   objective=self.objective, constraints=self.constraints,
-                               interpolation=self.material, representation=self.design)
+                               interpolation=self.material, representation=self.design,
+                               schedules=self.schedules, variants=self.variants)
 
         # on_iter is the per-iteration callback passed into the optimisation scripts.
         # It runs inside the optimisation loop after every solver step.

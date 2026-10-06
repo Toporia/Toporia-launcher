@@ -63,7 +63,7 @@ toporia/
 ├── framework/           THE RULES — no mathematics
 │   ├── problem/         scenario · mesh · solver · run · files
 │   ├── parts/           method · model · updater · composition · physics · response · representation ·
-│   │                    filter · interpolation
+│   │                    filter · interpolation · schedule · variants
 │   ├── optimisers/      flat_view · external_loop
 │   ├── params.py        every tunable value, declared once
 │   └── registry.py      finds plugins: here, in installed packages, or by hand
@@ -72,6 +72,7 @@ toporia/
 │   ├── representations/ what the design variables are: element densities, moving morphable components
 │   ├── filters/         design → physical density, and back
 │   ├── interpolations/  the material law: SIMP, RAMP
+│   ├── schedules/       continuation: how a parameter changes during the run
 │   ├── physics/         finite-element solvers and the engines built on them
 │   ├── models/          what is optimised: an engine + filters + responses
 │   ├── responses/       objectives and constraints that compute themselves
@@ -142,6 +143,7 @@ background thread (SciPy's SLSQP); to the engine they look the same.
 | an update rule, or wrap an optimiser library | an updater in `plugins/updaters/` | [docs/writing-plugins.md](../docs/writing-plugins.md) |
 | a filter or fabrication rule | a filter in `plugins/filters/` | 〃 |
 | a new kind of design variable (bars, splines, a network) | a representation in `plugins/representations/` | [plugins/representations/README.md](plugins/representations/README.md) |
+| a continuation rule (how a parameter changes during the run) | a schedule in `plugins/schedules/` | [plugins/schedules/README.md](plugins/schedules/README.md) |
 | a material law (density to stiffness) | an interpolation in `plugins/interpolations/` | [plugins/interpolations/README.md](plugins/interpolations/README.md) |
 | an objective or constraint | a response in `plugins/responses/` | 〃 |
 | a new physics or element | a physics engine in `plugins/physics/` and a three-line model | 〃 |

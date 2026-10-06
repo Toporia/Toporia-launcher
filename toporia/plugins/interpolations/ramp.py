@@ -24,6 +24,7 @@ class RAMP(Interpolation):
     name = "ramp"
     label = "RAMP (rational)"
     order = 20
+    schedulable = ("q",)
     params = (
         Param("q", 8.0, "RAMP q",
               "Penalisation of grey material. 0 is linear (no penalty); about 8 behaves like "

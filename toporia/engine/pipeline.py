@@ -27,9 +27,10 @@ def registries():
     from toporia.plugins.models import MODELS
     from toporia.plugins.representations import REPRESENTATIONS
     from toporia.plugins.responses import RESPONSES
+    from toporia.plugins.schedules import SCHEDULES
     from toporia.plugins.updaters import UPDATERS
     return {"model": MODELS, "updater": UPDATERS, "representation": REPRESENTATIONS, "filter": FILTERS,
-            "interpolation": INTERPOLATIONS, "response": RESPONSES, "method": METHODS}
+            "interpolation": INTERPOLATIONS, "response": RESPONSES, "schedule": SCHEDULES, "method": METHODS}
 
 
 def _representation(found, solver):
@@ -43,31 +44,134 @@ def representation_used(method_cls, solver):
     return _representation(registries(), solver)
 
 
-def solver_problems(method_cls, solver):
-    """Why this method cannot run with the parts the solver chooses — an empty list when it can.
+def solver_problems(method_cls, run):
+    """Why this method cannot run with the parts the run's solver chooses — an empty list when it can.
 
     Capabilities.problems_with answers the same question for the scenario.  Here:
     an updater that moves one density per element (optimality criteria, BESO)
-    cannot move the variables of any other design representation.
+    cannot move the variables of any other design representation, and a
+    schedule must drive a parameter its part can change during a run.
     """
-    representation = representation_used(method_cls, solver)
-    if representation is None or not issubclass(method_cls, ComposedMethod):
+    reasons = []
+    representation = representation_used(method_cls, run.solver)
+    if representation is not None and issubclass(method_cls, ComposedMethod):
+        updater = method_cls.updater
+        if updater.needs_element_densities and not representation.element_wise:
+            from toporia.plugins.updaters import UPDATERS
+            able = [cls.label for cls in UPDATERS.classes() if not cls.needs_element_densities]
+            reasons.append(f"{updater.label} moves one density per element, so it cannot move the variables "
+                           f"of {representation.label!r} (updaters that can: {', '.join(able)})")
+    reasons += _variant_problems(method_cls, run)
+    for spec in run.solver.schedules:
+        path = spec.get("path", "")
+        owner = scheduled_owner(method_cls, run, path)
+        name = path.rpartition(".")[2]
+        if owner is None:
+            reasons.append(f"the schedule on {path!r} drives nothing: {method_cls.label} has no part there")
+        elif name not in owner.schedulable:
+            can = ", ".join(owner.schedulable) or "none of its parameters"
+            reasons.append(f"{owner.label} cannot change {name!r} during a run (it can change: {can})")
+    return reasons
+
+
+def _variant_problems(method_cls, run):
+    """Why solver.variants cannot be used as given (framework/parts/variants.py)."""
+    from toporia.framework.parts.variants import COMBINE
+    from toporia.framework.problem.run import apply_param
+    spec = run.solver.variants
+    if not spec:
         return []
-    updater = method_cls.updater
-    if updater.needs_element_densities and not representation.element_wise:
-        from toporia.plugins.updaters import UPDATERS
-        able = [cls.label for cls in UPDATERS.classes() if not cls.needs_element_densities]
-        return [f"{updater.label} moves one density per element, so it cannot move the variables of "
-                f"{representation.label!r} (updaters that can: {', '.join(able)})"]
-    return []
+    if not issubclass(method_cls, ComposedMethod):
+        return [f"{method_cls.label} evaluates its own designs, so it cannot evaluate several variants; "
+                f"variants need a method assembled from a model and an updater"]
+    path, values = spec.get("path", ""), list(spec.get("values", ()))
+    reasons = []
+    name = path.rpartition(".")[2]
+    if path == "m" or path.startswith(("schedules", "variants")):
+        reasons.append(f"variants cannot vary {path!r}: every variant must share the mesh and the design variables")
+    elif path.startswith("method.") and name in {p.name for p in method_cls.updater.params}:
+        reasons.append(f"{path!r} belongs to the updater, which there is only one of; vary a part of the model")
+    else:
+        try:
+            for value in values:
+                apply_param(run, path, value)
+        except (KeyError, IndexError, TypeError) as error:
+            reasons.append(f"variants: {path!r} is not a parameter of this run ({error})")
+    if len(values) < 2:
+        reasons.append(f"variants need at least two values, got {values}")
+    if spec.get("combine", "worst") not in COMBINE:
+        reasons.append(f"variants combine as one of {sorted(COMBINE)}, not {spec.get('combine')!r}")
+    nominal = spec.get("nominal")
+    if nominal is not None and not 0 <= int(nominal) < len(values):
+        reasons.append(f"the nominal variant {nominal} is not one of the {len(values)}")
+    if any(schedule.get("path") == path for schedule in run.solver.schedules):
+        reasons.append(f"{path!r} is both varied and scheduled; it can only be one")
+    return reasons
+
+
+def describe_variants(run):
+    """The variants in words, e.g. "worst of filters[1].eta = 0.75, 0.5, 0.25 (...)"; "" when there are none."""
+    from toporia.framework.parts.variants import COMBINE
+    spec = run.solver.variants
+    if not spec:
+        return ""
+    values = list(spec.get("values", ()))
+    nominal = spec.get("nominal")
+    nominal = len(values) // 2 if nominal is None else int(nominal)
+    shown = f"{values[nominal]:g}" if 0 <= nominal < len(values) else "?"
+    return (f"{COMBINE.get(spec.get('combine', 'worst'), '?').split(' (')[0].lower()} of "
+            f"{spec.get('path')} = {', '.join(f'{v:g}' for v in values)}; {len(values)} solves per evaluation; "
+            f"the design shown and its volume at {shown}")
+
+
+def scheduled_owner(method_cls, run, path):
+    """The class of the part whose parameter a schedule on `path` changes; None when there is none."""
+    import re
+    prefix, _, name = path.rpartition(".")
+    capabilities = method_cls.capabilities
+    found = registries()
+    composed = issubclass(method_cls, ComposedMethod)
+    if prefix == "method":
+        if composed and name in {p.name for p in method_cls.updater.params}:
+            return method_cls.updater
+        return method_cls.model if composed else method_cls
+    if not composed:
+        return None
+    if prefix == "interpolation" and capabilities.accepts_interpolation:
+        return found["interpolation"].get(run.solver.interpolation.get("type", "simp"))
+    if prefix == "representation" and capabilities.accepts_representation:
+        return _representation(found, run.solver)
+    if prefix == "objective":
+        return found["response"].get(run.scenario.objective.get("type", "compliance"))
+    indexed = re.fullmatch(r"(filters|constraints)\[(\d+)\]", prefix)
+    if indexed:
+        index = int(indexed[2])
+        if indexed[1] == "filters" and capabilities.accepts_filters and index < len(run.solver.filter_specs):
+            return found["filter"].get(run.solver.filter_specs[index].get("type", "density"))
+        if indexed[1] == "constraints" and index < len(run.scenario.constraints):
+            return found["response"].get(run.scenario.constraints[index]["type"])
+    return None
+
+
+def make_schedules(run):
+    """The run's schedules as [(path, Schedule)], their parameters validated."""
+    from toporia.framework.params import resolve_params
+    found = registries()["schedule"]
+    schedules = []
+    for spec in run.solver.schedules:
+        spec = dict(spec)
+        path = spec.pop("path")
+        cls = found.get(spec.pop("type", "steps"))
+        schedules.append((path, cls(**resolve_params(f"schedule {cls.name!r} on {path!r}", cls.params, spec))))
+    return schedules
 
 
 def pipeline_parts(run):
     """Every plugin the run uses, as [(kind, class)], each once, in pipeline order.
 
     The model and the updater (or the whole method), the design representation,
-    the material law and the filters when the method uses them, then the
-    objective and each constraint.
+    the material law and the filters when the method uses them, the objective
+    and each constraint, then the schedules.
     """
     from toporia.plugins.methods import method_class
     found = registries()
@@ -84,6 +188,7 @@ def pipeline_parts(run):
         parts += [("filter", found["filter"].get(spec.get("type", "density"))) for spec in run.solver.filter_specs]
     parts.append(("response", found["response"].get(run.scenario.objective.get("type", "compliance"))))
     parts += [("response", found["response"].get(spec["type"])) for spec in run.scenario.constraints]
+    parts += [("schedule", found["schedule"].get(spec.get("type", "steps"))) for spec in run.solver.schedules]
     unique = {}
     for kind, cls in parts:
         unique.setdefault((kind, cls.name), (kind, cls))
@@ -130,9 +235,10 @@ def pipeline_stages(run):
     # Names only: the numbers live in their own panels, and this stays true while they are edited.
     objective, limits = responses[0], ["volume budget"] + responses[1:]
 
+    schedules = _describe_schedules(run)
     if not issubclass(method_cls, ComposedMethod):
         return [("Method", _labelled("method", method_cls)), ("Objective", objective),
-                ("Constraints", ", ".join(limits))]
+                ("Constraints", ", ".join(limits))] + schedules
 
     if not capabilities.accepts_filters:
         filters = "inside the model"
@@ -170,7 +276,19 @@ def pipeline_stages(run):
     else:
         stages.append(("Optimiser sees", "the design field itself"))
     stages.append(("Updater", _labelled("updater", updater)))
-    return stages
+    variants = describe_variants(run)
+    if variants:
+        stages.insert(stages.index(("Constraints", ", ".join(limits))) + 1, ("Variants", variants))
+    return stages + schedules
+
+
+def _describe_schedules(run):
+    """[("Schedules", "interpolation.penal 1 -> 3, +0.5 every 20 iterations; ...")], or [] when there are none."""
+    try:
+        described = [f"{path} {schedule.describe()}" for path, schedule in make_schedules(run)]
+    except (KeyError, ValueError, TypeError) as error:
+        described = [f"cannot be read: {error}"]
+    return [("Schedules", "; ".join(described))] if described else []
 
 
 def describe_pipeline(run):
@@ -178,10 +296,10 @@ def describe_pipeline(run):
     return "  ->  ".join(f"{stage}: {text}" for stage, text in pipeline_stages(run))
 
 
-def pipeline_notes(method, solver=None):
+def pipeline_notes(method, run=None):
     """Why the selected parts offer less than one of them could (see framework.parts.composition.explain).
 
-    With the solver, also why its choice of parts would be refused (solver_problems).
+    With the run, also why its choice of parts would be refused (solver_problems).
     """
     from toporia.plugins.methods import method_class
 
@@ -189,9 +307,9 @@ def pipeline_notes(method, solver=None):
     missing = missing_dependencies(method_cls)
     unavailable = ([f"Not installed here: {', '.join(missing)}. A run would stop at once; "
                     f"install it with: {install_hint(missing)}"] if missing else [])
-    if solver is not None:
-        unavailable += [f"A run would be refused: {reason}." for reason in solver_problems(method_cls, solver)]
-        representation = representation_used(method_cls, solver)
+    if run is not None:
+        unavailable += [f"A run would be refused: {reason}." for reason in solver_problems(method_cls, run)]
+        representation = representation_used(method_cls, run.solver)
         if representation is not None and representation.advice:
             unavailable.append(f"{representation.label}: {representation.advice}")
     if issubclass(method_cls, ComposedMethod):

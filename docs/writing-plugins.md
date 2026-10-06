@@ -21,6 +21,7 @@ variables z ──Representation──> design x ──Filter──> density ρ 
 | a new kind of design variable (bars, splines)    | representation           | `Representation`            | `plugins/representations/` · `toporia.representations` |
 | a smoothing, projection or fabrication rule      | filter                   | `Filter`                    | `plugins/filters/` · `toporia.filters` |
 | a material law (density → stiffness)             | interpolation            | `Interpolation`             | `plugins/interpolations/` · `toporia.interpolations` |
+| a continuation rule (a parameter over the run)   | schedule                 | `Schedule`                  | `plugins/schedules/` · `toporia.schedules` |
 | an objective or constraint                       | response                 | `Response`                  | `plugins/responses/` · `toporia.responses` |
 | a finite-element solver or other physics         | physics engine + model   | `Physics`, `AssembledModel` | `plugins/physics/`, `plugins/models/` · `toporia.models` |
 | a method that does not split into the above      | whole method             | `OptimizationMethod`        | `plugins/methods/` · `toporia.methods` |
@@ -320,6 +321,59 @@ otherwise such a pairing is refused before the run, with the reason.
 `toporia check representation:<name>` checks the field's shape and range, that the start
 design lies within the bounds, `backward` against finite differences, and a short run with
 `q4+mma`.
+
+## A continuation schedule
+
+A schedule changes one parameter during the run. `value(completed)` gives the parameter's
+value for the iteration after `completed` finished ones, and `finished(completed)` says when
+that value stops changing. The solver attaches a schedule to any parameter path whose part
+allows it (`schedulable`), for example
+`{"path": "interpolation.penal", "type": "guide_cosine", "start": 1, "end": 3}`. The engine
+applies it before each iteration and does not stop on its tolerance until it has finished.
+
+The example is a ramp that starts and ends gently, a smooth alternative to equal steps:
+
+```python
+# example: schedule
+import math
+
+from toporia.api import Param, Schedule
+
+
+class CosineRamp(Schedule):
+    """From start to end over `over` iterations, along half a cosine: no jumps at either end."""
+
+    name = "guide_cosine"
+    label = "Cosine ramp (guide example)"
+    params = (Param("start", 1.0, "Start", "First value.", min=-1e6, max=1e6),
+              Param("end", 3.0, "End", "Last value.", min=-1e6, max=1e6),
+              Param("over", 40, "Over", "Iterations the ramp takes.", min=1, max=10000))
+
+    def __init__(self, start=1.0, end=3.0, over=40):
+        self.start, self.end, self.over = float(start), float(end), int(over)
+
+    def value(self, completed):
+        if completed >= self.over:
+            return self.end
+        fraction = 0.5 - 0.5 * math.cos(math.pi * completed / self.over)
+        return self.start + fraction * (self.end - self.start)
+
+    def finished(self, completed):
+        return completed >= self.over
+```
+
+To let a parameter of your own part be scheduled, list it in the part's `schedulable`.
+If other values are derived from it when the run starts, also give the part a
+`set_parameter(name, value)` that updates them.
+
+`toporia check schedule:<name>` checks that the values are finite, that the schedule
+finishes and then stays put, and a short run.
+
+**Several versions of one design** (robust design, uncertain loads) need no plugin; they
+are a solver setting:
+`{"path": "filters[1].eta", "values": [0.75, 0.5, 0.25], "combine": "worst"}`
+evaluates every design eroded, intermediate and dilated, and minimises the worst. See
+[`framework/parts/variants.py`](../toporia/framework/parts/variants.py).
 
 ## A response
 

@@ -85,6 +85,8 @@ class VonMisesStress(Response):
     )
 
     requires = (STRESS,)
+    # A larger p-norm exponent once the design has settled approximates the peak better.
+    schedulable = ("p",)
     #: The adaptive scale is held constant in the gradient on purpose (see above),
     #: so the gradient is checked against finite differences with it switched off.
     gradient_check_settings = {"adaptive": False}

@@ -47,6 +47,20 @@ class Solver:
     # Empty list means raw optimiser output with no filtering.
     filter_specs: list = field(default_factory=lambda: [{"type": "density"}])
 
+    # Continuation: parameters that change during the run, each
+    # {"path": <parameter path>, "type": <schedule name>, <param>: <value>},
+    # e.g. {"path": "interpolation.penal", "type": "steps", "start": 1, "end": 3}.
+    # See framework/parts/schedule.py.  The engine does not stop on its
+    # tolerance while one is still moving.
+    schedules: list = field(default_factory=list)
+
+    # Evaluate every design in several versions and optimise the combination,
+    # {"path": <parameter path>, "values": [...], "combine": "worst" | "mean",
+    #  "nominal": <index>, "sharpness": 50}; empty means one version.  The robust
+    # formulation is {"path": "filters[1].eta", "values": [0.75, 0.5, 0.25]}.
+    # See framework/parts/variants.py.
+    variants: dict = field(default_factory=dict)
+
     # ── Discretisation ────────────────────────────────────────────────────────
     # Elements per millimetre: the mesh is round(Lx*m) x round(Ly*m) elements.
     # It lives here rather than in the Scenario because resolution is a choice

@@ -104,6 +104,10 @@ class FlatProblem:
         self._store(x, evaluation)
         return evaluation
 
+    def forget(self):
+        """Drop the cached evaluation: the problem itself changed (a schedule moved a parameter)."""
+        self._cached = None
+
     def cached(self, x):
         """The cached Evaluation if it is for exactly x (free variables), else None."""
         if self._cached is not None and self._cached[0] == np.asarray(x, dtype=float).tobytes():

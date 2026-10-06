@@ -33,6 +33,8 @@ class Interpolation(ABC):
     #: Tunable parameters (framework.params.Param).  The constructor must accept
     #: each one as a keyword argument of the same name.
     params = ()
+    #: Parameters a schedule may change during a run (framework/parts/schedule.py).
+    schedulable = ()
 
     @abstractmethod
     def stiffness(self, density, E0, Emin):

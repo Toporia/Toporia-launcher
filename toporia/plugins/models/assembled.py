@@ -23,11 +23,14 @@
 # features for — compliance, volume, stress — with every filter and every
 # updater.  A new response or filter likewise works with every engine.
 
+import re
+
 import numpy as np
 
 from toporia.framework.parts.method import Capabilities
 from toporia.framework.parts.model import ConstraintValue, Evaluation, Model
 from toporia.framework.parts.response import CONSTRAINT_ROLE, OBJECTIVE_ROLE
+from toporia.framework.parts.schedule import change_parameter
 from toporia.plugins.filters.pipeline import DensityFilterPipeline
 from toporia.plugins.responses import RESPONSES, resolve_response, responses_for
 
@@ -170,3 +173,26 @@ class AssembledModel(Model):
 
     def advance(self, completed):
         self.pipeline.step(completed)
+
+    def continuing(self):
+        return self.pipeline.chain is not None and self.pipeline.chain.continuing()
+
+    def set_parameter(self, path, value):
+        """Change a value of a live part: the material law, the representation, a filter, a response."""
+        name = path.rpartition(".")[2]
+        change_parameter(self._part_at(path), name, value)
+
+    def _part_at(self, path):
+        prefix, _, _ = path.rpartition(".")
+        if prefix == "interpolation" and self.physics.uses_interpolation:
+            return self.engine.material
+        if prefix == "representation":
+            return self.representation
+        if prefix == "objective":
+            return self.objective
+        indexed = re.fullmatch(r"(filters|constraints)\[(\d+)\]", prefix)
+        if indexed and indexed[1] == "filters" and self.pipeline.chain is not None:
+            return self.pipeline.chain.filters[int(indexed[2])]
+        if indexed and indexed[1] == "constraints":
+            return self.constraints[int(indexed[2])]
+        raise ValueError(f"{self.label} has no part at {path!r} that could change during a run")

@@ -43,6 +43,7 @@ class MMAUpdater(Updater):
 
     # The volume budget only: the subproblem's dual is solved by 1-D bisection.
     max_constraints = 0
+    schedulable = ("move",)
     flat_view = True   # unscaled: f0fac below is MMA's own, iteration-dependent scaling
 
     def initialize(self, model, settings):

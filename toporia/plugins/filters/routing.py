@@ -89,6 +89,10 @@ class RoutingRadiusFilter(Filter):
         )
         self._interior_mask = (dist > self.radius_el).astype(float)
 
+    def continuing(self):
+        """True until the routing constraint is fully on."""
+        return not self._identity and self._alpha < 1.0
+
     def step(self, iteration):
         if iteration < self.start_iter:
             self._alpha = 0.0

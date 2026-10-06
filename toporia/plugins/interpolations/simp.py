@@ -21,6 +21,7 @@ class SIMP(Interpolation):
     label = "SIMP (power law)"
     order = 10
     params = (PENAL,)
+    schedulable = ("penal",)    # continuation p = 1 -> 3 is common practice
 
     def __init__(self, penal=3.0):
         self.penal = float(penal)

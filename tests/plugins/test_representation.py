@@ -105,15 +105,15 @@ def test_an_updater_that_moves_element_densities_is_refused_with_bars(updater):
     run = _run(method=f"q4+{updater}", representation=MMC)
     with pytest.raises(ValueError, match="moves one density per element"):
         initialized_method(run)
-    assert solver_problems(method_class(f"q4+{updater}"), run.solver)
-    assert any("would be refused" in note for note in pipeline_notes(run.solver.method, run.solver))
-    assert not solver_problems(method_class("q4+mma"), run.solver)
+    assert solver_problems(method_class(f"q4+{updater}"), run)
+    assert any("would be refused" in note for note in pipeline_notes(run.solver.method, run))
+    assert not solver_problems(method_class("q4+mma"), run)
 
 
 def test_models_with_their_own_variables_ignore_it():
     run = _run(method="levelset", representation=MMC)
     assert not method_class("levelset").capabilities.accepts_representation
-    assert not solver_problems(method_class("levelset"), run.solver)
+    assert not solver_problems(method_class("levelset"), run)
     assert "representation" not in [kind for kind, _ in pipeline_parts(run)]
 
 
@@ -122,7 +122,7 @@ def test_the_choice_is_shown_advised_and_recorded(tmp_path):
                method_params={"move": 0.02}).with_output_dir(tmp_path)
     assert dict(pipeline_stages(run))["Design"] == "Moving morphable components, projected onto the elements"
     assert dict(pipeline_stages(_run()))["Design"] == "Element densities"
-    assert any("move limit" in note for note in pipeline_notes(run.solver.method, run.solver))
+    assert any("move limit" in note for note in pipeline_notes(run.solver.method, run))
     run_single(run)
     record = json.loads((tmp_path / "run.json").read_text())
     assert record["solver"]["definition"]["representation"] == {"type": "mmc", "n_x": 2}

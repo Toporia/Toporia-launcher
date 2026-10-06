@@ -25,7 +25,7 @@ from toporia.framework.parts.method import OBJECTIVE
 from toporia.framework.problem.mesh import RectangularProblem
 from toporia.framework.registry import install_hint, missing_dependencies
 
-from .pipeline import describe_pipeline, representation_used, solver_problems
+from .pipeline import describe_pipeline, make_schedules, representation_used, solver_problems
 from .records import ResultStore, check_limits, describe_violations, run_record
 
 
@@ -50,7 +50,7 @@ def initialized_method(run):
         advice = f"Methods that can: {able}." if able else "No registered method can."
         raise ValueError(f"Method {method_cls.name!r} cannot solve this scenario: "
                          f"{'; '.join(reasons)}. {advice}")
-    reasons = solver_problems(method_cls, run.solver)
+    reasons = solver_problems(method_cls, run)
     if reasons:
         raise ValueError(f"Method {method_cls.name!r} cannot run with these parts: {'; '.join(reasons)}.")
     (objective_cls, _), _ = check_responses(run.scenario)
@@ -125,14 +125,25 @@ def run_single_with_store(run, on_iteration=None):
 def _loop(run, method, store, on_iteration):
     """The iterations themselves; returns (last iteration, stop reason)."""
     solver = run.solver
+    schedules = make_schedules(run)
+    scheduled = {}           # the value each schedule last set
+    held = False             # the tolerance was met while something was still moving
     obj0 = None
     iteration = 0
     stop_reason = f"iteration limit ({solver.max_iter})"
     for iteration in range(1, solver.max_iter + 1):
         t0 = time.perf_counter()
+        # Continuation: every schedule sets its parameter for this iteration.
+        for path, schedule in schedules:
+            value = schedule.value(iteration - 1)
+            if scheduled.get(path) != value:
+                method.set_parameter(path, value)
+                if path in scheduled:
+                    print(f"  schedule: {path} = {value:g}")
+                scheduled[path] = value
         method.step(iteration)
 
-        responses = method.get_responses()
+        responses = {**method.get_responses(), **scheduled}
         objective = responses[OBJECTIVE]
         density = method.get_density()
         change = method.get_change()
@@ -148,6 +159,19 @@ def _loop(run, method, store, on_iteration):
         if on_iteration:
             on_iteration(density, store.objectives, iteration)
 
+        # Nothing stops while a continuation is still moving: a design that has
+        # settled at p = 1 or at a soft projection is not the answer at the end.
+        # The iteration just run used value(iteration - 1), so that one must be the last.
+        moving = [path for path, schedule in schedules if not schedule.finished(iteration - 1)]
+        if method.continuing():
+            moving.append("the method's own continuation")
+        settled = change < solver.tol or method.is_converged()
+        if settled and moving:
+            if not held:
+                print(f"  converged, but continuing: {', '.join(moving)} still moving")
+            held = True
+            continue
+        held = False
         # Platform rule first: it applies to every method and is what keeps a
         # cross-method benchmark honest.
         if change < solver.tol:
@@ -158,4 +182,9 @@ def _loop(run, method, store, on_iteration):
             stop_reason = (method.convergence_reason()
                            or f"{type(method).__name__} reported its own convergence criterion")
             break
+    else:
+        unfinished = [f"{path} at {scheduled[path]:g}" for path, schedule in schedules
+                      if not schedule.finished(iteration - 1)]
+        if unfinished:
+            stop_reason += f"; schedules not finished: {', '.join(unfinished)}"
     return iteration, stop_reason

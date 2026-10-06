@@ -64,6 +64,7 @@ class MovingMorphableComponents(Representation):
     advice = ("Its variables are positions, lengths and angles across the whole domain, so the "
               "updater's move limit moves bars a long way: about 0.02 (method.move) keeps them on "
               "the load between iterations; the usual 0.2 lets them jump off and back.")
+    schedulable = ("edge_width",)    # wide edges early, crisp geometry at the end
     params = (
         Param("n_x", 4, "Cells across", "Start layout: cells across the domain, each with two crossing bars.",
               min=1, max=20),
@@ -90,6 +91,7 @@ class MovingMorphableComponents(Representation):
         self.X, self.Y = problem.elem_x, problem.elem_y
         Lx, Ly = problem.Lx, problem.Ly
         h = min(problem.dx, problem.dy)
+        self.h = h
         self.eps = self.edge_width * h
         # Physical value = low + z × span, for the five variables in order.
         self.low = np.array([0.0, 0.0, h, 0.5 * h, -np.pi])
@@ -109,6 +111,10 @@ class MovingMorphableComponents(Representation):
                     bars.append([*centre, 0.5 * np.hypot(width, height),
                                  self.start_thickness * (self.low[3] + self.span[3]), theta])
         return np.clip((np.array(bars) - self.low) / self.span, 0.0, 1.0).reshape(-1)
+
+    def set_parameter(self, name, value):
+        self.edge_width = float(value)
+        self.eps = self.edge_width * self.h
 
     @property
     def n_bars(self):

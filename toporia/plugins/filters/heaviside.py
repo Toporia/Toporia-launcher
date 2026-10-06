@@ -9,6 +9,13 @@
 # β is ramped up via the continuation scheme to avoid local minima:
 #   call step(iteration) each optimisation iteration.
 # step() doubles β every beta_interval iterations, capped at beta_max.
+# Until β reaches beta_max the filter reports continuing(), and the engine does
+# not stop on its tolerance: a design converged at a soft projection is not
+# the answer to the sharp one.
+#
+# β and η may also be driven by a schedule (solver.schedules, e.g. a
+# geometric one on "filters[1].beta"); the built-in doubling then stands
+# aside, so the two never fight over β.
 #
 # Backward pass (pointwise chain rule):
 #   dx = β·sech²(β·(x − η)) / num
@@ -44,11 +51,19 @@ class HeavisideFilter(Filter):
               min=1, max=500),
     )
 
+    schedulable = ("beta", "eta")
+
     def __init__(self, beta=1.0, eta=0.5, beta_max=32.0, beta_interval=25):
         self.beta          = float(beta)
         self.eta           = float(eta)
         self.beta_max      = float(beta_max)
         self.beta_interval = int(beta_interval)
+        self._beta_scheduled = False   # a schedule drives beta: the built-in doubling stands aside
+
+    def set_parameter(self, name, value):
+        if name == "beta":
+            self._beta_scheduled = True
+        setattr(self, name, float(value))
 
     def forward(self, x):
         b, e = self.beta, self.eta
@@ -64,5 +79,11 @@ class HeavisideFilter(Filter):
     def step(self, iteration):
         """Double beta every beta_interval iterations, capped at beta_max.
         Called by FilterChain.step() once per optimisation iteration."""
+        if self._beta_scheduled:
+            return
         if iteration > 0 and iteration % self.beta_interval == 0:
             self.beta = min(self.beta * 2.0, self.beta_max)
+
+    def continuing(self):
+        """True until the built-in doubling has brought beta to beta_max."""
+        return not self._beta_scheduled and self.beta < self.beta_max
