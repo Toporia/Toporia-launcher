@@ -1,4 +1,4 @@
-# engine/runner.py — the optimisation loop.
+# engine/loop.py — the optimisation loop.
 #
 # Every analysis mode (run_one, sweep, compare, sensitivity) goes through this
 # module, so the wiring, the loop, the stopping rule and the recording all live
@@ -78,7 +78,7 @@ def run_single_with_store(run, on_iteration=None):
 
     Parameters
     ----------
-    run          : core.run.Run
+    run          : framework.problem.run.Run
     on_iteration : callable, optional
         Called after every solver step as ``on_iteration(density, objectives, iteration)``.
         Raise an exception inside the callback to interrupt the loop early.

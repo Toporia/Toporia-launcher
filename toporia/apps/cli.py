@@ -29,6 +29,7 @@ from pathlib import Path
 
 
 def main(argv=None) -> int:
+    """Parse the command line and run the command; no command opens the GUI.  Returns the exit code."""
     parser = _parser()
     args = parser.parse_args(argv)
     if args.command in (None, "gui"):
@@ -197,6 +198,7 @@ def _parser():
     export.set_defaults(handler=_cmd_export)
 
     def running(name, help_text, handler):
+        """A sub-command that runs optimisations: a scenario, --out and any number of --set."""
         sub = commands.add_parser(name, help=help_text)
         sub.add_argument("scenario", help="scenario JSON file or preset name")
         sub.add_argument("--out", help="output directory")

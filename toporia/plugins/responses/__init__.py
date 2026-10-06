@@ -1,7 +1,7 @@
-"""library.responses — what a scenario can minimise or constrain.
+"""plugins.responses — what a scenario can minimise or constrain.
 
 Every Response subclass in this package with a non-empty `name` is found by the
-RESPONSES registry.  Responses are declarations (see core/responses.py); the
+RESPONSES registry.  Responses are declarations (see framework/parts/response.py); the
 models that can compute them say so in their Capabilities.
 
 The volume budget (scenario.volfrac) is enforced by every method and is not a

@@ -1,8 +1,8 @@
-# library/updaters/scipy_slsqp.py — SciPy's SLSQP, the template for wrapping a library.
+# plugins/updaters/scipy_slsqp.py — SciPy's SLSQP, the template for wrapping a plugins.
 #
 # This file is the worked example in docs/writing-plugins.md.  It is the whole
-# adapter: SciPy runs its own loop, and ExternalOptimizer (core/external.py)
-# runs that loop in a background thread on the flat view (core/flat.py), so
+# adapter: SciPy runs its own loop, and ExternalOptimizer (framework/optimisers/external_loop.py)
+# runs that loop in a background thread on the flat view (framework/optimisers/flat_view.py), so
 # all this file does is call the library the way its documentation says to.
 #
 #     Toporia                         this adapter                SciPy

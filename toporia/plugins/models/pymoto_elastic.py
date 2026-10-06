@@ -1,4 +1,4 @@
-# library/models/pymoto_elastic.py — linear elasticity on a pyMOTO module network.
+# plugins/models/pymoto_elastic.py — linear elasticity on a pyMOTO module network.
 #
 # pyMOTO (https://github.com/aatmdelissen/pyMOTO, MIT) builds a topology
 # optimisation problem as a network of modules and backpropagates through it,
@@ -11,15 +11,15 @@
 #                                               └─ ρ^q · von Mises(Stress(u)) ─p-norm────> stress constraint
 #
 # Objectives: compliance or volume.  Constraints: any number of peak von Mises
-# stress limits (library/responses/stress.py), over every load case.
+# stress limits (plugins/responses/stress.py), over every load case.
 #
 # It computes its responses itself, by backpropagation through its own network,
-# so it is a whole model rather than a physics engine for library/models/assembled.py:
+# so it is a whole model rather than a physics engine for plugins/models/assembled.py:
 # its responses are listed by name in its Capabilities, and Toporia's filter
 # pipeline does not apply.
 #
 # It is also the contract's canary: pyMOTO knows nothing about Toporia, so if a
-# change to core/ cannot be satisfied here without conversion code, the
+# change to framework/ cannot be satisfied here without conversion code, the
 # contract has grown a Toporia-specific assumption.
 #
 # Requires the optional dependency:  pip install "toporia[pymoto]"

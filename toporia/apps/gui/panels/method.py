@@ -5,7 +5,7 @@
 # each with its own generated parameter form, then convergence and output.
 
 
-from PySide6.QtCore import Signal  # Qt signal/slot system (see python_primer.py §11)
+from PySide6.QtCore import Signal
 from PySide6.QtWidgets import (
     QComboBox,
     QFormLayout,

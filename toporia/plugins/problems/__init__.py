@@ -1,4 +1,4 @@
-"""library.problems — benchmark and application problems, one per module.
+"""plugins.problems — benchmark and application problems, one per module.
 
 Each module in this package defines:
 

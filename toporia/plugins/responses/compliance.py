@@ -1,4 +1,4 @@
-# library/responses/compliance.py — structural compliance.
+# plugins/responses/compliance.py — structural compliance.
 #
 # C = Σ_k w_k · f_kᵀ u_k, the load-weighted work of the external forces over
 # the load cases.  Minimising it maximises stiffness; it is the objective of
@@ -15,6 +15,7 @@ from toporia.framework.parts.response import OBJECTIVE_ROLE, Response, ResponseV
 
 
 class Compliance(Response):
+    """C = Σ w_k f_kᵀ u_k, the load-weighted compliance; minimising it maximises stiffness."""
     name = "compliance"
     label = "Compliance"
     order = 10

@@ -2,7 +2,7 @@
 
 A filter maps design variables to physical densities and carries the chain rule back
 again: `forward(x)`, `backward(x_in, sensitivity)`. They compose into an ordered
-[`FilterChain`](filter_base.py), so a run can stack a density filter, a projection and a
+[`FilterChain`](../../framework/parts/filter.py), so a run can stack a density filter, a projection and a
 fabrication rule and get consistent sensitivities through all three.
 
 Without a filter, a density method produces checkerboards and a mesh-dependent result.
@@ -20,12 +20,12 @@ This layer is not optional decoration — it is what makes the problem well pose
 
 | Filter | File | Registry name | Reference |
 | :-- | :-- | :-- | :-- |
-| ✅ Density filter | [`filter_density.py`](filter_density.py) | `density` | Bruns & Tortorelli, *CMAME* 2001; Bourdin, *IJNME* 2001 |
-| ✅ Sensitivity filter | [`filter_sensitivity.py`](filter_sensitivity.py) | `sensitivity` | Sigmund, *Struct. Optim.* 1997 |
-| ✅ Heaviside projection, free threshold η | [`filter_heaviside.py`](filter_heaviside.py) | `heaviside` | Guest et al., *IJNME* 2004; `tanh` form from Wang, Lazarov & Sigmund, *SMO* 2011 |
-| ✅ AM overhang filter | [`filter_am.py`](filter_am.py) | `am` | Langelaar, *Addit. Manuf.* 2016; *SMO* 2017 |
-| ✅ Symmetry filter | [`filter_symmetry.py`](filter_symmetry.py) | `symmetry` | standard practice |
-| ✅ Routing radius filter | [`filter_routing.py`](filter_routing.py) | `routing` | Toporia-specific |
+| ✅ Density filter | [`filter_density.py`](density.py) | `density` | Bruns & Tortorelli, *CMAME* 2001; Bourdin, *IJNME* 2001 |
+| ✅ Sensitivity filter | [`filter_sensitivity.py`](sensitivity.py) | `sensitivity` | Sigmund, *Struct. Optim.* 1997 |
+| ✅ Heaviside projection, free threshold η | [`filter_heaviside.py`](heaviside.py) | `heaviside` | Guest et al., *IJNME* 2004; `tanh` form from Wang, Lazarov & Sigmund, *SMO* 2011 |
+| ✅ AM overhang filter | [`filter_am.py`](am.py) | `am` | Langelaar, *Addit. Manuf.* 2016; *SMO* 2017 |
+| ✅ Symmetry filter | [`filter_symmetry.py`](symmetry.py) | `symmetry` | standard practice |
+| ✅ Routing radius filter | [`filter_routing.py`](routing.py) | `routing` | Toporia-specific |
 
 The projection already takes an arbitrary threshold η, which is the prerequisite for the
 robust formulation below.
@@ -34,8 +34,8 @@ robust formulation below.
 
 | Filter | Status | Reference | Why it matters |
 | :-- | :-- | :-- | :-- |
-| PDE / Helmholtz filter | 📄 | Lazarov & Sigmund, *IJNME* 86 (2011) 765–781 | Filtering as a solve of `−r²∇²ρ̄ + ρ̄ = ρ̃` with Neumann boundaries. No neighbour lists and no stored weight matrix, so memory is constant in the radius, it scales to distributed memory, and **it is the only density filter that transfers to unstructured meshes and 3-D** — which matters now that a pyMOTO model exists. Our [`filter_density.py`](filter_density.py) builds an n×n weight matrix in a four-deep Python loop, the slowest part of starting a fine run. |
-| Morphology filters: erode, dilate, open, close | 📄 | Sigmund, *SMO* 33 (2007) 401–424 | Smooth min/max filters that give genuinely black-and-white designs and enforce feature size directly. The smooth min/max machinery already exists in [`filter_am.py`](filter_am.py). |
+| PDE / Helmholtz filter | 📄 | Lazarov & Sigmund, *IJNME* 86 (2011) 765–781 | Filtering as a solve of `−r²∇²ρ̄ + ρ̄ = ρ̃` with Neumann boundaries. No neighbour lists and no stored weight matrix, so memory is constant in the radius, it scales to distributed memory, and **it is the only density filter that transfers to unstructured meshes and 3-D** — which matters now that a pyMOTO model exists. Our [`filter_density.py`](density.py) builds an n×n weight matrix in a four-deep Python loop, the slowest part of starting a fine run. |
+| Morphology filters: erode, dilate, open, close | 📄 | Sigmund, *SMO* 33 (2007) 401–424 | Smooth min/max filters that give genuinely black-and-white designs and enforce feature size directly. The smooth min/max machinery already exists in [`filter_am.py`](am.py). |
 | Volume-preserving Heaviside | 📄 | Xu, Cai & Cheng, *SMO* 41 (2010) 495–505 | Adjusts η each iteration so projection does not change the volume. About twenty lines on the existing filter. |
 | Anisotropic / directional filters | 📄 | Lazarov & Sigmund 2011 (PDE form) | Different length scales per direction, for rolled or printed material. Falls out of the PDE filter almost free. |
 | Multi-resolution design and analysis meshes | 📄 | Nguyen, Paulino, Song & Le, *SMO* 2010; Groen et al., *IJNME* 2017 | Fine density field over a coarse FE mesh. Large speed-ups, with a known risk of artificial fine-scale artefacts. |
@@ -60,7 +60,7 @@ actually differentiate.
 | Enclosed void / powder removal | 📄 | Li et al., *SMO* 2016; Liu et al. 2015 | A virtual temperature field that only heats up inside disconnected voids, penalised to zero. Cheap and elegant. |
 | Casting and moulding directionality | 📄 | Xia, Shi, Wang & Liu, *CMAME* 2010; Guest & Zhu 2012 | No undercuts relative to a parting direction: a monotone projection along the draw axis. |
 | Machining accessibility | 📄 | Langelaar, *CAD* 2019; Lee, Nomura & Dede 2020 | Every solid point reachable by a tool from an allowed set of directions. A generalisation of the AM filter's directional sweep. |
-| Extrusion / 2.5-D milling | 📄 | Ishii & Aomura 2004 | Density constant along one axis — structurally the same operator as [`filter_symmetry.py`](filter_symmetry.py). |
+| Extrusion / 2.5-D milling | 📄 | Ishii & Aomura 2004 | Density constant along one axis — structurally the same operator as [`filter_symmetry.py`](symmetry.py). |
 | Pattern repetition | 📄 | Bendsøe & Sigmund, *Topology Optimization*, Springer 2003 | Folds the design onto a repeating unit. Same machinery as the symmetry filter. |
 | Residual stress / distortion aware | 📄 | Allaire & Jakabčin 2018; Miki & Yamada, *FEAD* 2021 | An inherent-strain model of the build inside the loop, so the *printed* shape is optimised rather than the designed one. |
 | Fibre orientation for composites | 🔗 FRC-TOuNN | Chandrasekhar, Sridhara & Suresh, *CAD* 2022 | Continuous fibre angle alongside density; the angle field itself needs regularising for printable tow paths. |

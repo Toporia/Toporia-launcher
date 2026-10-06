@@ -1,4 +1,4 @@
-# library/updaters/beso.py — bi-directional evolutionary structural optimisation.
+# plugins/updaters/beso.py — bi-directional evolutionary structural optimisation.
 #
 # BESO does not move densities continuously.  Every element is either solid or
 # void, and each iteration does three things:
@@ -140,6 +140,7 @@ class BESOUpdater(Updater):
         filter chain exactly as the volume budget does for every other updater.
         """
         def design_at(threshold):
+            """Solid above the threshold, void below, kept inside the element bounds."""
             return np.clip(np.where(sensitivity > threshold, 1.0, self.void_density),
                            self.lb, self.ub)
 

@@ -2,7 +2,7 @@
 
 import html
 
-from PySide6.QtCore import Qt  # Qt signal/slot system (see python_primer.py §11)
+from PySide6.QtCore import Qt
 from PySide6.QtWidgets import (
     QGroupBox,
     QLabel,

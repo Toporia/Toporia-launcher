@@ -1,7 +1,7 @@
-# core/run.py — one complete, runnable job: a Scenario, a Solver and an Output.
+# framework/problem/run.py — one complete, runnable job: a Scenario, a Solver and an Output.
 #
 #     Scenario  (what is solved)  ─┐
-#     Solver    (how it is solved) ─┼─>  Run  ─>  engine.runner.run_single(run)
+#     Solver    (how it is solved) ─┼─>  Run  ─>  engine.loop.run_single(run)
 #     Output    (where it goes)    ─┘
 #
 # A Run is what the engine consumes and what every analysis mode varies.

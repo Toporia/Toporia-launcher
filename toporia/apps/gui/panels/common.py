@@ -77,6 +77,7 @@ class CollapsibleSection(QWidget):
         self._toggle.setText(f"{'▼' if checked else '▶'}  {self._title}")
 
     def set_title(self, title):
+        """Change the section's title, keeping its open or closed arrow."""
         self._title = title
         self._on_toggle(self._toggle.isChecked())
 

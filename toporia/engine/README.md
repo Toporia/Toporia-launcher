@@ -1,78 +1,79 @@
-# `toporia/engine` — the optimisation loop and the analysis modes
+# `toporia/engine` — running things
 
-The engine **runs** things. It takes a [`Run`](../core/run.py), builds the problem and the
+The engine **runs** a [`Run`](../framework/problem/run.py): it builds the problem and the
 method from it, drives the iterations, applies one stopping rule to every method, and
 records what happened. Every analysis mode — one run, a sweep, a comparison, a
 sensitivity study — is built on that one loop, so they all stop, record and report the
 same way.
 
-The engine knows methods only through the contract in
-[`core/contract.py`](../core/contract.py). It does not know whether a method is OC, BESO,
-SciPy's SLSQP or the level set; that is what keeps a cross-method comparison fair.
+The engine knows methods only through
+[`framework/parts/method.py`](../framework/parts/method.py). It does not know whether a
+method is OC, BESO, SciPy's SLSQP or the level set; that is what keeps a cross-method
+comparison fair.
+
+```
+engine/
+├── loop.py         the one optimisation loop
+├── records.py      what a run leaves behind: history, images, limit check, run.json
+├── pipeline.py     names the parts of a run, for the console and the GUI
+└── modes/          one module per analysis mode
+    ├── single.py       Run One
+    ├── sweep.py        Sweep, Sweep 2D
+    ├── compare.py      Compare Two, Compare Load Cases
+    ├── sensitivity.py  Sensitivity, Sensitivity Sweep, Sensitivity Sweep 2D
+    ├── check.py        Check Parts
+    └── grids.py        what the multi-run modes share
+```
 
 ## At a glance
 
 ```mermaid
 flowchart TB
-    callers["Who starts a run<br/>the GUI (gui/runner.py) · the CLI (cli.py) · Python and tests"]
-    modes["Analysis modes, one per GUI mode<br/>run_one.py · sweep.py · sweep_2d.py<br/>compare_two.py · compare_load_cases.py, both via compare_core.py<br/>sensitivity.py · sensitivity_sweep.py<br/>each builds variants of a Run with apply_param"]
-    runner["runner.py: the one loop<br/>initialized_method · run_single_with_store"]
-    method["the method<br/>core contract, built from library plugins"]
+    callers["Who starts a run<br/>the GUI (apps/gui/runner.py) · the CLI (apps/cli.py) · Python and tests"]
+    modes["modes/: one module per analysis mode<br/>single · sweep · compare · sensitivity · check<br/>each builds variants of a Run with apply_param<br/>(grids.py: the folder, the cells, the image grid)"]
+    loop["loop.py: the one loop<br/>initialized_method · run_single_with_store"]
+    method["the method<br/>framework contract, built from plugins"]
     pipeline["pipeline.py<br/>names the parts of the run"]
-    feasibility["feasibility.py<br/>were the limits met?"]
-    results["results.py<br/>ResultStore: history, PNG, CSV"]
-    provenance["provenance.py<br/>run.json"]
+    records["records.py<br/>ResultStore · check_limits · run_record"]
     disk[("output folder<br/>final_density.png · .csv<br/>density_NNNN.png · run.json")]
 
     callers --> modes
-    callers -- "or directly" --> runner
-    modes -- "one call per run" --> runner
-    runner -- "initialize · step · close" --> method
-    runner --> pipeline
-    runner --> feasibility
-    runner --> results
-    runner --> provenance
-    results --> disk
-    provenance --> disk
+    callers -- "or directly" --> loop
+    modes -- "one call per run" --> loop
+    loop -- "initialize · step · close" --> method
+    loop --> pipeline
+    loop --> records
+    records --> disk
 ```
 
 ## The files
 
-### The loop
-
 | File | What it does |
 | :--- | :--- |
-| [`runner.py`](runner.py) | **The one optimisation loop.** `initialized_method(run)` looks the method up by name, refuses it before anything is computed if a package it needs is missing or it cannot do what the scenario asks (naming the methods that can), prints the pipeline, builds the `RectangularProblem` and initialises the method. `run_single_with_store(run, on_iteration)` steps it, records every iteration, calls the live callback (the GUI's canvas and Stop button), applies the stopping rule, always calls `method.close()`, checks the limits, and writes the results and `run.json`. `run_single(run)` returns just the final density. |
-| [`pipeline.py`](pipeline.py) | Names what a run is made of: `pipeline_stages(run)` → design → filters → physics → objective, constraints → what the optimiser sees → updater. `describe_pipeline` is the console line, `pipeline_notes` the plain-language reasons why a part is unavailable (an updater that cannot enforce a constraint, a package not installed). The GUI's **Pipeline** panel shows exactly the same. |
-| [`feasibility.py`](feasibility.py) | `check_limits(scenario, responses)` judges the final design against the volume budget and every scenario constraint (on the exact value when the method reports one, e.g. the true peak stress), with 1 % tolerance; `describe_violations` turns broken limits into the `WARNING:` lines. An optimiser that cannot meet every limit settles on a compromise without an error, so this is checked explicitly after every run. |
-| [`provenance.py`](provenance.py) | `run_record(...)` — the `run.json` written next to every result: scenario and solver in full with their fingerprints, software versions and git commit, iterations, stop reason, feasibility, every limit, the final responses (including `solves`), and the outside optimiser's own verdict when there is one. |
-| [`results.py`](results.py) | `ResultStore` — per-run history (objective, volume, every reported response per iteration), density snapshots every `save_every` iterations, `final_density.png` and `final_density.csv`, an optional `history.png`, and `save_json`. |
+| [`loop.py`](loop.py) | **The one optimisation loop.** `initialized_method(run)` looks the method up by name, refuses it before anything is computed if a package it needs is missing or it cannot do what the scenario asks (naming the methods that can), prints the pipeline, meshes the problem and initialises the method. `run_single_with_store(run, on_iteration)` steps it, records every iteration, calls the live callback (the GUI's canvas and Stop button), applies the stopping rule, always calls `method.close()`, checks the limits, and writes the results and `run.json`. `run_single(run)` returns just the final density. |
+| [`records.py`](records.py) | **What a run leaves behind.** `ResultStore` keeps the per-iteration history (objective, volume, every reported response), writes density snapshots, `final_density.png`, `final_density.csv` and an optional `history.png`. `check_limits` judges the final design against the volume budget and every constraint (on the exact value when there is one, e.g. the true peak stress) and `describe_violations` turns broken ones into `WARNING:` lines. `run_record` builds `run.json`: scenario and solver with fingerprints, software versions and git commit, how the run ended, every limit, the final responses, and an outside optimiser's own verdict. |
+| [`pipeline.py`](pipeline.py) | Names what a run is made of: design → filters → physics → objective, constraints → what the optimiser sees → updater, and why any part is unavailable. The console line at the start of every run and the GUI's **Pipeline** panel both come from here. |
 
 ### The analysis modes
 
-Each mode builds variants of a `Run` with [`apply_param`](../core/run.py) — so any
-parameter path can be swept or compared — and sends each through the loop.
+Each mode builds variants of a `Run` with [`apply_param`](../framework/problem/run.py) — so
+any parameter path can be swept, compared or perturbed — and sends each through the loop.
 
-| File | Mode | What it produces |
+| File | GUI mode | What it produces |
 | :--- | :--- | :--- |
-| [`run_one.py`](run_one.py) | Run One | One optimisation; returns the `ResultStore` and the final density. |
-| [`sweep.py`](sweep.py) | Sweep | One parameter over an `n_rows × n_cols` grid of linearly spaced values; one run per cell, assembled into `sweep_grid.png`. |
-| [`sweep_2d.py`](sweep_2d.py) | Sweep 2D | Two parameters, one along the rows and one along the columns, to see how they interact; `sweep2d_grid.png`. |
-| [`compare_core.py`](compare_core.py) | *(shared)* | Runs two prepared `Run`s and draws one overlay figure, `comparison.png`: material only in A, only in B, in both. |
-| [`compare_two.py`](compare_two.py) | Compare Two | Two runs that differ in one parameter value. |
-| [`compare_load_cases.py`](compare_load_cases.py) | Compare Load Cases | Two runs that differ only in their load cases. |
-| [`sensitivity.py`](sensitivity.py) | Sensitivity | Runs at `base` and `base + gap` and maps `(ρ_perturbed − ρ_base) / gap` per element over the base design; `sensitivity.png` and a CSV. |
-| [`sensitivity_sweep.py`](sensitivity_sweep.py) | Sensitivity Sweep (1-D, 2-D) | The sensitivity field for every cell of a sweep; can also sweep the base value or the gap itself; `senssweep_grid.png` / `senssweep2d_grid.png`. |
-
-The GUI's eighth mode, **Check Parts**, runs the conformance test of
-[`toporia/testing.py`](../testing.py) on the selected pipeline rather than an optimisation.
+| [`modes/single.py`](modes/single.py) | Run One | One optimisation, with a summary of the meshed problem first and `history.png` at the end. |
+| [`modes/sweep.py`](modes/sweep.py) | Sweep · Sweep 2D | One parameter over an `n_rows × n_cols` grid, or two parameters (rows × columns); one run per cell; `sweep_grid.png` / `sweep2d_grid.png`. |
+| [`modes/compare.py`](modes/compare.py) | Compare Two · Compare Load Cases | Two runs differing in one parameter, or in their load cases; `comparison.png` shows material only in A, only in B, and in both. `compare_runs` takes any two prepared runs (used by `toporia compare`). |
+| [`modes/sensitivity.py`](modes/sensitivity.py) | Sensitivity · Sensitivity Sweep (1-D, 2-D) | Runs at `base` and `base + gap` and maps `(ρ_perturbed − ρ_base) / gap` per element over the base design (`sensitivity.png`, `.csv`); the sweeps do that for every cell, and can also vary the base value or the gap (`senssweep_grid.png`, `senssweep2d_grid.png`). |
+| [`modes/check.py`](modes/check.py) | Check Parts | No optimisation: the conformance test ([`checks/`](../checks/README.md)) on every part of the selected pipeline. |
+| [`modes/grids.py`](modes/grids.py) | *(shared)* | The mode's output folder, running a list of cells with progress lines, and laying images out in one grid. |
 
 ## One run, step by step
 
 ```mermaid
 sequenceDiagram
     participant C as caller (mode, GUI, CLI)
-    participant R as runner
+    participant R as loop
     participant M as method
     participant S as ResultStore
     C->>R: run_single_with_store(run, on_iteration)
@@ -117,13 +118,12 @@ recorded instead of a generic message. Whatever ended the run is written to `run
 
 ```mermaid
 flowchart LR
-    engine["engine"] --> core["core<br/>Run, problem, contract"]
-    engine --> library["library<br/>methods, responses, filters (by name)"]
-    gui["gui"] --> engine
-    cli["cli"] --> engine
-    testing["testing"] --> engine
+    engine["engine"] --> framework["framework<br/>Run, mesh, contracts"]
+    engine --> plugins["plugins<br/>methods, responses, filters (by name)"]
+    apps["apps"] --> engine
+    checks["checks"] --> engine
 ```
 
-The engine imports `core` for the data model and the contract, and looks methods,
-responses and filters up in `library` by name. Nothing in `core` or `library` imports the
-engine, so a plugin never depends on how it is driven.
+The engine imports `framework` for the data model and the contracts, and looks methods,
+responses and filters up in `plugins` by name. Nothing in `framework` or `plugins` imports
+the engine, so a plugin never depends on how it is driven.

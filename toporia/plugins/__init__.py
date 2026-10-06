@@ -12,6 +12,6 @@ subpackage is scanned for plugins, so extending one means adding a file:
     problems/  benchmark and application presets
     catalog.py every numeric value a setup lets you sweep, as parameter paths
 
-Extending the library never requires editing core/ or engine/.  See README.md
+Extending the library never requires editing framework/ or engine/.  See README.md
 here for the map of each part, and docs/writing-plugins.md for how to add one.
 """

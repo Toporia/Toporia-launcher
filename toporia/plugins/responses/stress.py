@@ -1,4 +1,4 @@
-# library/responses/stress.py — peak von Mises stress.
+# plugins/responses/stress.py — peak von Mises stress.
 #
 # A limit on the largest von Mises stress anywhere in the design.  The maximum
 # is not differentiable, so it is approximated by the p-norm of all element
@@ -34,7 +34,7 @@
 #                 dP/dρ_e −= dE/dρ_e · λ_eᵀ K_e u_e              (physics.mutual_energy)
 #
 # Everything engine-specific — element stresses, the adjoint solve — comes from
-# the physics engine (core/physics.py), so this one file serves every engine
+# the physics engine (framework/parts/physics.py), so this one file serves every engine
 # that provides the STRESS feature.
 #
 # Stresses are measured with the true element size, so a limit means the same
@@ -60,6 +60,7 @@ _EPSILON = 1e-12
 
 
 class VonMisesStress(Response):
+    """A limit on the peak von Mises stress, through a p-norm of the relaxed element stresses."""
     name = "stress"
     label = "Peak von Mises stress"
     order = 30

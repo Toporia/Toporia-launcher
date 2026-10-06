@@ -1,4 +1,4 @@
-# core/serialize.py — Scenario and Solver as JSON files.
+# framework/problem/files.py — Scenario and Solver as JSON files.
 #
 # A scenario file describes a problem completely; a solver file describes how
 # to solve it.  Both are plain, human-editable JSON with two reserved keys:
@@ -6,7 +6,7 @@
 #     {"kind": "scenario", "format": 1, "Lx": 60.0, "Ly": 20.0, ...}
 #
 # Loading is strict: an unknown key is an error rather than being dropped, for
-# the same reason unknown parameters are (see core/params.py).  Missing keys
+# the same reason unknown parameters are (see framework/params.py).  Missing keys
 # take the dataclass defaults, so a file only needs what differs from them.
 #
 # fingerprint() hashes the canonical JSON form, so equal definitions get the

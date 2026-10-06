@@ -1,4 +1,4 @@
-# library/responses/volume.py — material volume.
+# plugins/responses/volume.py — material volume.
 #
 # The total physical material of the design.  As an objective it gives the
 # lightest design that still satisfies the scenario's constraints; on its own
@@ -20,6 +20,7 @@ from toporia.framework.parts.response import OBJECTIVE_ROLE, Response, ResponseV
 
 
 class Volume(Response):
+    """The total physical material; as an objective it needs a further constraint."""
     name = "volume"
     label = "Material volume"
     order = 20

@@ -1,8 +1,8 @@
 """test_pymoto_backend.py — the contract canary.
 
 pyMOTO knows nothing about Toporia.  If the model in
-library/models/pymoto_elastic.py can drive it using only core.contract and
-core.problem, then those two modules contain no Toporia-specific assumptions.
+plugins/models/pymoto_elastic.py can drive it using only framework.parts.method and
+framework.problem.mesh, then those two modules contain no Toporia-specific assumptions.
 
 A failure here after a contract change is the signal that the contract has
 quietly grown a dependency on how Toporia's own methods happen to work.

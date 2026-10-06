@@ -1,13 +1,13 @@
-# library/models/assembled.py — a model assembled from swappable parts.
+# plugins/models/assembled.py — a model assembled from swappable parts.
 #
 # Every density model does the same four things, so they are written once:
 #
 #     x ──Filters──> ρ ──Physics.solve──> state ──Responses──> objective, constraints
 #     dx <─filter adjoint── dρ <─────────── gradients ─────────────┘
 #
-#   Filters    solver.filter_specs                    (library/filters)
-#   Physics    the model's `physics` class            (core/physics.py, library/fe)
-#   Responses  scenario.objective and .constraints    (library/responses)
+#   Filters    solver.filter_specs                    (plugins/filters)
+#   Physics    the model's `physics` class            (framework/parts/physics.py, plugins/physics)
+#   Responses  scenario.objective and .constraints    (plugins/responses)
 #
 # A new physics engine becomes a model with one declaration:
 #
@@ -31,6 +31,7 @@ from toporia.plugins.responses import RESPONSES, resolve_response, responses_for
 def _capabilities(physics):
     """What a model on this physics can minimise and constrain: every computable response."""
     def computable(role):
+        """The responses in `role` this physics can compute."""
         return [cls for cls in responses_for(role) if cls.computable_on(physics)]
     objectives = computable(OBJECTIVE_ROLE)
     return Capabilities(variable_kind="density", accepts_filters=True,
@@ -43,7 +44,7 @@ def _capabilities(physics):
 class AssembledModel(Model):
     """Filters, a physics engine and the scenario's responses, joined into a Model.
 
-    Subclasses set `physics` (a core.physics.Physics class) and their registry
+    Subclasses set `physics` (a framework.parts.physics.Physics class) and their registry
     name and label.  Parameters and capabilities follow from the engine.
     """
 

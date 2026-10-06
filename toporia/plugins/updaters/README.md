@@ -2,7 +2,7 @@
 
 An updater turns a model's `Evaluation` (objective, volume, gradients) into the next
 design. It knows nothing about the physics that produced the numbers, so **every updater
-works with every model** — see [`core/composition.py`](../../core/composition.py).
+works with every model** — see [`framework/parts/composition.py`](../../framework/parts/composition.py).
 
 **Status: 7 in Toporia · 8 with open code · 3 paper only**
 
@@ -36,7 +36,7 @@ The full guide, with a worked example of every plugin kind, is
 
 Almost every optimiser from a library wants a vector, bounds and callbacks. Set
 `flat_view = True` on the updater and call `self.flat_problem(model)` in `initialize`:
-the [`FlatProblem`](../../core/flat.py) it returns gives `x0`, `lower`, `upper`, `f`,
+the [`FlatProblem`](../../framework/optimisers/flat_view.py) it returns gives `x0`, `lower`, `upper`, `f`,
 `df`, `g`, `dg` (and `g_geq`, `dg_geq` for SciPy's sign convention), with the fixed
 elements left out, the volume budget as the first constraint, an optional objective
 scaling (`flat_objective_scale`), and a cache so one point costs one physics solve.
@@ -45,7 +45,7 @@ it. Every run counts its physics solves itself (`solves` in the history and the
 console), so an updater that re-evaluates trial designs is compared fairly.
 
 If the library insists on running its own loop (SciPy's `minimize`, NLopt, IPOPT),
-subclass [`ExternalOptimizer`](../../core/external.py) instead and write one method,
+subclass [`ExternalOptimizer`](../../framework/optimisers/external_loop.py) instead and write one method,
 `run(flat, x0, iterate)`: call the library, call `iterate(x)` wherever it reports a new
 design (its per-iteration callback, or its objective if it has no callback), and return
 a `Verdict`. The library then runs in a background thread and hands the engine one

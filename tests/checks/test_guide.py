@@ -47,5 +47,5 @@ def test_every_guide_example_conforms(block):
 
 def test_the_slsqp_template_the_guide_points_to_is_registered_and_conforms():
     text = GUIDE.read_text(encoding="utf-8")
-    assert "library/updaters/scipy_slsqp.py" in text
+    assert "plugins/updaters/scipy_slsqp.py" in text
     conformance("updater:scipy_slsqp").assert_ok()

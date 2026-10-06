@@ -1,8 +1,8 @@
-# core/physics.py — the interface a physics engine implements.
+# framework/parts/physics.py — the interface a physics engine implements.
 #
 # A physics engine turns a physical density field into a solved state, and
 # answers a fixed set of questions about that state.  Responses
-# (library/responses) are written against these questions only, so one
+# (plugins/responses) are written against these questions only, so one
 # compliance or stress response works on every engine that can answer them:
 #
 #     density ──Physics.solve──> state ──Response.evaluate──> value, gradient
@@ -36,7 +36,7 @@ class Physics(ABC):
     Class attributes describe the engine, as for every other plugin:
 
         name, label, order   registry key, menu text, menu position
-        params               tunable parameters (core.params.Param), e.g. a SIMP penalty
+        params               tunable parameters (framework.params.Param), e.g. a SIMP penalty
         provides             the feature names (ELASTIC_ENERGY, STRESS, ...) it answers
 
     Only `initialize` and `solve` are required.  The other methods belong to a

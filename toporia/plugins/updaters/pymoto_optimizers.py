@@ -1,7 +1,7 @@
-# library/updaters/pymoto_optimizers.py — pyMOTO's MMA and GCMMA as updaters.
+# plugins/updaters/pymoto_optimizers.py — pyMOTO's MMA and GCMMA as updaters.
 #
 # pyMOTO's optimisers expect a pyMOTO network.  To drive ANY Toporia model with
-# them, the model's flat view (core/flat.py) is presented to pyMOTO as a
+# them, the model's flat view (framework/optimisers/flat_view.py) is presented to pyMOTO as a
 # single module:
 #
 #     pyMOTO Signal x ──[_FlatModule]──> f, g_volume, g_1, …     (FlatProblem.f, .g)

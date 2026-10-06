@@ -68,7 +68,7 @@ def describe_pipeline(run):
 
 
 def pipeline_notes(method):
-    """Why the selected parts offer less than one of them could (see core.composition.explain)."""
+    """Why the selected parts offer less than one of them could (see framework.parts.composition.explain)."""
     from toporia.plugins.methods import method_class
 
     method_cls = method_class(method)

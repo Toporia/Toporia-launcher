@@ -3,7 +3,7 @@ This repository is meant to be a platform for all topological optimization resea
 
 ## What is implemented, and what is not
 
-Every folder in [`toporia/library/`](toporia/library/README.md) carries a README that lists
+Every folder in [`toporia/plugins/`](toporia/plugins/README.md) carries a README that lists
 its part of the field with one of three markers on **every single row**, so there is never
 any doubt about what this repository actually does today:
 
@@ -17,13 +17,13 @@ any doubt about what this repository actually does today:
 
 | Layer | ✅ In Toporia | 🔗 Open code | 📄 Paper only |
 | :-- | :-- | --: | --: |
-| [Methods](toporia/library/methods/README.md) — how the design is described | SIMP density, RBF level set, BESO | 14 | 3 |
-| [Filters](toporia/library/filters/README.md) — regularisation and fabrication | density, sensitivity, Heaviside, AM overhang, symmetry, routing | 1 | 15 |
-| [Models](toporia/library/models/README.md) — physics and gradients | 2-D Q4, pyMOTO elasticity | 24 | 3 |
-| [Elements](toporia/library/fe/README.md) — discretisation | Q4 plane stress | 6 | 3 |
-| [Responses](toporia/library/responses/README.md) — objectives and constraints | compliance, volume, von Mises stress | 4 | 14 |
-| [Updaters](toporia/library/updaters/README.md) — optimisers | OC, MMA, GCMMA, SiMPL, BESO, SLSQP | 8 | 3 |
-| [Problems](toporia/library/problems/README.md) — benchmarks | MBB, cantilever, 3-point bending, bar, 3× drone arm | 6 | 3 |
+| [Methods](toporia/plugins/methods/README.md) — how the design is described | SIMP density, RBF level set, BESO | 14 | 3 |
+| [Filters](toporia/plugins/filters/README.md) — regularisation and fabrication | density, sensitivity, Heaviside, AM overhang, symmetry, routing | 1 | 15 |
+| [Models](toporia/plugins/models/README.md) — physics and gradients | 2-D Q4, pyMOTO elasticity | 24 | 3 |
+| [Elements](toporia/plugins/physics/README.md) — discretisation | Q4 plane stress | 6 | 3 |
+| [Responses](toporia/plugins/responses/README.md) — objectives and constraints | compliance, volume, von Mises stress | 4 | 14 |
+| [Updaters](toporia/plugins/updaters/README.md) — optimisers | OC, MMA, GCMMA, SiMPL, BESO, SLSQP | 8 | 3 |
+| [Problems](toporia/plugins/problems/README.md) — benchmarks | MBB, cantilever, 3-point bending, bar, 3× drone arm | 6 | 3 |
 
 **41 implemented · 63 with open code elsewhere · 44 from papers only.**
 
@@ -41,12 +41,12 @@ six so a comparison can change one and only one of them.
 
 That is the gap worth filling: **no open-source package holds the problem, the mesh and the
 constraints fixed while swapping the parameterisation, the filter and the updater.** Start
-at [`toporia/library/README.md`](toporia/library/README.md).
+at [`toporia/plugins/README.md`](toporia/plugins/README.md).
 
 ### How the code fits together
 
 [`toporia/README.md`](toporia/README.md) maps the package — its layers and the life of a
-run, with diagrams — and [`toporia/core/`](toporia/core/README.md) and
+run, with diagrams — and [`toporia/framework/`](toporia/framework/README.md) and
 [`toporia/engine/`](toporia/engine/README.md) each explain every file in them and how
 they interact.
 

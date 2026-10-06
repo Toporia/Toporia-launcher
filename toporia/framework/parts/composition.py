@@ -9,7 +9,7 @@
 #     Updater  HOW the design moves: turns those numbers into the next design
 #              (optimality criteria, MMA, GCMMA, ...).
 #
-# ComposedMethod is the glue.  It implements core.contract.OptimizationMethod,
+# ComposedMethod is the glue.  It implements framework.parts.method.OptimizationMethod,
 # so the engine cannot tell a composed method from a hand-written one, and it
 # fixes the one ordering that matters:
 #
@@ -23,7 +23,7 @@
 # method can minimise what its model can compute AND its updater can handle.
 #
 # A model is itself usually assembled from parts — filters, a physics engine
-# (core/physics.py) and responses — see library/models/assembled.py.
+# (framework/parts/physics.py) and responses — see plugins/models/assembled.py.
 
 from dataclasses import replace
 
@@ -55,7 +55,7 @@ class ComposedMethod(OptimizationMethod):
 
     Pairings are not declared one by one: compose(model, updater) builds the
     method for any pair, named "<model>+<updater>" (e.g. "q4+mma"), and
-    library.methods.method_class turns such a name into it.  A subclass may
+    plugins.methods.method_class turns such a name into it.  A subclass may
     still be written by hand:
 
         class MyPairing(ComposedMethod):

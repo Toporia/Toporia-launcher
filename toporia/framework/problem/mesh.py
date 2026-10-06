@@ -1,4 +1,4 @@
-# problem.py — finite element mesh and boundary conditions
+# framework/problem/mesh.py — finite element mesh and boundary conditions
 #
 # Defines two things:
 #
@@ -43,7 +43,7 @@ class BaseProblem:
     1. Subclass BaseProblem (or duck-type it if you prefer).
     2. In __post_init__ / __init__, set all required attributes listed below.
     3. Call self.validate() at the end of setup to catch omissions early.
-    4. Register the problem in toporia/library/problems/__init__.py so the GUI sees it.
+    4. Register the problem in toporia/plugins/problems/__init__.py so the GUI sees it.
 
     Attributes
     ----------

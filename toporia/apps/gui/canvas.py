@@ -1,4 +1,4 @@
-# canvas.py — the live visualisation panel
+# apps/gui/canvas.py — the live visualisation panel
 #
 # LiveCanvas is a matplotlib figure embedded directly inside the Qt window.
 # It has two subplots:
@@ -17,6 +17,7 @@ from PySide6.QtWidgets import QSizePolicy
 
 
 class LiveCanvas(FigureCanvas):
+    """The live view: the current design on the left, the objective's convergence on the right."""
     # FigureCanvas is a Qt widget that contains a matplotlib figure.
     # By inheriting from it, LiveCanvas IS a Qt widget and can be added to layouts.
 

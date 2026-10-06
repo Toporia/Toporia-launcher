@@ -1,4 +1,4 @@
-# runner.py — bridge between the GUI and the optimisation scripts
+# apps/gui/runner.py — bridge between the GUI and the optimisation scripts
 #
 # This is the only file in the gui/ package that RUNS optimisation code.  The
 # widgets import plugin declarations (Param lists, capabilities) to build
@@ -36,6 +36,7 @@ class _LogStream:
         self._buf = ""    # partial line buffer (print may not always end with \n)
 
     def write(self, text):
+        """Collect text; hand every complete line to the log."""
         self._buf += text
         # A single print() may arrive in multiple write() calls.
         # Accumulate until we see a newline, then fire the callback with the full line.
@@ -44,6 +45,7 @@ class _LogStream:
             self._fn(line)
 
     def flush(self):
+        """Hand over whatever is left of an unfinished line."""
         # Called by Python when it wants to ensure all output is delivered.
         if self._buf:
             self._fn(self._buf); self._buf = ""
@@ -70,6 +72,7 @@ def _redir(log_fn):
 # The "finally" block guarantees stdout is restored even if an exception occurs.
 
 def run_one(config, on_iter, log_fn):
+    """The Run One mode, with its printed output routed to the GUI's log."""
     old = _redir(log_fn)
     try:
         _run_one(config, on_iteration=on_iter)

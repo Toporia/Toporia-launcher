@@ -1,7 +1,7 @@
 """test_physics.py — physics engines, the responses written against them, and the assembled model.
 
 The point of the split is that a response is written once, against the
-questions a physics engine answers (core/physics.py), and then works on every
+questions a physics engine answers (framework/parts/physics.py), and then works on every
 engine that answers them.  These tests hold that to account: the gradients
 must match finite differences, the Q4 engine must agree with pyMOTO where both
 are right, and a model must offer exactly the responses its engine supports.

@@ -2,7 +2,7 @@
 
 A model answers "what is optimised": design in, objective, volume, constraints and all
 their gradients out. The physics, the filter bookkeeping and the sensitivity analysis live
-here — see [`core.composition.Model`](../../core/composition.py). Swapping the model is
+here — see [`framework.parts.model.Model`](../../framework/parts/model.py). Swapping the model is
 how Toporia reaches new physics, new dimensions and new mesh types without touching a
 single update rule.
 
@@ -27,7 +27,7 @@ for, every filter in the pipeline. `pymoto_elastic` is written as a whole model 
 because pyMOTO brings its own filter and its own gradients.
 
 **So a new engine is not a new model.** Implement
-[`core.physics.Physics`](../../core/physics.py) — solve a density to a state, answer a
+[`framework.parts.physics.Physics`](../../framework/parts/physics.py) — solve a density to a state, answer a
 declared set of `provides` features (`elastic_energy`, `stress`, …) — and every existing
 response and filter applies to it unchanged. That is the interface each engine below
 should be wrapped behind.
@@ -41,7 +41,7 @@ Ordered roughly by what they add beyond what we already have.
 
 | Engine | Language / licence | Scope | What it would add |
 | :-- | :-- | :-- | :-- |
-| 🔗 [pyMOTO](https://github.com/aatmdelissen/pyMOTO) | Python · MIT | Module/Signal graph with backpropagated sensitivities; 2-D and 3-D statics and dynamics, thermal, thermo-mechanical, compliant mechanisms, stress, multigrid-preconditioned CG | Already a dependency, but only the elastic part is wrapped. Its thermal, dynamic and 3-D modules are unused. **The cheapest next step in this whole library.** |
+| 🔗 [pyMOTO](https://github.com/aatmdelissen/pyMOTO) | Python · MIT | Module/Signal graph with backpropagated sensitivities; 2-D and 3-D statics and dynamics, thermal, thermo-mechanical, compliant mechanisms, stress, multigrid-preconditioned CG | Already a dependency, but only the elastic part is wrapped. Its thermal, dynamic and 3-D modules are unused. **The cheapest next step in this whole plugins.** |
 | 🔗 [JAX-FEM](https://github.com/deepmodeling/jax-fem) | Python/JAX · Apache-2 | Differentiable GPU FEM; hyperelasticity, plasticity, 3-D unstructured | GPU scale and non-linear materials, with AD instead of hand-derived adjoints. The natural host for anything neural. |
 | 🔗 [FEniTop](https://github.com/missionlab/fenitop) | Python/FEniCSx | 2-D and 3-D SIMP over MPI, problems stated in weak form | Unstructured meshes, real geometry, parallel runs, arbitrary PDEs through UFL. Jia, Wang & Zhang, *SMO* 2024. |
 | 🔗 [TopOpt_in_PETSc](https://github.com/topopt/TopOpt_in_PETSc) | C++ · open | Fully parallel 3-D minimum compliance on Cartesian grids | The upper bound on resolution — the code behind the giga-voxel wing in Aage et al., *Nature* 2017. [Python wrapper](https://github.com/thsmit/TopOpt_in_PETSc_wrapped_in_Python) and a [transient variant](https://github.com/topopt/TopOpt_in_PETSc_Transient) exist. |

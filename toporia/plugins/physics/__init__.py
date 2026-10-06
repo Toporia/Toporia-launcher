@@ -1,7 +1,7 @@
-"""library.fe — finite element solvers and the physics engines built on them.
+"""plugins.physics — finite element solvers and the physics engines built on them.
 
 Each module here implements one physics on one element type, as plain
-functions and as a core.physics.Physics engine that responses run on.
+functions and as a framework.parts.physics.Physics engine that responses run on.
 
     q4_plane_stress.py   2-D linear elasticity, bilinear Q4 elements, SIMP
 """

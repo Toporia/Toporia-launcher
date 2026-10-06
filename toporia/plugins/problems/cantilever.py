@@ -25,6 +25,7 @@ ORDER = 20
 
 
 def scenario() -> Scenario:
+    """The physical problem: domain, supports, loads, material, volume budget."""
     Lx, Ly = 60.0, 30.0   # 2:1 aspect ratio — common choice for cantilever
     return Scenario(
         Lx=Lx,

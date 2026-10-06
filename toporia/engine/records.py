@@ -39,6 +39,7 @@ from toporia.framework.problem.run import PROJECT_ROOT
 #   history.png        — objective and volume fraction plotted against iteration
 
 class ResultStore:
+    """One run's history and output files.  The loop calls record() every iteration and save_final() at the end."""
     def __init__(self, output_dir):
         self.output_dir = Path(output_dir)
         self.output_dir.mkdir(parents=True, exist_ok=True)  # create folder if needed
@@ -190,6 +191,7 @@ def describe_violations(report):
 def _git_state():
     """Commit and dirty flag of the Toporia checkout, or None outside a git repo."""
     def git(*args):
+        """Run one git command in the checkout and return its output."""
         return subprocess.run(["git", "-C", str(PROJECT_ROOT), *args],
                               capture_output=True, text=True, timeout=5, check=True).stdout.strip()
     try:

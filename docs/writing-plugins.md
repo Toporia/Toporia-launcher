@@ -16,12 +16,12 @@ design x ──Filter──> density ρ ──Physics──> state ──Respons
 
 | You have…                                        | Write a…                 | Subclass                    | Folder / entry-point group       |
 | :----------------------------------------------- | :----------------------- | :-------------------------- | :------------------------------- |
-| an update rule (OC, MMA, BESO, a new idea)       | updater                  | `Updater`                   | `library/updaters/` · `toporia.updaters` |
-| a library that runs its own loop (SciPy, NLopt)  | updater                  | `ExternalOptimizer`         | `library/updaters/` · `toporia.updaters` |
-| a smoothing, projection or fabrication rule      | filter                   | `Filter`                    | `library/filters/` · `toporia.filters` |
-| an objective or constraint                       | response                 | `Response`                  | `library/responses/` · `toporia.responses` |
-| a finite-element solver or other physics         | physics engine + model   | `Physics`, `AssembledModel` | `library/fe/`, `library/models/` · `toporia.models` |
-| a method that does not split into the above      | whole method             | `OptimizationMethod`        | `library/methods/` · `toporia.methods` |
+| an update rule (OC, MMA, BESO, a new idea)       | updater                  | `Updater`                   | `plugins/updaters/` · `toporia.updaters` |
+| a library that runs its own loop (SciPy, NLopt)  | updater                  | `ExternalOptimizer`         | `plugins/updaters/` · `toporia.updaters` |
+| a smoothing, projection or fabrication rule      | filter                   | `Filter`                    | `plugins/filters/` · `toporia.filters` |
+| an objective or constraint                       | response                 | `Response`                  | `plugins/responses/` · `toporia.responses` |
+| a finite-element solver or other physics         | physics engine + model   | `Physics`, `AssembledModel` | `plugins/physics/`, `plugins/models/` · `toporia.models` |
+| a method that does not split into the above      | whole method             | `OptimizationMethod`        | `plugins/methods/` · `toporia.methods` |
 
 Every piece works with every other: an updater never sees the physics, a response never
 sees the updater. A run names its method as `"<model>+<updater>"`, e.g. `"q4+mma"`, so a
@@ -130,7 +130,7 @@ done. Subclass `ExternalOptimizer` and write one method, `run(flat, x0, iterate)
 Toporia runs your `run` in a background thread and takes one design per `iterate`, so the
 live display, the stopping rule and the Stop button work as for any other updater, and
 the library's verdict is written to `run.json`. The complete SciPy SLSQP adapter,
-[`library/updaters/scipy_slsqp.py`](../toporia/library/updaters/scipy_slsqp.py), is the
+[`plugins/updaters/scipy_slsqp.py`](../toporia/plugins/updaters/scipy_slsqp.py), is the
 template:
 
 ```python
@@ -294,10 +294,10 @@ class MyModel(AssembledModel):
 ```
 
 The filters, the responses and every updater then work with it.
-[`library/fe/q4_plane_stress.py`](../toporia/library/fe/q4_plane_stress.py) is the
+[`plugins/physics/q4_plane_stress.py`](../toporia/plugins/physics/q4_plane_stress.py) is the
 reference engine. A physics that brings its own gradients (a pyMOTO network, an AD
 framework) can instead be a whole `Model` — see
-[`library/models/pymoto_elastic.py`](../toporia/library/models/pymoto_elastic.py).
+[`plugins/models/pymoto_elastic.py`](../toporia/plugins/models/pymoto_elastic.py).
 
 ## Optional dependencies
 

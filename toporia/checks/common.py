@@ -21,6 +21,7 @@ BENCHMARK, WITH_HOLES = "MBB Beam", "Drone Arm"
 # ── Shared pieces ─────────────────────────────────────────────────────────────
 
 def check_declaration(report, cls):
+    """Every plugin: a name, a label, and parameters with unique names that resolve to their defaults."""
     with report.step("declaration: name, label and parameters") as check:
         assert getattr(cls, "name", ""), "name is empty, so the plugin cannot be registered"
         assert getattr(cls, "label", ""), "label is empty, so menus would show nothing"
@@ -44,6 +45,7 @@ def registered(registry, cls):
 
 
 def small_run(problem=BENCHMARK, **values):
+    """A preset run made small (mesh 0.4 el/mm unless given, no snapshots), with `values` applied."""
     from toporia.plugins.problems import get_run
     values.setdefault("m", 0.4)
     values.setdefault("save_every", 0)
@@ -85,6 +87,7 @@ def gradient_check(value, gradient, x, movable, report, name, count=6, h=1e-5, r
 
 
 def random_design(model, seed=0):
+    """The model's start design, perturbed and kept inside its bounds (and away from 0 and 1)."""
     lower, upper = model.bounds()
     rng = np.random.default_rng(seed)
     x = np.asarray(model.initial_design(), dtype=float) + rng.uniform(-0.15, 0.15, np.shape(lower))
@@ -92,6 +95,7 @@ def random_design(model, seed=0):
 
 
 def optimiser_threads():
+    """Every running background optimiser thread (they are all named toporia-...)."""
     return {t for t in threading.enumerate() if t.name.startswith("toporia-")}
 
 

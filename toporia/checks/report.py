@@ -11,6 +11,7 @@ from dataclasses import dataclass, field
 
 @dataclass
 class Check:
+    """One check: its name, whether it passed (None when skipped), and what was measured or went wrong."""
     name: str
     passed: bool | None      # None: not applicable, skipped
     detail: str = ""
@@ -23,10 +24,12 @@ class Report:
     checks: list = field(default_factory=list)
 
     def add(self, name, passed, detail=""):
+        """Record a check directly, without running it through step()."""
         self.checks.append(Check(name, passed, detail))
 
     @property
     def ok(self):
+        """True when no check failed (skipped ones do not count against it)."""
         return all(check.passed is not False for check in self.checks)
 
     def __str__(self):
@@ -37,6 +40,7 @@ class Report:
         return "\n".join(lines)
 
     def assert_ok(self):
+        """Raise AssertionError with the whole report when a check failed; otherwise return the report."""
         if not self.ok:
             raise AssertionError(str(self))
         return self
@@ -60,4 +64,4 @@ class Report:
 
 
 class Skip(Exception):
-    pass
+    """Raised inside Report.step() when a check does not apply to this plugin."""

@@ -2,7 +2,7 @@
 
 A response is a scalar a scenario can minimise (objective) or limit (constraint), and
 usually also the code that computes it and its gradient on any physics engine. See
-[`core/responses.py`](../../core/responses.py).
+[`framework/parts/response.py`](../../framework/parts/response.py).
 
 **This is the layer where most published papers actually live.** Compliance is the easy
 case — self-adjoint, one solve, no aggregation. Everything else needs its own adjoint and
@@ -34,7 +34,7 @@ Lagrangian to survive thousands of local constraints.
 > updaters that ability is what the augmented Lagrangian entry below is for.
 
 A response declares the engine features it `requires` (see
-[`core/physics.py`](../../core/physics.py)); a model can offer it exactly when its engine
+[`framework/parts/physics.py`](../../framework/parts/physics.py)); a model can offer it exactly when its engine
 provides them. Compliance needs `elastic_energy`, the stress response needs `stress` — so
 adding one feature to an engine adds every response built on it at once.
 
@@ -70,7 +70,7 @@ adding one feature to an engine adds every response built on it at once.
 
 A response is a declaration, and usually a computation as well: set `requires` to the
 engine features it needs and implement `evaluate(state, gradient=True)` against
-[`core/physics.py`](../../core/physics.py), as [`compliance.py`](compliance.py) and
+[`framework/parts/physics.py`](../../framework/parts/physics.py), as [`compliance.py`](compliance.py) and
 [`stress.py`](stress.py) do. It is then offered by every model whose engine provides
 those features. A declaration without a computation (`requires = None`) is allowed too:
 only a model that computes it itself, like the pyMOTO model, will offer it, and the

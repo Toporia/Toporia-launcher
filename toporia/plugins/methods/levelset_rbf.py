@@ -33,6 +33,7 @@ from toporia.plugins.physics.q4_plane_stress import solve_fea
 
 
 class LevelSetRBFMethod(OptimizationMethod):
+    """RBF level-set topology optimisation (Wang & Wang 2006; TOPRBF.m by Luo et al.), a whole method."""
 
     name = "levelset"
     label = "RBF level set"

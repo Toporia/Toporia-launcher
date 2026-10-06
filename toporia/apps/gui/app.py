@@ -23,6 +23,7 @@ from .window import MainWindow
 
 
 def launch():
+    """Start the desktop app and block until its window is closed."""
     app = QApplication(sys.argv)  # one QApplication per process — mandatory
     app.setStyle("Fusion")        # cross-platform look that works on all OS
 

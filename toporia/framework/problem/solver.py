@@ -1,4 +1,4 @@
-# core/solver.py — HOW a scenario is solved.
+# framework/problem/solver.py — HOW a scenario is solved.
 #
 # A Solver names the method and holds everything that belongs to solving rather
 # than to the physical problem: the method's own parameters, the filter
@@ -6,7 +6,7 @@
 #
 # Two runs that share a scenario and differ only in their solver are a
 # benchmark — the comparison Toporia exists to make.  Solvers round-trip
-# through JSON (core/serialize.py) just like scenarios.
+# through JSON (framework/problem/files.py) just like scenarios.
 
 from dataclasses import dataclass, field
 

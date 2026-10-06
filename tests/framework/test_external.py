@@ -1,4 +1,4 @@
-"""test_external.py — optimisers that run their own loop (core/external.py).
+"""test_external.py — optimisers that run their own loop (framework/optimisers/external_loop.py).
 
 The libraries worth plugging in (SciPy, NLopt, IPOPT) call Toporia, not the
 other way round.  These tests use small fake optimisers, written exactly as

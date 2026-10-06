@@ -19,7 +19,7 @@ density field can resolve and where the classic numerical artefacts come from.
 | :-- | :-- | :-- |
 | ✅ Q4 plane stress | [`q4_plane_stress.py`](q4_plane_stress.py) | Bilinear quadrilateral, 2 DOF per node, structured grid, column-major numbering, analytic element stiffness. The top88 element. |
 
-This module is also Toporia's only [`core.physics.Physics`](../../core/physics.py) engine:
+This module is also Toporia's only [`framework.parts.physics.Physics`](../../framework/parts/physics.py) engine:
 it solves a density to a state and declares which features it answers (`elastic_energy`,
 `stress`). Adding an element formulation below means implementing that interface, after
 which every response and filter in the library applies to it unchanged.

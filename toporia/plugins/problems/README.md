@@ -1,6 +1,6 @@
 # Problems — benchmarks and datasets
 
-A problem is a [`Scenario`](../../core/scenario.py) — geometry, supports, load cases,
+A problem is a [`Scenario`](../../framework/problem/scenario.py) — geometry, supports, load cases,
 material, volume target — plus the solver settings recommended for it. Two runs that share
 a scenario and differ only in their solver are a benchmark, and that comparison is what
 Toporia exists to make.
@@ -61,9 +61,9 @@ problem, their own mesh and their own filter radius, so SIMP-against-BESO-agains
 comparisons in the literature are rarely like-for-like. A suite that fixes the scenario,
 the mesh and the volume fraction, and varies only the method, the filter and the updater,
 is a genuine contribution — and it is already most of the way there in
-[`engine/compare_two.py`](../../engine/compare_two.py),
-[`engine/sweep.py`](../../engine/sweep.py) and
-[`engine/sweep_2d.py`](../../engine/sweep_2d.py).
+[`engine/compare_two.py`](../../engine/modes/compare.py),
+[`engine/sweep.py`](../../engine/modes/sweep.py) and
+[`engine/sweep_2d.py`](../../engine/modes/sweep.py).
 
 ## References
 

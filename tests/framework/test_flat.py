@@ -1,4 +1,4 @@
-"""test_flat.py — the problem as an optimisation library sees it (core/flat.py).
+"""test_flat.py — the problem as an optimisation library sees it (framework/optimisers/flat_view.py).
 
 Every adapter for an outside optimiser relies on this view, so it is pinned
 here once: the translation between design and vector, the volume budget as

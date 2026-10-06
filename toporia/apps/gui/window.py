@@ -1,4 +1,4 @@
-# window.py — the main application window
+# apps/gui/window.py — the main application window
 #
 # MainWindow assembles all components into the final UI:
 #
@@ -56,6 +56,7 @@ class _StopRequested(Exception):
 
 
 class MainWindow(QMainWindow):
+    """The application window: input panels and the Run/Stop button on the left, the live canvas and the log on the right."""
 
     def __init__(self):
         super().__init__()
@@ -258,6 +259,7 @@ class MainWindow(QMainWindow):
         # It runs inside the optimisation loop after every solver step.
         last_it = [0]   # list instead of plain int so the nested function can modify it
         def on_iter(d, obj, it):
+            """Called after every iteration: honour Stop, redraw the canvas, keep the window responsive."""
             if self._stop:
                 raise _StopRequested()   # breaks out of the optimisation loop cleanly
             if it <= last_it[0]:

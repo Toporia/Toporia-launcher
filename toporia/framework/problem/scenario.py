@@ -1,12 +1,12 @@
-# core/scenario.py — WHAT is being solved.
+# framework/problem/scenario.py — WHAT is being solved.
 #
 # A Scenario is the physical problem: the design domain, where the part is held,
 # where and how it is loaded, what it is made of, and how much material it may
 # use.  It says nothing about how the problem is solved — that is the Solver
-# (core/solver.py) — so the same scenario can be handed to any method, at any
+# (framework/problem/solver.py) — so the same scenario can be handed to any method, at any
 # mesh resolution, and the results compared.
 #
-# Scenarios are plain data and round-trip through JSON (core/serialize.py).
+# Scenarios are plain data and round-trip through JSON (framework/problem/files.py).
 # Coordinates are in mm, measured from the bottom-left corner of the domain.
 
 from dataclasses import dataclass, field

@@ -1,6 +1,6 @@
 # Toporia library — the plug-in catalogue
 
-Everything in `toporia/library/` is a plug-in. `toporia/core/` defines the contracts;
+Everything in `toporia/plugins/` is a plug-in. `toporia/framework/` defines the contracts;
 this folder holds the implementations, and each sub-folder has its own README listing
 **what is implemented here, what exists as open-source code elsewhere, and what only
 exists as a paper.**
@@ -28,7 +28,7 @@ Nothing is ever labelled ✅ until it is registered, tested, and reachable from 
 | [`methods/`](methods/README.md) | How the design is described | 15 | 14 | 3 |
 | [`filters/`](filters/README.md) | How it is smoothed, projected, made manufacturable | 6 | 1 | 15 |
 | [`models/`](models/README.md) | What computes the physics and the gradients | 2 | 24 | 3 |
-| [`fe/`](fe/README.md) | Element formulations and discretisation | 1 | 6 | 3 |
+| [`physics/`](physics/README.md) | Element formulations and discretisation | 1 | 6 | 3 |
 | [`responses/`](responses/README.md) | What is minimised or constrained | 3 | 4 | 14 |
 | [`updaters/`](updaters/README.md) | How the design moves each iteration | 7 | 8 | 3 |
 | [`problems/`](problems/README.md) | Benchmark problems and datasets | 7 | 6 | 3 |
@@ -55,19 +55,19 @@ Toporia separates all six so a comparison can change one and only one:
 
 | Choice | Contract | Registry |
 | :-- | :-- | :-- |
-| Parameterisation | [`core.contract.OptimizationMethod`](../core/contract.py) | `METHODS` + any `model+updater` pair |
-| Regularisation | [`filters.filter_base.Filter`](filters/filter_base.py) | `FILTERS` |
-| What is optimised | [`core.composition.Model`](../core/composition.py) | `MODELS` |
-| Physics engine | [`core.physics.Physics`](../core/physics.py) | declared by a model |
-| Response | [`core.responses.Response`](../core/responses.py) | `RESPONSES` |
-| Updater | [`core.composition.Updater`](../core/composition.py) | `UPDATERS` |
-| Problem | [`core.scenario.Scenario`](../core/scenario.py) | `problems/` |
+| Parameterisation | [`framework.parts.method.OptimizationMethod`](../framework/parts/method.py) | `METHODS` + any `model+updater` pair |
+| Regularisation | [`framework.parts.filter.Filter`](../framework/parts/filter.py) | `FILTERS` |
+| What is optimised | [`framework.parts.model.Model`](../framework/parts/model.py) | `MODELS` |
+| Physics engine | [`framework.parts.physics.Physics`](../framework/parts/physics.py) | declared by a model |
+| Response | [`framework.parts.response.Response`](../framework/parts/response.py) | `RESPONSES` |
+| Updater | [`framework.parts.updater.Updater`](../framework/parts/updater.py) | `UPDATERS` |
+| Problem | [`framework.problem.scenario.Scenario`](../framework/problem/scenario.py) | `problems/` |
 
 Most methods are not written by hand. A method is named `"<model>+<updater>"` and built on
 demand, so any physics works with any update rule and **a new combination costs nothing at
 all** — see [`methods/__init__.py`](methods/__init__.py). A new *engine* is not a new model
-either: implement [`core.physics.Physics`](../core/physics.py) and every response and
-filter in the library applies to it unchanged.
+either: implement [`framework.parts.physics.Physics`](../framework/parts/physics.py) and every response and
+filter applies to it unchanged.
 
 ## Adding one
 
@@ -76,8 +76,8 @@ example of every plugin kind, each one run and checked by the test suite.
 
 There is no decorator and no list to maintain: a class in the right package, subclassing
 the right base, with a non-empty `name`, **is** registered
-([`core/registry.py`](../core/registry.py)). Parameters are declared as
-[`Param`](../core/params.py) objects next to the code that uses them, and the GUI, the
+([`framework/registry.py`](../framework/registry.py)). Parameters are declared as
+[`Param`](../framework/params.py) objects next to the code that uses them, and the GUI, the
 sweeps and the config validation are all generated from those declarations.
 
 ### From another package

@@ -1,4 +1,4 @@
-# core/contract.py — the interface every optimisation algorithm must satisfy.
+# framework/parts/method.py — the interface every optimisation algorithm must satisfy.
 #
 # This module deliberately contains no mathematics and imports nothing from
 # toporia.plugins.  It is the whole agreement between the engine (which drives
@@ -80,7 +80,7 @@ class OptimizationMethod(ABC):
     it.
 
     Most gradient-based methods are not written against this class directly
-    but assembled from a Model and an Updater (core/composition.py).
+    but assembled from a Model and an Updater (framework/parts/composition.py).
 
     A method also describes itself through class attributes.  The registry
     (toporia.plugins.methods.METHODS) finds every subclass with a `name`, the
@@ -96,7 +96,7 @@ class OptimizationMethod(ABC):
     aliases = ()
     #: Menu position; lower comes first.
     order = 100
-    #: Tunable parameters, as core.params.Param declarations.
+    #: Tunable parameters, as framework.params.Param declarations.
     params = ()
     capabilities = Capabilities()
 
@@ -113,7 +113,7 @@ class OptimizationMethod(ABC):
     def initialize(self, problem, solver):
         """Prepare internal state.  Called once, before the first step.
 
-        `problem` is a core.problem.BaseProblem built from the scenario:
+        `problem` is a framework.problem.mesh.BaseProblem built from the scenario:
         geometry, node masks, per-element density bounds, and problem.scenario
         for the material, volume target and load cases.  It carries no
         degree-of-freedom numbering — a method brings its own conventions.

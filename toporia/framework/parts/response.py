@@ -1,4 +1,4 @@
-# core/responses.py — the quantities a scenario can minimise or constrain.
+# framework/parts/response.py — the quantities a scenario can minimise or constrain.
 #
 # A Response is first a declaration: a name, a label, the roles it can play,
 # and its parameters.  Scenarios refer to responses by name:
@@ -11,7 +11,7 @@
 # starts.
 #
 # A Response can also compute itself, against the questions a physics engine
-# answers (core/physics.py).  Such a response lists the engine features it
+# answers (framework/parts/physics.py).  Such a response lists the engine features it
 # `requires`, and then works with every engine that provides them:
 #
 #     response.setup(physics, problem, settings)            once per run
@@ -33,7 +33,7 @@ class ResponseValue:
     """One response at one design.
 
     value     : what the optimiser works with.  As a constraint it is normalised
-                so that value <= 0 means satisfied (core.composition.ConstraintValue).
+                so that value <= 0 means satisfied (framework.parts.composition.ConstraintValue).
     gradient  : d(value)/d(physical density), shaped like the density;
                 None when it was not requested.
     exact     : for a constraint whose value is a smooth stand-in (a p-norm for
@@ -57,7 +57,7 @@ class Response:
     order = 100
     #: Which of OBJECTIVE_ROLE / CONSTRAINT_ROLE this response can play.
     roles = ()
-    #: Tunable parameters (core.params.Param), e.g. a constraint's limit.
+    #: Tunable parameters (framework.params.Param), e.g. a constraint's limit.
     params = ()
     #: True when minimising this response is meaningless without a further
     #: constraint (minimising volume alone gives an empty design).
@@ -65,7 +65,7 @@ class Response:
     #: Printed at the start of every run that uses this response as the
     #: objective: practical guidance the declaration alone cannot enforce.
     advice = ""
-    #: Physics features (core.physics) evaluate() needs.  () means it needs
+    #: Physics features (framework.parts.physics) evaluate() needs.  () means it needs
     #: none — it is computed from the density alone.  None means it cannot
     #: compute itself and only a model that computes it can offer it.
     requires = None

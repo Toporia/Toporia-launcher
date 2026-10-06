@@ -1,4 +1,4 @@
-# library/fe/q4_plane_stress.py — 2-D Q4 plane-stress finite element solver.
+# plugins/physics/q4_plane_stress.py — 2-D Q4 plane-stress finite element solver.
 #
 # This is ONE implementation of the physics, not the platform's definition of it.
 # It owns everything that depends on the top88 conventions: the analytical 8×8
@@ -7,7 +7,7 @@
 # module here and the engine never notices the difference.
 #
 # Q4PlaneStress at the bottom of this file presents the solver as a physics
-# engine (core/physics.py), so every response written against that interface
+# engine (framework/parts/physics.py), so every response written against that interface
 # — compliance, stress — runs on it without knowing any of the above.
 
 import numpy as np
@@ -298,7 +298,7 @@ def solve_fea(problem, density, penal):
 class Q4PlaneStress(Physics):
     """Linear elasticity, 2-D plane stress, bilinear Q4 elements, SIMP material.
 
-    Answers every question of core.physics: the compliance and strain energies,
+    Answers every question of framework.parts.physics: the compliance and strain energies,
     and the element stresses and adjoint solves a stress response needs.
     """
 

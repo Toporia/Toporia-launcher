@@ -4,6 +4,10 @@
 # the window shows only the selected mode's group.  Every parameter dropdown
 # lists the setup's parameter paths (plugins/catalog.py), so anything numeric
 # can be swept, compared or perturbed.
+#
+# Every group offers the same small interface to the window:
+#   refresh(items)   refill its parameter dropdowns from (label, path) pairs
+#   key(), row_key(), sens_key(), ...   the parameter path currently selected
 
 
 from PySide6.QtWidgets import (

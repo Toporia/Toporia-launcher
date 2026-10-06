@@ -1,7 +1,7 @@
 # apps/gui/panels/loads.py — the load cases: one row per force (magnitude, angle, weight).
 
 
-from PySide6.QtCore import Signal  # Qt signal/slot system (see python_primer.py §11)
+from PySide6.QtCore import Signal
 from PySide6.QtWidgets import (
     QHBoxLayout,
     QLabel,
@@ -94,6 +94,7 @@ class LoadCasesGroup(QWidget):
         self.cases_changed.emit(len(self._rows))
 
     def get_load_cases(self):
+        """The load cases as LoadCase objects, in display order."""
         return [r.get() for r in self._rows]   # list comprehension: call .get() on every row
 
     def setTitle(self, title):

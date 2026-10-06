@@ -1,11 +1,11 @@
-"""library.methods — the selectable optimisation methods.
+"""plugins.methods — the selectable optimisation methods.
 
 A method is named in solver.method in one of two ways:
 
-    "<model>+<updater>"   any model (library/models) with any updater
-                          (library/updaters), e.g. "q4+oc" or "pymoto_elastic+pymoto_gcmma".
+    "<model>+<updater>"   any model (plugins/models) with any updater
+                          (plugins/updaters), e.g. "q4+oc" or "pymoto_elastic+pymoto_gcmma".
                           The pairing is built on demand; nothing is declared per pair.
-    "<method>"            a whole method that implements core.contract.OptimizationMethod
+    "<method>"            a whole method that implements framework.parts.method.OptimizationMethod
                           itself, because it does not split into a model and an updater —
                           the RBF level set evolves its own representation with its own
                           volume control.

@@ -1,4 +1,4 @@
-"""library.catalog — every value the platform can vary, as parameter paths.
+"""plugins.catalog — every value the platform can vary, as parameter paths.
 
 A *parameter path* addresses one value in a Run:
 
@@ -9,7 +9,7 @@ A *parameter path* addresses one value in a Run:
     constraints[0].limit    a parameter of the first scenario constraint
     load_cases[0].Fmag      a field of the first load case
 
-core.run.apply_param writes to a path.  This module lists which paths exist
+framework.problem.run.apply_param writes to a path.  This module lists which paths exist
 for a given setup, with human-readable labels — it is what the GUI's sweep,
 comparison and sensitivity dropdowns show.  Only numeric parameters are listed,
 because only numbers can be swept.

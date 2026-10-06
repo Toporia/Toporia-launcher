@@ -1,4 +1,4 @@
-# library/updaters/mma.py — the method of moving asymptotes (MMA), one constraint.
+# plugins/updaters/mma.py — the method of moving asymptotes (MMA), one constraint.
 #
 # Mirrors the optimiser half of the top88mma.m script: a moving-asymptote
 # convex approximation of the objective and of the normalised volume constraint
@@ -8,7 +8,7 @@
 # solved through its dual by bisection on the single multiplier.  The objective
 # is rescaled by f0fac so its magnitude is comparable with the constraint.
 #
-# The subproblem works on the model's flat view (core/flat.py): the free design
+# The subproblem works on the model's flat view (framework/optimisers/flat_view.py): the free design
 # variables, column-major as in top88, with the volume budget as g_0.  Elements
 # pinned by holes or solid rings are left out rather than moved and clipped back.
 
@@ -133,6 +133,7 @@ class MMAUpdater(Updater):
         b = float(np.sum(p / ux1 + q / xl1) - fval)
 
         def candidate(lam):
+            """The subproblem's minimiser for multiplier lam, inside the move limits."""
             plam = p0 + lam * p
             qlam = q0 + lam * q
             sqrtp = np.sqrt(np.maximum(plam, 0.0))
@@ -141,6 +142,7 @@ class MMAUpdater(Updater):
             return np.minimum(beta, np.maximum(alpha, x))
 
         def constraint_at(x):
+            """The approximated volume constraint at x; ≤ 0 is satisfied."""
             return float(np.sum(p / (upp - x) + q / (x - low)) - b)
 
         x0 = candidate(0.0)

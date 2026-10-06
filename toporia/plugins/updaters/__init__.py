@@ -1,7 +1,7 @@
-"""library.updaters — how a design moves.
+"""plugins.updaters — how a design moves.
 
 An updater turns a model's Evaluation (objective, volume, gradients) into the
-next design (see core.composition.Updater).  It knows nothing about the physics
+next design (see framework.parts.updater.Updater).  It knows nothing about the physics
 that produced the numbers, so every updater works with every model.
 
 Every Updater subclass in this package with a non-empty `name` is found by the

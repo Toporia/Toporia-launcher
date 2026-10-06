@@ -1,4 +1,4 @@
-# library/updaters/simpl.py — entropic mirror descent on a latent variable (SiMPL).
+# plugins/updaters/simpl.py — entropic mirror descent on a latent variable (SiMPL).
 #
 # The design is not updated directly.  It is carried as a latent variable
 #
@@ -136,6 +136,7 @@ class SiMPLUpdater(Updater):
         volume_direction = _normalised(evaluation.volume_gradient)
 
         def design_at(multiplier):
+            """The design one mirror-descent step away, for this volume multiplier."""
             moved = latent - step * (objective_direction + multiplier * volume_direction)
             return np.clip(_sigmoid(moved), self.lb, self.ub)
 

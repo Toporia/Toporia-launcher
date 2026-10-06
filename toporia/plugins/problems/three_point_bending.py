@@ -17,6 +17,7 @@ ORDER = 30
 
 
 def scenario() -> Scenario:
+    """The physical problem: domain, supports, loads, material, volume budget."""
     Lx, Ly = 60.0, 20.0
     return Scenario(
         Lx=Lx,

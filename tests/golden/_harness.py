@@ -18,7 +18,7 @@ FIELDS = ("density", "objective", "iterations")
 def run_case(run, output_dir):
     """Run one optimisation to completion and return the asserted quantities.
 
-    Mirrors engine.runner.run_single's loop exactly, but without ResultStore, so
+    Mirrors engine.loop.run_single's loop exactly, but without ResultStore, so
     the baselines do not depend on file output.  The problem and the method are
     built by the engine's own initialized_method, so the wiring under test is
     the real one.

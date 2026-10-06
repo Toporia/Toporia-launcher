@@ -1,10 +1,10 @@
-# core/registry.py — find plugins: in Toporia's own packages, and in installed ones.
+# framework/registry.py — find plugins: in Toporia's own packages, and in installed ones.
 #
 # A plugin is a class that subclasses the registry's base class and sets a
 # non-empty `name`.  There is no decorator and no list to maintain.  Plugins
 # come from three places:
 #
-#   1. Toporia's own package, scanned: adding a file to toporia/library/methods/
+#   1. Toporia's own package, scanned: adding a file to toporia/plugins/methods/
 #      IS registering a method.  Modules starting with an underscore are skipped,
 #      so shared helpers can live next to the plugins.
 #   2. Other installed packages, through a standard Python entry point.  A

@@ -1,4 +1,4 @@
-# library/filters/pipeline.py — build a filter pipeline from spec dicts
+# plugins/filters/pipeline.py — build a filter pipeline from spec dicts
 #
 #   build_filter_chain(filter_specs, problem, solver)
 #       Looks each spec's "type" up in the FILTERS registry, validates its
@@ -6,11 +6,11 @@
 #       FilterChain.  Empty list → caller uses no chain (raw optimiser output).
 #
 #   DensityFilterPipeline
-#       Small adapter used by density models (library/models) to keep filter
+#       Small adapter used by density models (plugins/models) to keep filter
 #       bookkeeping out of their physics.
 #
 # Individual filter classes live next to this file, one per module; FilterChain
-# and the Filter ABC live in filter_base.py.
+# and the Filter ABC live in framework/parts/filter.py.
 
 import numpy as np
 

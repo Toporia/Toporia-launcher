@@ -1,4 +1,4 @@
-# core/external.py — optimisers that insist on running their own loop.
+# framework/optimisers/external_loop.py — optimisers that insist on running their own loop.
 #
 # SciPy, NLopt, IPOPT and most optimisers from the literature are written as
 # "give me f, g and their gradients, I will call you until I am done".  The
@@ -6,13 +6,13 @@
 # apply the same stopping rule to every method, and stop on request.
 #
 # ExternalOptimizer reconciles the two.  The library runs in a background
-# thread on the flat view (core/flat.py).  Whenever it reaches a new design it
+# thread on the flat view (framework/optimisers/flat_view.py).  Whenever it reaches a new design it
 # hands that design to the engine and waits; the engine's next step lets it
 # continue:
 #
 #     engine thread                          optimiser thread
 #     -------------                          ----------------
-#     update(x0)  ── start ───────────────>  library.minimize(f, g, ..., callback)
+#     update(x0)  ── start ───────────────>  plugins.minimize(f, g, ..., callback)
 #                 <── iterate(x1) ─────────  callback(x1)   (waits)
 #     draw x1, check stopping rule
 #     update(x1)  ── continue ────────────>  ... more evaluations ...

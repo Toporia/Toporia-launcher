@@ -1,4 +1,4 @@
-# core/flat.py — the problem as an optimisation library sees it.
+# framework/optimisers/flat_view.py — the problem as an optimisation library sees it.
 #
 # Optimisers from the literature and from libraries (MMA, SciPy, NLopt, IPOPT,
 # pyMOTO) all want the same thing: a vector, its bounds, and callbacks
@@ -37,7 +37,7 @@ VOLUME_BUDGET = "volume budget"
 class FlatProblem:
     """A Model as a flat vector problem: x0, bounds, f, df, g, dg.
 
-    model              : a core.composition.Model, already initialised
+    model              : a framework.parts.model.Model, already initialised
     scale_objective_to : rescale the objective so its first evaluated value has
                          this magnitude (10 is the usual choice for MMA); None
                          leaves it unscaled.  The factor is fixed once, so the

@@ -6,7 +6,7 @@
 # a new filter or response appears here without editing this file.
 
 
-from PySide6.QtCore import Signal  # Qt signal/slot system (see python_primer.py §11)
+from PySide6.QtCore import Signal
 from PySide6.QtWidgets import (
     QComboBox,
     QFrame,

@@ -18,6 +18,7 @@ ORDER = 60
 
 
 def scenario() -> Scenario:
+    """The physical problem: domain, supports, loads, material, volume budget."""
     base = drone_arm.scenario()
 
     # Symmetric about x=100. The sketch shows a wide lower opening with a
