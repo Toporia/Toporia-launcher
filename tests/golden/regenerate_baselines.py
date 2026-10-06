@@ -15,10 +15,10 @@ from pathlib import Path
 
 import numpy as np
 
-sys.path.insert(0, str(Path(__file__).resolve().parent.parent))
+sys.path.insert(0, str(Path(__file__).resolve().parents[2]))   # the repository root
 
-from tests._harness import run_case  # noqa: E402
-from tests.cases import CASES  # noqa: E402
+from tests.golden._harness import run_case  # noqa: E402
+from tests.golden.cases import CASES  # noqa: E402
 
 BASELINE_DIR = Path(__file__).resolve().parent / "baselines"
 

@@ -1,6 +1,6 @@
 """conftest.py — makes the repository root importable during tests.
 
-Without this, `from tests._harness import run_case` only resolves when pytest
+Without this, `from tests.golden._harness import run_case` only resolves when pytest
 happens to be invoked from the repo root.  Adding it explicitly means the suite
 runs the same way from any working directory, and from an IDE test runner.
 """

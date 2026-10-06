@@ -15,8 +15,8 @@ from pathlib import Path
 import numpy as np
 import pytest
 
-from tests._harness import run_case
-from tests.cases import CASES
+from tests.golden._harness import run_case
+from tests.golden.cases import CASES
 
 BASELINE_DIR = Path(__file__).resolve().parent / "baselines"
 ATOL = 1e-8
