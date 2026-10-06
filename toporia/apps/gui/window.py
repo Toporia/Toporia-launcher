@@ -13,7 +13,7 @@
 #   └─────────────────────┴──────────────────────────────────────────┘
 #
 # This file contains no optimisation logic and no widget definitions.
-# It only wires together the pieces from widgets.py, canvas.py, and runner.py.
+# It only wires together the pieces from panels/, canvas.py, and runner.py.
 
 import traceback  # for formatting Python exception messages into readable text
 
@@ -34,7 +34,7 @@ from PySide6.QtWidgets import (
 )
 
 from .canvas import LiveCanvas
-from .widgets import (
+from .panels import (
     CompareLoadCasesParamsGroup,
     CompareTwoParamsGroup,
     CoreParamsGroup,

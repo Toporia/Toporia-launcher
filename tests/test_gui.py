@@ -51,7 +51,7 @@ def window(app):
 @pytest.mark.parametrize("cls", [c for _, c in PLUGINS], ids=[i for i, _ in PLUGINS])
 def test_param_form_round_trips(app, cls):
     """Defaults, then extreme values, come back out exactly as they went in."""
-    from toporia.apps.gui.param_form import ParamForm
+    from toporia.apps.gui.panels import ParamForm
     form = ParamForm(cls.params)
     _assert_same(form.get_values(), resolve_params(cls.name, cls.params, {}))
 

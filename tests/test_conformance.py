@@ -9,7 +9,7 @@ adjoint, a wrong gradient, a poor optimiser.
 import pytest
 
 from toporia.checks import Report, all_plugins, conformance
-from toporia.framework.parts.composition import Updater
+from toporia.framework.parts.updater import Updater
 from toporia.plugins.filters.filter_density import DensityFilter
 from toporia.plugins.models.q4 import Q4Model
 from toporia.plugins.updaters.oc import OCUpdater

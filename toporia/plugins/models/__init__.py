@@ -22,7 +22,7 @@ MODELS registry.  Modules starting with an underscore are not scanned.
                           stress constraints (optional dependency)
 """
 
-from toporia.framework.parts.composition import Model
+from toporia.framework.parts.model import Model
 from toporia.framework.registry import Registry
 
 MODELS = Registry("model", Model, __name__)

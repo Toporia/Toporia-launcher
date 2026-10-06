@@ -24,7 +24,7 @@
 
 import numpy as np
 
-from toporia.framework.parts.composition import Updater
+from toporia.framework.parts.updater import Updater
 from toporia.plugins.models.pymoto_elastic import import_pymoto
 
 from ._common import MOVE

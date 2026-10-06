@@ -65,7 +65,7 @@
 import numpy as np
 
 from toporia.framework.params import Param
-from toporia.framework.parts.composition import Updater
+from toporia.framework.parts.updater import Updater
 
 # Densities are pulled this far inside (0, 1) before the logit, which is
 # infinite at both ends.  1e-9 keeps |w| below ~21: far enough to act like a

@@ -55,7 +55,7 @@ from collections import deque
 import numpy as np
 
 from toporia.framework.params import Param
-from toporia.framework.parts.composition import Updater
+from toporia.framework.parts.updater import Updater
 
 #: Iterations per window of the objective-based convergence test (Huang & Xie use 5).
 WINDOW = 5

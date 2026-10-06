@@ -22,17 +22,12 @@ rule is what keeps the data flow readable.
 from toporia.framework.optimisers.external_loop import ExternalOptimizer, Verdict
 from toporia.framework.optimisers.flat_view import FlatProblem
 from toporia.framework.params import Param, resolve_params
-from toporia.framework.parts.composition import (
-    ComposedMethod,
-    ConstraintValue,
-    Evaluation,
-    Model,
-    Updater,
-    compose,
-)
+from toporia.framework.parts.composition import ComposedMethod, compose
 from toporia.framework.parts.method import Capabilities, OptimizationMethod
+from toporia.framework.parts.model import ConstraintValue, Evaluation, Model
 from toporia.framework.parts.physics import ELASTIC_ENERGY, STRESS, Physics
 from toporia.framework.parts.response import CONSTRAINT_ROLE, OBJECTIVE_ROLE, Response, ResponseValue
+from toporia.framework.parts.updater import Updater
 from toporia.framework.problem.mesh import BaseProblem, RectangularProblem
 from toporia.framework.problem.run import OUTPUT_PARAMS, Output, Run, apply_param, read_param
 from toporia.framework.problem.scenario import (

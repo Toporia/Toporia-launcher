@@ -36,7 +36,7 @@ from dataclasses import dataclass
 
 import numpy as np
 
-from toporia.framework.parts.composition import Updater
+from toporia.framework.parts.updater import Updater
 
 
 @dataclass

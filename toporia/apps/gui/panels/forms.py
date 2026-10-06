@@ -1,4 +1,4 @@
-# gui/param_form.py — build input widgets from Param declarations.
+# apps/gui/panels/forms.py — build input widgets from Param declarations.
 #
 # This is the only place that knows how to turn a core.params.Param into a Qt
 # widget.  Every method, filter and scenario panel in the GUI is a ParamForm,

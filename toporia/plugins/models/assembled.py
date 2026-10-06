@@ -21,8 +21,8 @@
 
 import numpy as np
 
-from toporia.framework.parts.composition import ConstraintValue, Evaluation, Model
 from toporia.framework.parts.method import Capabilities
+from toporia.framework.parts.model import ConstraintValue, Evaluation, Model
 from toporia.framework.parts.response import CONSTRAINT_ROLE, OBJECTIVE_ROLE
 from toporia.plugins.filters.pipeline import DensityFilterPipeline
 from toporia.plugins.responses import RESPONSES, resolve_response, responses_for

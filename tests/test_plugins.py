@@ -13,7 +13,7 @@ import numpy as np
 import pytest
 
 import toporia.framework.registry as registry_module
-from toporia.framework.parts.composition import Updater
+from toporia.framework.parts.updater import Updater
 from toporia.framework.registry import Registry, missing_dependencies
 from toporia.plugins.updaters import UPDATERS
 from toporia.plugins.updaters.oc import OCUpdater

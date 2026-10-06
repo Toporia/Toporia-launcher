@@ -13,8 +13,9 @@ import numpy as np
 import pytest
 
 from toporia.framework import Param
-from toporia.framework.parts.composition import ComposedMethod, Model, compose
+from toporia.framework.parts.composition import ComposedMethod, compose
 from toporia.framework.parts.method import OBJECTIVE
+from toporia.framework.parts.model import Model
 from toporia.framework.problem.mesh import RectangularProblem
 from toporia.plugins.methods import method_class, method_classes
 from toporia.plugins.models import MODELS

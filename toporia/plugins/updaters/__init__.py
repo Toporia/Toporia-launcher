@@ -19,7 +19,7 @@ by construction, and BESO does not move them at all — it re-ranks and flips
 elements between solid and void.
 """
 
-from toporia.framework.parts.composition import Updater
+from toporia.framework.parts.updater import Updater
 from toporia.framework.registry import Registry
 
 UPDATERS = Registry("updater", Updater, __name__)
