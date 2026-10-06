@@ -9,6 +9,8 @@
     toporia check [KIND:NAME ...] [--quick]          conformance test of plugins (all by default)
     toporia benchmark --methods M ... [--problems P ...] [--set PATH=VALUE] [--out DIR]
                                                      several methods on several problems, one table
+    toporia post FOLDER TYPE[:PARAM=VALUE,...] ...   post-process a saved run again, e.g.
+                                                     toporia post results/mbb threshold export_stl:thickness=3
 
 SCENARIO is a scenario JSON file or a preset name such as "MBB Beam".
 SOLVER is a solver JSON file; without one, a preset's recommended solver (or the
@@ -20,7 +22,9 @@ where PATH is a parameter path:
     toporia run "MBB Beam" --set method=q4+mma --set interpolation.penal=4 --set volfrac=0.3
 
 VALUE is parsed as JSON when it can be (numbers, lists, objects) and taken as a
-plain string otherwise.
+plain string otherwise.  Post-processors run after any run with, for example,
+
+    toporia run "MBB Beam" --set 'postprocess=[{"type": "threshold"}, {"type": "export_dxf"}]'
 """
 
 import argparse
@@ -85,6 +89,7 @@ def _cmd_list(args):
     from toporia.plugins.interpolations import INTERPOLATIONS
     from toporia.plugins.methods import METHODS, PRESETS
     from toporia.plugins.models import MODELS
+    from toporia.plugins.postprocessors import POSTPROCESSORS
     from toporia.plugins.problems import problem_names
     from toporia.plugins.representations import REPRESENTATIONS
     from toporia.plugins.responses import RESPONSES
@@ -100,7 +105,7 @@ def _cmd_list(args):
     for title, registry in (("Models", MODELS), ("Updaters", UPDATERS), ("Whole methods", METHODS),
                             ("Design representations", REPRESENTATIONS), ("Filters", FILTERS),
                             ("Material laws", INTERPOLATIONS), ("Responses", RESPONSES),
-                            ("Schedules", SCHEDULES)):
+                            ("Schedules", SCHEDULES), ("Post-processors", POSTPROCESSORS)):
         print(f"\n{title}:")
         for cls in registry.classes():
             params = ", ".join(p.name for p in cls.params) or "-"
@@ -118,6 +123,21 @@ def _cmd_list(args):
     for old, new in PRESETS.items():
         print(f"  {old:<18} = {new}")
     return 0
+
+
+def _cmd_post(args):
+    from toporia.engine.postprocess import postprocess_folder
+
+    specs = []
+    for text in args.postprocessors:
+        name, _, rest = text.partition(":")
+        spec = {"type": name}
+        for item in filter(None, rest.split(",")):
+            key, value = _parse_override(item)
+            spec[key] = value
+        specs.append(spec)
+    done = postprocess_folder(Path(args.folder), specs)
+    return 1 if any("error" in entry for entry in done.values()) else 0
 
 
 def _cmd_export(args):
@@ -222,6 +242,12 @@ def _parser():
                        help="applied to every problem, e.g. m=0.5 max_iter=80 (repeatable)")
     bench.add_argument("--out", help="output directory (default results/benchmark)")
     bench.set_defaults(handler=_cmd_benchmark)
+
+    post = commands.add_parser("post", help="post-process a saved run again (threshold, checks, exports)")
+    post.add_argument("folder", help="a run's output folder (with run.json and final_density.csv)")
+    post.add_argument("postprocessors", nargs="+", metavar="TYPE[:PARAM=VALUE,...]",
+                      help="e.g. threshold connectivity export_stl:thickness=3")
+    post.set_defaults(handler=_cmd_post)
 
     export = commands.add_parser("export", help="write a preset as scenario + solver JSON files")
     export.add_argument("preset")

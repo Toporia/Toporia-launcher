@@ -28,6 +28,7 @@ framework/
 │   ├── filter.py      Filter: design → physical density, and the chain rule back
 │   ├── interpolation.py  Interpolation: density → stiffness (SIMP, RAMP, ...)
 │   ├── schedule.py    Schedule: a parameter that changes during the run (continuation)
+│   ├── postprocess.py PostProcessor: what is made of the finished design (threshold, exports)
 │   └── variants.py    VariantModel: one design evaluated in several versions (robust design)
 ├── optimisers/    HOW OPTIMISERS WRITTEN FOR VECTORS CONNECT
 │   ├── flat_view.py     a Model as x0, bounds, f, df, g, dg
@@ -113,6 +114,7 @@ outside library that runs its own loop.
 | [`representation.py`](parts/representation.py) | `Representation` — what the design variables are: `density(z)` gives the element density field and `backward(z, sensitivity)` carries the gradient back; `initial()` and `bounds()` give the start design and the variables' range. Chosen in the solver (`solver.representation`); `element_wise` says whether the variables are the element densities themselves, and an updater that needs them (`needs_element_densities`: OC, BESO, SiMPL) is refused with any other. | `plugins/representations` |
 | [`interpolation.py`](parts/interpolation.py) | `Interpolation` — the material law: `stiffness(ρ, E0, Emin)` and its `slope`, element-wise. Chosen in the solver (`solver.interpolation`) like the filters, and handed to every physics engine that declares `uses_interpolation`. | `plugins/interpolations` |
 | [`schedule.py`](parts/schedule.py) | `Schedule` — continuation: `value(completed)` and `finished(completed)` for one parameter path. Chosen in the solver (`solver.schedules`); every part lists the parameters that may change mid-run in `schedulable`, and `change_parameter()` sets one on a live part. Models and methods route a path to the part that owns it with `set_parameter(path, value)`, and say whether a continuation of their own is still moving with `continuing()`. | `plugins/schedules` |
+| [`postprocess.py`](parts/postprocess.py) | `PostProcessor` — `process(result)` returns metrics and writes files through `result.file(name)`; `Result` carries the final density, the meshed problem, the run, the folder, explicit geometry when the representation has it, and the black-and-white design once a threshold made one (`solid()`). Chosen in the run's Output section (`output.postprocess`), never changing the optimisation. | `plugins/postprocessors` |
 | [`variants.py`](parts/variants.py) | `VariantModel` — the same model built once per value of one parameter path (`solver.variants`), evaluated together and joined into one `Evaluation`: the worst case (a smooth maximum with an exact gradient) or the mean. The robust eroded / intermediate / dilated formulation, uncertain loads. Built by `ComposedMethod` when the solver asks for it; updaters see one model. | `ComposedMethod` |
 | [`filter.py`](parts/filter.py) | `Filter` — `forward(x)`, `backward(x_in, sensitivity)`, `step(iteration)` for continuation, and `FilterChain`, which runs several in order with one consistent backward pass. | `plugins/filters` |
 
@@ -128,7 +130,7 @@ outside library that runs its own loop.
 | File | Holds | Used by |
 | :--- | :--- | :--- |
 | [`params.py`](params.py) | `Param` — one tunable value, declared once next to the code that uses it (default, label, help, range, units). The GUI forms, the sweep menus and the config validation (`resolve_params`, which rejects unknown names) are all generated from these. | every plugin, apps, engine |
-| [`registry.py`](registry.py) | `Registry` — finds plugins in three ways: by scanning Toporia's own package, through the entry-point groups `toporia.models`, `.updaters`, `.representations`, `.filters`, `.interpolations`, `.responses`, `.schedules`, `.methods` of installed packages, and by `register()`. A plugin that fails to load is recorded in `errors` while the rest still load. `missing_dependencies()` / `install_hint()` handle optional packages. | `plugins/*/__init__.py`, apps, engine |
+| [`registry.py`](registry.py) | `Registry` — finds plugins in three ways: by scanning Toporia's own package, through the entry-point groups `toporia.models`, `.updaters`, `.representations`, `.filters`, `.interpolations`, `.responses`, `.schedules`, `.postprocessors`, `.methods` of installed packages, and by `register()`. A plugin that fails to load is recorded in `errors` while the rest still load. `missing_dependencies()` / `install_hint()` handle optional packages. | `plugins/*/__init__.py`, apps, engine |
 | [`__init__.py`](__init__.py) | Re-exports the most used names, so `from toporia.framework import Run, Scenario, …` works. Plugins import from [`toporia.api`](../api.py) instead. | everywhere |
 
 ## How a method is built from these pieces

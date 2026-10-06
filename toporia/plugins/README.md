@@ -30,12 +30,13 @@ Nothing is ever labelled ✅ until it is registered, tested, and reachable from 
 | [`filters/`](filters/README.md) | How it is smoothed, projected, made manufacturable | 6 | 1 | 15 |
 | [`interpolations/`](interpolations/README.md) | How density becomes stiffness (the material law) | 2 | 0 | 4 |
 | [`schedules/`](schedules/README.md) | How a parameter changes during the run (continuation) | 3 | 0 | 2 |
+| [`postprocessors/`](postprocessors/README.md) | What is made of the finished design: threshold, checks, exports | 6 | 0 | 3 |
 | [`models/`](models/README.md) | What computes the physics and the gradients | 2 | 24 | 3 |
 | [`physics/`](physics/README.md) | Element formulations and discretisation | 1 | 6 | 3 |
 | [`responses/`](responses/README.md) | What is minimised or constrained | 3 | 4 | 14 |
 | [`updaters/`](updaters/README.md) | How the design moves each iteration | 7 | 8 | 3 |
 | [`problems/`](problems/README.md) | Benchmark problems and datasets | 8 | 6 | 2 |
-| **Total** | | **49** | **63** | **51** |
+| **Total** | | **55** | **63** | **54** |
 
 The 15 selectable methods are the 14 `model+updater` pairings plus the one whole
 method; those pairings are built from the 2 models and 7 updaters counted in their own
@@ -62,6 +63,7 @@ Toporia separates them all so a comparison can change one and only one:
 | Parameterisation | [`framework.parts.method.OptimizationMethod`](../framework/parts/method.py) | `METHODS` + any `model+updater` pair |
 | Regularisation | [`framework.parts.filter.Filter`](../framework/parts/filter.py) | `FILTERS` |
 | Design variables | [`framework.parts.representation.Representation`](../framework/parts/representation.py) | `REPRESENTATIONS` |
+| Post-processing | [`framework.parts.postprocess.PostProcessor`](../framework/parts/postprocess.py) | `POSTPROCESSORS` |
 | Continuation | [`framework.parts.schedule.Schedule`](../framework/parts/schedule.py) | `SCHEDULES` |
 | Material law | [`framework.parts.interpolation.Interpolation`](../framework/parts/interpolation.py) | `INTERPOLATIONS` |
 | What is optimised | [`framework.parts.model.Model`](../framework/parts/model.py) | `MODELS` |
@@ -102,7 +104,7 @@ my_slsqp      = "my_package.optimisers:MySLSQP"    # or a single class
 After `pip install my_package` it appears in the GUI menus, the CLI (`toporia list` shows
 where each plugin comes from) and the configs. The groups are `toporia.models`,
 `toporia.updaters`, `toporia.representations`, `toporia.filters`, `toporia.interpolations`,
-`toporia.responses`, `toporia.schedules` and
+`toporia.responses`, `toporia.schedules`, `toporia.postprocessors` and
 `toporia.methods`. A plugin
 that fails to import is reported in the GUI's log and by `toporia list`, and every other
 plugin still loads. A plugin that needs an optional package declares

@@ -26,6 +26,7 @@ from toporia.framework.problem.mesh import RectangularProblem
 from toporia.framework.registry import install_hint, missing_dependencies
 
 from .pipeline import describe_pipeline, make_schedules, representation_used, solver_problems
+from .postprocess import check_postprocess, run_postprocessors, save_geometry
 from .records import ResultStore, check_limits, describe_violations, run_record
 
 
@@ -53,6 +54,7 @@ def initialized_method(run):
     reasons = solver_problems(method_cls, run)
     if reasons:
         raise ValueError(f"Method {method_cls.name!r} cannot run with these parts: {'; '.join(reasons)}.")
+    check_postprocess(run)
     (objective_cls, _), _ = check_responses(run.scenario)
     if objective_cls.advice:
         print(f"note: {objective_cls.advice}")
@@ -115,9 +117,13 @@ def run_single_with_store(run, on_iteration=None):
     store.limits = limits
     store.optimiser = optimiser
     store.save_final(method.get_density(), save_history=False)
+    geometry = method.geometry()
+    if geometry:
+        save_geometry(run.output.dir, geometry)
+    store.postprocess = run_postprocessors(run, method.get_density(), run.output.dir, geometry)
     store.save_json("run.json", run_record(
         run, iterations=iteration, stop_reason=stop_reason, responses=final, limits=limits,
-        optimiser=optimiser,
+        optimiser=optimiser, postprocess=store.postprocess,
     ))
     return store, method.get_density()
 

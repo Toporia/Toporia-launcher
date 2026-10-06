@@ -65,3 +65,7 @@ class Representation(ABC):
     @abstractmethod
     def backward(self, z, sensitivity):
         """d(objective)/dz, given `sensitivity` = d(objective)/d(density(z)), shaped like the field."""
+
+    def outlines(self, z):
+        """The design's own shapes as closed polygons [(n, 2) arrays in mm], for export; None when it has none."""
+        return None

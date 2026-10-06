@@ -184,6 +184,10 @@ class OptimizationMethod(ABC):
         """True while a continuation of the method's own is still moving; the engine then does not stop."""
         return False
 
+    def geometry(self):
+        """Explicit outlines of the current design (closed polygons in mm), for export; None for a density design."""
+        return None
+
     def is_converged(self):
         """Optional method-specific stopping criterion.
 

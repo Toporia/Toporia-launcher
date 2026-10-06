@@ -11,6 +11,10 @@
 # needs is not installed) is listed with the reason rather than stopping the
 # comparison.
 #
+# The run's post-processors (output.postprocess) run on every method's design
+# alike, and their numbers become further columns: with a threshold, the
+# compliance of every design cut to black and white at its own volume.
+#
 # The table reports each method's own objective, and also a referee: the
 # compliance of every final design measured the same way, on Toporia's Q4
 # solver with SIMP p = 3 and no filter.  Methods use different physics (the
@@ -28,15 +32,15 @@ import csv
 import time
 from pathlib import Path
 
-import numpy as np
-
 from toporia.engine.loop import run_single_with_store
+from toporia.engine.postprocess import table_metrics
 from toporia.framework.problem.mesh import RectangularProblem
+from toporia.plugins.postprocessors import _measure as measure
 
 from .grids import DESIGNS, mode_folder, save_grid, with_values
 
 #: The referee measures every final design with the same physics.
-REFEREE_PENAL = 3.0
+REFEREE_PENAL = measure.REFEREE_PENAL
 #: The table's columns, in order.
 COLUMNS = ("problem", "method", "label", "status", "objective", "referee_compliance", "volume",
            "grey_level", "iterations", "solves", "seconds", "feasible", "stop_reason")
@@ -125,6 +129,7 @@ def _run_method(name, base_config, folder, on_iteration):
     start = time.perf_counter()
     store, density = run_single_with_store(run, on_iteration)
     final = {key: values[-1] for key, values in store.responses.items()}
+    row.update(table_metrics(store.postprocess))     # e.g. threshold.compliance, the same for every method
     row.update(
         status="ran",
         objective=final.get("objective"),
@@ -141,24 +146,11 @@ def _run_method(name, base_config, folder, on_iteration):
 
 
 def referee_compliance(run, density):
-    """Compliance of a final design measured the same way for every method.
-
-    Toporia's Q4 solver, SIMP with p = REFEREE_PENAL, no filter, the
-    scenario's load cases and weights; the density is clipped to the
-    problem's bounds so holes stay holes.
-    """
-    from toporia.plugins.interpolations.simp import SIMP
-    from toporia.plugins.physics.q4_plane_stress import Q4PlaneStress
-    problem = RectangularProblem(run.scenario, run.solver.m)
-    engine = Q4PlaneStress()
-    engine.initialize(problem, {}, SIMP(REFEREE_PENAL))
-    state = engine.solve(np.clip(density, problem.lower_bound, problem.upper_bound))
-    return float(sum(weight * engine.compliance(state, case) for case, weight in enumerate(state.weights)))
+    """Compliance of a final design measured the same way for every method (plugins/postprocessors/_measure.py)."""
+    return measure.referee_compliance(RectangularProblem(run.scenario, run.solver.m), density)
 
 
-def grey_level(density):
-    """Sigmund's measure of non-discreteness, 4/n Σ ρ(1 − ρ): 0 is black and white, 1 uniform grey."""
-    return float(4.0 * np.mean(density * (1.0 - density)))
+grey_level = measure.grey_level
 
 
 # ── The table ─────────────────────────────────────────────────────────────────
@@ -169,6 +161,7 @@ def format_table(rows):
              "grey_level", "iterations", "solves", "seconds", "feasible")
     if not any(row.get("problem") for row in rows):
         shown = shown[1:]
+    shown += tuple(_extra_columns(rows))          # the post-processors' numbers
 
     def cell(value):
         if value is None:
@@ -186,10 +179,15 @@ def format_table(rows):
     return "\n".join(lines)
 
 
+def _extra_columns(rows):
+    """Columns beyond COLUMNS that some row has (post-processor metrics), in the order first seen."""
+    return list(dict.fromkeys(key for row in rows for key in row if key not in COLUMNS))
+
+
 def _write_table(rows, path):
     path.parent.mkdir(parents=True, exist_ok=True)
     with open(path, "w", newline="", encoding="utf-8") as file:
-        writer = csv.DictWriter(file, fieldnames=COLUMNS)
+        writer = csv.DictWriter(file, fieldnames=list(COLUMNS) + _extra_columns(rows))
         writer.writeheader()
         writer.writerows(rows)
 

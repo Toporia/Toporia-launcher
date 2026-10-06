@@ -5,7 +5,7 @@ Neither contains optimisation logic. Both turn what the person chose into a
 
 ```
 apps/
-├── cli.py            toporia run · compare · sweep · benchmark · check · list · export  (no command: the GUI)
+├── cli.py            toporia run · compare · sweep · benchmark · check · list · export · post  (no command: the GUI)
 └── gui/
     ├── app.py        starts Qt (and sets matplotlib's Qt backend first)
     ├── window.py     the main window: lays out the panels, wires the Run/Stop button

@@ -96,6 +96,9 @@ class VariantModel(Model):
     def volume_of(self, x):
         return self.models[self.nominal].volume_of(x)
 
+    def geometry(self, x):
+        return self.models[self.nominal].geometry(x)
+
     # ── All of them ───────────────────────────────────────────────────────────
 
     def evaluate(self, x, gradients=True):

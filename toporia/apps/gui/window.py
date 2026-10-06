@@ -123,6 +123,8 @@ class MainWindow(QMainWindow):
         from toporia.plugins.schedules import SCHEDULES
         self.schedules   = ScheduleListGroup(SCHEDULES.classes())
         self.variants    = VariantsGroup()
+        from toporia.plugins.postprocessors import POSTPROCESSORS
+        self.post        = SpecListGroup("Post-processing", POSTPROCESSORS.classes(), noun="post-processor")
         self.lc      = LoadCasesGroup()
         self.sg      = SweepParamsGroup()
         self.sg2     = Sweep2DParamsGroup()
@@ -132,7 +134,7 @@ class MainWindow(QMainWindow):
         self.sens    = SensitivityParamsGroup()
         self.ssg     = SensitivitySweepParamsGroup()
         self.ssg2    = SensitivitySweep2DParamsGroup()
-        for g in (self.pipeline, self.core, self.design, self.material, self.objective, self.constraints, self.filters, self.schedules, self.variants, self.lc, self.sg, self.sg2,
+        for g in (self.pipeline, self.core, self.design, self.material, self.objective, self.constraints, self.filters, self.schedules, self.variants, self.post, self.lc, self.sg, self.sg2,
                   self.cg, self.clcg, self.cmg, self.sens, self.ssg, self.ssg2):
             pl.addWidget(g)
 
@@ -145,6 +147,7 @@ class MainWindow(QMainWindow):
             group.changed.connect(self._refresh_parameter_paths)
         self.core.method_changed.connect(self._on_method_changed)
         self.variants.changed.connect(self._refresh_pipeline)
+        self.post.changed.connect(self._refresh_pipeline)
         self.variants.robust_requested.connect(self._use_robust_projection)
 
         # Run/Stop button — the same button toggles between two roles.
@@ -196,6 +199,7 @@ class MainWindow(QMainWindow):
         self.filters.load_specs(cfg.solver.filter_specs)
         self.schedules.load_specs(cfg.solver.schedules)
         self.variants.load_spec(cfg.solver.variants)
+        self.post.load_specs(cfg.output.postprocess)
         self.lc.load_from_config(cfg)
         self._on_method_changed(self.core.method_name())
 
@@ -244,7 +248,8 @@ class MainWindow(QMainWindow):
             cfg = build_config(self.core, self.lc, self.filters, base_cfg=self._base_cfg,
                                objective=self.objective, constraints=self.constraints,
                                interpolation=self.material, representation=self.design,
-                               schedules=self.schedules, variants=self.variants)
+                               schedules=self.schedules, variants=self.variants,
+                               postprocess=self.post)
             self.pipeline.show_pipeline(pipeline_stages(cfg), pipeline_notes(cfg.solver.method, cfg))
         except (ValueError, KeyError) as error:
             self.pipeline.show_pipeline([], [f"Cannot describe this selection: {error}"])
@@ -293,7 +298,8 @@ class MainWindow(QMainWindow):
         cfg = runner.build_config(self.core, self.lc, self.filters, base_cfg=self._base_cfg,
                                   objective=self.objective, constraints=self.constraints,
                                interpolation=self.material, representation=self.design,
-                               schedules=self.schedules, variants=self.variants)
+                               schedules=self.schedules, variants=self.variants,
+                               postprocess=self.post)
 
         # on_iter is the per-iteration callback passed into the optimisation scripts.
         # It runs inside the optimisation loop after every solver step.

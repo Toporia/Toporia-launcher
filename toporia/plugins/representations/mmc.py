@@ -126,6 +126,21 @@ class MovingMorphableComponents(Representation):
     def bounds(self):
         return np.zeros_like(self._start), np.ones_like(self._start)
 
+    def outlines(self, z, points=72):
+        """Every bar as a closed polygon in mm: its super-ellipse, uncut by the domain edge or holes."""
+        s = np.linspace(0.0, 2.0 * np.pi, points, endpoint=False)
+        c, si = np.cos(s), np.sin(s)
+        along_unit = np.sign(c) * np.abs(c) ** (2.0 / P)
+        across_unit = np.sign(si) * np.abs(si) ** (2.0 / P)
+        polygons = []
+        for xc, yc, L, t, theta in self.low + np.asarray(z).reshape(-1, PER_BAR) * self.span:
+            along, across = L * along_unit, t * across_unit
+            x = xc + np.cos(theta) * along - np.sin(theta) * across
+            y = yc + np.sin(theta) * along + np.cos(theta) * across
+            polygon = np.column_stack([x, y])
+            polygons.append(np.vstack([polygon, polygon[:1]]))
+        return polygons
+
     # ── The projection ────────────────────────────────────────────────────────
 
     def _bars(self, z):

@@ -242,7 +242,7 @@ def _built(window):
     return runner.build_config(window.core, window.lc, window.filters, base_cfg=window._base_cfg,
                                objective=window.objective, constraints=window.constraints,
                                interpolation=window.material, representation=window.design,
-                               schedules=window.schedules, variants=window.variants)
+                               schedules=window.schedules, variants=window.variants, postprocess=window.post)
 
 
 def test_a_schedule_offers_only_what_can_change_and_reaches_the_run(window):
@@ -276,3 +276,16 @@ def test_the_robust_button_adds_a_projection_and_three_variants(window):
     assert cfg.solver.filter_specs[1]["type"] == "heaviside" and cfg.solver.variants["path"] == "filters[1].eta"
     window.variants.load_spec({})
     window.filters.load_specs([{"type": "density"}])
+
+
+def test_post_processors_can_be_switched_on_in_any_combination(window):
+    window._on_config_changed("MBB Beam")
+    assert _built(window).output.postprocess == []           # off unless asked for
+    window.post.load_specs([{"type": "threshold"}, {"type": "export_stl", "thickness": 2.0}])
+    cfg = _built(window)
+    assert [spec["type"] for spec in cfg.output.postprocess] == ["threshold", "export_stl"]
+    assert cfg.output.postprocess[1]["thickness"] == 2.0
+    assert dict(window.pipeline.stages())["Post-processing"] == "Threshold to black and white -> Export solid (STL)"
+    window.core.select_method("levelset")                     # any method's design can be post-processed
+    assert not window.post.isHidden() and len(_built(window).output.postprocess) == 2
+    window.post.load_specs([])

@@ -16,6 +16,7 @@ What contains what, top to bottom in the left panel:
     SpecListGroup       specs.py      filters (hidden when the method takes no filters)
     ScheduleListGroup   specs.py      continuation: parameters that change during the run
     VariantsGroup       variants.py   several versions of every design (robust design)
+    SpecListGroup       specs.py      post-processing: threshold, checks, exports of the final design
     LoadCasesGroup      loads.py      one LoadCaseRow per force
     one group per mode  modes.py      sweep, compare, sensitivity, ...
 """

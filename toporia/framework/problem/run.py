@@ -43,6 +43,10 @@ class Output:
     """
     dir: Path = PROJECT_ROOT / "results"
     save_every: int = 10   # intermediate density PNG every N iterations (0 = final only)
+    # What is made of the final design, in order, each {"type": <name>, <param>: <value>}:
+    # a black-and-white version, checks, exports.  Empty: nothing.  See
+    # framework/parts/postprocess.py.
+    postprocess: list = field(default_factory=list)
 
 
 OUTPUT_PARAMS = (

@@ -113,5 +113,9 @@ class Model(ABC):
         """True while a continuation of the model's own (a filter's) is still moving."""
         return False
 
+    def geometry(self, x):
+        """Explicit outlines of design x (closed polygons in mm), when its variables describe shapes; else None."""
+        return None
+
     def advance(self, completed):
         """Called once per iteration, after evaluate: advance any continuation schedule."""

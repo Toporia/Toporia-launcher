@@ -202,7 +202,7 @@ def test_the_api_offers_everything_a_plugin_needs():
     for name in api.__all__:
         assert hasattr(api, name), name
     assert set(api.REGISTRIES) == {"model", "updater", "representation", "filter", "interpolation",
-                                     "response", "schedule", "method"}
+                                     "response", "schedule", "method", "postprocessor"}
     assert api.plugin_errors() == []         # every plugin in this repository loads
 
 
@@ -211,4 +211,5 @@ def test_entry_point_groups_follow_the_plugin_kinds():
     assert {kind: registry.group for kind, registry in api.REGISTRIES.items()} == {
         "model": "toporia.models", "updater": "toporia.updaters", "representation": "toporia.representations",
         "filter": "toporia.filters", "schedule": "toporia.schedules",
-        "interpolation": "toporia.interpolations", "response": "toporia.responses", "method": "toporia.methods"}
+        "interpolation": "toporia.interpolations", "response": "toporia.responses", "method": "toporia.methods",
+        "postprocessor": "toporia.postprocessors"}

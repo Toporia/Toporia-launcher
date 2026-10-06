@@ -24,6 +24,7 @@
 #                  differences (unless the filter declares exact_adjoint = False)
 #   Interpolation  E(0) = Emin, E(1) = E0, increasing; slope() against finite differences
 #   Schedule       finite values, a finish it keeps, a short run driving a projection
+#   PostProcessor  plain metrics, the files it names, the design untouched, repeatable
 #   Response       its gradient against finite differences, on every engine
 #                  that provides the features it requires
 #   whole method   a short run (finite, inside the bounds)
@@ -36,7 +37,7 @@
 #     report.py    Report and Check: what a check returns
 #     common.py    the benchmark problems, finite differences, threads
 #     updater.py · model.py · representation.py · filter.py · interpolation.py · response.py ·
-#     schedule.py · method.py
+#     schedule.py · postprocess.py · method.py
 
 import contextlib
 import io
@@ -51,6 +52,7 @@ from .filter import check_filter
 from .interpolation import check_interpolation
 from .method import check_method
 from .model import check_model, check_physics
+from .postprocess import check_postprocessor
 from .report import Check, Report
 from .representation import check_representation
 from .response import check_response
@@ -94,6 +96,9 @@ def _conformance(plugin, **options):
     from toporia.framework.parts.schedule import Schedule
     if isinstance(plugin, type) and issubclass(plugin, Schedule):
         return check_schedule(plugin, **options)
+    from toporia.framework.parts.postprocess import PostProcessor
+    if isinstance(plugin, type) and issubclass(plugin, PostProcessor):
+        return check_postprocessor(plugin, **options)
     raise TypeError(f"{plugin!r} is not a Toporia plugin class")
 
 
@@ -114,4 +119,4 @@ def _lookup(text):
 
 __all__ = ["Check", "Report", "conformance", "all_plugins", "parts_of", "check_updater",
            "check_model", "check_physics", "check_filter", "check_interpolation", "check_representation",
-           "check_schedule", "check_response", "check_method"]
+           "check_schedule", "check_postprocessor", "check_response", "check_method"]

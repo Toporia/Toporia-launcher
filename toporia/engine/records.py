@@ -49,6 +49,7 @@ class ResultStore:
         self.responses  = {}   # name -> per-iteration list, for every response a
                                # method reports (constraint values, beta, ...)
         self.stop_reason = None  # set by the runner when the loop ends
+        self.postprocess = {}    # what the post-processors made of the final design
 
     def record(self, iteration, objective, volume, density, save_every=0, responses=None):
         """Append one iteration's data and optionally save a density snapshot."""
@@ -245,7 +246,7 @@ def parts_record(run):
     return record
 
 
-def run_record(run, *, iterations, stop_reason, responses, limits=(), optimiser=None):
+def run_record(run, *, iterations, stop_reason, responses, limits=(), optimiser=None, postprocess=None):
     """The provenance document written as run.json at the end of every run.
 
     `limits` is check_limits' report; `feasible` is False
@@ -269,4 +270,6 @@ def run_record(run, *, iterations, stop_reason, responses, limits=(), optimiser=
     }
     if optimiser:
         record["result"]["optimiser"] = optimiser
+    if postprocess:
+        record["postprocess"] = postprocess
     return record

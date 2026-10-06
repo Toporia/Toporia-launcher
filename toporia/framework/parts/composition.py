@@ -170,6 +170,9 @@ class ComposedMethod(OptimizationMethod):
     def continuing(self):
         return self._model.continuing()
 
+    def geometry(self):
+        return self._model.geometry(self.x)
+
     def describe_view(self):
         """What the updater's optimiser sees, when it works on a flat view; else None."""
         flat = getattr(self._updater, "flat", None)

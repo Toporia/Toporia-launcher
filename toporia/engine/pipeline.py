@@ -25,12 +25,14 @@ def registries():
     from toporia.plugins.interpolations import INTERPOLATIONS
     from toporia.plugins.methods import METHODS
     from toporia.plugins.models import MODELS
+    from toporia.plugins.postprocessors import POSTPROCESSORS
     from toporia.plugins.representations import REPRESENTATIONS
     from toporia.plugins.responses import RESPONSES
     from toporia.plugins.schedules import SCHEDULES
     from toporia.plugins.updaters import UPDATERS
     return {"model": MODELS, "updater": UPDATERS, "representation": REPRESENTATIONS, "filter": FILTERS,
-            "interpolation": INTERPOLATIONS, "response": RESPONSES, "schedule": SCHEDULES, "method": METHODS}
+            "interpolation": INTERPOLATIONS, "response": RESPONSES, "schedule": SCHEDULES, "method": METHODS,
+            "postprocessor": POSTPROCESSORS}
 
 
 def _representation(found, solver):
@@ -171,7 +173,7 @@ def pipeline_parts(run):
 
     The model and the updater (or the whole method), the design representation,
     the material law and the filters when the method uses them, the objective
-    and each constraint, then the schedules.
+    and each constraint, the schedules, then the post-processors.
     """
     from toporia.plugins.methods import method_class
     found = registries()
@@ -189,6 +191,7 @@ def pipeline_parts(run):
     parts.append(("response", found["response"].get(run.scenario.objective.get("type", "compliance"))))
     parts += [("response", found["response"].get(spec["type"])) for spec in run.scenario.constraints]
     parts += [("schedule", found["schedule"].get(spec.get("type", "steps"))) for spec in run.solver.schedules]
+    parts += [("postprocessor", found["postprocessor"].get(spec["type"])) for spec in run.output.postprocess]
     unique = {}
     for kind, cls in parts:
         unique.setdefault((kind, cls.name), (kind, cls))
@@ -236,6 +239,8 @@ def pipeline_stages(run):
     objective, limits = responses[0], ["volume budget"] + responses[1:]
 
     schedules = _describe_schedules(run)
+    post = [_labelled(kind, cls) for kind, cls in parts if kind == "postprocessor"]
+    schedules += [("Post-processing", " -> ".join(post))] if post else []
     if not issubclass(method_cls, ComposedMethod):
         return [("Method", _labelled("method", method_cls)), ("Objective", objective),
                 ("Constraints", ", ".join(limits))] + schedules

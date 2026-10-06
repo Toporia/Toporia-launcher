@@ -22,6 +22,7 @@ variables z ──Representation──> design x ──Filter──> density ρ 
 | a smoothing, projection or fabrication rule      | filter                   | `Filter`                    | `plugins/filters/` · `toporia.filters` |
 | a material law (density → stiffness)             | interpolation            | `Interpolation`             | `plugins/interpolations/` · `toporia.interpolations` |
 | a continuation rule (a parameter over the run)   | schedule                 | `Schedule`                  | `plugins/schedules/` · `toporia.schedules` |
+| a check or export of the finished design         | post-processor           | `PostProcessor`             | `plugins/postprocessors/` · `toporia.postprocessors` |
 | an objective or constraint                       | response                 | `Response`                  | `plugins/responses/` · `toporia.responses` |
 | a finite-element solver or other physics         | physics engine + model   | `Physics`, `AssembledModel` | `plugins/physics/`, `plugins/models/` · `toporia.models` |
 | a method that does not split into the above      | whole method             | `OptimizationMethod`        | `plugins/methods/` · `toporia.methods` |
@@ -374,6 +375,45 @@ are a solver setting:
 `{"path": "filters[1].eta", "values": [0.75, 0.5, 0.25], "combine": "worst"}`
 evaluates every design eroded, intermediate and dilated, and minimises the worst. See
 [`framework/parts/variants.py`](../toporia/framework/parts/variants.py).
+
+## A post-processor
+
+A post-processor makes something of the finished design: numbers, files, or both. It does
+not change the optimisation. It is switched on in the run's Output section,
+`output.postprocess = [{"type": "guide_perimeter"}]`. Its numbers appear in `run.json`, and
+in Compare Methods they appear as a column for every method. `process(result)` receives:
+
+- the final `result.density`, the meshed `result.problem`, and the `result.run`;
+- `result.solid()`, the black-and-white design: the threshold's when one ran before it,
+  else density ≥ 0.5.
+
+It writes files through `result.file(name)`. The example measures the outline length of the
+black-and-white design, a common measure of how intricate a design is:
+
+```python
+# example: postprocessor
+import numpy as np
+
+from toporia.api import PostProcessor
+
+
+class Perimeter(PostProcessor):
+    """Length of the boundary between solid and void, in mm, counted along element edges."""
+
+    name = "guide_perimeter"
+    label = "Perimeter (guide example)"
+
+    def process(self, result):
+        solid = np.pad(result.solid(), 1).astype(int)
+        across_x = np.abs(np.diff(solid, axis=1)).sum()      # vertical element edges
+        across_y = np.abs(np.diff(solid, axis=0)).sum()      # horizontal element edges
+        problem = result.problem
+        return {"perimeter_mm": float(across_x * problem.dy + across_y * problem.dx)}
+```
+
+`toporia check postprocessor:<name>` checks that the metrics are plain values, that the
+files it names exist and are not empty, that the design is left unchanged, and that a
+second run gives the same numbers.
 
 ## A response
 

@@ -177,6 +177,9 @@ class AssembledModel(Model):
     def continuing(self):
         return self.pipeline.chain is not None and self.pipeline.chain.continuing()
 
+    def geometry(self, z):
+        return self.representation.outlines(z)
+
     def set_parameter(self, path, value):
         """Change a value of a live part: the material law, the representation, a filter, a response."""
         name = path.rpartition(".")[2]
