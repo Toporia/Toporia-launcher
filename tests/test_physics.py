@@ -12,14 +12,14 @@ import importlib.util
 import numpy as np
 import pytest
 
-from toporia.core.physics import ELASTIC_ENERGY, Physics
-from toporia.core.problem import RectangularProblem
-from toporia.core.responses import OBJECTIVE_ROLE, Response
-from toporia.engine.runner import initialized_method
-from toporia.library.fe.q4_plane_stress import Q4PlaneStress
-from toporia.library.models.assembled import AssembledModel
-from toporia.library.models.q4 import Q4Model
-from toporia.library.problems import get_run
+from toporia.engine.loop import initialized_method
+from toporia.framework.parts.physics import ELASTIC_ENERGY, Physics
+from toporia.framework.parts.response import OBJECTIVE_ROLE, Response
+from toporia.framework.problem.mesh import RectangularProblem
+from toporia.plugins.models.assembled import AssembledModel
+from toporia.plugins.models.q4 import Q4Model
+from toporia.plugins.physics.q4_plane_stress import Q4PlaneStress
+from toporia.plugins.problems import get_run
 
 requires_pymoto = pytest.mark.skipif(importlib.util.find_spec("pymoto") is None,
                                      reason="optional dependency: pip install pymoto")
@@ -103,8 +103,8 @@ def test_q4_and_pymoto_agree_on_compliance_and_differ_on_stress_only_by_pymotos_
     Q4 shear reproduces pyMOTO's peak exactly, which pins both the agreement
     and the one known difference.
     """
-    from toporia.library.models.pymoto_elastic import PymotoElasticModel
-    from toporia.library.responses.stress import VON_MISES_2D
+    from toporia.plugins.models.pymoto_elastic import PymotoElasticModel
+    from toporia.plugins.responses.stress import VON_MISES_2D
 
     run = get_run("MBB Beam").updated(m=1.0, volfrac=0.5, filter_specs=[],
                                       constraints=[{"type": "stress", "limit": 1e9}])
@@ -153,7 +153,7 @@ def test_a_model_offers_exactly_what_its_engine_provides_features_for():
 
 
 def test_a_response_says_which_engines_it_can_compute_on():
-    from toporia.library.responses import RESPONSES
+    from toporia.plugins.responses import RESPONSES
     assert RESPONSES.get("stress").computable_on(Q4PlaneStress)
     assert not RESPONSES.get("stress").computable_on(_EnergyOnly)
     assert RESPONSES.get("volume").computable_on(Physics)        # needs no physics at all

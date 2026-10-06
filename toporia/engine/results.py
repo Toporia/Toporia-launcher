@@ -46,7 +46,7 @@ class ResultStore:
 
     def save_json(self, name, data):
         """Write a JSON document — such as the run.json provenance record — to the output folder."""
-        from toporia.core.serialize import dump_json
+        from toporia.framework.problem.files import dump_json
         (self.output_dir / name).write_text(dump_json(data) + "\n", encoding="utf-8")
 
     def save_csv(self, density):

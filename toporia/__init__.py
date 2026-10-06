@@ -3,8 +3,8 @@ Toporia — open-source topology optimisation platform.
 
 Quickstart
 ----------
-    from toporia.library.problems import get_run
-    from toporia.engine.runner import run_single
+    from toporia.plugins.problems import get_run
+    from toporia.engine.loop import run_single
 
     run = get_run("MBB Beam").updated(volfrac=0.4)
     density = run_single(run)

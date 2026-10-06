@@ -26,7 +26,7 @@ dev = ["pytest>=7", "ruff"]
 pymoto = ["pymoto>=2.0"]
 
 [project.scripts]
-toporia = "toporia.cli:main"
+toporia = "toporia.apps.cli:main"
 
 
 # ── Test suite ────────────────────────────────────────────────────────────────

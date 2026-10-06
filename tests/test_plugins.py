@@ -12,11 +12,11 @@ import types
 import numpy as np
 import pytest
 
-import toporia.core.registry as registry_module
-from toporia.core.composition import Updater
-from toporia.core.registry import Registry, missing_dependencies
-from toporia.library.updaters import UPDATERS
-from toporia.library.updaters.oc import OCUpdater
+import toporia.framework.registry as registry_module
+from toporia.framework.parts.composition import Updater
+from toporia.framework.registry import Registry, missing_dependencies
+from toporia.plugins.updaters import UPDATERS
+from toporia.plugins.updaters.oc import OCUpdater
 
 MISSING = "toporia_test_package_that_does_not_exist"
 
@@ -67,14 +67,14 @@ def installed(monkeypatch):
 # ── Entry points ──────────────────────────────────────────────────────────────
 
 def test_an_installed_package_adds_its_plugins(installed):
-    registry = Registry("updater", Updater, "toporia.library.updaters")
+    registry = Registry("updater", Updater, "toporia.plugins.updaters")
     assert {"external_step", "from_module", "oc", "mma"} <= set(registry.names())
     assert registry.source("external_step") == "my-optimisers"
     assert registry.source("oc") == "toporia"
 
 
 def test_a_broken_or_clashing_plugin_is_reported_and_the_rest_still_load(installed):
-    registry = Registry("updater", Updater, "toporia.library.updaters")
+    registry = Registry("updater", Updater, "toporia.plugins.updaters")
     errors = dict(registry.errors)
     assert "No module named 'nlopt'" in errors["broken = my_optimisers.broken"]
     assert "Two updaters are named 'oc'" in errors["clash = my_optimisers:OC"]
@@ -87,7 +87,7 @@ def test_a_broken_module_in_a_package_does_not_hide_the_others(tmp_path, monkeyp
     package.mkdir()
     (package / "__init__.py").write_text("")
     (package / "good.py").write_text(
-        "from toporia.library.updaters.oc import OCUpdater\n"
+        "from toporia.plugins.updaters.oc import OCUpdater\n"
         "class Good(OCUpdater):\n    name, label = 'good', 'Good'\n")
     (package / "bad.py").write_text("import toporia_test_package_that_does_not_exist\n")
     monkeypatch.syspath_prepend(str(tmp_path))
@@ -98,9 +98,9 @@ def test_a_broken_module_in_a_package_does_not_hide_the_others(tmp_path, monkeyp
 
 
 def test_an_installed_updater_is_a_method_part_like_any_other(installed):
-    from toporia.engine.runner import initialized_method
-    from toporia.library.methods import method_class
-    from toporia.library.problems import get_run
+    from toporia.engine.loop import initialized_method
+    from toporia.plugins.methods import method_class
+    from toporia.plugins.problems import get_run
     UPDATERS._by_name = None        # rediscover with the package installed
     try:
         assert method_class("q4+external_step").updater is ExternalStep
@@ -127,15 +127,15 @@ def needs_missing():
 
 
 def test_missing_dependencies_are_found_for_a_plugin_and_for_a_pairing(needs_missing):
-    from toporia.library.methods import method_class
+    from toporia.plugins.methods import method_class
     assert missing_dependencies(needs_missing) == [MISSING]
     assert missing_dependencies(method_class("q4+needs_missing")) == [MISSING]
     assert missing_dependencies(OCUpdater) == []
 
 
 def test_a_run_refuses_a_missing_dependency_before_it_starts(needs_missing):
-    from toporia.engine.runner import initialized_method
-    from toporia.library.problems import get_run
+    from toporia.engine.loop import initialized_method
+    from toporia.plugins.problems import get_run
     run = get_run("MBB Beam").updated(method="q4+needs_missing", m=0.3)
     with pytest.raises(ImportError, match=f"pip install {MISSING}"):
         initialized_method(run)
@@ -147,7 +147,7 @@ def test_the_gui_greys_out_what_is_not_installed_and_says_why(needs_missing):
     os.environ.setdefault("QT_QPA_PLATFORM", "offscreen")
     from PySide6 import QtWidgets
     QtWidgets.QApplication.instance() or QtWidgets.QApplication([])
-    from toporia.gui.window import MainWindow
+    from toporia.apps.gui.window import MainWindow
 
     window = MainWindow()
     combo = window.core.updater

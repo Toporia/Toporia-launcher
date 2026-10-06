@@ -25,22 +25,22 @@
 # A physics engine (Physics) is not registered on its own: declare a model on
 # it with AssembledModel, three lines (see library/models/q4.py).
 
-from toporia.core.composition import ConstraintValue, Evaluation, Model, Updater, compose
-from toporia.core.contract import OBJECTIVE, Capabilities, OptimizationMethod
-from toporia.core.external import ExternalOptimizer, Verdict
-from toporia.core.flat import VOLUME_BUDGET, FlatProblem
-from toporia.core.params import Param
-from toporia.core.physics import ELASTIC_ENERGY, STRESS, Physics
-from toporia.core.registry import install_hint, missing_dependencies
-from toporia.core.responses import CONSTRAINT_ROLE, OBJECTIVE_ROLE, Response, ResponseValue
-from toporia.library.filters import FILTERS
-from toporia.library.filters.filter_base import Filter
-from toporia.library.methods import METHODS, method_class
-from toporia.library.models import MODELS
-from toporia.library.models.assembled import AssembledModel
-from toporia.library.responses import RESPONSES
-from toporia.library.updaters import UPDATERS
-from toporia.testing import conformance
+from toporia.checks import conformance
+from toporia.framework.optimisers.external_loop import ExternalOptimizer, Verdict
+from toporia.framework.optimisers.flat_view import VOLUME_BUDGET, FlatProblem
+from toporia.framework.params import Param
+from toporia.framework.parts.composition import ConstraintValue, Evaluation, Model, Updater, compose
+from toporia.framework.parts.filter import Filter
+from toporia.framework.parts.method import OBJECTIVE, Capabilities, OptimizationMethod
+from toporia.framework.parts.physics import ELASTIC_ENERGY, STRESS, Physics
+from toporia.framework.parts.response import CONSTRAINT_ROLE, OBJECTIVE_ROLE, Response, ResponseValue
+from toporia.framework.registry import install_hint, missing_dependencies
+from toporia.plugins.filters import FILTERS
+from toporia.plugins.methods import METHODS, method_class
+from toporia.plugins.models import MODELS
+from toporia.plugins.models.assembled import AssembledModel
+from toporia.plugins.responses import RESPONSES
+from toporia.plugins.updaters import UPDATERS
 
 #: Every registry, by plugin kind.
 REGISTRIES = {"model": MODELS, "updater": UPDATERS, "filter": FILTERS,

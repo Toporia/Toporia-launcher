@@ -17,8 +17,8 @@ import numpy as np
 import scipy
 
 import toporia
-from toporia.core.run import PROJECT_ROOT
-from toporia.core.serialize import fingerprint, to_dict
+from toporia.framework.problem.files import fingerprint, to_dict
+from toporia.framework.problem.run import PROJECT_ROOT
 
 
 @functools.lru_cache(maxsize=1)

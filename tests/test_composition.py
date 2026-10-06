@@ -12,18 +12,18 @@ import warnings
 import numpy as np
 import pytest
 
-from toporia.core import Param
-from toporia.core.composition import ComposedMethod, Model, compose
-from toporia.core.contract import OBJECTIVE
-from toporia.core.problem import RectangularProblem
-from toporia.library.methods import method_class, method_classes
-from toporia.library.models import MODELS
-from toporia.library.models.pymoto_elastic import PymotoElasticModel
-from toporia.library.problems import get_run
-from toporia.library.updaters import UPDATERS
-from toporia.library.updaters.mma import MMAUpdater
-from toporia.library.updaters.oc import OCUpdater
-from toporia.library.updaters.simpl import SiMPLUpdater
+from toporia.framework import Param
+from toporia.framework.parts.composition import ComposedMethod, Model, compose
+from toporia.framework.parts.method import OBJECTIVE
+from toporia.framework.problem.mesh import RectangularProblem
+from toporia.plugins.methods import method_class, method_classes
+from toporia.plugins.models import MODELS
+from toporia.plugins.models.pymoto_elastic import PymotoElasticModel
+from toporia.plugins.problems import get_run
+from toporia.plugins.updaters import UPDATERS
+from toporia.plugins.updaters.mma import MMAUpdater
+from toporia.plugins.updaters.oc import OCUpdater
+from toporia.plugins.updaters.simpl import SiMPLUpdater
 
 PAIRS = list(itertools.product(MODELS.classes(), UPDATERS.classes()))
 

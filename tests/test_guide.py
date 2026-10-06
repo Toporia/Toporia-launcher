@@ -10,9 +10,9 @@ from pathlib import Path
 
 import pytest
 
-from toporia.core.composition import Updater
-from toporia.core.external import ExternalOptimizer
-from toporia.testing import conformance
+from toporia.checks import conformance
+from toporia.framework.optimisers.external_loop import ExternalOptimizer
+from toporia.framework.parts.composition import Updater
 
 GUIDE = Path(__file__).resolve().parents[1] / "docs" / "writing-plugins.md"
 BLOCKS = [block for block in re.findall(r"```python\n(.*?)```", GUIDE.read_text(encoding="utf-8"), re.S)

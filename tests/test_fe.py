@@ -6,7 +6,7 @@ so they stay valid across the whole restructure.
 
 import numpy as np
 
-from toporia.library.fe.q4_plane_stress import element_stiffness
+from toporia.plugins.physics.q4_plane_stress import element_stiffness
 
 # The analytical unit-square matrix from Andreassen et al. (2011), top88.
 A11 = np.array([[12, 3, -6, -3], [3, 12, 3, 0], [-6, 3, 12, -3], [-3, 0, -3, 12]])

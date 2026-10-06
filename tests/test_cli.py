@@ -11,9 +11,9 @@ import pytest
 
 matplotlib.use("Agg")   # sweeps and comparisons draw figures; never open a window
 
-from toporia.cli import main  # noqa: E402
-from toporia.core import Solver  # noqa: E402
-from toporia.core.serialize import fingerprint, load, save  # noqa: E402
+from toporia.apps.cli import main  # noqa: E402
+from toporia.framework import Solver  # noqa: E402
+from toporia.framework.problem.files import fingerprint, load, save  # noqa: E402
 
 # Small and fast: every command below runs real optimisations.
 SMALL = ["--set", "m=0.25", "--set", "max_iter=3", "--set", "tol=0", "--set", "save_every=0"]

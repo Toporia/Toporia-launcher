@@ -19,15 +19,15 @@ import pytest
 
 matplotlib.use("Agg")   # never open a window during tests
 
-from toporia.core import LoadCase  # noqa: E402
-from toporia.engine.compare_load_cases import compare_load_cases  # noqa: E402
-from toporia.engine.compare_two import compare_two  # noqa: E402
-from toporia.engine.run_one import run_one  # noqa: E402
-from toporia.engine.sensitivity import sensitivity_field  # noqa: E402
-from toporia.engine.sensitivity_sweep import sensitivity_sweep, sensitivity_sweep_2d  # noqa: E402
-from toporia.engine.sweep import sweep  # noqa: E402
-from toporia.engine.sweep_2d import sweep_2d  # noqa: E402
-from toporia.library.problems import get_run  # noqa: E402
+from toporia.engine.modes.compare_load_cases import compare_load_cases  # noqa: E402
+from toporia.engine.modes.compare_two import compare_two  # noqa: E402
+from toporia.engine.modes.sensitivity import sensitivity_field  # noqa: E402
+from toporia.engine.modes.sensitivity_sweep import sensitivity_sweep, sensitivity_sweep_2d  # noqa: E402
+from toporia.engine.modes.single import run_one  # noqa: E402
+from toporia.engine.modes.sweep import sweep  # noqa: E402
+from toporia.engine.modes.sweep_2d import sweep_2d  # noqa: E402
+from toporia.framework import LoadCase  # noqa: E402
+from toporia.plugins.problems import get_run  # noqa: E402
 
 
 @pytest.fixture

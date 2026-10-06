@@ -14,10 +14,10 @@ import threading
 import numpy as np
 import pytest
 
-from toporia.core.external import ExternalOptimizer, Verdict
-from toporia.engine.runner import initialized_method, run_single_with_store
-from toporia.library.problems import get_run
-from toporia.library.updaters import UPDATERS
+from toporia.engine.loop import initialized_method, run_single_with_store
+from toporia.framework.optimisers.external_loop import ExternalOptimizer, Verdict
+from toporia.plugins.problems import get_run
+from toporia.plugins.updaters import UPDATERS
 
 
 class _Descent(ExternalOptimizer):

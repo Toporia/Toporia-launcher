@@ -15,9 +15,9 @@ import sys
 import numpy as np
 import pytest
 
-from toporia.core.contract import OBJECTIVE
-from toporia.engine.runner import initialized_method
-from toporia.library.problems import get_run
+from toporia.engine.loop import initialized_method
+from toporia.framework.parts.method import OBJECTIVE
+from toporia.plugins.problems import get_run
 
 # Checked without importing pyMOTO: importing it switches matplotlib's backend,
 # and the library only ever imports it through import_pymoto(), which undoes that.
@@ -85,7 +85,7 @@ def test_importing_pymoto_leaves_the_matplotlib_backend_alone():
     """
     script = (
         "import matplotlib; matplotlib.use('Agg')\n"
-        "from toporia.library.models.pymoto_elastic import import_pymoto\n"
+        "from toporia.plugins.models.pymoto_elastic import import_pymoto\n"
         "import_pymoto()\n"
         "print(matplotlib.get_backend())\n"
     )
@@ -104,7 +104,7 @@ def test_pymoto_imports_inside_the_running_qt_gui():
         "import os; os.environ['QT_QPA_PLATFORM'] = 'offscreen'\n"
         "from PySide6.QtWidgets import QApplication; app = QApplication([])\n"
         "import matplotlib; matplotlib.use('QtAgg'); import matplotlib.pyplot\n"
-        "from toporia.library.models.pymoto_elastic import import_pymoto\n"
+        "from toporia.plugins.models.pymoto_elastic import import_pymoto\n"
         "import_pymoto()\n"
         "print(matplotlib.get_backend())\n"
     )
@@ -116,7 +116,7 @@ def test_pymoto_imports_inside_the_running_qt_gui():
 def test_the_install_hint_appears_only_when_pymoto_is_missing():
     script = (
         "import sys; sys.modules['pymoto'] = None   # make pyMOTO unimportable\n"
-        "from toporia.library.models.pymoto_elastic import import_pymoto\n"
+        "from toporia.plugins.models.pymoto_elastic import import_pymoto\n"
         "try:\n"
         "    import_pymoto()\n"
         "except ImportError as exc:\n"

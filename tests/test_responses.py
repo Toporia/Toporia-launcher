@@ -12,14 +12,14 @@ from dataclasses import replace
 import numpy as np
 import pytest
 
-from toporia.core import CONSTRAINT_ROLE, OBJECTIVE_ROLE, apply_param, read_param
-from toporia.core.problem import RectangularProblem
-from toporia.core.serialize import load, save
-from toporia.engine.runner import initialized_method
-from toporia.library.catalog import parameter_paths
-from toporia.library.methods import method_class
-from toporia.library.problems import get_run
-from toporia.library.responses import RESPONSES, check_responses, responses_for
+from toporia.engine.loop import initialized_method
+from toporia.framework import CONSTRAINT_ROLE, OBJECTIVE_ROLE, apply_param, read_param
+from toporia.framework.problem.files import load, save
+from toporia.framework.problem.mesh import RectangularProblem
+from toporia.plugins.catalog import parameter_paths
+from toporia.plugins.methods import method_class
+from toporia.plugins.problems import get_run
+from toporia.plugins.responses import RESPONSES, check_responses, responses_for
 
 requires_pymoto = pytest.mark.skipif(importlib.util.find_spec("pymoto") is None,
                                      reason="optional dependency: pip install pymoto")
@@ -118,7 +118,7 @@ def _optimise(run):
 
 def _peak_stress(run, design=None):
     """True (un-aggregated) peak relaxed stress of a design, or of the starting design."""
-    from toporia.library.models.pymoto_elastic import PymotoElasticModel
+    from toporia.plugins.models.pymoto_elastic import PymotoElasticModel
     measuring = run.updated(constraints=[{"type": "stress", "limit": 1e9}])
     model = PymotoElasticModel()
     model.initialize(RectangularProblem(measuring.scenario, measuring.solver.m), measuring.solver,
@@ -129,7 +129,7 @@ def _peak_stress(run, design=None):
 @requires_pymoto
 @pytest.mark.parametrize("problem", ["MBB Beam", "Drone Arm"])   # one and two load cases
 def test_the_stress_gradient_matches_finite_differences(problem):
-    from toporia.library.models.pymoto_elastic import PymotoElasticModel
+    from toporia.plugins.models.pymoto_elastic import PymotoElasticModel
     # Fixed scaling: the adaptive factor is recomputed at every evaluation but
     # held constant in the gradient (by design), so finite differences of the
     # adaptive constraint cannot match its gradient.  This checks the p-norm itself.
@@ -188,7 +188,7 @@ def test_minimising_volume_under_a_stress_limit_saves_material_and_holds_the_lim
 def test_a_run_that_meets_its_limits_is_recorded_as_feasible(tmp_path):
     import json
 
-    from toporia.engine.runner import run_single
+    from toporia.engine.loop import run_single
     run = get_run("MBB Beam").updated(m=0.3, max_iter=10, tol=0.0, save_every=0).with_output_dir(tmp_path)
     run_single(run)
     result = json.loads((tmp_path / "run.json").read_text())["result"]
@@ -205,7 +205,7 @@ def test_an_impossible_stress_limit_is_reported_not_hidden(tmp_path, capsys):
     """
     import json
 
-    from toporia.engine.runner import run_single
+    from toporia.engine.loop import run_single
     base = get_run("MBB Beam").updated(method="pymoto", m=0.4, max_iter=60, tol=0.0, save_every=0)
     limit = 0.6 * _peak_stress(base, _optimise(base).x)
     run = base.updated(constraints=[{"type": "stress", "limit": limit}]).with_output_dir(tmp_path)

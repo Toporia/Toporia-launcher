@@ -10,15 +10,15 @@
 # Whole methods (the RBF level set) do not split into parts; for those the
 # chain is the method itself.
 
-from toporia.core.composition import ComposedMethod, explain
-from toporia.core.registry import install_hint, missing_dependencies
+from toporia.framework.parts.composition import ComposedMethod, explain
+from toporia.framework.registry import install_hint, missing_dependencies
 
 
 def pipeline_stages(run):
     """Return [(stage, description), ...] in the order the design flows through them."""
-    from toporia.library.filters import FILTERS
-    from toporia.library.methods import method_class
-    from toporia.library.responses import RESPONSES
+    from toporia.plugins.filters import FILTERS
+    from toporia.plugins.methods import method_class
+    from toporia.plugins.responses import RESPONSES
 
     method_cls = method_class(run.solver.method)
     capabilities = method_cls.capabilities
@@ -69,7 +69,7 @@ def describe_pipeline(run):
 
 def pipeline_notes(method):
     """Why the selected parts offer less than one of them could (see core.composition.explain)."""
-    from toporia.library.methods import method_class
+    from toporia.plugins.methods import method_class
 
     method_cls = method_class(method)
     missing = missing_dependencies(method_cls)
@@ -78,7 +78,7 @@ def pipeline_notes(method):
     if issubclass(method_cls, ComposedMethod):
         notes = unavailable + explain(method_cls.model, method_cls.updater)
         if method_cls.model.capabilities.constraints and not method_cls.capabilities.constraints:
-            from toporia.library.updaters import UPDATERS
+            from toporia.plugins.updaters import UPDATERS
             able = [cls.label for cls in UPDATERS.classes() if cls.max_constraints != 0]
             if able:
                 notes.append(f"Updaters that enforce constraints: {', '.join(able)}.")
