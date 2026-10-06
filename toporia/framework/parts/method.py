@@ -124,7 +124,7 @@ class OptimizationMethod(ABC):
         for the material, volume target and load cases.  It carries no
         degree-of-freedom numbering — a method brings its own conventions.
 
-        `solver` is the core.solver.Solver: this method's parameters (read them
+        `solver` is the framework.problem.solver.Solver: this method's parameters (read them
         with resolve_params) and, for methods that accept them, the filter
         pipeline in solver.filter_specs.
         """

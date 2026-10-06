@@ -28,8 +28,8 @@ framework/
 │   ├── filter.py      Filter: design → physical density, and the chain rule back
 │   ├── interpolation.py  Interpolation: density → stiffness (SIMP, RAMP, ...)
 │   ├── schedule.py    Schedule: a parameter that changes during the run (continuation)
-│   ├── postprocess.py PostProcessor: what is made of the finished design (threshold, exports)
-│   └── variants.py    VariantModel: one design evaluated in several versions (robust design)
+│   ├── postprocess.py PostProcessor: what is made of the finished design
+│   └── variants.py    VariantModel: one design in several versions (robust)
 ├── optimisers/    HOW OPTIMISERS WRITTEN FOR VECTORS CONNECT
 │   ├── flat_view.py     a Model as x0, bounds, f, df, g, dg
 │   └── external_loop.py a library that runs its own loop, in a background thread
@@ -41,55 +41,50 @@ framework/
 
 ```mermaid
 flowchart TB
-    subgraph SUPPORT["Shared machinery"]
-        direction LR
-        params["params.py<br/>Param: every tunable value,<br/>declared once"]
-        registry["registry.py<br/>finds plugins: this repo,<br/>installed packages, by hand"]
-    end
-
-    subgraph PROBLEM["problem/ — what a run is: plain data, saved as JSON"]
-        direction LR
-        scenario["scenario.py<br/>Scenario: domain, supports, loads,<br/>material, volume budget,<br/>objective, constraints"]
-        solver["solver.py<br/>Solver: method name,<br/>its parameters, filters,<br/>mesh, stopping rule"]
-        run["run.py<br/>Run = Scenario + Solver<br/>+ Output, and parameter<br/>paths into it"]
-        mesh["mesh.py<br/>the meshed problem:<br/>node masks, element bounds"]
-        files["files.py<br/>JSON files,<br/>fingerprints"]
-        scenario --> run
-        solver --> run
-        scenario -- "+ mesh size m" --> mesh
-        run -.-> files
-    end
-
-    subgraph PARTS["parts/ and optimisers/ — the interfaces plugins implement"]
-        direction LR
-        method["method.py<br/>OptimizationMethod:<br/>the engine's only view<br/>of any method"]
-        composition["composition.py<br/>ComposedMethod =<br/>Model + Updater"]
-        model["model.py<br/>Model"]
-        updater["updater.py<br/>Updater"]
-        response["response.py<br/>Response: value + gradient"]
-        physics["physics.py<br/>Physics: solves a density,<br/>answers questions"]
-        filter["filter.py<br/>Filter and FilterChain"]
-        flat["optimisers/flat_view.py<br/>a Model as a vector"]
-        external["optimisers/external_loop.py<br/>a library's own loop"]
-        composition -- implements --> method
-        composition --> model
-        composition --> updater
-        model -. "assembled from" .-> filter
-        model -. "assembled from" .-> response
-        response -- "computed against" --> physics
-        updater -. "may work on" .-> flat
-        external -- "an Updater on" --> flat
-    end
-
-    SUPPORT -- "declares the parameters of,<br/>finds the plugins for" --> PROBLEM
-    PROBLEM -- "the engine hands the mesh and<br/>the solver to a method" --> PARTS
+    problem["problem/<br/>what a run is: plain data, saved as JSON"]
+    parts["parts/<br/>what every part must do"]
+    optimisers["optimisers/<br/>how vector optimisers connect"]
+    shared["params.py · registry.py<br/>declared values · plugin discovery"]
+    problem --> parts --> optimisers
+    shared -.-> parts
 ```
 
-Read it top to bottom: a **Run** describes a job as plain data; the engine meshes the
-**problem** from it and hands both to a **method**, which is usually a **Model** plus an
-**Updater**; the model's numbers come from **filters**, a **physics engine** and its
-**responses**; an updater may see them through the **flat view**, or hand them to an
-outside library that runs its own loop.
+A **Run** describes a job as plain data. The engine meshes the problem from it and hands
+both to a method built from the **parts**. An updater written for vectors sees the model
+through the **optimisers** folder. Every tunable value is a declared `Param`, and the
+registry finds every plugin.
+
+## One evaluation: the chain of parts
+
+```mermaid
+flowchart TB
+    rep["Representation<br/>design variables → densities"]
+    fil["Filters<br/>→ physical density"]
+    phy["Physics + material law<br/>solve the state"]
+    res["Responses<br/>objective, constraints"]
+    upd["Updater<br/>next design variables"]
+    rep --> fil --> phy --> res --> upd --> rep
+```
+
+Each box is one interface in `parts/` and one folder in `plugins/`. The gradients run back
+up the same chain: each part carries the sensitivity of the one below it back to its
+input. So any box can be swapped without touching the others.
+
+## Around the chain
+
+```mermaid
+flowchart TB
+    sched["Schedules<br/>change a parameter before each iteration"]
+    var["Variants<br/>evaluate each design in several versions"]
+    chain["The chain of parts"]
+    post["Post-processors<br/>after the last iteration"]
+    sched --> chain
+    var --> chain
+    chain --> post
+```
+
+Schedules (continuation) and variants (robust design) are chosen in the solver;
+post-processors in the run's output section. None of them changes a part.
 
 ## `problem/` — what a run is
 
@@ -137,84 +132,54 @@ outside library that runs its own loop.
 
 ```mermaid
 flowchart TB
-    OM["OptimizationMethod<br/>(parts/method.py)"]
-    CM["ComposedMethod<br/>(parts/composition.py)"]
-    WM["a whole method<br/>e.g. the RBF level set"]
-    M["Model<br/>design → Evaluation"]
-    U["Updater<br/>Evaluation → next design"]
-    AM["AssembledModel<br/>(plugins/models)"]
-    F["Filters<br/>(parts/filter.py)"]
-    P["Physics<br/>(parts/physics.py)"]
-    R["Responses<br/>(parts/response.py)"]
-    FP["FlatProblem<br/>(optimisers/flat_view.py)"]
-    EO["ExternalOptimizer<br/>(optimisers/external_loop.py)"]
-    LIB["SciPy · NLopt · IPOPT …"]
-
-    OM --- CM
-    OM --- WM
-    CM -- "model" --> M
-    CM -- "updater" --> U
-    M --- AM
-    AM --> F
-    AM --> P
-    AM --> R
-    R -- "asks questions of" --> P
-    U -. "may work on" .-> FP
-    U --- EO
-    EO --> FP
-    EO -- "runs, in a thread" --> LIB
-    FP -- "wraps" --> M
+    om["OptimizationMethod<br/>what the engine drives"]
+    cm["ComposedMethod<br/>a model + an updater, any pair"]
+    whole["a whole method<br/>e.g. the RBF level set"]
+    model["Model<br/>the chain of parts above"]
+    updater["Updater<br/>next design"]
+    om --> cm
+    om --> whole
+    cm --> model
+    cm --> updater
 ```
 
-Every arrow is an interface in this folder, so each box can be replaced without touching
-the others: a new physics engine gets every response and filter for free, a new response
-works on every engine that provides what it requires, and a new updater works with every
-model.
+Every arrow is an interface in this folder. A new physics engine gets every response and
+filter for free, a new response works on every engine that provides what it requires, and
+a new updater works with every model.
 
 ## One iteration of a composed method
 
 ```mermaid
 sequenceDiagram
-    participant E as engine (loop.py)
+    participant E as engine
     participant C as ComposedMethod
     participant M as Model
     participant U as Updater
-    E->>C: step(iteration)
-    C->>U: cached_evaluation(x)?
-    alt the updater already has it
-        U-->>C: Evaluation
-    else
-        C->>M: evaluate(x)  [physics solve, counted]
-        M-->>C: Evaluation: objective, volume, constraints, gradients
-    end
-    C->>M: advance(completed)  [continuation, e.g. Heaviside β]
-    C->>U: update(x, evaluation, completed)
-    U-->>C: next design
-    C->>M: physical(next design)  [cheap: filters only]
-    E->>C: get_density(), get_responses(), get_change()
+    E->>C: scheduled parameters, then step(i)
+    C->>M: evaluate(x)
+    M-->>C: objective, constraints, gradients
+    C->>U: update(x, evaluation)
+    U-->>C: next x
+    C-->>E: density, responses, change
 ```
 
 ## An optimiser that runs its own loop
 
 ```mermaid
 sequenceDiagram
-    participant E as engine thread
+    participant E as engine
     participant X as ExternalOptimizer
-    participant L as library thread
-    E->>X: update(x0)
-    X->>L: start run(flat, x0, iterate)
-    L->>L: f, df, g, dg on the flat view
-    L->>X: iterate(x1)  then waits
-    X-->>E: x1  [drawn, stopping rule checked]
-    E->>X: update(x1)
+    participant L as library, own thread
+    E->>X: update(x)
     X->>L: continue
-    L->>X: iterate(x2)  then waits
-    X-->>E: x2
-    Note over E,L: engine stops (limit, tolerance, Stop button): close() unwinds the library
-    Note over E,L: library returns first: its answer is evaluated, then its Verdict ends the run
+    L->>X: iterate(next x), then waits
+    X-->>E: next x, drawn and checked
 ```
 
-Only one of the two threads runs at any moment, so models need no locking.
+The library waits while the engine draws and checks each design, and the engine waits
+while the library computes, so models need no locking. When the engine stops (limit,
+tolerance, Stop button), `close()` unwinds the library; when the library finishes first,
+its `Verdict` ends the run.
 
 ## Changing something here
 

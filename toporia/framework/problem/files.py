@@ -52,7 +52,7 @@ def _convert(tp, value):
     if origin is list:
         return [_convert(args[0], v) for v in value] if args else list(value)
     if origin is tuple:
-        return tuple(_convert(a, v) for a, v in zip(args, value)) if args else tuple(value)
+        return tuple(_convert(a, v) for a, v in zip(args, value, strict=False)) if args else tuple(value)
     if tp is float and isinstance(value, (int, float)) and not isinstance(value, bool):
         return float(value)
     return value

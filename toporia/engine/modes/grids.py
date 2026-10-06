@@ -68,7 +68,7 @@ def save_grid(images, n_rows, n_cols, path, look, fontsize):
     cell_w = max(look["smallest_cell"][0], width / look["pixels_per_inch"])
     cell_h = max(look["smallest_cell"][1], height / look["pixels_per_inch"])
     fig, axes = plt.subplots(n_rows, n_cols, squeeze=False, figsize=(cell_w * n_cols, cell_h * n_rows))
-    for ax, (image, title) in zip(axes.flat, images):
+    for ax, (image, title) in zip(axes.flat, images, strict=False):
         ax.imshow(mpimg.imread(str(image)), **look["show"])
         ax.set_title(title, fontsize=fontsize)
         ax.axis("off")

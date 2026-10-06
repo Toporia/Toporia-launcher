@@ -86,7 +86,7 @@ def sensitivity_sweep_2d(row_param, row_min, row_max, n_rows,
 def _sensitivity_cells(cells, titles, sens_param, base_value, gap, base_config, on_iteration):
     """Run a sensitivity study per cell; return [(sensitivity.png, title)] in cell order."""
     images, start = [], time.perf_counter()
-    for k, ((assignments, cell_folder), title) in enumerate(zip(cells, titles), 1):
+    for k, ((assignments, cell_folder), title) in enumerate(zip(cells, titles, strict=True), 1):
         run, cell_base, cell_gap = base_config.with_output_dir(cell_folder), base_value, gap
         for path, value in assignments:
             if path == BASE_VALUE:

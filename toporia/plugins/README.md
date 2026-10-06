@@ -49,11 +49,15 @@ choices, and almost every paper in the field changes exactly one of them and hol
 fixed:
 
 ```
-design variables ──representation──> element field ──filter──> physical density ──engine──> state ──response──> objective
-       ^                                                                                 │
-       └──────────────── updater <──── gradients <──── adjoint / backprop ───────────────┘
-                                                              │
-                                        fabrication rules ────┘
+design variables z
+   │  Representation   z → element densities
+   │  Filter           → physical density ρ
+   │  Physics          ρ → state (displacements, stresses)
+   │  Response         → objective and constraints, with gradients
+   ▼  Updater          → the next design variables, and round again
+
+The gradients travel back up the same chain: each part carries the sensitivity
+of the one below it back to its own input.
 ```
 
 Toporia separates them all so a comparison can change one and only one:

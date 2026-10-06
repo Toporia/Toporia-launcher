@@ -100,6 +100,7 @@ class VariantsGroup(QWidget):
                 "nominal": self.nominal.value(), "sharpness": self.sharpness.value()}
 
     def load_spec(self, spec):
+        """Show solver.variants; an empty dict switches the variants off."""
         spec = dict(spec or {})
         self.enabled.blockSignals(True)
         self.enabled.setChecked(bool(spec))

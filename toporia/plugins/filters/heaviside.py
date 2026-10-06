@@ -62,6 +62,7 @@ class HeavisideFilter(Filter):
         self._beta_scheduled = False   # a schedule drives beta: the built-in doubling stands aside
 
     def set_parameter(self, name, value):
+        """Set beta or eta during a run; a scheduled beta switches the built-in doubling off."""
         if name == "beta":
             self._beta_scheduled = True
         setattr(self, name, float(value))

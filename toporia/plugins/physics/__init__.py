@@ -13,7 +13,6 @@ from .q4_plane_stress import (
     element_dofs,
     element_stiffness,
     element_stress_matrix,
-    smooth_field,
     solve_fea,
 )
 
@@ -25,5 +24,4 @@ __all__ = [
     "element_stiffness",
     "element_stress_matrix",
     "element_dofs",
-    "smooth_field",
 ]

@@ -22,6 +22,5 @@ class Q4Model(AssembledModel):
 
     name = "q4"
     label = "2-D Q4 plane stress (Toporia)"
-    aliases = ("q4_compliance",)   # its name while it could only minimise compliance
     order = 10
     physics = Q4PlaneStress

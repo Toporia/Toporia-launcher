@@ -210,4 +210,4 @@ class BESOUpdater(Updater):
         total = sum(abs(value) for value in recent)
         if total == 0.0:
             return False
-        return abs(sum(r - e for r, e in zip(recent, earlier))) / total < self.tol
+        return abs(sum(r - e for r, e in zip(recent, earlier, strict=True))) / total < self.tol

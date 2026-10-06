@@ -1,9 +1,9 @@
 """test_golden.py — characterisation tests.
 
 These do NOT assert that the optimiser is correct.  They assert that it still
-does exactly what it did before, so the Phase 1-9 restructure can be verified
+does exactly what it did before, so any restructuring can be verified
 mechanically.  A failure means behaviour changed: either fix the regression, or
-if the change was intended, run tests/regenerate_baselines.py and commit the
+if the change was intended, run tests/golden/regenerate_baselines.py and commit the
 new .npz alongside it.
 
 Tolerance is tight on purpose.  A pure refactor on one machine should reproduce
@@ -25,7 +25,7 @@ ATOL = 1e-8
 def _load_baseline(name):
     path = BASELINE_DIR / f"{name}.npz"
     if not path.exists():
-        pytest.fail(f"Missing baseline {path.name}. Run: python tests/regenerate_baselines.py {name}")
+        pytest.fail(f"Missing baseline {path.name}. Run: python tests/golden/regenerate_baselines.py {name}")
     return np.load(path)
 
 

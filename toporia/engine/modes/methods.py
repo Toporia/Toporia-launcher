@@ -172,7 +172,7 @@ def format_table(rows):
 
     table = [list(shown)] + [[cell(row.get(column)) for column in shown] for row in rows]
     widths = [max(len(line[i]) for line in table) for i in range(len(shown))]
-    lines = ["  ".join(text.ljust(width) for text, width in zip(line, widths)) for line in table]
+    lines = ["  ".join(text.ljust(width) for text, width in zip(line, widths, strict=True)) for line in table]
     lines.insert(1, "  ".join("-" * width for width in widths))
     skipped = [row for row in rows if row["status"] == "skipped"]
     lines += [f"  {row['method']}: {row['stop_reason']}" for row in skipped]

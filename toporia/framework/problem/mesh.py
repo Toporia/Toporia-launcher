@@ -39,6 +39,7 @@ from toporia.framework.problem.scenario import Scenario
 
 # ── Public interface ──────────────────────────────────────────────────────────
 
+
 class BaseProblem:
     """Interface contract every topology-optimization problem must fulfill.
 
@@ -59,7 +60,7 @@ class BaseProblem:
 
     Attributes
     ----------
-    scenario : core.scenario.Scenario
+    scenario : framework.problem.scenario.Scenario
         The scenario the problem was built from.  Methods read the material,
         the volume target and the load cases from it.
     dims : int
@@ -94,15 +95,15 @@ class BaseProblem:
     """
 
     # Class-level annotations — concrete subclasses must set these as instance vars.
-    scenario:         Scenario
-    nelx:             int
-    nely:             int
-    nn:               int
-    fixed_nodes:      np.ndarray
-    fixed_x_nodes:    np.ndarray
-    fixed_y_nodes:    np.ndarray
-    load_node_sets:   list
-    void_elements:    np.ndarray
+    scenario: Scenario
+    nelx: int
+    nely: int
+    nn: int
+    fixed_nodes: np.ndarray
+    fixed_x_nodes: np.ndarray
+    fixed_y_nodes: np.ndarray
+    load_node_sets: list
+    void_elements: np.ndarray
     passive_elements: np.ndarray
 
     # ── Derived views ─────────────────────────────────────────────────────────
@@ -128,18 +129,27 @@ class BaseProblem:
         Raises NotImplementedError immediately rather than letting the solver
         encounter a confusing AttributeError mid-run.
         """
-        required = ["scenario", "nelx", "nely", "nn", "load_node_sets",
-                    "fixed_nodes", "fixed_x_nodes", "fixed_y_nodes",
-                    "void_elements", "passive_elements"]
+        required = [
+            "scenario",
+            "nelx",
+            "nely",
+            "nn",
+            "load_node_sets",
+            "fixed_nodes",
+            "fixed_x_nodes",
+            "fixed_y_nodes",
+            "void_elements",
+            "passive_elements",
+        ]
         missing = [a for a in required if not hasattr(self, a)]
         if missing:
             raise NotImplementedError(
-                f"{type(self).__name__} did not set the following required "
-                f"BaseProblem attributes: {missing}"
+                f"{type(self).__name__} did not set the following required BaseProblem attributes: {missing}"
             )
 
 
 # ── Reference implementation ──────────────────────────────────────────────────
+
 
 @dataclass
 class RectangularProblem(BaseProblem):
@@ -153,18 +163,19 @@ class RectangularProblem(BaseProblem):
     during __post_init__ and result in the void/passive element masks and the
     node masks that a finite element solver turns into its own DOF arrays.
     """
+
     scenario: Scenario
-    m: float = 1.0   # mesh resolution in elements per mm (Solver.m)
+    m: float = 1.0  # mesh resolution in elements per mm (Solver.m)
 
     def __post_init__(self):
         cfg = self.scenario
 
         # ── Mesh size ─────────────────────────────────────────────────────────
-        self.Lx   = cfg.Lx
-        self.Ly   = cfg.Ly
+        self.Lx = cfg.Lx
+        self.Ly = cfg.Ly
         self.nelx = int(round(cfg.Lx * self.m))
         self.nely = max(1, int(round(cfg.Ly * self.m)))
-        self.nn   = (self.nelx + 1) * (self.nely + 1)
+        self.nn = (self.nelx + 1) * (self.nely + 1)
 
         self.dx = self.Lx / self.nelx
         self.dy = self.Ly / self.nely
@@ -182,19 +193,19 @@ class RectangularProblem(BaseProblem):
         )
 
         # ── Region masks ─────────────────────────────────────────────────────
-        self.void_elements    = np.zeros((self.nely, self.nelx), dtype=bool)
+        self.void_elements = np.zeros((self.nely, self.nelx), dtype=bool)
         self.passive_elements = np.zeros((self.nely, self.nelx), dtype=bool)
-        self.fixed_nodes      = np.zeros((self.nely + 1, self.nelx + 1), dtype=bool)
-        self.fixed_x_nodes    = np.zeros((self.nely + 1, self.nelx + 1), dtype=bool)
-        self.fixed_y_nodes    = np.zeros((self.nely + 1, self.nelx + 1), dtype=bool)
-        self.load_nodes       = np.zeros((self.nely + 1, self.nelx + 1), dtype=bool)
-        self.load_node_sets   = []
+        self.fixed_nodes = np.zeros((self.nely + 1, self.nelx + 1), dtype=bool)
+        self.fixed_x_nodes = np.zeros((self.nely + 1, self.nelx + 1), dtype=bool)
+        self.fixed_y_nodes = np.zeros((self.nely + 1, self.nelx + 1), dtype=bool)
+        self.load_nodes = np.zeros((self.nely + 1, self.nelx + 1), dtype=bool)
+        self.load_node_sets = []
 
         for hole in cfg.holes:
             ed = np.sqrt((self.elem_x - hole.cx) ** 2 + (self.elem_y - hole.cy) ** 2)
             nd = np.sqrt((self.node_x - hole.cx) ** 2 + (self.node_y - hole.cy) ** 2)
 
-            self.void_elements    |= ed <= hole.r_void
+            self.void_elements |= ed <= hole.r_void
             self.passive_elements |= (ed > hole.r_void) & (ed <= hole.r_passive)
 
             if hole.kind == "fixed":
@@ -211,42 +222,47 @@ class RectangularProblem(BaseProblem):
             elif area.kind == "empty":
                 self.void_elements |= mask
             else:
-                raise ValueError(
-                    f"EnforcedArea: unknown kind {area.kind!r}. Use 'full' or 'empty'."
-                )
+                raise ValueError(f"EnforcedArea: unknown kind {area.kind!r}. Use 'full' or 'empty'.")
 
         if np.any(self.passive_elements & self.void_elements):
-            raise ValueError(
-                "Enforced areas conflict: at least one element is marked both full and empty."
-            )
+            raise ValueError("Enforced areas conflict: at least one element is marked both full and empty.")
 
         # ── Edge constraints ──────────────────────────────────────────────────
         for ec in cfg.edge_constraints:
             mask = np.zeros((self.nely + 1, self.nelx + 1), dtype=bool)
-            if   ec.edge == "left":   mask[:, 0]  = True
-            elif ec.edge == "right":  mask[:, -1] = True
-            elif ec.edge == "top":    mask[-1, :] = True
-            elif ec.edge == "bottom": mask[0, :]  = True
-            else: raise ValueError(
-                f"EdgeConstraint: unknown edge {ec.edge!r}. Use 'left', 'right', 'top', or 'bottom'."
-            )
-            if   ec.dof == "both": self.fixed_nodes   |= mask
-            elif ec.dof == "x":    self.fixed_x_nodes |= mask
-            elif ec.dof == "y":    self.fixed_y_nodes |= mask
-            else: raise ValueError(
-                f"EdgeConstraint: unknown dof {ec.dof!r}. Use 'x', 'y', or 'both'."
-            )
+            if ec.edge == "left":
+                mask[:, 0] = True
+            elif ec.edge == "right":
+                mask[:, -1] = True
+            elif ec.edge == "top":
+                mask[-1, :] = True
+            elif ec.edge == "bottom":
+                mask[0, :] = True
+            else:
+                raise ValueError(
+                    f"EdgeConstraint: unknown edge {ec.edge!r}. Use 'left', 'right', 'top', or 'bottom'."
+                )
+            if ec.dof == "both":
+                self.fixed_nodes |= mask
+            elif ec.dof == "x":
+                self.fixed_x_nodes |= mask
+            elif ec.dof == "y":
+                self.fixed_y_nodes |= mask
+            else:
+                raise ValueError(f"EdgeConstraint: unknown dof {ec.dof!r}. Use 'x', 'y', or 'both'.")
 
         # ── Point constraints ─────────────────────────────────────────────────
         for pc in cfg.point_constraints:
             dist = np.hypot(self.node_x - pc.x, self.node_y - pc.y)
             r, c = np.unravel_index(np.argmin(dist), dist.shape)
-            if   pc.dof == "both": self.fixed_nodes[r, c]   = True
-            elif pc.dof == "x":    self.fixed_x_nodes[r, c] = True
-            elif pc.dof == "y":    self.fixed_y_nodes[r, c] = True
-            else: raise ValueError(
-                f"PointConstraint: unknown dof {pc.dof!r}. Use 'x', 'y', or 'both'."
-            )
+            if pc.dof == "both":
+                self.fixed_nodes[r, c] = True
+            elif pc.dof == "x":
+                self.fixed_x_nodes[r, c] = True
+            elif pc.dof == "y":
+                self.fixed_y_nodes[r, c] = True
+            else:
+                raise ValueError(f"PointConstraint: unknown dof {pc.dof!r}. Use 'x', 'y', or 'both'.")
 
         # ── Point loads ───────────────────────────────────────────────────────
         for pl in cfg.point_loads:
@@ -254,13 +270,11 @@ class RectangularProblem(BaseProblem):
             r, c = np.unravel_index(np.argmin(dist), dist.shape)
             load_mask = np.zeros((self.nely + 1, self.nelx + 1), dtype=bool)
             load_mask[r, c] = True
-            self.load_nodes     |= load_mask
+            self.load_nodes |= load_mask
             self.load_node_sets.append(load_mask)
 
         # Fallback: if no BCs are defined, use simple defaults so FEA is always solvable.
-        has_any_fixed = (np.any(self.fixed_nodes) or
-                         np.any(self.fixed_x_nodes) or
-                         np.any(self.fixed_y_nodes))
+        has_any_fixed = np.any(self.fixed_nodes) or np.any(self.fixed_x_nodes) or np.any(self.fixed_y_nodes)
         if not has_any_fixed:
             self.fixed_nodes[:, 0] = True
         if not np.any(self.load_nodes):
@@ -288,9 +302,6 @@ class RectangularProblem(BaseProblem):
             xj, yj = xi, yi
         return inside
 
-
-# Backward-compatibility alias — existing user code using BracketProblem still works.
-BracketProblem = RectangularProblem
 
 
 class BoxProblem(BaseProblem):

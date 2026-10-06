@@ -22,8 +22,8 @@ def neighbour_matrix(shape, rmin):
         if weight <= 0.0:
             continue
         # The elements whose neighbour at `offset` lies inside the domain.
-        source = tuple(slice(max(0, -o), n - max(0, o)) for o, n in zip(offset, shape))
-        target = tuple(slice(max(0, o), n - max(0, -o)) for o, n in zip(offset, shape))
+        source = tuple(slice(max(0, -o), n - max(0, o)) for o, n in zip(offset, shape, strict=True))
+        target = tuple(slice(max(0, o), n - max(0, -o)) for o, n in zip(offset, shape, strict=True))
         rows.append(index[source].ravel())
         cols.append(index[target].ravel())
         vals.append(np.full(rows[-1].size, weight))

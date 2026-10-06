@@ -76,6 +76,7 @@ class DesignSection(QWidget):
     # ── Values ────────────────────────────────────────────────────────────────
 
     def is_3d(self):
+        """True when the 3-D option is selected."""
         return self.dims.currentData() == 3
 
     def elements_per_mm(self):
@@ -91,6 +92,7 @@ class DesignSection(QWidget):
         return self.representation.get_spec()
 
     def load_spec(self, spec):
+        """Show a representation spec in the representation panel."""
         self.representation.load_spec(spec)
 
     def load_from_config(self, cfg):

@@ -51,7 +51,7 @@ def _flat_module(pym):
             def _sensitivity(self, *seeds):
                 gradients = [self.flat.df(self.x), *self.flat.dg(self.x)]
                 total = np.zeros_like(gradients[0])
-                for seed, gradient in zip(seeds, gradients):
+                for seed, gradient in zip(seeds, gradients, strict=True):
                     if seed is not None:
                         total = total + seed * gradient
                 return total

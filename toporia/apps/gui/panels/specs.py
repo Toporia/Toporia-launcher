@@ -27,7 +27,8 @@ from .forms import ParamForm
 
 class _SpecRow(QWidget):
     """One spec: a type selector, that type's generated parameters, and optionally ✕."""
-    changed = Signal()   # the selected type changed
+
+    changed = Signal()  # the selected type changed
 
     def __init__(self, classes, on_remove=None, parent=None, spec=None):
         super().__init__(parent)
@@ -40,12 +41,13 @@ class _SpecRow(QWidget):
         self._type = QComboBox()
         header.addWidget(self._type, 1)
         if on_remove is not None:
-            remove = QPushButton("✕"); remove.setFixedWidth(28)
+            remove = QPushButton("✕")
+            remove.setFixedWidth(28)
             remove.clicked.connect(lambda: on_remove(self))
             header.addWidget(remove)
         outer.addLayout(header)
 
-        self._wanted = self._classes[0].name if self._classes else None   # kept while it is not offered
+        self._wanted = self._classes[0].name if self._classes else None  # kept while it is not offered
         self._forms = {}
         for cls in self._classes:
             self._forms[cls.name] = ParamForm(cls.params, self)
@@ -58,7 +60,9 @@ class _SpecRow(QWidget):
         self._on_type_changed()
 
         if on_remove is not None:
-            line = QFrame(); line.setFrameShape(QFrame.HLine); line.setFrameShadow(QFrame.Sunken)
+            line = QFrame()
+            line.setFrameShape(QFrame.HLine)
+            line.setFrameShadow(QFrame.Sunken)
             outer.addWidget(line)
 
     def _fill_types(self, names):
@@ -118,7 +122,8 @@ class SpecListGroup(QWidget):
     list, so a run never receives entries its method would ignore or refuse.
     The rows are kept, so switching back to a method that can use them restores them.
     """
-    changed = Signal()   # a row was added or removed, or changed type
+
+    changed = Signal()  # a row was added or removed, or changed type
 
     def __init__(self, title, classes, initial=(), noun="entry", parent=None):
         super().__init__(parent)
@@ -179,7 +184,7 @@ class SpecListGroup(QWidget):
     def _remove_row(self, row):
         self._rows.remove(row)
         self._rows_box.removeWidget(row)
-        row.hide()          # disappear now; Qt frees it on the next event-loop pass
+        row.hide()  # disappear now; Qt frees it on the next event-loop pass
         row.deleteLater()
         self._refresh_label()
         self.changed.emit()
@@ -262,8 +267,10 @@ class _ScheduleRow(_SpecRow):
     def __init__(self, classes, paths, on_remove=None, parent=None, spec=None):
         super().__init__(classes, on_remove=on_remove, parent=parent)
         self._path = QComboBox()
-        self._path.setToolTip("The parameter this schedule changes during the run. Only parameters "
-                              "their part allows to change mid-run are offered.")
+        self._path.setToolTip(
+            "The parameter this schedule changes during the run. Only parameters "
+            "their part allows to change mid-run are offered."
+        )
         self.layout().insertWidget(0, self._path)
         self.set_paths(paths)
         if spec:
@@ -307,8 +314,9 @@ class ScheduleListGroup(SpecListGroup):
         super().__init__("Schedules", classes, noun="schedule", parent=parent)
 
     def _make_row(self, spec):
-        return _ScheduleRow(self._classes, self._paths, on_remove=self._remove_row,
-                            parent=self._rows_container, spec=spec)
+        return _ScheduleRow(
+            self._classes, self._paths, on_remove=self._remove_row, parent=self._rows_container, spec=spec
+        )
 
     def set_paths(self, items):
         """The parameters the rows may drive, as (label, path); hide the group when there are none."""
@@ -322,6 +330,7 @@ class ScheduleListGroup(SpecListGroup):
 
 class SingleSpecGroup(QWidget):
     """One spec row in a titled, folding section: the objective, the material law, the design representation."""
+
     changed = Signal()
     title = ""
 
@@ -335,14 +344,26 @@ class SingleSpecGroup(QWidget):
         section.body_layout.addWidget(self._row)
         outer.addWidget(section)
 
-    def offered_types(self):  return self._row.offered_types()
-    def set_allowed(self, names): self._row.set_allowed(names)
-    def get_spec(self):       return self._row.get_spec()
-    def load_spec(self, spec):    self._row.load_spec(spec)
+    def offered_types(self):
+        """The types the selector offers, in menu order."""
+        return self._row.offered_types()
+
+    def set_allowed(self, names):
+        """Offer only these types."""
+        self._row.set_allowed(names)
+
+    def get_spec(self):
+        """The row as a spec dict: {"type": ..., <param>: <value>}."""
+        return self._row.get_spec()
+
+    def load_spec(self, spec):
+        """Show a spec dict in the row."""
+        self._row.load_spec(spec)
 
 
 class ObjectiveGroup(SingleSpecGroup):
     """What the scenario minimises, from the response declarations."""
+
     title = "Objective"
 
 
@@ -352,6 +373,7 @@ class MaterialGroup(SingleSpecGroup):
     Hidden when the selected method brings its own (the pyMOTO model) or has
     none (the level set); the Pipeline box then says "Material: inside the model".
     """
+
     title = "Material law"
 
 
@@ -361,4 +383,5 @@ class RepresentationGroup(SingleSpecGroup):
     Hidden when the selected method keeps its own variables (the pyMOTO model,
     the level set); the Pipeline box then names the design it uses.
     """
+
     title = "Design representation"

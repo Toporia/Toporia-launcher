@@ -1,4 +1,4 @@
-"""test_guide.py — the examples in docs/writing-plugins.md run, and conform.
+"""test_guide.py — the examples in docs/writing-plugins.md and docs/quickstart.md run, and conform.
 
 Every code block in the guide marked `# example:` is executed here and every
 plugin class it defines goes through the conformance test, so the guide can
@@ -17,6 +17,9 @@ from toporia.framework.parts.updater import Updater
 GUIDE = Path(__file__).resolve().parents[2] / "docs" / "writing-plugins.md"
 BLOCKS = [block for block in re.findall(r"```python\n(.*?)```", GUIDE.read_text(encoding="utf-8"), re.S)
           if "# example:" in block]
+
+
+QUICKSTART = Path(__file__).resolve().parents[2] / "docs" / "quickstart.md"
 
 
 def _plugins(block):
@@ -44,6 +47,23 @@ def test_every_guide_example_conforms(block):
     report.assert_ok()
     if issubclass(plugin, Updater) and not options:
         assert any(c.name.startswith("benchmark") and c.passed for c in report.checks)
+
+
+def test_the_quick_start_example_conforms_and_measures_the_material():
+    import numpy as np
+
+    from toporia.framework.parts.postprocess import Result
+    from toporia.framework.problem.mesh import make_problem
+    from toporia.plugins.problems import get_run
+    blocks = [b for b in re.findall(r"```python\n(.*?)```", QUICKSTART.read_text(encoding="utf-8"), re.S)
+              if "# example:" in b]
+    assert len(blocks) == 1
+    (plugin,) = _plugins(blocks[0])
+    conformance(plugin).assert_ok()
+    run = get_run("MBB Beam")
+    problem = make_problem(run.scenario, 0.4)
+    full = Result(density=np.ones(problem.shape), problem=problem, run=run, folder=Path("."))
+    assert plugin(thickness=2.0).process(full)["volume_mm3"] == pytest.approx(run.scenario.Lx * run.scenario.Ly * 2.0)
 
 
 def test_the_slsqp_template_the_guide_points_to_is_registered_and_conforms():

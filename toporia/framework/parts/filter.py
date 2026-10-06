@@ -78,6 +78,7 @@ class FilterChain:
         self._inputs = []   # the field entering each filter, kept from the last forward pass
 
     def setup(self, problem, solver):
+        """Set up every filter in the chain for a run."""
         for filt in self.filters:
             filt.setup(problem, solver)
 
@@ -91,13 +92,13 @@ class FilterChain:
 
     def backward(self, sensitivity):
         """Carry a sensitivity back through every filter, right to left."""
-        for filt, x_in in zip(reversed(self.filters), reversed(self._inputs)):
+        for filt, x_in in zip(reversed(self.filters), reversed(self._inputs), strict=True):
             sensitivity = filt.backward(x_in, sensitivity)
         return sensitivity
 
     def backward_volume(self, sensitivity):
         """Carry the volume's sensitivity back, through each filter's backward_volume."""
-        for filt, x_in in zip(reversed(self.filters), reversed(self._inputs)):
+        for filt, x_in in zip(reversed(self.filters), reversed(self._inputs), strict=True):
             sensitivity = filt.backward_volume(x_in, sensitivity)
         return sensitivity
 

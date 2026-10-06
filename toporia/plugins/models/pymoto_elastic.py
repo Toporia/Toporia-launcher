@@ -202,7 +202,7 @@ class PymotoElasticModel(Model):
         constraints = tuple(
             ConstraintValue("stress", float(s_constraint.state), gradient(s_constraint),
                             exact=float(np.max(s_relaxed.state)) / limit - 1.0)
-            for (s_constraint, s_relaxed), limit in zip(self._stress, self._stress_limits)
+            for (s_constraint, s_relaxed), limit in zip(self._stress, self._stress_limits, strict=True)
         )
         reported = {}
         if self.objective_name != "compliance":

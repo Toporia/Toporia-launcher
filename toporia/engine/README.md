@@ -31,21 +31,13 @@ engine/
 
 ```mermaid
 flowchart TB
-    callers["Who starts a run<br/>the GUI (apps/gui/runner.py) · the CLI (apps/cli.py) · Python and tests"]
-    modes["modes/: one module per analysis mode<br/>single · sweep · compare · methods · sensitivity · check<br/>each builds variants of a Run with apply_param<br/>(grids.py: the folder, the cells, the image grid)"]
-    loop["loop.py: the one loop<br/>initialized_method · run_single_with_store"]
-    method["the method<br/>framework contract, built from plugins"]
-    pipeline["pipeline.py<br/>names the parts of the run"]
-    records["records.py<br/>ResultStore · check_limits · run_record"]
-    disk[("output folder<br/>final_density.png · .csv<br/>density_NNNN.png · run.json")]
-
-    callers --> modes
-    callers -- "or directly" --> loop
-    modes -- "one call per run" --> loop
-    loop -- "initialize · step · close" --> method
-    loop --> pipeline
+    callers["the GUI · the command line · tests"]
+    modes["modes/<br/>one module per analysis mode"]
+    loop["loop.py<br/>the one optimisation loop"]
+    method["the method<br/>built from plugins"]
+    records["records.py · postprocess.py<br/>history, run.json, post-processing"]
+    callers --> modes --> loop --> method
     loop --> records
-    records --> disk
 ```
 
 ## The files
@@ -76,31 +68,19 @@ any parameter path can be swept, compared or perturbed — and sends each throug
 
 ```mermaid
 sequenceDiagram
-    participant C as caller (mode, GUI, CLI)
-    participant R as loop
+    participant C as caller
+    participant L as loop
     participant M as method
-    participant S as ResultStore
-    C->>R: run_single_with_store(run, on_iteration)
-    R->>R: method_class(run.solver.method)
-    R->>R: refuse at once: missing package, or a capability the scenario needs
-    R->>R: print pipeline
-    R->>M: initialize(RectangularProblem(scenario, m), solver)
-    loop iteration = 1 … max_iter
-        R->>M: step(iteration)
-        M-->>R: density, responses, change
-        R->>S: record(...)
-        R->>C: on_iteration(density, objectives, iteration)  [live canvas, may raise Stop]
-        alt change < tol
-            R->>R: stop: "design change … < tol"
-        else method.is_converged()
-            R->>R: stop: method's own reason
-        end
+    participant R as records
+    C->>L: run_single_with_store(run)
+    L->>M: check the parts, initialize
+    loop every iteration
+        L->>M: scheduled parameters, step(i)
+        M-->>L: density, responses, change
+        L->>R: record, draw, stopping rule
     end
-    R->>M: close()  [always: unwinds a background optimiser]
-    R->>M: report()  [an outside optimiser's verdict]
-    R->>R: check_limits → WARNING lines
-    R->>S: final_density.png, .csv, run.json
-    R-->>C: store, final density
+    L->>M: close()
+    L->>R: limits, post-processing, run.json
 ```
 
 **The stopping rule** is the same for every method, which is what makes two methods
@@ -121,20 +101,15 @@ in its stop reason.
 
 | File | Contents |
 | :--- | :--- |
-| `final_density.png` | the final design, greyscale |
+| `final_density.png` | the final design, greyscale (a 3-D design: its depth average) |
 | `final_density.csv` | the same as numbers, with two metadata rows |
+| `final_density.npy` | 3-D only: the whole design |
+| `final_geometry.json` | only when the design has explicit shapes (moving morphable components) |
 | `density_NNNN.png` | snapshots every `save_every` iterations (0 = none) |
+| `post/` | what the post-processors made, when any are switched on |
 | `run.json` | provenance: what was solved, how, by which code version, how it ended, whether every limit was met, how many physics solves it took, and an outside optimiser's own verdict |
 
 ## What the engine depends on
-
-```mermaid
-flowchart LR
-    engine["engine"] --> framework["framework<br/>Run, mesh, contracts"]
-    engine --> plugins["plugins<br/>methods, responses, filters (by name)"]
-    apps["apps"] --> engine
-    checks["checks"] --> engine
-```
 
 The engine imports `framework` for the data model and the contracts, and looks methods,
 responses and filters up in `plugins` by name. Nothing in `framework` or `plugins` imports

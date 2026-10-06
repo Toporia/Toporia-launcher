@@ -3,11 +3,8 @@
 Run this ONLY when a behaviour change is intentional, and commit the resulting
 .npz files in the same commit as the change so the diff shows both.
 
-    python tests/regenerate_baselines.py            # all cases
-    python tests/regenerate_baselines.py mbb_oc     # one case
-
-Phase 1 task P1.7 (element size entering the stiffness) is the one planned
-intentional change; expect every baseline to shift by a scale factor there.
+    python tests/golden/regenerate_baselines.py            # all cases
+    python tests/golden/regenerate_baselines.py mbb_oc     # one case
 """
 
 import sys

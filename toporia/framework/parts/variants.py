@@ -108,14 +108,14 @@ class VariantModel(Model):
         if self._scale is None:
             self._scale = max(float(np.max(np.abs(objectives))), 1e-12)
         objective, weights = self._join(objectives, self._scale)
-        gradient = (sum(w * e.objective_gradient for w, e in zip(weights, evaluations))
+        gradient = (sum(w * e.objective_gradient for w, e in zip(weights, evaluations, strict=True))
                     if gradients else None)
 
         constraints = []
         for j, first in enumerate(nominal.constraints):
             values = np.array([e.constraints[j].value for e in evaluations])
             value, w = self._join(values, 1.0)
-            grad = sum(wi * e.constraints[j].gradient for wi, e in zip(w, evaluations)) if gradients else None
+            grad = sum(wi * e.constraints[j].gradient for wi, e in zip(w, evaluations, strict=True)) if gradients else None
             exacts = [e.constraints[j].exact for e in evaluations]
             exact = None if any(v is None for v in exacts) else (
                 max(exacts) if self.combine == "worst" else float(np.mean(exacts)))
@@ -125,7 +125,7 @@ class VariantModel(Model):
         reported = dict(nominal.reported)
         if self.combine == "worst":
             reported["worst_case"] = float(np.max(objectives))
-        for value, e in zip(self.values, evaluations):
+        for value, e in zip(self.values, evaluations, strict=True):
             reported[f"objective[{variant_label(self.path, value)}]"] = e.objective
         return Evaluation(objective=objective, objective_gradient=gradient,
                           volume=nominal.volume, volume_gradient=nominal.volume_gradient,

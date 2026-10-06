@@ -1,12 +1,11 @@
-"""test_modes_smoke.py — one smoke test per analysis mode.
+"""test_modes.py — one smoke test per analysis mode.
 
 These assert only that each mode runs end to end and produces its output file.
 They deliberately do NOT check numbers: the golden tests in test_golden.py pin
 the physics, and duplicating that here would just make the suite slow.
 
-What these protect is the engine layer (toporia/functions/) — the sweep,
-compare and sensitivity drivers that the GUI calls.  Phase 1 moves this code
-into engine/; these tests are how you know the move was clean.
+What these protect is the engine layer (toporia/engine/modes) — the sweep,
+compare and sensitivity drivers that the GUI and the command line call.
 
 Configs are tiny on purpose: several of these modes run four or more full
 optimisations each.

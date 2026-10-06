@@ -18,42 +18,29 @@ Read in this order; each step is one folder and one README.
    kind, each listing what is implemented here and what exists elsewhere.
 4. **How a run is driven** — [`engine/`](engine/README.md): the one loop, what it records,
    and the analysis modes built on it.
-5. **How to add a part** — [`docs/writing-plugins.md`](../docs/writing-plugins.md), with a
-   worked example of every kind.
+5. **How to add a part** — [`docs/quickstart.md`](../docs/quickstart.md) to get going in
+   minutes, then [`docs/writing-plugins.md`](../docs/writing-plugins.md), with a worked example
+   of every kind.
 
 ## The layers
 
 ```mermaid
 flowchart TB
-    subgraph ENTRY["Ways in"]
-        direction LR
-        apps["apps/<br/>the desktop app and the command line"]
-        api["api.py<br/>the stable imports for plugins"]
-        checks["checks/<br/>the conformance test"]
-    end
-
-    engine["engine/<br/>the loop, the stopping rule, the records,<br/>and the analysis modes built on them"]
-
-    plugins["plugins/  —  the swappable parts<br/>problems/ · filters/ · physics/ · models/<br/>responses/ · updaters/ · methods/"]
-
-    framework["framework/<br/>what a run is (problem/), what a part must do (parts/),<br/>how outside optimisers connect (optimisers/),<br/>parameters and plugin discovery"]
-
-    other[("plugins in other<br/>installed packages")]
-
+    apps["apps/ · checks/<br/>the GUI, the command line, the conformance test"]
+    engine["engine/<br/>the loop and the analysis modes"]
+    plugins["plugins/<br/>the swappable parts"]
+    framework["framework/<br/>the rules: what a run is, what a part must do"]
     apps --> engine
-    checks --> engine
     engine --> plugins
     engine --> framework
     plugins --> framework
-    api --> framework
-    api --> plugins
-    other -. "entry points" .-> framework
-    other -. "import from" .-> api
 ```
 
-An arrow means "uses". The arrows only point down: `framework` uses nothing else in
-Toporia, `plugins` uses only `framework`, and `engine` uses both but is used by neither. A
-plugin therefore never depends on how it is driven or displayed.
+An arrow means "uses", and the arrows only point down. `framework` uses nothing else in
+Toporia, `plugins` uses only `framework`, and `engine` uses both but is used by neither, so
+a plugin never depends on how it is driven or displayed. [`api.py`](api.py) re-exports
+what a plugin needs, and plugins in other installed packages are found through entry
+points.
 
 ## What is where
 
@@ -62,14 +49,13 @@ toporia/
 ├── api.py               the stable imports for plugin authors
 ├── framework/           THE RULES — no mathematics
 │   ├── problem/         scenario · mesh · solver · run · files
-│   ├── parts/           method · model · updater · composition · physics · response · representation ·
-│   │                    filter · interpolation · schedule · variants · postprocess
+│   ├── parts/           one file per interface every part implements
 │   ├── optimisers/      flat_view · external_loop
 │   ├── params.py        every tunable value, declared once
 │   └── registry.py      finds plugins: here, in installed packages, or by hand
 ├── plugins/             THE PARTS — one folder per kind, each with a README
 │   ├── problems/        benchmark presets, 2-D and 3-D
-│   ├── representations/ what the design variables are: element densities, moving morphable components
+│   ├── representations/ what the design variables are: densities, bars (MMC)
 │   ├── filters/         design → physical density, and back
 │   ├── interpolations/  the material law: SIMP, RAMP
 │   ├── schedules/       continuation: how a parameter changes during the run
@@ -103,39 +89,29 @@ toporia/
 
 ## The life of a run
 
-From a click on **Run** to the files on disk, and where each step lives:
+From a click on **Run** (or a command, or a JSON file) to the files on disk:
 
 ```mermaid
 flowchart TB
-    A["Panels in the GUI, a CLI command,<br/>or a JSON scenario + solver"]
-    B["Run = Scenario + Solver + Output<br/>method: 'q4+mma'<br/>(framework/problem/run.py)"]
-    C["Look up the parts by name<br/>model q4, updater mma, filters, responses<br/>(plugin registries, framework/registry.py)"]
-    D["Refuse at once if a part is missing<br/>or cannot do what the scenario asks<br/>(engine/loop.py)"]
-    E["Mesh the problem: elements, supports,<br/>loads, fixed regions, bounds<br/>(framework/problem/mesh.py)"]
-
-    subgraph ITER["Each iteration (framework/parts/composition.py)"]
-        direction LR
-        F["Filters<br/>x → ρ"]
-        G["Physics engine<br/>solve ρ → state"]
-        H["Responses<br/>objective, constraints,<br/>gradients"]
-        I["Filter adjoint<br/>gradients → x"]
-        J["Updater<br/>next x"]
-        F --> G --> H --> I --> J
-        J -- "next iteration" --> F
-    end
-
-    K["Engine: record, draw, stopping rule<br/>(engine/loop.py)"]
-    L["Check every limit<br/>(engine/records.py)"]
-    M[("final_density.png · .csv<br/>run.json: what, how, which code,<br/>how it ended, limits met, solves")]
-
-    A --> B --> C --> D --> E --> ITER
-    ITER <--> K
-    K --> L --> M
+    run["A Run<br/>Scenario + Solver + Output"]
+    build["Check the parts, mesh the case<br/>2-D rectangle or 3-D box"]
+    iterate["Iterate<br/>until the stopping rule"]
+    post["Post-process<br/>threshold, checks, exports"]
+    files[("Results<br/>images, run.json, files")]
+    run --> build --> iterate --> post --> files
 ```
 
-The method in the middle can also be a whole method that does its own iteration (the
-RBF level set), and the updater can be an outside library running its own loop in a
-background thread (SciPy's SLSQP); to the engine they look the same.
+| Step | Where |
+| :-- | :-- |
+| A Run | [`framework/problem/run.py`](framework/problem/run.py) |
+| Check the parts, mesh the case | [`engine/loop.py`](engine/loop.py), [`engine/pipeline.py`](engine/pipeline.py), [`framework/problem/mesh.py`](framework/problem/mesh.py) |
+| Iterate | [`engine/loop.py`](engine/loop.py); what one evaluation does: [`framework/README.md`](framework/README.md#one-evaluation-the-chain-of-parts) |
+| Post-process | [`engine/postprocess.py`](engine/postprocess.py), [`plugins/postprocessors/`](plugins/postprocessors/README.md) |
+| Results | [`engine/records.py`](engine/records.py) |
+
+The method can also be a whole method that does its own iteration (the RBF level set),
+and the updater can be an outside library running its own loop in a background thread
+(SciPy's SLSQP). To the engine they all look the same.
 
 ## Extending it
 
@@ -165,5 +141,5 @@ Then `toporia check kind:name`, and mark it ✅ in the folder's README.
 - **Comments say why**, or what a non-obvious line does — not what the code already says.
 - **Parameters are declared, not read from dictionaries by hand**: a `Param` next to the
   code that uses it, so the GUI, sweeps and validation follow automatically.
-- **Results are pinned.** `tests/golden/` stores seven runs bit for bit; a change that moves
+- **Results are pinned.** `tests/golden/` stores eight runs bit for bit, one of them 3-D; a change that moves
   them is either a bug or is said in its commit, with the baseline regenerated.

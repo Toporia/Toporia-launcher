@@ -86,5 +86,6 @@ class DensityFilterPipeline:
         return np.where(self.pinned, 0.0, sensitivity)
 
     def step(self, iteration):
+        """Advance every filter's continuation, once per iteration."""
         if self.chain is not None:
             self.chain.step(iteration)

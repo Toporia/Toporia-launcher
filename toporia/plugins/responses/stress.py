@@ -39,7 +39,7 @@
 #
 # Stresses are measured with the true element size, so a limit means the same
 # at every mesh resolution.  The pyMOTO model's stresses differ from these in
-# two ways, both pinned by tests/test_physics.py:
+# two ways, both pinned by tests/plugins/test_physics.py:
 #   * pyMOTO measures on unit elements, so its strains are m times smaller
 #     than the true ones at a mesh of m el/mm (equal at m = 1);
 #   * pyMOTO 2.0.1 doubles the shear stress: its strain-displacement matrix

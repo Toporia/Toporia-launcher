@@ -2,16 +2,22 @@
 
 Toporia is built so that an algorithm, a filter or a response from a paper is **one small
 file and one passing check**. This guide shows how, kind by kind. Every code block marked
-`# example:` is run by the test suite (`tests/test_guide.py`), so what you read here works.
+`# example:` is run by the test suite (`tests/checks/test_guide.py`), so what you read here works.
 
 ## The pieces
 
 A topology-optimisation method is a chain of independent choices. Each is a plugin kind:
 
 ```
-variables z ──Representation──> design x ──Filter──> density ρ ──Physics──> state ──Response──> objective, constraints
-   ^                                                                                                │
-   └──────────── Updater <──────── gradients (adjoint, filter adjoint, representation backward) ────┘
+design variables z
+   │  Representation   z → element densities
+   │  Filter           → physical density ρ
+   │  Physics          ρ → state (displacements, stresses)
+   │  Response         → objective and constraints, with gradients
+   ▼  Updater          → the next design variables, and round again
+
+The gradients travel back up the same chain: each part carries the sensitivity
+of the one below it back to its own input.
 ```
 
 | You have…                                        | Write a…                 | Subclass                    | Folder / entry-point group       |

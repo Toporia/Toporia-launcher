@@ -11,7 +11,6 @@
 # — compliance, stress — runs on it without knowing any of the above.
 
 import numpy as np
-from scipy.ndimage import convolve  # image-style convolution filter
 from scipy.sparse import coo_matrix  # sparse matrix in coordinate format
 from scipy.sparse.linalg import spsolve  # sparse direct linear solver
 
@@ -26,7 +25,7 @@ def element_stiffness(nu, dx=1.0, dy=1.0, thickness=1.0):
     Computed by 2x2 Gauss integration of B^T D B over a dx x dy rectangle, with
     nodes ordered counter-clockwise from the bottom-left corner.  For dx == dy
     this reproduces the analytical unit-square matrix from the top88 MATLAB code
-    to machine precision (see tests/test_fe.py), so replacing the hardcoded
+    to machine precision (see tests/plugins/test_fe.py), so replacing the hardcoded
     matrix with this one changed no result.
 
     A note on element size, because it is easy to get wrong: in 2-D the
@@ -289,7 +288,7 @@ def solve_fea(problem, density, penal):
     solution = _solve(problem, density, SIMP(penal))
     ce         = np.zeros((problem.nely, problem.nelx))
     compliance = 0.0
-    for weight, ce_k, C_k in zip(solution.weights, solution.energies, solution.compliances):
+    for weight, ce_k, C_k in zip(solution.weights, solution.energies, solution.compliances, strict=True):
         ce         += weight * ce_k
         compliance += weight * C_k
     return solution.U, ce, compliance
@@ -362,15 +361,3 @@ class Q4PlaneStress(Physics):
 
     def mutual_energy(self, state, case, adjoint):
         return self._field(np.sum((adjoint[self.edof] @ self.KE) * state.U[self.edof, case], axis=1))
-
-
-def smooth_field(field, amount=0.15):
-    """Apply a light neighbourhood-average smoothing to a 2-D field.
-    Used by the level-set method to reduce noise.  amount=0 disables it."""
-    if amount <= 0:
-        return field
-    kernel = np.array([[0.0, amount, 0.0],
-                        [amount, 1.0, amount],
-                        [0.0, amount, 0.0]])
-    kernel /= np.sum(kernel)   # normalise so the sum of weights = 1
-    return convolve(field, kernel, mode="nearest")

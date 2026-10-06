@@ -113,6 +113,7 @@ class MovingMorphableComponents(Representation):
         return np.clip((np.array(bars) - self.low) / self.span, 0.0, 1.0).reshape(-1)
 
     def set_parameter(self, name, value):
+        """Change the edge width during a run (a schedule), keeping its length in mm in step."""
         self.edge_width = float(value)
         self.eps = self.edge_width * self.h
 

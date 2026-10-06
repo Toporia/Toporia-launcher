@@ -71,72 +71,113 @@ class MainWindow(QMainWindow):
 
         # QSplitter lets the user drag the divider between left and right panels.
         splitter = QSplitter(Qt.Horizontal)
-        self.setCentralWidget(splitter)   # the central widget fills the whole window
+        self.setCentralWidget(splitter)  # the central widget fills the whole window
 
         # ── Left panel: all controls ──────────────────────────────────────────
-        left = QWidget(); left.setMinimumWidth(20); left.setMaximumWidth(500)
-        ll = QVBoxLayout(left); ll.setSpacing(6)
+        left = QWidget()
+        left.setMinimumWidth(20)
+        left.setMaximumWidth(500)
+        ll = QVBoxLayout(left)
+        ll.setSpacing(6)
 
         # Configuration row: selects the problem geometry and default solver settings.
         from toporia.plugins.problems import DEFAULT_PROBLEM, problem_names
+
         crow = QHBoxLayout()
         crow.addWidget(QLabel("Configuration:"))
         self.config_combo = QComboBox()
         self.config_combo.addItems(problem_names())
         self.config_combo.setCurrentText(DEFAULT_PROBLEM)
-        crow.addWidget(self.config_combo, 1); ll.addLayout(crow)
+        crow.addWidget(self.config_combo, 1)
+        ll.addLayout(crow)
 
         # Mode row: selects what kind of run to perform.
         mrow = QHBoxLayout()
         mrow.addWidget(QLabel("Mode:"))
         self.mode = QComboBox()
-        self.mode.addItems([
-            "Run One", "Sweep", "Sweep 2D",
-            "Compare Two", "Compare Load Cases", "Compare Methods",
-            "Sensitivity", "Sensitivity Sweep", "Sensitivity Sweep 2D",
-            "Check Parts",
-        ])
+        self.mode.addItems(
+            [
+                "Run One",
+                "Sweep",
+                "Sweep 2D",
+                "Compare Two",
+                "Compare Load Cases",
+                "Compare Methods",
+                "Sensitivity",
+                "Sensitivity Sweep",
+                "Sensitivity Sweep 2D",
+                "Check Parts",
+            ]
+        )
         self.mode.currentTextChanged.connect(self._on_mode)  # call _on_mode when selection changes
-        mrow.addWidget(self.mode, 1); ll.addLayout(mrow)
+        mrow.addWidget(self.mode, 1)
+        ll.addLayout(mrow)
 
-        self._base_cfg = None   # set by _on_config_changed; holds geometry from selected config
+        self._base_cfg = None  # set by _on_config_changed; holds geometry from selected config
 
         # QScrollArea lets the parameter groups scroll if the window is too short.
-        scroll = QScrollArea(); scroll.setWidgetResizable(True)
-        scroll.setFrameShape(QScrollArea.NoFrame)   # no visible border around the scroll area
-        pw = QWidget(); pl = QVBoxLayout(pw)
-        pl.setAlignment(Qt.AlignTop); pl.setSpacing(8)  # stack groups from the top
-        scroll.setWidget(pw); ll.addWidget(scroll, 1)   # stretch=1 so it takes available space
+        scroll = QScrollArea()
+        scroll.setWidgetResizable(True)
+        scroll.setFrameShape(QScrollArea.NoFrame)  # no visible border around the scroll area
+        pw = QWidget()
+        pl = QVBoxLayout(pw)
+        pl.setAlignment(Qt.AlignTop)
+        pl.setSpacing(8)  # stack groups from the top
+        scroll.setWidget(pw)
+        ll.addWidget(scroll, 1)  # stretch=1 so it takes available space
 
         # Instantiate all parameter group widgets and add them to the scroll area.
-        self.pipeline = PipelineView()   # what the run is made of, kept in view above the controls
-        self.core    = CoreParamsGroup()
+        self.pipeline = PipelineView()  # what the run is made of, kept in view above the controls
+        self.core = CoreParamsGroup()
         from toporia.plugins.filters import FILTERS
         from toporia.plugins.interpolations import INTERPOLATIONS
         from toporia.plugins.representations import REPRESENTATIONS
         from toporia.plugins.responses import CONSTRAINT_ROLE, OBJECTIVE_ROLE, responses_for
-        self.design      = DesignSection(REPRESENTATIONS.classes())
-        self.material    = MaterialGroup(INTERPOLATIONS.classes())
-        self.objective   = ObjectiveGroup(responses_for(OBJECTIVE_ROLE))
+
+        self.design = DesignSection(REPRESENTATIONS.classes())
+        self.material = MaterialGroup(INTERPOLATIONS.classes())
+        self.objective = ObjectiveGroup(responses_for(OBJECTIVE_ROLE))
         self.constraints = ConstraintsGroup(responses_for(CONSTRAINT_ROLE))
-        self.filters     = SpecListGroup("Filters", FILTERS.classes(),
-                                         initial=[{"type": "density"}], noun="filter")
+        self.filters = SpecListGroup(
+            "Filters", FILTERS.classes(), initial=[{"type": "density"}], noun="filter"
+        )
         from toporia.plugins.schedules import SCHEDULES
-        self.schedules   = ScheduleListGroup(SCHEDULES.classes())
-        self.variants    = VariantsGroup()
+
+        self.schedules = ScheduleListGroup(SCHEDULES.classes())
+        self.variants = VariantsGroup()
         from toporia.plugins.postprocessors import POSTPROCESSORS
-        self.post        = SpecListGroup("Post-processing", POSTPROCESSORS.classes(), noun="post-processor")
-        self.lc      = LoadCasesGroup()
-        self.sg      = SweepParamsGroup()
-        self.sg2     = Sweep2DParamsGroup()
-        self.cg      = CompareTwoParamsGroup()
-        self.clcg    = CompareLoadCasesParamsGroup()
-        self.cmg     = CompareMethodsParamsGroup()
-        self.sens    = SensitivityParamsGroup()
-        self.ssg     = SensitivitySweepParamsGroup()
-        self.ssg2    = SensitivitySweep2DParamsGroup()
-        for g in (self.pipeline, self.core, self.design, self.material, self.objective, self.constraints, self.filters, self.schedules, self.variants, self.post, self.lc, self.sg, self.sg2,
-                  self.cg, self.clcg, self.cmg, self.sens, self.ssg, self.ssg2):
+
+        self.post = SpecListGroup("Post-processing", POSTPROCESSORS.classes(), noun="post-processor")
+        self.lc = LoadCasesGroup()
+        self.sg = SweepParamsGroup()
+        self.sg2 = Sweep2DParamsGroup()
+        self.cg = CompareTwoParamsGroup()
+        self.clcg = CompareLoadCasesParamsGroup()
+        self.cmg = CompareMethodsParamsGroup()
+        self.sens = SensitivityParamsGroup()
+        self.ssg = SensitivitySweepParamsGroup()
+        self.ssg2 = SensitivitySweep2DParamsGroup()
+        for g in (
+            self.pipeline,
+            self.core,
+            self.design,
+            self.material,
+            self.objective,
+            self.constraints,
+            self.filters,
+            self.schedules,
+            self.variants,
+            self.post,
+            self.lc,
+            self.sg,
+            self.sg2,
+            self.cg,
+            self.clcg,
+            self.cmg,
+            self.sens,
+            self.ssg,
+            self.ssg2,
+        ):
             pl.addWidget(g)
 
         # The sweep / compare / sensitivity dropdowns list every parameter path of
@@ -144,7 +185,14 @@ class MainWindow(QMainWindow):
         # pipeline or the number of load cases changes.
         self._sweep_groups = (self.sg, self.sg2, self.cg, self.sens, self.ssg, self.ssg2)
         self.lc.cases_changed.connect(self._refresh_parameter_paths)
-        for group in (self.design, self.material, self.objective, self.constraints, self.filters, self.schedules):
+        for group in (
+            self.design,
+            self.material,
+            self.objective,
+            self.constraints,
+            self.filters,
+            self.schedules,
+        ):
             group.changed.connect(self._refresh_parameter_paths)
         self.core.method_changed.connect(self._on_method_changed)
         self.design.dims_changed.connect(self._on_dims_changed)
@@ -153,32 +201,42 @@ class MainWindow(QMainWindow):
         self.variants.robust_requested.connect(self._use_robust_projection)
 
         # Run/Stop button — the same button toggles between two roles.
-        self._stop = False   # flag checked inside on_iter to interrupt the loop
-        self.run_btn = QPushButton("▶  Run"); self.run_btn.setFixedHeight(44)
-        f = self.run_btn.font(); f.setPointSize(12); f.setBold(True)
-        self.run_btn.setFont(f); self.run_btn.clicked.connect(self._on_run)
+        self._stop = False  # flag checked inside on_iter to interrupt the loop
+        self.run_btn = QPushButton("▶  Run")
+        self.run_btn.setFixedHeight(44)
+        f = self.run_btn.font()
+        f.setPointSize(12)
+        f.setBold(True)
+        self.run_btn.setFont(f)
+        self.run_btn.clicked.connect(self._on_run)
         ll.addWidget(self.run_btn)
         splitter.addWidget(left)
 
         # ── Right panel: live canvas + log ────────────────────────────────────
-        right = QWidget(); rl = QVBoxLayout(right)
-        self.canvas = LiveCanvas(); rl.addWidget(self.canvas, 3)  # stretch=3: takes most space
+        right = QWidget()
+        rl = QVBoxLayout(right)
+        self.canvas = LiveCanvas()
+        rl.addWidget(self.canvas, 3)  # stretch=3: takes most space
         rl.addWidget(QLabel("Console output"))
-        self.log = QTextEdit(); self.log.setReadOnly(True)
-        self.log.setFont(QFont("Courier New", 9)); self.log.setFixedHeight(160)
+        self.log = QTextEdit()
+        self.log.setReadOnly(True)
+        self.log.setFont(QFont("Courier New", 9))
+        self.log.setFixedHeight(160)
         rl.addWidget(self.log)
-        splitter.addWidget(right); splitter.setSizes([400, 880])  # initial split proportions
+        splitter.addWidget(right)
+        splitter.setSizes([400, 880])  # initial split proportions
 
         # Wire the configuration dropdown now that self.log exists so error messages work.
         self.config_combo.currentTextChanged.connect(self._on_config_changed)
         self._on_config_changed(self.config_combo.currentText())  # populate widgets from first config
 
-        self._on_mode("Run One")   # hide sweep-specific groups on startup
+        self._on_mode("Run One")  # hide sweep-specific groups on startup
         self._report_plugin_errors()
 
     def _report_plugin_errors(self):
         """Log every plugin that failed to load; the others are all usable."""
         from toporia.api import plugin_errors
+
         for kind, where, message in plugin_errors():
             self._log(f"[Plugin not loaded] {kind} {where}: {message}")
 
@@ -187,6 +245,7 @@ class MainWindow(QMainWindow):
     def _on_config_changed(self, name):
         """Load a configuration preset: update self._base_cfg and populate the widgets."""
         from toporia.plugins.problems import get_run
+
         try:
             cfg = get_run(name)
         except Exception as e:
@@ -209,11 +268,15 @@ class MainWindow(QMainWindow):
         """Adapt the panels to what the selected method can do."""
         from toporia.plugins.filters import FILTERS
         from toporia.plugins.methods import method_class
+
         capabilities = method_class(name).capabilities
         self.filters.set_allowed(FILTERS.names() if capabilities.accepts_filters else [])
         self.design.set_representation_available(capabilities.accepts_representation)
         from toporia.framework.parts.composition import ComposedMethod
-        self.variants.setVisible(issubclass(method_class(name), ComposedMethod))   # a whole method evaluates itself
+
+        self.variants.setVisible(
+            issubclass(method_class(name), ComposedMethod)
+        )  # a whole method evaluates itself
         self.material.setVisible(capabilities.accepts_interpolation)
         self.objective.set_allowed(capabilities.objectives)
         enforceable = capabilities.constraints if capabilities.max_constraints != 0 else []
@@ -225,14 +288,17 @@ class MainWindow(QMainWindow):
         from toporia.framework.parts.composition import ComposedMethod
         from toporia.plugins.methods import method_class
         from toporia.plugins.updaters import UPDATERS
+
         cls = method_class(name)
         if not issubclass(cls, ComposedMethod):
             return f"{cls.label} enforces only the volume budget."
         if not cls.model.capabilities.constraints:
             return f"{cls.model.label} computes no constraint besides the volume budget."
         able = [u.label for u in UPDATERS.classes() if u.max_constraints != 0]
-        return (f"{cls.updater.label} enforces only the volume budget. "
-                f"Updaters that enforce constraints: {', '.join(able)}.")
+        return (
+            f"{cls.updater.label} enforces only the volume budget. "
+            f"Updaters that enforce constraints: {', '.join(able)}."
+        )
 
     def _on_dims_changed(self, dims):
         """2-D <-> 3-D: keep the updater, pick a physics model that works in that dimension, show load elevations."""
@@ -240,6 +306,7 @@ class MainWindow(QMainWindow):
         from toporia.framework.parts.composition import ComposedMethod
         from toporia.plugins.methods import method_class
         from toporia.plugins.models import MODELS
+
         cls = method_class(self.core.method_name())
         if issubclass(cls, ComposedMethod) and dims not in cls.model.capabilities.dims:
             model = next((m for m in MODELS.classes() if dims in m.capabilities.dims), None)
@@ -251,11 +318,23 @@ class MainWindow(QMainWindow):
     def _refresh_parameter_paths(self, *_):
         """Rebuild every parameter dropdown from the current method, filters and load cases."""
         from toporia.plugins.catalog import parameter_paths, schedulable_paths
-        setup = dict(objective=self.objective.get_spec(), constraints=self.constraints.get_specs(),
-                     interpolation=self.material.get_spec(), representation=self.design.get_spec())
-        self.schedules.set_paths(schedulable_paths(self.core.method_name(), self.filters.get_specs(), **setup))
-        items = parameter_paths(self.core.method_name(), self.filters.get_specs(),
-                                len(self.lc.get_load_cases()), schedules=self.schedules.get_specs(), **setup)
+
+        setup = dict(
+            objective=self.objective.get_spec(),
+            constraints=self.constraints.get_specs(),
+            interpolation=self.material.get_spec(),
+            representation=self.design.get_spec(),
+        )
+        self.schedules.set_paths(
+            schedulable_paths(self.core.method_name(), self.filters.get_specs(), **setup)
+        )
+        items = parameter_paths(
+            self.core.method_name(),
+            self.filters.get_specs(),
+            len(self.lc.get_load_cases()),
+            schedules=self.schedules.get_specs(),
+            **setup,
+        )
         for group in self._sweep_groups:
             group.refresh(items)
         self.variants.set_paths(items)
@@ -275,12 +354,22 @@ class MainWindow(QMainWindow):
         from toporia.engine.pipeline import pipeline_notes, pipeline_stages
 
         from .config import build_config
+
         try:
-            cfg = build_config(self.core, self.lc, self.filters, base_cfg=self._base_cfg,
-                               objective=self.objective, constraints=self.constraints,
-                               interpolation=self.material, representation=self.design,
-                               schedules=self.schedules, variants=self.variants,
-                               postprocess=self.post, design=self.design)
+            cfg = build_config(
+                self.core,
+                self.lc,
+                self.filters,
+                base_cfg=self._base_cfg,
+                objective=self.objective,
+                constraints=self.constraints,
+                interpolation=self.material,
+                representation=self.design,
+                schedules=self.schedules,
+                variants=self.variants,
+                postprocess=self.post,
+                design=self.design,
+            )
             self.pipeline.show_pipeline(pipeline_stages(cfg), pipeline_notes(cfg.solver.method, cfg))
         except (ValueError, KeyError) as error:
             self.pipeline.show_pipeline([], [f"Cannot describe this selection: {error}"])
@@ -304,7 +393,7 @@ class MainWindow(QMainWindow):
         self.log.moveCursor(QTextCursor.End)
         self.log.insertPlainText(text + "\n")
         self.log.moveCursor(QTextCursor.End)
-        QApplication.processEvents()   # force Qt to repaint the log immediately
+        QApplication.processEvents()  # force Qt to repaint the log immediately
 
     def _on_stop(self):
         """Called when the user clicks Stop — sets the flag that on_iter checks."""
@@ -314,7 +403,8 @@ class MainWindow(QMainWindow):
     def _on_run(self):
         """Called when Run is clicked.  Orchestrates the full run sequence."""
         mode = self.mode.currentText()
-        self.log.clear(); self._log(f"=== {mode} ===")
+        self.log.clear()
+        self._log(f"=== {mode} ===")
         self._stop = False
 
         # Re-label the button as Stop and rewire it to _on_stop.
@@ -326,21 +416,31 @@ class MainWindow(QMainWindow):
 
         from . import runner  # imports SciPy-backed optimisation code only when needed
 
-        cfg = runner.build_config(self.core, self.lc, self.filters, base_cfg=self._base_cfg,
-                                  objective=self.objective, constraints=self.constraints,
-                               interpolation=self.material, representation=self.design,
-                               schedules=self.schedules, variants=self.variants,
-                               postprocess=self.post, design=self.design)
+        cfg = runner.build_config(
+            self.core,
+            self.lc,
+            self.filters,
+            base_cfg=self._base_cfg,
+            objective=self.objective,
+            constraints=self.constraints,
+            interpolation=self.material,
+            representation=self.design,
+            schedules=self.schedules,
+            variants=self.variants,
+            postprocess=self.post,
+            design=self.design,
+        )
 
         # on_iter is the per-iteration callback passed into the optimisation scripts.
         # It runs inside the optimisation loop after every solver step.
-        last_it = [0]   # list instead of plain int so the nested function can modify it
+        last_it = [0]  # list instead of plain int so the nested function can modify it
+
         def on_iter(d, obj, it):
             """Called after every iteration: honour Stop, redraw the canvas, keep the window responsive."""
             if self._stop:
-                raise _StopRequested()   # breaks out of the optimisation loop cleanly
+                raise _StopRequested()  # breaks out of the optimisation loop cleanly
             if it <= last_it[0]:
-                self.canvas.reset()      # new sweep cell started — clear the canvas
+                self.canvas.reset()  # new sweep cell started — clear the canvas
             last_it[0] = it
             self.canvas.refresh(d, obj, it)
             QApplication.processEvents()  # keep the UI responsive between iterations
@@ -371,8 +471,11 @@ class MainWindow(QMainWindow):
             elif mode == "Compare Methods":
                 grid = runner.run_compare_methods(cfg, self.cmg, on_iter, self._log)
                 if grid is not None:
-                    self.canvas.show_grid(grid, f"Compare Methods: {cfg.scenario.Lx:g} x {cfg.scenario.Ly:g} mm, "
-                                                f"{len(self.cmg.selected())} methods")
+                    self.canvas.show_grid(
+                        grid,
+                        f"Compare Methods: {cfg.scenario.Lx:g} x {cfg.scenario.Ly:g} mm, "
+                        f"{len(self.cmg.selected())} methods",
+                    )
             elif mode == "Compare Load Cases":
                 img = runner.run_compare_load_cases(cfg, self.clcg, on_iter, self._log)
                 self.canvas.show_grid(img, "Compare Load Cases  —  A vs B")
@@ -388,8 +491,7 @@ class MainWindow(QMainWindow):
                 grid = runner.run_sensitivity_sweep(cfg, self.ssg, on_iter, self._log)
                 self.canvas.show_grid(
                     grid,
-                    f"Sensitivity Sweep: {self.ssg.sweep_key()}"
-                    f"  sens={self.ssg.sens_key()}",
+                    f"Sensitivity Sweep: {self.ssg.sweep_key()}  sens={self.ssg.sens_key()}",
                 )
             else:
                 grid = runner.run_sensitivity_sweep_2d(cfg, self.ssg2, on_iter, self._log)
@@ -400,7 +502,7 @@ class MainWindow(QMainWindow):
                     f"  sens={self.ssg2.sens_key()}",
                 )
         except _StopRequested:
-            self._log("— Stopped —")         # user-requested stop: no error shown
+            self._log("— Stopped —")  # user-requested stop: no error shown
         except Exception:
             self._log("\n[ERROR]\n" + traceback.format_exc())  # unexpected error: full traceback
         finally:

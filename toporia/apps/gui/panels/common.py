@@ -21,22 +21,30 @@ from PySide6.QtWidgets import (
 # Extra items added to the sweep dropdown in sensitivity-sweep modes
 SENS_SWEEP_EXTRA = [
     ("Sensitivity base value", "sens.base_value"),
-    ("Sensitivity gap",        "sens.gap"),
+    ("Sensitivity gap", "sens.gap"),
 ]
 
 
 # ── Spinbox factory helpers ───────────────────────────────────────────────────
 # These avoid writing the same five lines every time a numeric input is needed.
 
+
 def double_box(v, lo, hi, dec=3, step=0.1):
     """Create a floating-point spinbox with the given initial value, range, and step."""
     s = QDoubleSpinBox()
-    s.setRange(lo, hi); s.setValue(v); s.setDecimals(dec); s.setSingleStep(step)
+    s.setRange(lo, hi)
+    s.setValue(v)
+    s.setDecimals(dec)
+    s.setSingleStep(step)
     return s
+
 
 def int_box(v, lo, hi):
     """Create an integer spinbox."""
-    s = QSpinBox(); s.setRange(lo, hi); s.setValue(v); return s
+    s = QSpinBox()
+    s.setRange(lo, hi)
+    s.setValue(v)
+    return s
 
 
 def add_tooltip_row(form, label, widget, tooltip):
@@ -84,6 +92,7 @@ class CollapsibleSection(QWidget):
 
 # ── Sweep dropdown helpers ────────────────────────────────────────────────────
 
+
 def mark_availability(combo, classes):
     """Grey out every entry whose plugin needs a package that is not installed.
 
@@ -92,6 +101,7 @@ def mark_availability(combo, classes):
     instead of failing when a run starts.
     """
     from toporia.framework.registry import install_hint, missing_dependencies
+
     by_name = {cls.name: cls for cls in classes}
     for index in range(combo.count()):
         cls = by_name.get(combo.itemData(index))
@@ -112,18 +122,18 @@ def fill_combo(combo, items, prefer=""):
     selection is kept when it still exists, otherwise `prefer`, otherwise the first.
     """
     cur = combo.currentData() or prefer
-    combo.blockSignals(True); combo.clear()
+    combo.blockSignals(True)
+    combo.clear()
     for label, path in items:
         combo.addItem(label, userData=path)
-    idx = combo.findData(cur); combo.setCurrentIndex(max(idx, 0))
+    idx = combo.findData(cur)
+    combo.setCurrentIndex(max(idx, 0))
     combo.blockSignals(False)
 
 
 def fill_sens_sweep_combo(combo, items, prefer=""):
     """Like fill_combo but appends the two sensitivity-specific sweep targets."""
     fill_combo(combo, list(items) + SENS_SWEEP_EXTRA, prefer)
-
-
 
 
 def section_label(text):

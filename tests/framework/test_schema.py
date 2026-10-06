@@ -99,7 +99,6 @@ def test_every_filter_is_discovered_in_menu_order():
 def test_aliases_and_case_are_accepted():
     assert method_class("mma") is method_class("density_mma") is method_class("Q4+MMA")
     assert method_class("DENSITY").name == "q4+oc"
-    assert method_class("q4_compliance+oc") is method_class("q4+oc")
 
 
 def test_an_unknown_name_lists_the_alternatives():

@@ -5,19 +5,18 @@ Neither contains optimisation logic. Both turn what the person chose into a
 
 ```
 apps/
-├── cli.py            toporia run · compare · sweep · benchmark · check · list · export · post  (no command: the GUI)
+├── cli.py            the command line; with no command, the GUI
 └── gui/
     ├── app.py        starts Qt (and sets matplotlib's Qt backend first)
     ├── window.py     the main window: lays out the panels, wires the Run/Stop button
-    ├── canvas.py     the live density image (a 3-D design: its depth average, then a 3-D view) and convergence curve
+    ├── canvas.py     the live design and convergence curve; a 3-D view at the end
     ├── config.py     the panels' values → a Run (cheap, so the Pipeline box can refresh)
     ├── runner.py     calls the engine's modes and routes their printed output to the log
     └── panels/       every input panel, one module each
         ├── method.py     volume, and the method: physics model + updater, or whole
-        ├── design.py     the Design section: representation, 2-D or 3-D and its depth,
-        │                 the resolution (elements per mm or element size) and the mesh it gives
+        ├── design.py     representation, 2-D or 3-D, resolution and the mesh it gives
         ├── pipeline.py   the Pipeline box
-        ├── specs.py      filters, objective, constraints (always shown, with why when unavailable)
+        ├── specs.py      filters, objective, constraints, schedules
         ├── loads.py      load cases
         ├── modes.py      the settings of each analysis mode
         ├── forms.py      a form generated from Param declarations
@@ -25,16 +24,12 @@ apps/
 ```
 
 ```mermaid
-flowchart LR
-    person(["person"]) --> window["window.py"]
-    window --> panels["panels/<br/>generated from the plugins'<br/>Param declarations"]
-    panels --> config["config.py<br/>values → Run"]
-    config --> pipelinebox["Pipeline box<br/>(engine/pipeline.py)"]
-    window -- "Run" --> runner["runner.py"]
-    runner --> modes["engine/modes"]
-    modes -- "on_iteration" --> canvas["canvas.py<br/>live design + curve"]
-    modes -- "print()" --> log["log box"]
-    window -- "Stop: raises in on_iteration" --> modes
+flowchart TB
+    panels["panels/<br/>generated from the plugins"]
+    config["config.py<br/>the values become a Run"]
+    runner["runner.py<br/>starts an analysis mode"]
+    canvas["canvas.py · log<br/>live design, curve, output"]
+    panels --> config --> runner --> canvas
 ```
 
 Every input that comes from a plugin — a method's, filter's or response's parameters,

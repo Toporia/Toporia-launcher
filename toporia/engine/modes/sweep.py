@@ -28,7 +28,7 @@ def sweep(parameter, min_val, max_val, n_rows, n_cols, base_config, on_iteration
     run_cells(base_config, cells, on_iteration)
 
     images = [(cell_folder / "final_density.png", f"{parameter} = {value:.3g}")
-              for value, (_, cell_folder) in zip(values, cells)]
+              for value, (_, cell_folder) in zip(values, cells, strict=True)]
     return save_grid(images, n_rows, n_cols, folder / "sweep_grid.png", DESIGNS, fontsize=9)
 
 
@@ -49,5 +49,5 @@ def sweep_2d(row_param, row_min, row_max, n_rows,
     run_cells(base_config, cells, on_iteration)
 
     images = [(cell_folder / "final_density.png", f"{row_param}={rv:.3g}  {col_param}={cv:.3g}")
-              for (rv, cv), (_, cell_folder) in zip(pairs, cells)]
+              for (rv, cv), (_, cell_folder) in zip(pairs, cells, strict=True)]
     return save_grid(images, n_rows, n_cols, folder / "sweep2d_grid.png", DESIGNS, fontsize=8)

@@ -15,4 +15,5 @@ def towards(start, end, value):
 
 
 def format_number(value):
+    """A number as short text for the Pipeline box: 3, 0.5, 1e-06."""
     return f"{value:g}"

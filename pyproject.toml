@@ -35,7 +35,7 @@ toporia = "toporia.apps.cli:main"
 # ── Test suite ────────────────────────────────────────────────────────────────
 # The golden tests in tests/ are characterisation tests: they pin current
 # behaviour so the architecture work can be verified mechanically.  See
-# tests/regenerate_baselines.py before changing any stored baseline.
+# tests/golden/regenerate_baselines.py before changing any stored baseline.
 [tool.pytest.ini_options]
 testpaths = ["tests"]
 addopts = "-q"
@@ -49,23 +49,13 @@ target-version = "py310"
 exclude = ["results", ".venv"]
 
 [tool.ruff.lint]
-# Conservative starting set: real bug classes (F, B), import hygiene (I),
-# and basic style (E, W, UP).  Widen this as the codebase is restructured.
+# Real bug classes (F, B), import hygiene (I), and basic style (E, W, UP).
 select = ["E", "W", "F", "I", "B", "UP"]
 ignore = [
     "E501",  # line length is handled by the formatter, not the linter
     "E741",  # ambiguous names like `l1`/`l2` are idiomatic in the OC bisection
-
-    # ── Deferred to Phase 1, not accepted as permanent ──────────────────────
-    # 83 occurrences of a deliberate compact style (`def get_density(self): return ...`,
-    # `axes[0].plot(x); axes[0].set_ylabel(y)`). Reformatting them in Phase 0 would be a
-    # large diff with no behavioural value and would obscure the real refactor diffs.
-    "E701",  # if x: return
-    "E702",  # a; b
-    # 3 real but subtle cases - zip() lengths may legitimately differ. Each needs a
-    # decision, not a blanket fix.
-    "B905",
-    "B027",  # empty non-abstract method on Filter ABC; revisited when the ABC is redefined
+    "B027",  # optional hooks on the abstract bases (Filter.setup, Filter.step, Model.advance,
+             # close) are empty on purpose: a part overrides only the ones it needs
 ]
 
 [tool.ruff.lint.per-file-ignores]

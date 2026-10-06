@@ -25,7 +25,7 @@ def _base(problem_name: str, **overrides) -> Run:
 
 
 # name -> zero-argument builder returning a fully configured Run.
-# Chosen to cover every code path Phase 1 is going to touch:
+# Chosen to cover every code path the framework has:
 #   OC update, MMA update, level-set update, the FEA solver, the filter chain,
 #   passive/void masks, and the multi-load-case weighted compliance sum.
 CASES = {

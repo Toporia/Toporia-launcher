@@ -40,17 +40,19 @@ from toporia.framework.problem.run import PROJECT_ROOT
 #   final_density.png  — the converged design
 #   history.png        — objective and volume fraction plotted against iteration
 
+
 class ResultStore:
     """One run's history and output files.  The loop calls record() every iteration and save_final() at the end."""
+
     def __init__(self, output_dir):
         self.output_dir = Path(output_dir)
         self.output_dir.mkdir(parents=True, exist_ok=True)  # create folder if needed
-        self.objectives = []   # objective value recorded each iteration
-        self.volumes    = []   # mean density (= material fraction) each iteration
-        self.responses  = {}   # name -> per-iteration list, for every response a
-                               # method reports (constraint values, beta, ...)
+        self.objectives = []  # objective value recorded each iteration
+        self.volumes = []  # mean density (= material fraction) each iteration
+        self.responses = {}  # name -> per-iteration list, for every response a
+        # method reports (constraint values, beta, ...)
         self.stop_reason = None  # set by the runner when the loop ends
-        self.postprocess = {}    # what the post-processors made of the final design
+        self.postprocess = {}  # what the post-processors made of the final design
 
     def record(self, iteration, objective, volume, density, save_every=0, responses=None):
         """Append one iteration's data and optionally save a density snapshot."""
@@ -90,11 +92,11 @@ class ResultStore:
         Rows 3+ — density matrix (row 0 = top of image, matching the PNG orientation)
         Each value is the material density [0, 1] of that finite element.
         """
-        density_out = np.flipud(density)   # row 0 = image top, matching final_density.png
+        density_out = np.flipud(density)  # row 0 = image top, matching final_density.png
         with open(self.output_dir / "final_density.csv", "w", newline="") as f:
             writer = csv.writer(f)
             writer.writerow(["iterations", len(self.objectives)])
-            writer.writerow(["objective",  f"{self.objectives[-1]:.6g}"])
+            writer.writerow(["objective", f"{self.objectives[-1]:.6g}"])
             for row in density_out:
                 writer.writerow([f"{v:.4f}" for v in row])
 
@@ -109,17 +111,19 @@ class ResultStore:
         """
         pixels = np.flipud(1.0 - projection(density))
         pixels = (np.clip(pixels, 0.0, 1.0) * 255).astype(np.uint8)
-        Image.fromarray(pixels, mode="L").save(path)   # "L" = 8-bit greyscale
+        Image.fromarray(pixels, mode="L").save(path)  # "L" = 8-bit greyscale
 
     def save_history(self):
         """Write a two-panel PNG: objective (top) and volume fraction (bottom)."""
         fig, axes = plt.subplots(2, 1, figsize=(6, 5), sharex=True)  # shared x-axis
-        axes[0].plot(self.objectives); axes[0].set_ylabel("Objective")
-        axes[1].plot(self.volumes);    axes[1].set_ylabel("Volume")
+        axes[0].plot(self.objectives)
+        axes[0].set_ylabel("Objective")
+        axes[1].plot(self.volumes)
+        axes[1].set_ylabel("Volume")
         axes[1].set_xlabel("Iteration")
         fig.tight_layout()
         fig.savefig(self.output_dir / "history.png", dpi=160)
-        plt.close(fig)   # close so the figure is not shown as an interactive window
+        plt.close(fig)  # close so the figure is not shown as an interactive window
 
 
 # ── Did the result honour its limits? ─────────────────────────────────────────
@@ -148,12 +152,14 @@ def check_limits(scenario, responses):
     report = []
     volume = responses.get("volume")
     if volume is not None:
-        report.append({
-            "name": "volume budget",
-            "value": float(volume),
-            "limit": scenario.volfrac,
-            "satisfied": bool(volume <= scenario.volfrac * (1 + TOLERANCE)),
-        })
+        report.append(
+            {
+                "name": "volume budget",
+                "value": float(volume),
+                "limit": scenario.volfrac,
+                "satisfied": bool(volume <= scenario.volfrac * (1 + TOLERANCE)),
+            }
+        )
 
     for i, spec in enumerate(scenario.constraints):
         key = f"constraint_{i}_{spec.get('type')}"
@@ -166,12 +172,14 @@ def check_limits(scenario, responses):
         # user's units when the spec has a limit.
         limit = spec.get("limit")
         value = (1.0 + g) * limit if limit is not None else g
-        report.append({
-            "name": name,
-            "value": float(value),
-            "limit": limit if limit is not None else 0.0,
-            "satisfied": bool(g <= TOLERANCE),
-        })
+        report.append(
+            {
+                "name": name,
+                "value": float(value),
+                "limit": limit if limit is not None else 0.0,
+                "satisfied": bool(g <= TOLERANCE),
+            }
+        )
     return report
 
 
@@ -182,8 +190,10 @@ def describe_violations(report):
         if entry["satisfied"] is False:
             over = entry["value"] / entry["limit"] - 1.0 if entry["limit"] else None
             amount = f" ({over:.1%} over)" if over is not None else ""
-            lines.append(f"{entry['name']} not met: {entry['value']:.4g} against a limit of "
-                         f"{entry['limit']:.4g}{amount}")
+            lines.append(
+                f"{entry['name']} not met: {entry['value']:.4g} against a limit of "
+                f"{entry['limit']:.4g}{amount}"
+            )
     return lines
 
 
@@ -197,13 +207,17 @@ def describe_violations(report):
 # problem; two with the same solver fingerprint were solved the same way.  That
 # is what makes a comparison reproducible and citable.
 
+
 @functools.lru_cache(maxsize=1)
 def _git_state():
     """Commit and dirty flag of the Toporia checkout, or None outside a git repo."""
+
     def git(*args):
         """Run one git command in the checkout and return its output."""
-        return subprocess.run(["git", "-C", str(PROJECT_ROOT), *args],
-                              capture_output=True, text=True, timeout=5, check=True).stdout.strip()
+        return subprocess.run(
+            ["git", "-C", str(PROJECT_ROOT), *args], capture_output=True, text=True, timeout=5, check=True
+        ).stdout.strip()
+
     try:
         return {
             "commit": git("rev-parse", "HEAD"),
@@ -245,8 +259,13 @@ def parts_record(run):
 
     record = []
     for kind, cls in pipeline_parts(run):
-        entry = {"kind": kind, "name": cls.name, "label": cls.label,
-                 "class": f"{cls.__module__}.{cls.__qualname__}", **part_origin(kind, cls)}
+        entry = {
+            "kind": kind,
+            "name": cls.name,
+            "label": cls.label,
+            "class": f"{cls.__module__}.{cls.__qualname__}",
+            **part_origin(kind, cls),
+        }
         dependencies = getattr(cls, "dependencies", ())
         if dependencies:
             entry["dependencies"] = {name: version_of(name) for name in dependencies}
