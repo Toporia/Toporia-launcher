@@ -5,7 +5,7 @@ material, volume target — plus the solver settings recommended for it. Two run
 a scenario and differ only in their solver are a benchmark, and that comparison is what
 Toporia exists to make.
 
-**Status: 7 in Toporia · 6 open datasets or suites · 3 paper only**
+**Status: 8 in Toporia · 6 open datasets or suites · 2 paper only**
 
 | Label | Meaning |
 | :-- | :-- |
@@ -24,8 +24,16 @@ Toporia exists to make.
 | ✅ Drone arm | [`drone_arm.py`](drone_arm.py) | `Drone Arm` |
 | ✅ Drone arm, camera view | [`drone_arm_camera_view.py`](drone_arm_camera_view.py) | `Drone Arm (Camera View)` |
 | ✅ Drone arm, point loads | [`drone_arm_point_loads.py`](drone_arm_point_loads.py) | `Drone Arm (Point Loads)` |
+| ✅ Michell cantilever | [`michell_cantilever.py`](michell_cantilever.py) | `Michell Cantilever` |
 
-All seven are 2-D compliance problems, which matches what the library can currently solve.
+All eight are 2-D compliance problems, which matches what the library can currently solve.
+
+The **Michell cantilever** carries a point load to a clamped circular support. Its optimal
+layout is known analytically (Michell 1904: orthogonal spirals leaving the circle at 45°),
+which makes it the check that a method converges to the right *shape*, not only to a low
+number. The analytical optimum is a truss of infinitely many members, so compare layouts
+rather than exact values. Run every method on it with **Compare Methods** in the GUI, or
+`toporia benchmark --methods q4+oc q4+mma levelset --problems "Michell Cantilever"`.
 
 ## 📄 Canonical benchmarks not here yet
 
@@ -34,7 +42,6 @@ become useful alongside the matching response in [`responses/`](../responses/REA
 
 | Problem | Reference | What it tests |
 | :-- | :-- | :-- |
-| 📄 **Michell cantilever** | Michell, *Phil. Mag.* 1904 | **The only problem in the field with a known exact optimum.** Everything else is compared against other codes; this one can be compared against the truth. The single most valuable addition to this folder. |
 | 📄 L-bracket | Duysinx & Bendsøe, *IJNME* 1998 | The standard stress-concentration benchmark: the re-entrant corner that a compliance objective happily leaves sharp. |
 | 📄 Force inverter | Sigmund, *Mech. Struct. Mach.* 1997 | The standard compliant-mechanism benchmark, and where one-node hinges show up. |
 

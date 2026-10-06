@@ -70,3 +70,10 @@ def test_check_reports_each_plugin_and_fails_on_an_unknown_one(capsys):
     assert "filter SymmetryFilter (symmetry): conforms" in out and "2 of 2 conform" in out
     with pytest.raises(ValueError, match="Unknown filter"):
         main(["check", "filter:nope"])
+
+
+def test_benchmark_runs_methods_on_problems_and_writes_one_table(tmp_path, capsys):
+    assert main(["benchmark", "--methods", "q4+oc", "q4+mma", "--problems", "MBB Beam",
+                 "--set", "m=0.3", "--set", "max_iter=3", "--out", str(tmp_path)]) == 0
+    assert (tmp_path / "benchmark.csv").exists()
+    assert "referee_compliance" in capsys.readouterr().out

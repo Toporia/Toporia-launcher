@@ -31,8 +31,8 @@ Nothing is ever labelled ✅ until it is registered, tested, and reachable from 
 | [`physics/`](physics/README.md) | Element formulations and discretisation | 1 | 6 | 3 |
 | [`responses/`](responses/README.md) | What is minimised or constrained | 3 | 4 | 14 |
 | [`updaters/`](updaters/README.md) | How the design moves each iteration | 7 | 8 | 3 |
-| [`problems/`](problems/README.md) | Benchmark problems and datasets | 7 | 6 | 3 |
-| **Total** | | **41** | **63** | **44** |
+| [`problems/`](problems/README.md) | Benchmark problems and datasets | 8 | 6 | 2 |
+| **Total** | | **42** | **63** | **43** |
 
 The 15 selectable methods are the 14 `model+updater` pairings plus the one whole
 method; those pairings are built from the 2 models and 7 updaters counted in their own

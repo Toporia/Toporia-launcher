@@ -7,6 +7,8 @@
     toporia compare SCENARIO SOLVER_A SOLVER_B       same problem, two solvers
     toporia sweep SCENARIO [SOLVER] --param PATH --range MIN MAX [--grid ROWS COLS]
     toporia check [KIND:NAME ...] [--quick]          conformance test of plugins (all by default)
+    toporia benchmark --methods M ... [--problems P ...] [--set PATH=VALUE] [--out DIR]
+                                                     several methods on several problems, one table
 
 SCENARIO is a scenario JSON file or a preset name such as "MBB Beam".
 SOLVER is a solver JSON file; without one, a preset's recommended solver (or the
@@ -160,6 +162,21 @@ def _cmd_sweep(args):
     return 0
 
 
+def _cmd_benchmark(args):
+    from toporia.engine.modes.methods import benchmark
+    from toporia.plugins.problems import problem_names
+
+    problems = args.problems or ["MBB Beam"]
+    unknown = [name for name in problems if name not in problem_names()]
+    if unknown:
+        raise SystemExit(f"Unknown problem(s) {unknown}. Presets: {problem_names()}")
+    overrides = dict(_parse_override(text) for text in args.set)
+    out = Path(args.out) if args.out else Path("results") / "benchmark"
+    rows = benchmark(args.methods, problems, overrides, out)
+    print(f"\ntable in {out / 'benchmark.csv'}")
+    return 0 if all(row["status"] == "ran" for row in rows) else 1
+
+
 def _cmd_check(args):
     from toporia.checks import all_plugins, conformance
 
@@ -191,6 +208,15 @@ def _parser():
     check.add_argument("plugins", nargs="*", metavar="KIND:NAME", help="e.g. updater:mma filter:density")
     check.add_argument("--quick", action="store_true", help="skip the updater benchmark")
     check.set_defaults(handler=_cmd_check)
+
+    bench = commands.add_parser("benchmark", help="several methods on several problems, one table")
+    bench.add_argument("--methods", nargs="+", required=True, metavar="METHOD",
+                       help='e.g. q4+oc q4+mma levelset ("<model>+<updater>" or a whole method)')
+    bench.add_argument("--problems", nargs="+", metavar="PRESET", help='default: "MBB Beam"')
+    bench.add_argument("--set", action="append", default=[], metavar="PATH=VALUE",
+                       help="applied to every problem, e.g. m=0.5 max_iter=80 (repeatable)")
+    bench.add_argument("--out", help="output directory (default results/benchmark)")
+    bench.set_defaults(handler=_cmd_benchmark)
 
     export = commands.add_parser("export", help="write a preset as scenario + solver JSON files")
     export.add_argument("preset")

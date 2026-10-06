@@ -171,3 +171,22 @@ def test_check_parts_runs_the_conformance_test_on_the_selected_pipeline(window):
         assert part in text
     assert "4 of 4 parts conform" in text
     assert window.mode.findText("Check Parts") >= 0
+
+
+def test_compare_methods_lists_every_method_and_runs_the_ticked_ones(window, tmp_path):
+    from toporia.apps.gui import runner
+    window._on_config_changed("MBB Beam")
+    assert window.mode.findText("Compare Methods") >= 0
+    assert window.cmg.selected() == ["q4+oc", "q4+mma", "q4+simpl", "q4+beso"]   # the classic four
+    assert window.cmg.methods.count() == len(METHOD_NAMES)
+
+    window.cmg.set_selected(["q4+oc", "levelset"])
+    cfg = runner.build_config(window.core, window.lc, window.filters, base_cfg=window._base_cfg,
+                              objective=window.objective, constraints=window.constraints)
+    cfg = cfg.updated(m=0.3, max_iter=3, save_every=0).with_output_dir(tmp_path)
+    lines = []
+    grid = runner.run_compare_methods(cfg, window.cmg, None, lines.append)
+    assert grid.exists()
+    log = "\n".join(lines)
+    assert "referee_compliance" in log and "q4+oc" in log and "levelset" in log
+    window.cmg.set_selected(window.cmg.DEFAULT)

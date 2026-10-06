@@ -21,6 +21,7 @@ from .loads import LoadCaseRow, LoadCasesGroup
 from .method import CoreParamsGroup
 from .modes import (
     CompareLoadCasesParamsGroup,
+    CompareMethodsParamsGroup,
     CompareTwoParamsGroup,
     SensitivityParamsGroup,
     SensitivitySweep2DParamsGroup,
@@ -33,7 +34,8 @@ from .specs import ObjectiveGroup, SpecListGroup
 
 __all__ = [
     "ParamForm", "LoadCaseRow", "LoadCasesGroup", "CoreParamsGroup", "PipelineView",
-    "ObjectiveGroup", "SpecListGroup", "CompareLoadCasesParamsGroup", "CompareTwoParamsGroup",
+    "ObjectiveGroup", "SpecListGroup", "CompareLoadCasesParamsGroup", "CompareMethodsParamsGroup",
+    "CompareTwoParamsGroup",
     "SensitivityParamsGroup", "SensitivitySweepParamsGroup", "SensitivitySweep2DParamsGroup",
     "SweepParamsGroup", "Sweep2DParamsGroup",
 ]

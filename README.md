@@ -23,9 +23,9 @@ any doubt about what this repository actually does today:
 | [Elements](toporia/plugins/physics/README.md) — discretisation | Q4 plane stress | 6 | 3 |
 | [Responses](toporia/plugins/responses/README.md) — objectives and constraints | compliance, volume, von Mises stress | 4 | 14 |
 | [Updaters](toporia/plugins/updaters/README.md) — optimisers | OC, MMA, GCMMA, SiMPL, BESO, SLSQP | 8 | 3 |
-| [Problems](toporia/plugins/problems/README.md) — benchmarks | MBB, cantilever, 3-point bending, bar, 3× drone arm | 6 | 3 |
+| [Problems](toporia/plugins/problems/README.md) — benchmarks | MBB, cantilever, Michell cantilever, 3-point bending, bar, 3× drone arm | 6 | 2 |
 
-**41 implemented · 63 with open code elsewhere · 44 from papers only.**
+**42 implemented · 63 with open code elsewhere · 43 from papers only.**
 
 Short version of where this sits in the field: Toporia is 2-D, structured-grid, linear
 elastic today, and it covers three of the field's parameterisation families (density/SIMP,

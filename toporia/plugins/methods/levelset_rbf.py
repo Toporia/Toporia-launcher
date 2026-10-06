@@ -233,6 +233,17 @@ class LevelSetRBFMethod(OptimizationMethod):
         self.iteration = iteration - 1
         # ── 1. Compute element volumes and run FEA (penal=1: linear stiffness) ──
         self.density = self._element_volume()
+        # The design change the engine's stopping rule reads (the contract's
+        # get_change): the largest change of any element's volume fraction
+        # since the previous step.  It used to be the relative change of the
+        # compliance, which is tiny while the volume is still being driven to
+        # its target, so the engine stopped the method after a few iterations
+        # far above the budget.  On the first step nothing has moved yet, so
+        # the change stays infinite.
+        previous = getattr(self, "_previous_step_density", None)
+        if previous is not None:
+            self.change = float(np.max(np.abs(self.density - previous)))
+        self._previous_step_density = self.density.copy()
         _, ce, self.objective = solve_fea(self.problem, self.density, penal=1.0)
         ele_comp = ce * (self.scenario.Emin + self.density * (self.scenario.E0 - self.scenario.Emin))
         vol      = float(np.mean(self.density))
@@ -288,9 +299,6 @@ class LevelSetRBFMethod(OptimizationMethod):
         self._apply_enforced_regions_to_phi()
         self.Phi = np.clip(self.Phi, -12., 12.)
 
-        if len(self.comp_history) > 1:
-            self.change = (abs(self.comp_history[-1] - self.comp_history[-2])
-                           / max(abs(self.comp_history[-1]), 1.))
 
     def is_converged(self):
         """Method-specific criterion: volume on target AND compliance stable.

@@ -36,6 +36,7 @@ from PySide6.QtWidgets import (
 from .canvas import LiveCanvas
 from .panels import (
     CompareLoadCasesParamsGroup,
+    CompareMethodsParamsGroup,
     CompareTwoParamsGroup,
     CoreParamsGroup,
     LoadCasesGroup,
@@ -86,7 +87,7 @@ class MainWindow(QMainWindow):
         self.mode = QComboBox()
         self.mode.addItems([
             "Run One", "Sweep", "Sweep 2D",
-            "Compare Two", "Compare Load Cases",
+            "Compare Two", "Compare Load Cases", "Compare Methods",
             "Sensitivity", "Sensitivity Sweep", "Sensitivity Sweep 2D",
             "Check Parts",
         ])
@@ -116,11 +117,12 @@ class MainWindow(QMainWindow):
         self.sg2     = Sweep2DParamsGroup()
         self.cg      = CompareTwoParamsGroup()
         self.clcg    = CompareLoadCasesParamsGroup()
+        self.cmg     = CompareMethodsParamsGroup()
         self.sens    = SensitivityParamsGroup()
         self.ssg     = SensitivitySweepParamsGroup()
         self.ssg2    = SensitivitySweep2DParamsGroup()
         for g in (self.pipeline, self.core, self.objective, self.constraints, self.filters, self.lc, self.sg, self.sg2,
-                  self.cg, self.clcg, self.sens, self.ssg, self.ssg2):
+                  self.cg, self.clcg, self.cmg, self.sens, self.ssg, self.ssg2):
             pl.addWidget(g)
 
         # The sweep / compare / sensitivity dropdowns list every parameter path of
@@ -218,6 +220,7 @@ class MainWindow(QMainWindow):
         self.sg2.setVisible(m == "Sweep 2D")
         self.cg.setVisible(m == "Compare Two")
         self.clcg.setVisible(m == "Compare Load Cases")
+        self.cmg.setVisible(m == "Compare Methods")
         self.sens.setVisible(m == "Sensitivity")
         self.ssg.setVisible(m == "Sensitivity Sweep")
         self.ssg2.setVisible(m == "Sensitivity Sweep 2D")
@@ -289,6 +292,11 @@ class MainWindow(QMainWindow):
                     f"Compare: {self.cg.key()}  A={self.cg.value_a.value():.3g}"
                     f"  vs  B={self.cg.value_b.value():.3g}",
                 )
+            elif mode == "Compare Methods":
+                grid = runner.run_compare_methods(cfg, self.cmg, on_iter, self._log)
+                if grid is not None:
+                    self.canvas.show_grid(grid, f"Compare Methods: {cfg.scenario.Lx:g} x {cfg.scenario.Ly:g} mm, "
+                                                f"{len(self.cmg.selected())} methods")
             elif mode == "Compare Load Cases":
                 img = runner.run_compare_load_cases(cfg, self.clcg, on_iter, self._log)
                 self.canvas.show_grid(img, "Compare Load Cases  —  A vs B")

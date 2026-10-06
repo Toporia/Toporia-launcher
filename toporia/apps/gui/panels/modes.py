@@ -10,10 +10,14 @@
 #   key(), row_key(), sens_key(), ...   the parameter path currently selected
 
 
+from PySide6.QtCore import Qt
 from PySide6.QtWidgets import (
     QComboBox,
     QFormLayout,
     QGroupBox,
+    QLabel,
+    QListWidget,
+    QListWidgetItem,
     QVBoxLayout,
 )
 
@@ -232,3 +236,56 @@ class SensitivitySweep2DParamsGroup(QGroupBox):
     def sens_key(self):      return self.sens_param.currentData()  or self.sens_param.currentText()
     def row_sweep_key(self): return self.row_param.currentData()   or self.row_param.currentText()
     def col_sweep_key(self): return self.col_param.currentData()   or self.col_param.currentText()
+
+
+class CompareMethodsParamsGroup(QGroupBox):
+    """Which methods to compare on the current problem (visible only in Compare Methods mode).
+
+    Every selectable method is listed — every physics model with every updater,
+    and the whole methods — with the four classic ones ticked.  Each ticked
+    method runs on the same scenario, mesh, filters and stopping rule; the
+    results are one image of the designs and one table, also in the log.
+    """
+    #: Ticked when the panel is first shown.
+    DEFAULT = ("q4+oc", "q4+mma", "q4+simpl", "q4+beso")
+
+    def __init__(self, parent=None):
+        super().__init__("Compare Methods", parent)
+        from toporia.framework.registry import missing_dependencies
+        from toporia.plugins.methods import method_classes
+        layout = QVBoxLayout(self)
+        hint = QLabel("Ticked methods run on this problem with the same mesh, filters and "
+                      "stopping rule. A method that cannot solve it is listed with the reason.")
+        hint.setWordWrap(True)
+        layout.addWidget(hint)
+        self.methods = QListWidget()
+        for cls in method_classes():
+            # The updater first: in a long list of pairings it is what tells them apart.
+            model, updater = getattr(cls, "model", None), getattr(cls, "updater", None)
+            text = f"{updater.label}  ·  on {model.name}" if model else f"{cls.label}  (whole method)"
+            item = QListWidgetItem(text)
+            item.setData(Qt.UserRole, cls.name)
+            item.setToolTip(f"{cls.label}   [{cls.name}]")
+            missing = missing_dependencies(cls)
+            if missing:
+                item.setFlags(item.flags() & ~Qt.ItemIsEnabled)
+                item.setToolTip(f"{cls.label}: needs {', '.join(missing)}, which is not installed")
+            item.setFlags(item.flags() | Qt.ItemIsUserCheckable)
+            item.setCheckState(Qt.Checked if cls.name in self.DEFAULT and not missing else Qt.Unchecked)
+            self.methods.addItem(item)
+        self.methods.setMinimumHeight(180)
+        layout.addWidget(self.methods)
+
+    def selected(self):
+        """The ticked methods' names, in list order."""
+        return [self.methods.item(i).data(Qt.UserRole) for i in range(self.methods.count())
+                if self.methods.item(i).checkState() == Qt.Checked]
+
+    def set_selected(self, names):
+        """Tick exactly these methods."""
+        for i in range(self.methods.count()):
+            item = self.methods.item(i)
+            item.setCheckState(Qt.Checked if item.data(Qt.UserRole) in names else Qt.Unchecked)
+
+    def refresh(self, items):
+        """The method list does not depend on the parameter paths."""

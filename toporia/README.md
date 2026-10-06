@@ -80,10 +80,10 @@ toporia/
 │   ├── loop.py          the one optimisation loop
 │   ├── records.py       history, images, the limit check, run.json
 │   ├── pipeline.py      names the parts of a run, for the console and the GUI
-│   └── modes/           single · sweep · compare · sensitivity · check
+│   └── modes/           single · sweep · compare · methods · sensitivity · check
 ├── checks/              the conformance test, one module per plugin kind
 └── apps/
-    ├── cli.py           toporia run · sweep · compare · check · list · export
+    ├── cli.py           toporia run · sweep · compare · benchmark · check · list · export
     └── gui/             app · window · canvas · runner · config · panels/
 ```
 

@@ -20,6 +20,7 @@ engine/
     ├── single.py       Run One
     ├── sweep.py        Sweep, Sweep 2D
     ├── compare.py      Compare Two, Compare Load Cases
+    ├── methods.py      Compare Methods, and `toporia benchmark`
     ├── sensitivity.py  Sensitivity, Sensitivity Sweep, Sensitivity Sweep 2D
     ├── check.py        Check Parts
     └── grids.py        what the multi-run modes share
@@ -30,7 +31,7 @@ engine/
 ```mermaid
 flowchart TB
     callers["Who starts a run<br/>the GUI (apps/gui/runner.py) · the CLI (apps/cli.py) · Python and tests"]
-    modes["modes/: one module per analysis mode<br/>single · sweep · compare · sensitivity · check<br/>each builds variants of a Run with apply_param<br/>(grids.py: the folder, the cells, the image grid)"]
+    modes["modes/: one module per analysis mode<br/>single · sweep · compare · methods · sensitivity · check<br/>each builds variants of a Run with apply_param<br/>(grids.py: the folder, the cells, the image grid)"]
     loop["loop.py: the one loop<br/>initialized_method · run_single_with_store"]
     method["the method<br/>framework contract, built from plugins"]
     pipeline["pipeline.py<br/>names the parts of the run"]
@@ -64,6 +65,7 @@ any parameter path can be swept, compared or perturbed — and sends each throug
 | [`modes/single.py`](modes/single.py) | Run One | One optimisation, with a summary of the meshed problem first and `history.png` at the end. |
 | [`modes/sweep.py`](modes/sweep.py) | Sweep · Sweep 2D | One parameter over an `n_rows × n_cols` grid, or two parameters (rows × columns); one run per cell; `sweep_grid.png` / `sweep2d_grid.png`. |
 | [`modes/compare.py`](modes/compare.py) | Compare Two · Compare Load Cases | Two runs differing in one parameter, or in their load cases; `comparison.png` shows material only in A, only in B, and in both. `compare_runs` takes any two prepared runs (used by `toporia compare`). |
+| [`modes/methods.py`](modes/methods.py) | Compare Methods · `toporia benchmark` | Several methods on the same scenario, mesh, filters and stopping rule (and, for a benchmark, on several problems): `methods_grid.png` with every final design, and `methods.csv` / `benchmark.csv` with each method's own objective, a **referee compliance** (every design measured the same way: Q4, SIMP p = 3, no filter), volume, grey level, iterations, physics solves, time, stop reason and whether every limit was met. A method that cannot solve the scenario is listed with the reason. |
 | [`modes/sensitivity.py`](modes/sensitivity.py) | Sensitivity · Sensitivity Sweep (1-D, 2-D) | Runs at `base` and `base + gap` and maps `(ρ_perturbed − ρ_base) / gap` per element over the base design (`sensitivity.png`, `.csv`); the sweeps do that for every cell, and can also vary the base value or the gap (`senssweep_grid.png`, `senssweep2d_grid.png`). |
 | [`modes/check.py`](modes/check.py) | Check Parts | No optimisation: the conformance test ([`checks/`](../checks/README.md)) on every part of the selected pipeline. |
 | [`modes/grids.py`](modes/grids.py) | *(shared)* | The mode's output folder, running a list of cells with progress lines, and laying images out in one grid. |
