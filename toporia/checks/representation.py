@@ -9,9 +9,9 @@
 import numpy as np
 
 from toporia.framework.params import resolve_params
-from toporia.framework.problem.mesh import RectangularProblem
+from toporia.framework.problem.mesh import make_problem
 
-from .common import check_declaration, gradient_check, iterate, registered, small_run
+from .common import check_declaration, gradient_check, in_dims, iterate, registered, small_run
 from .report import Report
 
 
@@ -22,8 +22,8 @@ def check_representation(cls):
     check_declaration(report, cls)
     if not report.ok:
         return report
-    run = small_run(m=0.4)
-    problem = RectangularProblem(run.scenario, run.solver.m)
+    run = in_dims(small_run(m=0.4), getattr(cls, "dims", None))
+    problem = make_problem(run.scenario, run.solver.m)
     representation = cls(**resolve_params(cls.name, cls.params, {}))
 
     with report.step("start design within the bounds, field of the mesh's shape in [0, 1]") as check:
@@ -34,8 +34,8 @@ def check_representation(cls):
             f"bounds have shapes {lower.shape}, {upper.shape}; the variables {z0.shape}"
         assert np.all(lower <= z0) and np.all(z0 <= upper), "the start design is outside the bounds"
         field = representation.density(z0)
-        assert np.shape(field) == (problem.nely, problem.nelx), \
-            f"density() gave shape {np.shape(field)}, expected {(problem.nely, problem.nelx)}"
+        assert np.shape(field) == problem.shape, \
+            f"density() gave shape {np.shape(field)}, expected {problem.shape}"
         assert np.all(np.isfinite(field)) and field.min() >= -1e-9 and field.max() <= 1 + 1e-9, \
             "density() left [0, 1]"
         check.detail = f"{z0.size} variables, start volume {float(np.mean(field)):.3f}"
@@ -46,15 +46,15 @@ def check_representation(cls):
     rng = np.random.default_rng(0)
     movable = upper > lower
     z = np.clip(z0 + np.where(movable, rng.uniform(-0.02, 0.02, z0.shape) * (upper - lower), 0.0), lower, upper)
-    weights = rng.normal(size=(problem.nely, problem.nelx))
+    weights = rng.normal(size=problem.shape)
     gradient_check(lambda v: float(np.sum(weights * representation.density(v))), representation.backward(z, weights),
                    z, movable, report, "backward vs finite differences")
 
     with registered(REPRESENTATIONS, cls):
         with report.step("short run with q4+mma"):
             from toporia.engine.loop import initialized_method
-            run = small_run(method="q4+mma", m=0.4, max_iter=4, tol=0.0, representation={"type": cls.name},
-                            method_params={"move": 0.02})
+            run = in_dims(small_run(method="q4+mma", m=0.4, max_iter=4, tol=0.0, representation={"type": cls.name},
+                            method_params={"move": 0.02}), getattr(cls, "dims", None))
             method = initialized_method(run)
             iterate(method, 4)
             assert np.all(np.isfinite(method.get_density())), "the design has non-finite entries"

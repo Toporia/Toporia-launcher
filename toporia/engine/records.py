@@ -28,6 +28,7 @@ from PIL import Image  # writes the greyscale PNGs
 
 import toporia
 from toporia.framework.problem.files import dump_json, fingerprint, to_dict
+from toporia.framework.problem.mesh import projection
 from toporia.framework.problem.run import PROJECT_ROOT
 
 # ── The history and the images ────────────────────────────────────────────────
@@ -64,9 +65,16 @@ class ResultStore:
             self.save_density(density, self.output_dir / f"density_{iteration:04d}.png")
 
     def save_final(self, density, save_history=True):
-        """Write the final density image, CSV, and optionally the history plot."""
+        """Write the final density image, CSV, and optionally the history plot.
+
+        A 3-D design is drawn and written to the CSV as its average through the
+        depth (framework/problem/mesh.py, projection), and saved whole as
+        final_density.npy.
+        """
         self.save_density(density, self.output_dir / "final_density.png")
-        self.save_csv(density)
+        self.save_csv(projection(density))
+        if np.ndim(density) == 3:
+            np.save(self.output_dir / "final_density.npy", np.asarray(density))
         if save_history:
             self.save_history()
 
@@ -99,7 +107,7 @@ class ResultStore:
           3. ×255    — scale to byte range [0, 255]
           4. clip    — guard against any values that slipped outside [0,1]
         """
-        pixels = np.flipud(1.0 - density)
+        pixels = np.flipud(1.0 - projection(density))
         pixels = (np.clip(pixels, 0.0, 1.0) * 255).astype(np.uint8)
         Image.fromarray(pixels, mode="L").save(path)   # "L" = 8-bit greyscale
 

@@ -5,7 +5,7 @@
 # starts, and the convergence history (history.png) after it ends.
 
 from toporia.engine.loop import run_single_with_store
-from toporia.framework.problem.mesh import RectangularProblem
+from toporia.framework.problem.mesh import make_problem
 
 
 def run_one(config, on_iteration=None):
@@ -18,8 +18,9 @@ def run_one(config, on_iteration=None):
     # Mesh the problem once here, only to report its size.  The engine does not
     # know how a method numbers its degrees of freedom, so it reports nodes and
     # elements rather than DOFs.
-    problem = RectangularProblem(scenario, config.solver.m)
-    print(f"[setup] Lx={scenario.Lx} Ly={scenario.Ly} nelx={problem.nelx} nely={problem.nely}")
+    problem = make_problem(scenario, config.solver.m)
+    depth = f" Lz={scenario.Lz} nelz={problem.nelz}" if problem.dims == 3 else ""
+    print(f"[setup] Lx={scenario.Lx} Ly={scenario.Ly} nelx={problem.nelx} nely={problem.nely}{depth}")
     print(f"[setup] volfrac={scenario.volfrac} edge_c={len(scenario.edge_constraints)} "
           f"pt_c={len(scenario.point_constraints)} pt_l={len(scenario.point_loads)}")
     n_fixed = int((problem.fixed_nodes | problem.fixed_x_nodes | problem.fixed_y_nodes).sum())

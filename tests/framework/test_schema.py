@@ -88,7 +88,7 @@ def test_field_param_defaults_match_the_dataclass(declared, cls):
 
 def test_every_method_is_discovered_in_menu_order():
     assert METHODS.names() == ["levelset"]       # whole methods; everything else is model+updater
-    assert MODELS.names() == ["q4", "pymoto_elastic"]
+    assert MODELS.names() == ["q4", "h8", "pymoto_elastic"]
     assert len(method_classes()) == len(MODELS.names()) * len(UPDATERS.names()) + 1
 
 

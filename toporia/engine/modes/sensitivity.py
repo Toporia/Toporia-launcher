@@ -28,7 +28,7 @@ import numpy as np
 from matplotlib.colors import TwoSlopeNorm
 
 from toporia.engine.loop import run_single
-from toporia.framework import apply_param
+from toporia.framework import apply_param, projection
 
 from .grids import FIGURES, mode_folder, save_grid
 
@@ -110,6 +110,7 @@ def _save_csv(sensitivity, param_key, base_value, gap, folder):
 
     Values are raw finite-difference sensitivities, in Δdensity / Δ(param_key).
     """
+    sensitivity = projection(sensitivity)          # 3-D: the depth average
     path = folder / "sensitivity.csv"
     with open(path, "w", newline="") as file:
         writer = csv.writer(file)
@@ -125,6 +126,7 @@ def _save_csv(sensitivity, param_key, base_value, gap, folder):
 
 def _save_figure(density_base, sensitivity, param_key, base_value, gap, folder):
     """The sensitivity over a faint image of the base design, with a colour bar; returns the PNG's path."""
+    density_base, sensitivity = projection(density_base), projection(sensitivity)   # 3-D: depth averages
     max_abs = float(np.max(np.abs(sensitivity)))
     if max_abs < 1e-9:
         max_abs = 1.0

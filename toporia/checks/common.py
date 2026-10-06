@@ -52,6 +52,24 @@ def small_run(problem=BENCHMARK, **values):
     return get_run(problem).updated(**values)
 
 
+def in_dims(run, dims):
+    """`run` itself when a part working in `dims` can take a 2-D problem; else the same problem in 3-D.
+
+    The 3-D version is the scenario extruded two elements deep, with the
+    model q4 replaced by its 3-D counterpart h8, so a 3-D-only part is
+    checked on the same geometry as every other.
+    """
+    if dims is None or 2 in dims:
+        return run
+    method = run.solver.method.replace("q4+", "h8+") if run.solver.method.startswith("q4+") else run.solver.method
+    return run.updated(Lz=2.0 / run.solver.m, method=method)
+
+
+def model_name(run):
+    """Toporia's own model for the run's dimension: q4 in 2-D, h8 in 3-D."""
+    return "h8" if run.scenario.Lz > 0 else "q4"
+
+
 def iterate(method, iterations, tol=0.0):
     """Step as the engine does, with its stopping rule (design change below tol, or the method's own)."""
     for iteration in range(1, iterations + 1):

@@ -42,6 +42,8 @@ class Filter(ABC):
     #: conformance test checks it against finite differences; a heuristic
     #: (the classic sensitivity filter) declares False and is not checked.
     exact_adjoint = True
+    #: The problem dimensions it works in (2 for plane problems, 3 for a box); None means any.
+    dims = (2,)
     #: Parameters a schedule may change during a run (framework/parts/schedule.py).
     schedulable = ()
 

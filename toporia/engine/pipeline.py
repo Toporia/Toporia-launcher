@@ -64,6 +64,7 @@ def solver_problems(method_cls, run):
             reasons.append(f"{updater.label} moves one density per element, so it cannot move the variables "
                            f"of {representation.label!r} (updaters that can: {', '.join(able)})")
     reasons += _variant_problems(method_cls, run)
+    reasons += dimension_problems(run)
     for spec in run.solver.schedules:
         path = spec.get("path", "")
         owner = scheduled_owner(method_cls, run, path)
@@ -73,6 +74,36 @@ def solver_problems(method_cls, run):
         elif name not in owner.schedulable:
             can = ", ".join(owner.schedulable) or "none of its parameters"
             reasons.append(f"{owner.label} cannot change {name!r} during a run (it can change: {can})")
+    return reasons
+
+
+def problem_dims(run):
+    """2 for a plane problem, 3 when the scenario has a depth."""
+    return 3 if getattr(run.scenario, "Lz", 0.0) > 0 else 2
+
+
+def part_dims(kind, cls):
+    """The dimensions a part works in, as a tuple; None means any."""
+    if kind in ("model", "method"):
+        return tuple(cls.capabilities.dims)
+    dims = getattr(cls, "dims", None)
+    return None if dims is None else tuple(dims)
+
+
+def dimension_problems(run):
+    """Every part of the run that does not work in the problem's dimension, with what does."""
+    dims = problem_dims(run)
+    reasons = []
+    found = registries()
+    for kind, cls in pipeline_parts(run):
+        allowed = part_dims(kind, cls)
+        if allowed is None or dims in allowed:
+            continue
+        able = [other.label for other in found[kind].classes() if (part_dims(kind, other) or (dims,)) and
+                dims in (part_dims(kind, other) or (dims,))]
+        hint = f" ({kind}s that can: {', '.join(able)})" if able else ""
+        reasons.append(f"{cls.label} works in {'/'.join(f'{d}-D' for d in allowed)} only, "
+                       f"and this problem is {dims}-D{hint}")
     return reasons
 
 

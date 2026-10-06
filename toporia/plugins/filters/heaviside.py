@@ -39,6 +39,7 @@ class HeavisideFilter(Filter):
 
     name = "heaviside"
     label = "Heaviside projection"
+    dims = (2, 3)           # pointwise: any dimension
     order = 30
     params = (
         Param("beta", 1.0, "beta", "Initial projection sharpness. 1 is nearly linear.",

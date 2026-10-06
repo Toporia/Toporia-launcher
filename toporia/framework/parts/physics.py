@@ -51,6 +51,8 @@ class Physics(ABC):
     params = ()
     provides = ()
     uses_interpolation = False
+    #: The problem dimensions the engine solves: (2,) plane, (3,) solid.
+    dims = (2,)
 
     @abstractmethod
     def initialize(self, problem, settings, interpolation=None):

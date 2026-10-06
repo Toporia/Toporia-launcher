@@ -72,6 +72,8 @@ class Response:
     #: Parameter values for checking the gradient against finite differences
     #: (toporia.checks), when the defaults make the gradient deliberately inexact.
     gradient_check_settings = {}
+    #: The problem dimensions it works in; None means any (it never looks at the mesh's shape).
+    dims = None
     #: Parameters a schedule may change during a run (framework/parts/schedule.py).
     schedulable = ()
 

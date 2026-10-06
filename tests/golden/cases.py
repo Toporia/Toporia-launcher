@@ -56,6 +56,9 @@ CASES = {
         ],
     ),
 
+    # 3-D: the quick cantilever on H8 bricks, with the 3-D density filter.
+    "cantilever_3d_oc": lambda: _base("Cantilever 3D", method="h8+oc"),
+
     # Two weighted load cases — pins the weighted compliance sum in solve_fea.
     "cantilever_2lc": lambda: _base(
         "Cantilever",

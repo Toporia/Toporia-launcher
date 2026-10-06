@@ -10,7 +10,7 @@ import numpy as np
 
 from toporia.framework.parts.composition import ComposedMethod
 from toporia.framework.parts.method import OBJECTIVE
-from toporia.framework.problem.mesh import RectangularProblem
+from toporia.framework.problem.mesh import make_problem
 
 from .common import (
     BENCHMARK,
@@ -36,7 +36,7 @@ def _oc_compliance(m, max_iter):
         from toporia.plugins.methods import method_class
         run = small_run(method="q4+oc", m=m, max_iter=max_iter, tol=0.01)
         method = method_class("q4+oc")()
-        method.initialize(RectangularProblem(run.scenario, run.solver.m), run.solver)
+        method.initialize(make_problem(run.scenario, run.solver.m), run.solver)
         iterate(method, max_iter, tol=0.01)
         _reference[key] = float(method._model.evaluate(method.x, gradients=False).objective)
     return _reference[key]

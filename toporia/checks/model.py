@@ -7,12 +7,13 @@
 import numpy as np
 
 from toporia.framework.params import resolve_params
-from toporia.framework.problem.mesh import RectangularProblem
+from toporia.framework.problem.mesh import make_problem
 
 from .common import (
     WITH_HOLES,
     check_declaration,
     gradient_check,
+    in_dims,
     random_design,
     small_run,
 )
@@ -29,7 +30,8 @@ def _model_run(cls, problem=WITH_HOLES):
     if capabilities.constraints and capabilities.max_constraints != 0:
         response = RESPONSES.get(capabilities.constraints[0])
         constraints = [{"type": response.name, **getattr(response, "gradient_check_settings", {})}]
-    return small_run(problem, m=0.3, volfrac=0.4, objective={"type": objective}, constraints=constraints)
+    return in_dims(small_run(problem, m=0.3, volfrac=0.4, objective={"type": objective}, constraints=constraints),
+                   capabilities.dims)
 
 
 def check_model(cls):
@@ -39,9 +41,9 @@ def check_model(cls):
     if not report.ok:
         return report
     run = _model_run(cls)
-    problem = RectangularProblem(run.scenario, run.solver.m)
+    problem = make_problem(run.scenario, run.solver.m)
     model = cls()
-    with report.step("initialize on a problem with holes") as check:
+    with report.step(f"initialize on a problem with holes ({problem.dims}-D)") as check:
         model.initialize(problem, run.solver, resolve_params(cls.name, cls.params, {}))
         check.detail = (f"objective {run.scenario.objective['type']}, constraints "
                         f"{[c['type'] for c in run.scenario.constraints] or 'none'}")
@@ -55,7 +57,7 @@ def check_model(cls):
         assert np.all(lower <= upper), "a lower bound exceeds its upper bound"
         assert np.all(x0 >= lower - 1e-12) and np.all(x0 <= upper + 1e-12), "the start design is out of bounds"
         density = model.physical(x0)
-        assert density.shape == (problem.nely, problem.nelx), f"physical() returned shape {density.shape}"
+        assert density.shape == problem.shape, f"physical() returned shape {density.shape}"
         assert density.min() >= -1e-9 and density.max() <= 1 + 1e-9, "physical density outside [0, 1]"
 
     x = random_design(model)

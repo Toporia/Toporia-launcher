@@ -93,6 +93,8 @@ class VonMisesStress(Response):
 
     def evaluate(self, state, gradient=True):
         physics, settings = self.physics, self.settings
+        # The squared von Mises stress is σᵀVσ; a 3-D engine brings its own 6 × 6 V.
+        vm = getattr(physics, "von_mises_matrix", VON_MISES_2D)
         p, q, limit = settings["p"], settings["q"], settings["limit"]
         density = state.density
         relaxation = density ** q
@@ -100,7 +102,7 @@ class VonMisesStress(Response):
         cases = []   # (stress, von Mises, relaxed von Mises) per load case
         for case in range(len(state.weights)):
             stress = physics.element_stress(state, case)
-            von_mises = np.sqrt(np.einsum("...i,ij,...j->...", stress, VON_MISES_2D, stress) + _EPSILON)
+            von_mises = np.sqrt(np.einsum("...i,ij,...j->...", stress, vm, stress) + _EPSILON)
             cases.append((stress, von_mises, relaxation * von_mises))
 
         peak = float(max(np.max(relaxed) for *_, relaxed in cases))
@@ -124,7 +126,7 @@ class VonMisesStress(Response):
         for case, (stress, von_mises, relaxed) in enumerate(cases):
             d_norm = (relaxed / norm) ** (p - 1.0)
             sensitivity += d_norm * d_relaxation * von_mises
-            d_stress = (d_norm * relaxation / von_mises)[..., None] * (stress @ VON_MISES_2D)
+            d_stress = (d_norm * relaxation / von_mises)[..., None] * (stress @ vm)
             adjoint = physics.adjoint(state, physics.stress_load(state, case, d_stress))
             sensitivity -= slope * physics.mutual_energy(state, case, adjoint)
         return ResponseValue(value, scale / limit * sensitivity, exact, reported)

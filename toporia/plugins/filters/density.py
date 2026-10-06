@@ -14,6 +14,8 @@ from scipy.sparse import coo_matrix
 from toporia.framework.parts.filter import Filter
 from toporia.plugins.shared_params import RMIN
 
+from ._neighbours import neighbour_matrix
+
 
 class DensityFilter(Filter):
     """Weighted-average spatial filter (linear density filter).
@@ -23,6 +25,7 @@ class DensityFilter(Filter):
 
     name = "density"
     label = "Density filter"
+    dims = (2, 3)
     order = 10
     params = (RMIN,)
 
@@ -31,8 +34,13 @@ class DensityFilter(Filter):
 
     def setup(self, problem, solver):
         rmin        = self.rmin
+        if getattr(problem, "dims", 2) == 3:
+            # 3-D: the same weights in any dimension, elements in C order.
+            self._shape, self._order = problem.shape, "C"
+            self.H, self.Hs = neighbour_matrix(problem.shape, rmin)
+            return
         nely, nelx  = problem.nely, problem.nelx
-        self._shape = (nely, nelx)
+        self._shape, self._order = (nely, nelx), "F"
         reach       = int(np.ceil(rmin) - 1)
 
         rows, cols, vals = [], [], []
@@ -52,13 +60,9 @@ class DensityFilter(Filter):
         self.Hs = np.asarray(self.H.sum(axis=1)).ravel()
 
     def forward(self, x):
-        nely, nelx = self._shape
-        return (self.H @ x.reshape(-1, order="F") / self.Hs).reshape(
-            (nely, nelx), order="F"
-        )
+        order = self._order
+        return (self.H @ x.reshape(-1, order=order) / self.Hs).reshape(self._shape, order=order)
 
     def backward(self, x_in, sensitivity):
-        nely, nelx = self._shape
-        return (self.H @ (sensitivity.reshape(-1, order="F") / self.Hs)).reshape(
-            (nely, nelx), order="F"
-        )
+        order = self._order
+        return (self.H @ (sensitivity.reshape(-1, order=order) / self.Hs)).reshape(self._shape, order=order)

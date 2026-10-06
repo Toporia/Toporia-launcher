@@ -1,38 +1,53 @@
-# plugins/postprocessors/export_stl.py — the design extruded to a solid, as STL.
+# plugins/postprocessors/export_stl.py — the design as a closed solid, as STL.
 #
-# Every solid element of the black-and-white design becomes a block of the
-# chosen thickness, and only the faces between solid and empty are written,
-# so the result is one closed surface around the design exactly as it was
-# analysed (stepped at the element size), ready for a slicer.  Binary STL, in
-# millimetres.  Where two solid elements touch only at a corner, the surface
-# touches itself along that edge; slicers accept this.
+# Every solid element of the black-and-white design becomes a block — in 3-D
+# the element itself, in 2-D the element extruded to the chosen thickness —
+# and only the faces between solid and empty are written, so the result is
+# one closed surface around the design exactly as it was analysed (stepped at
+# the element size), ready for a slicer.  Binary STL, in millimetres.  Where
+# two solid elements touch only along an edge or at a corner, the surface
+# touches itself there; slicers accept this.
 
 import numpy as np
 
 from toporia.framework.params import Param
 from toporia.framework.parts.postprocess import PostProcessor
 
+#: For each of the six face directions (axis, side): the face's four corners, as
+#: (x, y, z) offsets in {0, 1}, ordered so the face points outward.
+_FACES = {
+    (0, 0): ((0, 0, 0), (0, 0, 1), (0, 1, 1), (0, 1, 0)),     # x low
+    (0, 1): ((1, 0, 0), (1, 1, 0), (1, 1, 1), (1, 0, 1)),     # x high
+    (1, 0): ((0, 0, 0), (1, 0, 0), (1, 0, 1), (0, 0, 1)),     # y low
+    (1, 1): ((0, 1, 0), (0, 1, 1), (1, 1, 1), (1, 1, 0)),     # y high
+    (2, 0): ((0, 0, 0), (0, 1, 0), (1, 1, 0), (1, 0, 0)),     # z low
+    (2, 1): ((0, 0, 1), (1, 0, 1), (1, 1, 1), (0, 1, 1)),     # z high
+}
 
-def block_faces(solid, dx, dy, thickness):
-    """Triangles (n, 3, 3) of the surface around the solid elements, outward-facing."""
-    nely, nelx = solid.shape
+
+def voxel_faces(solid, spacing):
+    """Triangles (n, 3, 3) of the closed surface around the solid voxels of a (z, y, x) array.
+
+    `spacing` is the element size (dx, dy, dz).
+    """
+    solid = np.asarray(solid, dtype=bool)
     padded = np.pad(solid, 1, constant_values=False)
+    nz, ny, nx = solid.shape
+    z, y, x = np.nonzero(solid)
     quads = []
-    rows, cols = np.nonzero(solid)
-    for i, j in zip(rows, cols):
-        x0, x1, y0, y1 = j * dx, (j + 1) * dx, i * dy, (i + 1) * dy
-        quads.append([(x0, y0, 0), (x0, y1, 0), (x1, y1, 0), (x1, y0, 0)])                     # bottom
-        quads.append([(x0, y0, thickness), (x1, y0, thickness), (x1, y1, thickness), (x0, y1, thickness)])  # top
-        if not padded[i + 1, j]:          # left neighbour empty
-            quads.append([(x0, y0, 0), (x0, y0, thickness), (x0, y1, thickness), (x0, y1, 0)])
-        if not padded[i + 1, j + 2]:      # right
-            quads.append([(x1, y0, 0), (x1, y1, 0), (x1, y1, thickness), (x1, y0, thickness)])
-        if not padded[i, j + 1]:          # below
-            quads.append([(x0, y0, 0), (x1, y0, 0), (x1, y0, thickness), (x0, y0, thickness)])
-        if not padded[i + 2, j + 1]:      # above
-            quads.append([(x0, y1, 0), (x0, y1, thickness), (x1, y1, thickness), (x1, y1, 0)])
-    quads = np.asarray(quads, dtype=np.float32).reshape(-1, 4, 3)
-    return np.concatenate([quads[:, [0, 1, 2]], quads[:, [0, 2, 3]]])
+    for (axis, side), corners in _FACES.items():
+        # The neighbour across this face, in the padded array (z, y, x order).
+        step = [0, 0, 0]
+        step[2 - axis] = 1 if side else -1
+        open_face = ~padded[z + 1 + step[0], y + 1 + step[1], x + 1 + step[2]]
+        if not np.any(open_face):
+            continue
+        base = np.stack([x[open_face], y[open_face], z[open_face]], axis=1).astype(float)
+        quads.append(base[:, None, :] + np.array(corners, dtype=float)[None])
+    if not quads:
+        return np.zeros((0, 3, 3), dtype=np.float32)
+    quads = np.concatenate(quads) * np.asarray(spacing, dtype=float)
+    return np.concatenate([quads[:, [0, 1, 2]], quads[:, [0, 2, 3]]]).astype(np.float32)
 
 
 def write_binary_stl(path, triangles):
@@ -49,13 +64,14 @@ def write_binary_stl(path, triangles):
 
 
 class ExportSTL(PostProcessor):
-    """The black-and-white design extruded to a closed solid, as binary STL in millimetres."""
+    """The black-and-white design as a closed solid (a 2-D design extruded), binary STL in millimetres."""
 
     name = "export_stl"
     label = "Export solid (STL)"
     order = 70
     table_metrics = ()          # files, not numbers to compare
-    params = (Param("thickness", 5.0, "Thickness", "Extrusion depth of the 2-D design.",
+    dims = (2, 3)
+    params = (Param("thickness", 5.0, "Thickness", "Extrusion depth of a 2-D design (a 3-D design has its own).",
                     min=0.01, max=1000.0, step=1.0, decimals=2, units="mm"),)
 
     def __init__(self, thickness=5.0):
@@ -63,7 +79,11 @@ class ExportSTL(PostProcessor):
 
     def process(self, result):
         problem = result.problem
-        triangles = block_faces(result.solid(), problem.dx, problem.dy, self.thickness)
+        solid = result.solid()
+        if solid.ndim == 2:
+            solid, spacing = solid[None], (problem.dx, problem.dy, self.thickness)
+        else:
+            spacing = (problem.dx, problem.dy, problem.dz)
+        triangles = voxel_faces(solid, spacing)
         write_binary_stl(result.file("design.stl"), triangles)
-        return {"triangles": int(len(triangles)),
-                "volume_mm3": float(result.solid().sum() * problem.dx * problem.dy * self.thickness)}
+        return {"triangles": int(len(triangles)), "volume_mm3": float(solid.sum() * np.prod(spacing))}

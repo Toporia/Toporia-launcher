@@ -10,6 +10,7 @@ from toporia.framework.parts.method import OBJECTIVE
 
 from .common import (
     check_declaration,
+    in_dims,
     iterate,
     registered,
     small_run,
@@ -33,7 +34,8 @@ def check_method(cls):
     with registered(METHODS, cls):
         with report.step("short run on the benchmark"):
             from toporia.engine.loop import initialized_method
-            method = initialized_method(small_run(method=cls.name, m=0.4, max_iter=5, tol=0.0))
+            method = initialized_method(in_dims(small_run(method=cls.name, m=0.4, max_iter=5, tol=0.0),
+                                                cls.capabilities.dims))
             try:
                 iterate(method, 5)
             finally:

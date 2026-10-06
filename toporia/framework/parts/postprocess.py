@@ -83,6 +83,8 @@ class PostProcessor(ABC):
     dependencies = ()
     #: The metrics worth a column when methods are compared; None means all of them.
     table_metrics = None
+    #: The problem dimensions it works in (2 for plane problems, 3 for a box); None means any.
+    dims = (2,)
 
     @abstractmethod
     def process(self, result):

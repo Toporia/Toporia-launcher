@@ -19,11 +19,11 @@ from scipy import ndimage
 
 from toporia.framework.parts.postprocess import PostProcessor
 
-from ._measure import pinned
+from ._measure import element_size, pinned
 
 
 def thinnest(field, free):
-    """Width, in elements, of the thinnest part of `field` (bool), from its distance ridge; None if empty."""
+    """Width, in elements, of the thinnest part of `field` (bool, 2-D or 3-D), from its distance ridge; None if empty."""
     distance = ndimage.distance_transform_edt(field)
     ridge = field & free & (distance >= ndimage.maximum_filter(distance, size=3))
     if not ridge.any():
@@ -38,12 +38,13 @@ class FeatureSize(PostProcessor):
     label = "Feature size"
     order = 30
     table_metrics = ("min_member_mm", "min_hole_mm")
+    dims = (2, 3)
 
     def process(self, result):
         problem = result.problem
         solid = result.solid()
         free = ~pinned(problem)
-        size = min(problem.dx, problem.dy)
+        size = element_size(problem)
         member = thinnest(np.pad(solid, 1, constant_values=False), np.pad(free, 1))
         hole = thinnest(np.pad(~solid, 1, constant_values=False), np.pad(free, 1))
         return {"min_member_mm": None if member is None else member * size,

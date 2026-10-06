@@ -3,6 +3,8 @@
 import numpy as np
 from PIL import Image
 
+from toporia.framework.problem.mesh import projection
+
 #: The referee measures every design with the same physics: Q4, SIMP with this penalty, no filter.
 REFEREE_PENAL = 3.0
 
@@ -10,14 +12,17 @@ REFEREE_PENAL = 3.0
 def referee_compliance(problem, density):
     """Compliance of a design measured the same way whatever made it.
 
-    Toporia's Q4 solver, SIMP with p = REFEREE_PENAL, no filter, the scenario's
-    load cases and weights; the density is clipped to the problem's bounds so
-    holes stay holes.  For a black-and-white design the penalty does not matter.
+    Toporia's Q4 solver (H8 in 3-D), SIMP with p = REFEREE_PENAL, no filter,
+    the scenario's load cases and weights; the density is clipped to the
+    problem's bounds so holes stay holes.  For a black-and-white design the
+    penalty does not matter.
     """
     from toporia.plugins.interpolations.simp import SIMP
+    from toporia.plugins.physics.h8_solid import H8Solid
     from toporia.plugins.physics.q4_plane_stress import Q4PlaneStress
-    engine = Q4PlaneStress()
-    engine.initialize(problem, {}, SIMP(REFEREE_PENAL))
+    engine = H8Solid() if getattr(problem, "dims", 2) == 3 else Q4PlaneStress()
+    engine.initialize(problem, {"linear_solver": "auto", "amg_above": 60000, "amg_tol": 1e-8}
+                      if getattr(problem, "dims", 2) == 3 else {}, SIMP(REFEREE_PENAL))
     state = engine.solve(np.clip(density, problem.lower_bound, problem.upper_bound))
     return float(sum(weight * engine.compliance(state, case) for case, weight in enumerate(state.weights)))
 
@@ -27,14 +32,19 @@ def grey_level(density):
     return float(4.0 * np.mean(density * (1.0 - density)))
 
 
+def element_size(problem):
+    """The smallest element edge, in mm."""
+    return min(problem.dx, problem.dy, getattr(problem, "dz", problem.dx))
+
+
 def pinned(problem):
     """Elements whose density is fixed by the problem (holes, solid rings)."""
     return problem.upper_bound <= problem.lower_bound
 
 
 def save_image(field, path):
-    """A design as a greyscale PNG, solid dark, drawn the way final_density.png is."""
-    pixels = (np.clip(np.flipud(1.0 - np.asarray(field, dtype=float)), 0.0, 1.0) * 255).astype(np.uint8)
+    """A design as a greyscale PNG, solid dark, drawn the way final_density.png is (3-D: depth average)."""
+    pixels = (np.clip(np.flipud(1.0 - projection(np.asarray(field, dtype=float))), 0.0, 1.0) * 255).astype(np.uint8)
     Image.fromarray(pixels, mode="L").save(path)
 
 

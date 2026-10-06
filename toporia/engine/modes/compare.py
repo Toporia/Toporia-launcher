@@ -25,7 +25,7 @@ import numpy as np
 from matplotlib.gridspec import GridSpec
 
 from toporia.engine.loop import run_single
-from toporia.framework import apply_param
+from toporia.framework import apply_param, projection
 
 COLOR_A, COLOR_B, COLOR_BOTH = [np.array(colorsys.hsv_to_rgb(hue / 360, 0.90, 0.95)) for hue in (30, 150, 270)]
 
@@ -99,6 +99,7 @@ def _save_figure(density_a, density_b, label_a, label_b, output_dir):
     grid = GridSpec(2, 2, figure=fig, height_ratios=[2, 1], hspace=0.30, wspace=0.05)
     ax_both, ax_a, ax_b = fig.add_subplot(grid[0, :]), fig.add_subplot(grid[1, 0]), fig.add_subplot(grid[1, 1])
 
+    density_a, density_b = projection(density_a), projection(density_b)    # 3-D: depth average
     ax_both.imshow(_overlay(density_a, density_b), interpolation="nearest", aspect="equal")
     ax_both.set_title(f"Comparison:  {label_a}   vs   {label_b}", fontsize=10)
     ax_both.axis("off")

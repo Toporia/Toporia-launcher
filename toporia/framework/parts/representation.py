@@ -42,6 +42,8 @@ class Representation(ABC):
     schedulable = ()
     #: True when the variables are one density per element (the identity map).
     element_wise = False
+    #: The problem dimensions it works in (2 for plane problems, 3 for a box); None means any.
+    dims = (2,)
     #: One sentence of advice on using it (a suitable move limit, say), shown
     #: before a run and in the GUI; empty when there is none.
     advice = ""

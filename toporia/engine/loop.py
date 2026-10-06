@@ -4,7 +4,7 @@
 # module, so the wiring, the loop, the stopping rule and the recording all live
 # in one place:
 #
-#     Run.scenario ──(Run.solver.m)──> RectangularProblem ──┐
+#     Run.scenario ──(Run.solver.m)──> make_problem ────────┐
 #     Run.solver ───────────────────────────────────────────┴─> method.initialize(problem, solver)
 #                                                                  │
 #     for each iteration:  method.step(i) → density, responses, change
@@ -22,7 +22,7 @@
 import time
 
 from toporia.framework.parts.method import OBJECTIVE
-from toporia.framework.problem.mesh import RectangularProblem
+from toporia.framework.problem.mesh import make_problem
 from toporia.framework.registry import install_hint, missing_dependencies
 
 from .pipeline import describe_pipeline, make_schedules, representation_used, solver_problems
@@ -63,7 +63,7 @@ def initialized_method(run):
         print(f"note: {representation.label}: {representation.advice}")
     print(f"  pipeline: {describe_pipeline(run)}")
 
-    problem = RectangularProblem(run.scenario, run.solver.m)
+    problem = make_problem(run.scenario, run.solver.m)
     method = method_cls()
     method.initialize(problem, run.solver)
     view = method.describe_view() if hasattr(method, "describe_view") else None

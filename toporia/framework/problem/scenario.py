@@ -25,6 +25,7 @@ class LoadCase:
     Fmag:   float = 1.0   # force magnitude [N or normalised units]
     Fa:     float = 0.0   # force direction in degrees: 0=+x, 90=+y, 180=-x, 270=-y
     weight: float = 1.0   # contribution to the weighted compliance sum
+    Fe:     float = 0.0   # 3-D only: elevation out of the xy plane in degrees, 90 = +z
 
 
 @dataclass
@@ -115,6 +116,10 @@ class Scenario:
     # ── Design domain [mm] ────────────────────────────────────────────────────
     Lx: float = 100.0   # domain width
     Ly: float = 50.0    # domain height
+    # Depth.  0 is a 2-D problem (plane stress, unit thickness); a positive
+    # depth extrudes the rectangle into a 3-D box (framework/problem/mesh.py,
+    # BoxProblem): holes through it, supports and loads through the thickness.
+    Lz: float = 0.0
 
     # ── Regions with a prescribed state ───────────────────────────────────────
     # Circular holes: void inside r_void, a solid ring out to r_passive, and

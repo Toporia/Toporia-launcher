@@ -8,12 +8,13 @@ import numpy as np
 
 from toporia.framework.params import resolve_params
 from toporia.framework.parts.response import CONSTRAINT_ROLE, OBJECTIVE_ROLE
-from toporia.framework.problem.mesh import RectangularProblem
+from toporia.framework.problem.mesh import make_problem
 
 from .common import (
     WITH_HOLES,
     check_declaration,
     gradient_check,
+    in_dims,
     small_run,
 )
 from .report import Report
@@ -38,15 +39,15 @@ def check_response(cls):
     if not engines:
         report.add("gradient vs finite differences", None, f"no registered engine provides {cls.requires}")
     for model_cls in engines:
-        run = small_run(WITH_HOLES, m=0.3, volfrac=0.4)
-        problem = RectangularProblem(run.scenario, run.solver.m)
+        run = in_dims(small_run(WITH_HOLES, m=0.3, volfrac=0.4), model_cls.capabilities.dims)
+        problem = make_problem(run.scenario, run.solver.m)
         engine = model_cls.physics()
         engine.initialize(problem, resolve_params(model_cls.name, model_cls.params, {}))
         response = cls()
         response.setup(engine, problem, resolve_params(cls.name, cls.params,
                                                        getattr(cls, "gradient_check_settings", {})))
         rng = np.random.default_rng(1)
-        density = np.clip(rng.uniform(0.2, 0.9, (problem.nely, problem.nelx)),
+        density = np.clip(rng.uniform(0.2, 0.9, problem.shape),
                           problem.lower_bound, problem.upper_bound)
         result = response.evaluate(engine.solve(density))
         with report.step(f"on {model_cls.label}: value without the gradient is the same"):

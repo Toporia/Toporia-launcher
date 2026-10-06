@@ -15,9 +15,21 @@
 #                        a Scenario.  This is the entry point for the bundled
 #                        benchmark problems and the drone-arm example.
 #
+#   BoxProblem         — the same scenario in 3-D: the rectangle extruded to a
+#                        depth Lz (Scenario.Lz > 0) and divided into
+#                        nelx × nely × nelz brick elements.  Holes become
+#                        through-holes, edges become faces, and point supports
+#                        and loads become lines through the thickness.
+#
+#   make_problem(scenario, m) builds whichever of the two the scenario asks for.
+#
 # The domain is a rectangle of size Lx × Ly mm divided into nelx × nely
 # bilinear quad elements (Q4).  Node numbering follows column-major (Fortran)
 # order to match the classic top88 MATLAB convention.
+#
+# Every element field has the problem's `shape`: (nely, nelx) in 2-D and
+# (nelz, nely, nelx) in 3-D, so a 2-D field is the 3-D one without its first
+# axis and code written for `shape` works in both.  `dims` is 2 or 3.
 
 from dataclasses import dataclass
 
@@ -50,6 +62,11 @@ class BaseProblem:
     scenario : core.scenario.Scenario
         The scenario the problem was built from.  Methods read the material,
         the volume target and the load cases from it.
+    dims : int
+        2 or 3.
+    shape : tuple
+        The shape of every element field: (nely, nelx), or (nelz, nely, nelx) in 3-D.
+        Node masks have one more node than elements along every axis.
     nelx : int
         Number of finite elements along the x-axis (domain width direction).
     nely : int
@@ -151,6 +168,8 @@ class RectangularProblem(BaseProblem):
 
         self.dx = self.Lx / self.nelx
         self.dy = self.Ly / self.nely
+        self.dims = 2
+        self.shape = (self.nely, self.nelx)
 
         # ── Coordinate grids ─────────────────────────────────────────────────
         self.node_x, self.node_y = np.meshgrid(
@@ -272,3 +291,84 @@ class RectangularProblem(BaseProblem):
 
 # Backward-compatibility alias — existing user code using BracketProblem still works.
 BracketProblem = RectangularProblem
+
+
+class BoxProblem(BaseProblem):
+    """A scenario in 3-D: its rectangle extruded to the depth Lz, in nelx × nely × nelz bricks.
+
+    The cross-section is the 2-D problem at the same resolution, so everything
+    a scenario can say in 2-D carries over: every element and node mask is the
+    2-D one repeated through the depth.  Element fields have the shape
+    (nelz, nely, nelx), node masks (nelz+1, nely+1, nelx+1).
+
+    Supports clamp the out-of-plane direction as well: a 2-D support is a wall
+    through the thickness.  Without that, a scenario held only by rollers (the
+    MBB beam) could slide and turn out of its plane.  fixed_z_nodes marks the
+    nodes held in z only (none, for an extruded scenario; the attribute is
+    there for problems that need it).
+
+    A load spread over a line or surface through the depth is shared between
+    the layers of nodes in proportion to the length each one carries: half at
+    the two outer layers.  A design that does not vary through the depth then
+    behaves exactly as the 2-D design in plane stress with Poisson's ratio 0,
+    which is how the 3-D engine is checked against the 2-D one.
+    """
+
+    def __init__(self, scenario, m=1.0):
+        if scenario.Lz <= 0:
+            raise ValueError("BoxProblem needs a scenario with a depth Lz > 0; use RectangularProblem in 2-D")
+        self.scenario, self.m = scenario, m
+        section = RectangularProblem(scenario, m)
+        self.section = section
+        self.Lx, self.Ly, self.Lz = section.Lx, section.Ly, scenario.Lz
+        self.nelx, self.nely = section.nelx, section.nely
+        self.nelz = max(1, int(round(scenario.Lz * m)))
+        self.dx, self.dy, self.dz = section.dx, section.dy, self.Lz / self.nelz
+        self.dims = 3
+        self.shape = (self.nelz, self.nely, self.nelx)
+        self.nn = (self.nelx + 1) * (self.nely + 1) * (self.nelz + 1)
+
+        def elements(mask):
+            return np.broadcast_to(mask, (self.nelz,) + mask.shape).copy()
+
+        def nodes(mask):
+            return np.broadcast_to(mask, (self.nelz + 1,) + mask.shape).copy()
+
+        z_nodes = np.linspace(0.0, self.Lz, self.nelz + 1)
+        z_elems = (np.arange(self.nelz) + 0.5) * self.dz
+        self.node_z = np.broadcast_to(z_nodes[:, None, None], (self.nelz + 1,) + section.node_x.shape).copy()
+        self.node_x, self.node_y = nodes(section.node_x), nodes(section.node_y)
+        self.elem_z = np.broadcast_to(z_elems[:, None, None], self.shape).copy()
+        self.elem_x, self.elem_y = elements(section.elem_x), elements(section.elem_y)
+
+        self.void_elements = elements(section.void_elements)
+        self.passive_elements = elements(section.passive_elements)
+        self.fixed_nodes = nodes(section.fixed_nodes)
+        # A 2-D roller is a wall through the thickness: it holds z as well.
+        self.fixed_x_nodes = nodes(section.fixed_x_nodes)
+        self.fixed_y_nodes = nodes(section.fixed_y_nodes)
+        self.fixed_z_nodes = self.fixed_x_nodes | self.fixed_y_nodes
+        self.load_nodes = nodes(section.load_nodes)
+        self.load_node_sets = [nodes(mask) for mask in section.load_node_sets]
+        # Share of a through-depth load carried by each layer of nodes.
+        layers = np.ones(self.nelz + 1)
+        layers[[0, -1]] = 0.5
+        self.layer_weights = layers / layers.sum()
+        self.validate()
+
+
+def projection(field):
+    """A 2-D picture of an element field: the field itself in 2-D, its average through the depth in 3-D.
+
+    The average is what an X-ray along z would show: 1 where the design is
+    solid all the way through, grey where only part of the depth is.  Images,
+    comparisons and the GUI's live view draw this; the full 3-D field is kept
+    as well (final_density.npy).
+    """
+    field = np.asarray(field)
+    return field.mean(axis=0) if field.ndim == 3 else field
+
+
+def make_problem(scenario, m=1.0):
+    """The meshed problem for a scenario: 2-D unless it has a depth (Scenario.Lz > 0)."""
+    return BoxProblem(scenario, m) if getattr(scenario, "Lz", 0.0) > 0 else RectangularProblem(scenario, m)

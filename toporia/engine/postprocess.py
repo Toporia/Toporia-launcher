@@ -56,8 +56,8 @@ def run_postprocessors(run, density, folder, geometry=None, problem=None):
     if not specs:
         return {}
     if problem is None:
-        from toporia.framework.problem.mesh import RectangularProblem
-        problem = RectangularProblem(run.scenario, run.solver.m)
+        from toporia.framework.problem.mesh import make_problem
+        problem = make_problem(run.scenario, run.solver.m)
     folder = Path(folder)
     result = Result(density=np.asarray(density, dtype=float), problem=problem, run=run,
                     folder=folder / FOLDER, geometry=geometry)
@@ -104,7 +104,8 @@ def postprocess_folder(folder, specs):
               solver=from_dict(Solver, record["solver"]["definition"])).with_output_dir(folder)
     run = replace(run, output=replace(run.output, postprocess=list(specs)))
     check_postprocess(run)
-    density = load_density(folder / "final_density.csv")
+    whole = folder / "final_density.npy"          # a 3-D design is saved whole
+    density = np.load(whole) if whole.exists() else load_density(folder / "final_density.csv")
     geometry_file = folder / "final_geometry.json"
     geometry = None
     if geometry_file.exists():

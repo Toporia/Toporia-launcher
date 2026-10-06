@@ -16,7 +16,7 @@ from toporia.framework import Param
 from toporia.framework.parts.composition import ComposedMethod, compose
 from toporia.framework.parts.method import OBJECTIVE
 from toporia.framework.parts.model import Model
-from toporia.framework.problem.mesh import RectangularProblem
+from toporia.framework.problem.mesh import make_problem
 from toporia.plugins.methods import method_class, method_classes
 from toporia.plugins.models import MODELS
 from toporia.plugins.models.pymoto_elastic import PymotoElasticModel
@@ -58,7 +58,7 @@ def test_any_pair_is_named_model_plus_updater_and_built_once():
 def _run(method_cls, problem="MBB Beam", iterations=3, **values):
     run = get_run(problem).updated(m=0.3, max_iter=iterations, tol=0.0, **values)
     method = method_cls()
-    method.initialize(RectangularProblem(run.scenario, run.solver.m), run.solver)
+    method.initialize(make_problem(run.scenario, run.solver.m), run.solver)
     try:
         for iteration in range(1, iterations + 1):
             method.step(iteration)
@@ -93,10 +93,11 @@ def test_a_parameter_clash_between_model_and_updater_is_rejected():
 def test_every_model_works_with_every_updater(model_cls, updater_cls):
     if _needs_pymoto(model_cls, updater_cls):
         _require_pymoto()
-    method = _run(_compose(model_cls, updater_cls))
+    three_d = 3 in model_cls.capabilities.dims and 2 not in model_cls.capabilities.dims
+    method = _run(_compose(model_cls, updater_cls), **({"Lz": 10.0} if three_d else {}))
 
     density = method.get_density()
-    assert density.shape == (6, 18)
+    assert density.shape == ((3, 6, 18) if three_d else (6, 18))      # a 3-D model runs on the box
     assert np.all(np.isfinite(density))
     assert density.min() >= -1e-9 and density.max() <= 1 + 1e-9
     assert np.isfinite(method.get_responses()[OBJECTIVE])

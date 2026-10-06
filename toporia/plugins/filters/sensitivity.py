@@ -18,6 +18,8 @@ from scipy.sparse import coo_matrix
 from toporia.framework.parts.filter import Filter
 from toporia.plugins.shared_params import RMIN
 
+from ._neighbours import neighbour_matrix
+
 
 class SensitivityFilter(Filter):
     """Heuristic sensitivity-averaging filter.
@@ -29,6 +31,7 @@ class SensitivityFilter(Filter):
 
     name = "sensitivity"
     label = "Sensitivity filter"
+    dims = (2, 3)
     order = 20
     params = (RMIN,)
     exact_adjoint = False   # a heuristic: backward() is not the derivative of forward()
@@ -38,8 +41,13 @@ class SensitivityFilter(Filter):
 
     def setup(self, problem, solver):
         rmin        = self.rmin
+        if getattr(problem, "dims", 2) == 3:
+            # 3-D: the same weights in any dimension, elements in C order.
+            self._shape, self._order = problem.shape, "C"
+            self.H, self.Hs = neighbour_matrix(problem.shape, rmin)
+            return
         nely, nelx  = problem.nely, problem.nelx
-        self._shape = (nely, nelx)
+        self._shape, self._order = (nely, nelx), "F"
         reach       = int(np.ceil(rmin) - 1)
 
         rows, cols, vals = [], [], []
@@ -64,11 +72,11 @@ class SensitivityFilter(Filter):
 
     def backward(self, x_in, sensitivity):
         """Density-weighted neighbourhood average (heuristic, not a true adjoint)."""
-        nely, nelx = self._shape
-        x_flat = x_in.reshape(-1, order="F")
-        s_flat = sensitivity.reshape(-1, order="F")
+        order = self._order
+        x_flat = x_in.reshape(-1, order=order)
+        s_flat = sensitivity.reshape(-1, order=order)
         result = (self.H @ (x_flat * s_flat) / self.Hs) / np.maximum(1e-3, x_flat)
-        return result.reshape((nely, nelx), order="F")
+        return result.reshape(self._shape, order=order)
 
     def backward_volume(self, x_in, sensitivity):
         """Volume sensitivity is not filtered by this heuristic."""

@@ -22,6 +22,7 @@ class ElementDensity(Representation):
     label = "Element densities"
     order = 10
     element_wise = True
+    dims = (2, 3)
     params = (
         Param("start", "uniform", "Start design",
               "Uniform at the volume fraction (meets the budget at once), or a full domain "
@@ -38,7 +39,7 @@ class ElementDensity(Representation):
     def initial(self):
         problem = self.problem
         value = problem.scenario.volfrac if self.start == "uniform" else 1.0
-        return np.clip(np.full((problem.nely, problem.nelx), value), problem.lower_bound, problem.upper_bound)
+        return np.clip(np.full(problem.shape, value), problem.lower_bound, problem.upper_bound)
 
     def bounds(self):
         return self.problem.lower_bound, self.problem.upper_bound

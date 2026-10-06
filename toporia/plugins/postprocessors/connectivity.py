@@ -7,7 +7,10 @@
 # floats: its material does nothing.  The check passes when every load
 # touches a piece that also touches a support.
 #
-# connectivity.png shows the design with the floating material in red.
+# connectivity.png shows the design with the floating material in red (a 3-D
+# design as seen through its depth).  In 3-D, pieces share a face.
+
+import itertools
 
 import numpy as np
 from PIL import Image
@@ -17,9 +20,12 @@ from toporia.framework.parts.postprocess import PostProcessor
 
 
 def touching(node_mask):
-    """The elements that have at least one of the marked nodes as a corner."""
+    """The elements that have at least one of the marked nodes as a corner (2-D or 3-D)."""
     n = np.asarray(node_mask, dtype=bool)
-    return n[:-1, :-1] | n[:-1, 1:] | n[1:, :-1] | n[1:, 1:]
+    out = np.zeros(tuple(s - 1 for s in n.shape), dtype=bool)
+    for corner in itertools.product((slice(None, -1), slice(1, None)), repeat=n.ndim):
+        out |= n[corner]
+    return out
 
 
 class Connectivity(PostProcessor):
@@ -29,12 +35,14 @@ class Connectivity(PostProcessor):
     label = "Connectivity check"
     order = 20
     table_metrics = ("pieces", "floating_fraction", "loads_connected")
+    dims = (2, 3)
 
     def process(self, result):
         problem = result.problem
         solid = result.solid()
         pieces, count = ndimage.label(solid)          # edge-sharing elements form one piece
-        supports = touching(problem.fixed_nodes | problem.fixed_x_nodes | problem.fixed_y_nodes)
+        supports = touching(problem.fixed_nodes | problem.fixed_x_nodes | problem.fixed_y_nodes
+                            | getattr(problem, "fixed_z_nodes", False))
         supported = set(np.unique(pieces[supports & solid]).tolist()) - {0}
         floating = solid & ~np.isin(pieces, sorted(supported))
 
@@ -42,8 +50,10 @@ class Connectivity(PostProcessor):
         loads_connected = all(
             bool(set(np.unique(pieces[touching(nodes) & solid]).tolist()) & supported) for nodes in load_sets)
 
-        picture = np.stack([1.0 - solid] * 3, axis=-1)
-        picture[floating] = (0.85, 0.15, 0.15)
+        # Drawn as in 2-D; a 3-D design as seen through its depth.
+        seen, adrift = (solid.any(axis=0), floating.any(axis=0)) if solid.ndim == 3 else (solid, floating)
+        picture = np.stack([1.0 - seen] * 3, axis=-1)
+        picture[adrift] = (0.85, 0.15, 0.15)
         Image.fromarray((np.flipud(picture) * 255).astype(np.uint8), mode="RGB").save(
             result.file("connectivity.png"))
         return {"pieces": int(count), "floating_fraction": float(floating.sum() / max(solid.sum(), 1)),

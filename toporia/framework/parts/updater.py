@@ -38,6 +38,8 @@ class Updater(ABC):
     #: (OC, BESO): it is then refused with any other design representation
     #: (framework/parts/representation.py).
     needs_element_densities = False
+    #: The problem dimensions it works in; None means any (it never looks at the mesh's shape).
+    dims = None
     #: Parameters a schedule may change during a run (framework/parts/schedule.py).
     schedulable = ()
 

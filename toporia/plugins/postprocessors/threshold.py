@@ -26,6 +26,7 @@ class Threshold(PostProcessor):
     label = "Threshold to black and white"
     order = 10
     table_metrics = ("compliance", "increase_pct")
+    dims = (2, 3)
     params = (
         Param("keep_volume", True, "Keep the volume",
               "Cut where the black-and-white design uses the same material as the original. "
@@ -57,6 +58,9 @@ class Threshold(PostProcessor):
         grey = referee_compliance(problem, density)
         cut = referee_compliance(problem, binary)
         save_image(binary, result.file("thresholded.png"))
-        np.savetxt(result.file("thresholded.csv"), np.flipud(binary), fmt="%d", delimiter=",")
+        if binary.ndim == 3:
+            np.save(result.file("thresholded.npy"), binary.astype(np.uint8))
+        else:
+            np.savetxt(result.file("thresholded.csv"), np.flipud(binary), fmt="%d", delimiter=",")
         return {"level": level, "volume": float(binary.mean()), "grey_level_before": grey_level(density),
                 "compliance": cut, "compliance_grey": grey, "increase_pct": 100.0 * (cut / grey - 1.0)}

@@ -38,6 +38,8 @@ class Schedule(ABC):
     #: Tunable parameters (framework.params.Param).  The constructor must accept
     #: each one as a keyword argument of the same name.
     params = ()
+    #: The problem dimensions it works in; None means any (it never looks at the mesh's shape).
+    dims = None
 
     @abstractmethod
     def value(self, completed):

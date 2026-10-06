@@ -43,6 +43,7 @@ def _capabilities(physics):
     objectives = computable(OBJECTIVE_ROLE)
     return Capabilities(variable_kind="density", accepts_filters=True,
                         accepts_interpolation=physics.uses_interpolation, accepts_representation=True,
+                        dims=tuple(getattr(physics, "dims", (2,))),
                         objectives=tuple(cls.name for cls in objectives),
                         constraints=tuple(cls.name for cls in computable(CONSTRAINT_ROLE)),
                         max_constraints=None,
@@ -87,7 +88,7 @@ class AssembledModel(Model):
         scenario = problem.scenario
         self.problem = problem
 
-        n_total = problem.nelx * problem.nely
+        n_total = int(np.prod(problem.shape))
         n_passive = int(np.sum(problem.passive_elements))
         if n_passive > scenario.volfrac * n_total:
             raise ValueError(

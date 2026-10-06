@@ -7,11 +7,12 @@
 import numpy as np
 
 from toporia.framework.params import resolve_params
-from toporia.framework.problem.mesh import RectangularProblem
+from toporia.framework.problem.mesh import make_problem
 
 from .common import (
     check_declaration,
     gradient_check,
+    in_dims,
     iterate,
     registered,
     small_run,
@@ -27,14 +28,14 @@ def check_filter(cls):
     check_declaration(report, cls)
     if not report.ok:
         return report
-    run = small_run(m=0.4)
-    problem = RectangularProblem(run.scenario, run.solver.m)
+    run = in_dims(small_run(m=0.4), getattr(cls, "dims", None))
+    problem = make_problem(run.scenario, run.solver.m)
     filt = cls(**resolve_params(cls.name, cls.params, {}))
     with report.step("forward: shape and range"):
         filt.setup(problem, run.solver)
         filt.step(10_000)        # end of any continuation: the sharpest, least linear state
         rng = np.random.default_rng(0)
-        x = rng.uniform(0.05, 0.95, (problem.nely, problem.nelx))
+        x = rng.uniform(0.05, 0.95, problem.shape)
         y = filt.forward(x)
         assert np.shape(y) == x.shape, f"forward returned shape {np.shape(y)}"
         assert np.all(np.isfinite(y)) and y.min() >= -1e-9 and y.max() <= 1 + 1e-9, "forward left [0, 1]"
@@ -52,8 +53,8 @@ def check_filter(cls):
     with registered(FILTERS, cls):
         with report.step("short run behind the density filter, with q4+oc"):
             from toporia.engine.loop import initialized_method
-            run = small_run(method="q4+oc", m=0.4, max_iter=4, tol=0.0,
-                       filter_specs=[{"type": "density"}, {"type": cls.name}])
+            run = in_dims(small_run(method="q4+oc", m=0.4, max_iter=4, tol=0.0,
+                       filter_specs=[{"type": "density"}, {"type": cls.name}]), getattr(cls, "dims", None))
             method = initialized_method(run)
             iterate(method, 4)
             assert np.all(np.isfinite(method.get_density())), "the design has non-finite entries"

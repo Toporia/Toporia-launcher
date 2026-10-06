@@ -28,7 +28,13 @@ from toporia.framework.parts.model import ConstraintValue, Evaluation, Model
 from toporia.framework.parts.physics import ELASTIC_ENERGY, STRESS, Physics
 from toporia.framework.parts.response import CONSTRAINT_ROLE, OBJECTIVE_ROLE, Response, ResponseValue
 from toporia.framework.parts.updater import Updater
-from toporia.framework.problem.mesh import BaseProblem, RectangularProblem
+from toporia.framework.problem.mesh import (
+    BaseProblem,
+    BoxProblem,
+    RectangularProblem,
+    make_problem,
+    projection,
+)
 from toporia.framework.problem.run import OUTPUT_PARAMS, Output, Run, apply_param, read_param
 from toporia.framework.problem.scenario import (
     SCENARIO_PARAMS,
@@ -47,7 +53,7 @@ __all__ = [
     "LoadCase", "HoleConfig", "EdgeConstraint", "PointConstraint", "PointLoad", "EnforcedArea",
     "SCENARIO_PARAMS", "SOLVER_PARAMS", "OUTPUT_PARAMS",
     "apply_param", "read_param",
-    "BaseProblem", "RectangularProblem",
+    "BaseProblem", "RectangularProblem", "BoxProblem", "make_problem", "projection",
     "OptimizationMethod", "Capabilities", "Param", "resolve_params",
     "ComposedMethod", "Model", "Updater", "Evaluation", "ConstraintValue", "compose", "FlatProblem",
     "ExternalOptimizer", "Verdict",

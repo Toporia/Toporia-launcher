@@ -34,7 +34,7 @@ from pathlib import Path
 
 from toporia.engine.loop import run_single_with_store
 from toporia.engine.postprocess import table_metrics
-from toporia.framework.problem.mesh import RectangularProblem
+from toporia.framework.problem.mesh import make_problem
 from toporia.plugins.postprocessors import _measure as measure
 
 from .grids import DESIGNS, mode_folder, save_grid, with_values
@@ -147,7 +147,7 @@ def _run_method(name, base_config, folder, on_iteration):
 
 def referee_compliance(run, density):
     """Compliance of a final design measured the same way for every method (plugins/postprocessors/_measure.py)."""
-    return measure.referee_compliance(RectangularProblem(run.scenario, run.solver.m), density)
+    return measure.referee_compliance(make_problem(run.scenario, run.solver.m), density)
 
 
 grey_level = measure.grey_level

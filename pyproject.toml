@@ -24,6 +24,9 @@ dev = ["pytest>=7", "ruff"]
 # Enables method="pymoto": compliance minimisation with pyMOTO's module network,
 # which computes sensitivities by backpropagation instead of by hand.
 pymoto = ["pymoto>=2.0"]
+# 3-D: pyamg is the multigrid solver for large 3-D meshes (the direct solver
+# handles small ones without it); scikit-image draws the 3-D view of a design.
+3d = ["pyamg>=5.0", "scikit-image>=0.22"]
 
 [project.scripts]
 toporia = "toporia.apps.cli:main"

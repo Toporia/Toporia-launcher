@@ -12,19 +12,19 @@ from pathlib import Path
 import numpy as np
 
 from toporia.framework.params import resolve_params
-from toporia.framework.problem.mesh import RectangularProblem
+from toporia.framework.problem.mesh import make_problem
 
-from .common import check_declaration, iterate, small_run
+from .common import check_declaration, in_dims, iterate, small_run
 from .report import Report
 
 
-def _finished_design():
-    """A short q4+oc run on the benchmark problem: (run, problem, density)."""
+def _finished_design(dims=None):
+    """A short q4+oc run on the benchmark problem (h8+oc in 3-D): (run, problem, density)."""
     from toporia.engine.loop import initialized_method
-    run = small_run(method="q4+oc", m=0.4, max_iter=8, tol=0.0)
+    run = in_dims(small_run(method="q4+oc", m=0.4, max_iter=8, tol=0.0), dims)
     method = initialized_method(run)
     iterate(method, 8)
-    return run, RectangularProblem(run.scenario, run.solver.m), method.get_density()
+    return run, make_problem(run.scenario, run.solver.m), method.get_density()
 
 
 def check_postprocessor(cls):
@@ -34,7 +34,7 @@ def check_postprocessor(cls):
     check_declaration(report, cls)
     if not report.ok:
         return report
-    run, problem, density = _finished_design()
+    run, problem, density = _finished_design(getattr(cls, "dims", None))
 
     with tempfile.TemporaryDirectory() as folder:
         def once(sub):
