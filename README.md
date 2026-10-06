@@ -43,6 +43,13 @@ That is the gap worth filling: **no open-source package holds the problem, the m
 constraints fixed while swapping the parameterisation, the filter and the updater.** Start
 at [`toporia/library/README.md`](toporia/library/README.md).
 
+### How the code fits together
+
+[`toporia/README.md`](toporia/README.md) maps the package — its layers and the life of a
+run, with diagrams — and [`toporia/core/`](toporia/core/README.md) and
+[`toporia/engine/`](toporia/engine/README.md) each explain every file in them and how
+they interact.
+
 ### Adding to it
 
 An algorithm, filter or response from a paper is one small file and one passing check —

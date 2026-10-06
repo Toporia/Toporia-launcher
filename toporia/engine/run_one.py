@@ -29,8 +29,8 @@ def run_one(config, on_iteration=None):
     -------
     (ResultStore, final_density_array)
     """
-    # Instantiate the chosen algorithm ("density" or "levelset") and hand it
-    # the problem geometry so it can set up its internal data structures.
+    # Mesh the problem once here, only to print its size; the runner builds the
+    # method and its own copy of the problem from the same Run.
     problem = BracketProblem(config.scenario, config.solver.m)
     print(f"[setup] Lx={config.scenario.Lx} Ly={config.scenario.Ly} nelx={problem.nelx} nely={problem.nely}")
     print(f"[setup] volfrac={config.scenario.volfrac} edge_c={len(config.scenario.edge_constraints)} "
