@@ -112,6 +112,38 @@ def test_an_installed_updater_is_a_method_part_like_any_other(installed):
         UPDATERS._by_name = None    # and forget it again once the fixture is undone
 
 
+def test_a_run_records_which_package_each_part_came_from(installed, tmp_path):
+    import json
+
+    from toporia.engine.loop import run_single
+    from toporia.engine.pipeline import pipeline_stages
+    from toporia.plugins.problems import get_run
+    UPDATERS._by_name = None
+    try:
+        run = get_run("MBB Beam").updated(method="q4+external_step", m=0.3, max_iter=2, tol=0.0,
+                                          save_every=0).with_output_dir(tmp_path)
+        # Shown where the parts are shown ...
+        assert dict(pipeline_stages(run))["Updater"] == "External step (from my-optimisers)"
+        # ... and recorded with the result.
+        run_single(run)
+        parts = {p["name"]: p for p in json.loads((tmp_path / "run.json").read_text())["parts"]}
+        assert parts["external_step"]["source"] == "my-optimisers"
+        assert parts["external_step"]["class"].endswith("test_plugins.ExternalStep")
+        assert parts["q4"]["source"] == "toporia" and parts["q4"]["version"]
+        assert [p["kind"] for p in parts.values()] == ["model", "updater", "filter", "response"]
+    finally:
+        UPDATERS._by_name = None
+
+
+def test_a_part_registered_by_hand_says_so():
+    from toporia.engine.pipeline import part_origin
+    UPDATERS.register(_NeedsMissing)
+    try:
+        assert part_origin("updater", _NeedsMissing)["source"].startswith("registered by hand")
+    finally:
+        UPDATERS.unregister(_NeedsMissing.name)
+
+
 # ── Optional dependencies ─────────────────────────────────────────────────────
 
 class _NeedsMissing(OCUpdater):

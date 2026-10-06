@@ -36,7 +36,6 @@
 import contextlib
 import io
 
-from toporia.framework.parts.composition import ComposedMethod
 from toporia.framework.parts.method import OptimizationMethod
 from toporia.framework.parts.model import Model
 from toporia.framework.parts.physics import Physics
@@ -62,19 +61,9 @@ def conformance(plugin, **options):
 
 
 def parts_of(run):
-    """The plugins a run is made of, as "kind:name": its model and updater (or whole
-    method), its filters, and its objective and constraint responses."""
-    from toporia.plugins.methods import method_class
-    method_cls = method_class(run.solver.method)
-    if issubclass(method_cls, ComposedMethod):
-        parts = [f"model:{method_cls.model.name}", f"updater:{method_cls.updater.name}"]
-    else:
-        parts = [f"method:{method_cls.name}"]
-    if method_cls.capabilities.accepts_filters:
-        parts += [f"filter:{spec.get('type', 'density')}" for spec in run.solver.filter_specs]
-    parts.append(f"response:{run.scenario.objective.get('type', 'compliance')}")
-    parts += [f"response:{spec['type']}" for spec in run.scenario.constraints]
-    return list(dict.fromkeys(parts))
+    """The plugins a run is made of, as "kind:name" (see engine.pipeline.pipeline_parts)."""
+    from toporia.engine.pipeline import pipeline_parts
+    return [f"{kind}:{cls.name}" for kind, cls in pipeline_parts(run)]
 
 
 def _conformance(plugin, **options):

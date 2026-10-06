@@ -7,7 +7,8 @@
 #                   at the end final_density.png, final_density.csv and,
 #                   for an interactive run, history.png
 #   check_limits    whether the final design honours every limit
-#   run_record      run.json: what was solved, how, by which code, how it ended
+#   run_record      run.json: what was solved, how, which parts and which code
+#                   (with the package and version of every plugin), how it ended
 #
 #     loop ──record()──> ResultStore ──save_final()──> PNG, CSV
 #       └──final responses──> check_limits ──> WARNING lines ─┐
@@ -216,6 +217,34 @@ def software():
     }
 
 
+def parts_record(run):
+    """Every plugin the run used: what it is, which package it came from, and the versions.
+
+    A result made with a plugin from another package can only be reproduced
+    with that package at that version, so both are recorded, together with
+    the versions of the optional packages the plugin declares it needs.
+    """
+    from importlib import metadata
+
+    from toporia.engine.pipeline import part_origin, pipeline_parts
+
+    def version_of(package):
+        try:
+            return metadata.version(package)
+        except (metadata.PackageNotFoundError, ValueError):
+            return None
+
+    record = []
+    for kind, cls in pipeline_parts(run):
+        entry = {"kind": kind, "name": cls.name, "label": cls.label,
+                 "class": f"{cls.__module__}.{cls.__qualname__}", **part_origin(kind, cls)}
+        dependencies = getattr(cls, "dependencies", ())
+        if dependencies:
+            entry["dependencies"] = {name: version_of(name) for name in dependencies}
+        record.append(entry)
+    return record
+
+
 def run_record(run, *, iterations, stop_reason, responses, limits=(), optimiser=None):
     """The provenance document written as run.json at the end of every run.
 
@@ -229,6 +258,7 @@ def run_record(run, *, iterations, stop_reason, responses, limits=(), optimiser=
         "software": software(),
         "scenario": {"fingerprint": fingerprint(run.scenario), "definition": to_dict(run.scenario)},
         "solver": {"fingerprint": fingerprint(run.solver), "definition": to_dict(run.solver)},
+        "parts": parts_record(run),
         "result": {
             "iterations": iterations,
             "stop_reason": stop_reason,
