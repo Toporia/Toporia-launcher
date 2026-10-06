@@ -28,6 +28,9 @@ kept. To apply post-processors to a run saved earlier without optimising again:
 toporia post results/my_run threshold connectivity export_stl:thickness=3
 ```
 
+**In 3-D**: threshold, connectivity (pieces share a face), feature size and the STL solid work;
+the images show the design as seen through its depth. The SVG and DXF outlines are 2-D only.
+
 **Status: 6 in Toporia · 0 with open code · 3 paper only**
 
 | Label | Meaning |

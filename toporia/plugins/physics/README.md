@@ -5,7 +5,7 @@ from [`models/`](../models/README.md) because the same physics can be discretise
 ways, and the choice of element is itself a thing worth comparing: it decides what the
 density field can resolve and where the classic numerical artefacts come from.
 
-**Status: 1 in Toporia · 6 with open code · 3 paper only**
+**Status: 2 in Toporia · 5 with open code · 3 paper only**
 
 | Label | Meaning |
 | :-- | :-- |
@@ -17,12 +17,22 @@ density field can resolve and where the classic numerical artefacts come from.
 
 | Element | File | Scope |
 | :-- | :-- | :-- |
-| ✅ Q4 plane stress | [`q4_plane_stress.py`](q4_plane_stress.py) | Bilinear quadrilateral, 2 DOF per node, structured grid, column-major numbering, analytic element stiffness. The top88 element. |
+| ✅ Q4 plane stress | [`q4_plane_stress.py`](q4_plane_stress.py) | Bilinear quadrilateral, 2 DOF per node, structured grid, column-major numbering, analytic element stiffness. The top88 element. 2-D. |
+| ✅ H8 solid | [`h8_solid.py`](h8_solid.py) | Trilinear brick, 3 DOF per node, 2 × 2 × 2 Gauss integration, the element of Liu & Tovar's top3d. 3-D: a scenario with a depth `Lz`. Direct sparse solver, or conjugate gradients with algebraic multigrid (optional `pyamg`) for large meshes. |
 
-This module is also Toporia's only [`framework.parts.physics.Physics`](../../framework/parts/physics.py) engine:
+Each module is a [`framework.parts.physics.Physics`](../../framework/parts/physics.py) engine:
 it solves a density to a state and declares which features it answers (`elastic_energy`,
-`stress`). Adding an element formulation below means implementing that interface, after
-which every response and filter in the library applies to it unchanged.
+`stress`) and in which dimensions (`dims`). Adding an element formulation below means
+implementing that interface, after which every response and filter in the library that
+works in its dimension applies to it unchanged.
+
+**How H8 is checked.** With Poisson's ratio 0, a design that does not vary through the depth
+must behave exactly as the 2-D design in plane stress. Its 3-D compliance is then the Q4
+compliance divided by the depth, which holds to 1e-12 on the cantilever, the MBB beam and
+the drone arm (holes and solid rings included). A test asserts it in
+`tests/plugins/test_3d.py`. The finite-difference gradient checks of `toporia check
+model:h8` and `toporia check response:stress` cover its compliance and 3-D stress
+sensitivities.
 
 Two consequences worth knowing before adding anything here:
 
@@ -38,7 +48,6 @@ Two consequences worth knowing before adding anything here:
 
 | Discretisation | Status | Where | What it adds |
 | :-- | :-- | :-- | :-- |
-| 3-D 8-node hexahedron (H8) | 🔗 top3d (with the paper), [TopOpt_in_PETSc](https://github.com/topopt/TopOpt_in_PETSc), [ToPy](https://github.com/williamhunter/topy) | Liu & Tovar, *SMO* 2014 | The obvious next element. Everything in the library is 2-D today. |
 | Higher-order and mixed elements | 🔗 top99neo (with the paper) | Ferrari & Sigmund, *SMO* 2020 | Fixes Q4's bending behaviour; changes which filter is actually needed. |
 | Polygonal elements | 🔗 [PolyTop](https://link.springer.com/article/10.1007/s00158-011-0696-x) | Talischi et al., *SMO* 2012 | Unstructured polygonal meshes; suppresses the mesh-bias artefacts of structured quads. |
 | Virtual element method | 🔗 with the paper | Antonietti et al., [arXiv:1612.08620](https://arxiv.org/abs/1612.08620); Chi et al., *SMO* 2020 | Arbitrary polygonal and polyhedral elements, including non-convex. |

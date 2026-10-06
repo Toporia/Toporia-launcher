@@ -481,9 +481,26 @@ class MyModel(AssembledModel):
 
 The filters, the responses and every updater then work with it.
 [`plugins/physics/q4_plane_stress.py`](../toporia/plugins/physics/q4_plane_stress.py) is the
-reference engine. A physics that brings its own gradients (a pyMOTO network, an AD
+reference engine in 2-D, [`plugins/physics/h8_solid.py`](../toporia/plugins/physics/h8_solid.py)
+in 3-D. A physics that brings its own gradients (a pyMOTO network, an AD
 framework) can instead be a whole `Model` — see
 [`plugins/models/pymoto_elastic.py`](../toporia/plugins/models/pymoto_elastic.py).
+
+## 2-D, 3-D, or both
+
+A scenario with a depth (`Lz > 0`) is a 3-D problem. Every element field then has the shape
+`(nelz, nely, nelx)` instead of `(nely, nelx)`; use `problem.shape` and `problem.dims`
+rather than `nely` and `nelx`. Each part says where it works with a class attribute:
+
+```python
+dims = (2, 3)        # 2-D and 3-D; (2,) for plane problems only, (3,) for 3-D only
+```
+
+Updaters, material laws, responses and schedules default to `dims = None`, meaning any
+dimension; they never look at the mesh. Filters, representations, post-processors and
+physics engines default to `(2,)`. Only widen that once the part handles the third axis.
+A part that does not work in the problem's dimension is refused before the run, with the
+parts that do. `toporia check` runs a 3-D-only part on the same problems extruded.
 
 ## Optional dependencies
 
@@ -516,7 +533,7 @@ reported (in `toporia list` and the GUI's log) and the others still load. In a n
 ## Checklist
 
 - [ ] `name`, `label`, `params` declared; citation in the module docstring
-- [ ] capabilities honest: `objectives`, `max_constraints` / `requires` / `exact_adjoint`
+- [ ] capabilities honest: `objectives`, `max_constraints` / `requires` / `exact_adjoint` / `dims`
 - [ ] optional packages in `dependencies`, imported lazily
 - [ ] `toporia check kind:name` passes
 - [ ] a run from the GUI looks right, and the Pipeline panel describes it correctly

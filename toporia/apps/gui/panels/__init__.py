@@ -9,10 +9,11 @@ What contains what, top to bottom in the left panel:
 
     PipelineView        pipeline.py   the selected chain, and why any part is unavailable
     CoreParamsGroup     method.py     mesh, volume; physics model + updater, or a whole method
-    RepresentationGroup specs.py      what the design variables are (element densities, MMC)
+    DesignSection       design.py     the representation, 2-D or 3-D with its depth, the mesh resolution
+    RepresentationGroup specs.py      what the design variables are (element densities, MMC), in DesignSection
     MaterialGroup       specs.py      the material law (SIMP, RAMP), when the method takes one
     ObjectiveGroup      specs.py      what to minimise, as the method allows
-    SpecListGroup       specs.py      constraints (hidden when the method enforces none)
+    ConstraintsGroup    specs.py      the volume budget and further constraints; says why when unavailable
     SpecListGroup       specs.py      filters (hidden when the method takes no filters)
     ScheduleListGroup   specs.py      continuation: parameters that change during the run
     VariantsGroup       variants.py   several versions of every design (robust design)
@@ -21,6 +22,7 @@ What contains what, top to bottom in the left panel:
     one group per mode  modes.py      sweep, compare, sensitivity, ...
 """
 
+from .design import DesignSection
 from .forms import ParamForm
 from .loads import LoadCaseRow, LoadCasesGroup
 from .method import CoreParamsGroup
@@ -35,12 +37,20 @@ from .modes import (
     SweepParamsGroup,
 )
 from .pipeline import PipelineView
-from .specs import MaterialGroup, ObjectiveGroup, RepresentationGroup, ScheduleListGroup, SpecListGroup
+from .specs import (
+    ConstraintsGroup,
+    MaterialGroup,
+    ObjectiveGroup,
+    RepresentationGroup,
+    ScheduleListGroup,
+    SpecListGroup,
+)
 from .variants import VariantsGroup
 
 __all__ = [
     "ParamForm", "LoadCaseRow", "LoadCasesGroup", "CoreParamsGroup", "PipelineView",
-    "ObjectiveGroup", "MaterialGroup", "RepresentationGroup", "ScheduleListGroup", "SpecListGroup", "VariantsGroup", "CompareLoadCasesParamsGroup", "CompareMethodsParamsGroup",
+    "ObjectiveGroup", "MaterialGroup", "RepresentationGroup", "ScheduleListGroup", "SpecListGroup", "VariantsGroup", "DesignSection",
+    "ConstraintsGroup", "CompareLoadCasesParamsGroup", "CompareMethodsParamsGroup",
     "CompareTwoParamsGroup",
     "SensitivityParamsGroup", "SensitivitySweepParamsGroup", "SensitivitySweep2DParamsGroup",
     "SweepParamsGroup", "Sweep2DParamsGroup",

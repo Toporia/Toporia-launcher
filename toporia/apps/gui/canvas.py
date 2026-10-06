@@ -15,6 +15,8 @@ from matplotlib.backends.backend_qtagg import FigureCanvasQTAgg as FigureCanvas
 from PySide6.QtGui import QPalette
 from PySide6.QtWidgets import QSizePolicy
 
+from toporia.framework.problem.mesh import projection
+
 
 class LiveCanvas(FigureCanvas):
     """The live view: the current design on the left, the objective's convergence on the right."""
@@ -88,7 +90,7 @@ class LiveCanvas(FigureCanvas):
         # Flip the array vertically so element (0,0) appears at the bottom-left,
         # matching engineering convention (origin at lower-left).
         # Invert values (1 - density) so solid material shows dark, void shows light.
-        disp = np.flipud(1.0 - density)
+        disp = np.flipud(1.0 - projection(density))     # a 3-D design: its depth average
 
         if self._im is None:
             # First call: create the image object inside the axis.
@@ -101,7 +103,8 @@ class LiveCanvas(FigureCanvas):
             self._im.set_data(disp)
             self._im.set_extent([0, disp.shape[1], 0, disp.shape[0]])
 
-        self._ax_d.set_title(f"iter {iteration}  |  vol = {density.mean():.3f}",
+        seen = "  (depth average)" if np.ndim(density) == 3 else ""
+        self._ax_d.set_title(f"iter {iteration}  |  vol = {density.mean():.3f}{seen}",
                              color=tc, fontsize=10)
 
         # Plot compliance relative to the first iteration so the curve starts at 0.
@@ -110,6 +113,38 @@ class LiveCanvas(FigureCanvas):
         self._ax_c.relim()          # recalculate axis limits to fit new data
         self._ax_c.autoscale_view() # apply those limits
         self._fig.tight_layout(pad=2.0)
+        self.draw_idle()
+
+    def show_3d(self, density, element_size=1.0, log=print, level=0.5):
+        """Replace the density image by a shaded 3-D surface of the final design (the density = `level` surface).
+
+        Uses scikit-image's marching cubes; without it the depth average stays
+        and `log` says how to get the 3-D view.
+        """
+        try:
+            from skimage.measure import marching_cubes
+        except ImportError:
+            log("3-D view: pip install scikit-image to see the design in 3-D; showing its depth average.")
+            return
+        _, tc, _ = self._colours()
+        volume = np.pad(np.asarray(density, dtype=float), 1)          # closed at the domain's faces
+        if volume.max() < level or volume.min() > level:
+            return
+        verts, faces, _, _ = marching_cubes(volume, level=level, spacing=(element_size,) * 3)
+        z, y, x = (verts - element_size).T                              # undo the padding
+        spec = self._ax_d.get_subplotspec()
+        self._ax_d.remove()
+        ax = self._fig.add_subplot(spec, projection="3d")
+        ax.plot_trisurf(x, z, faces, y, color="0.62", shade=True, linewidth=0, antialiased=True)
+        nz, ny, nx = np.shape(density)
+        ax.set_box_aspect((nx, nz, ny))
+        ax.set_xlim(0, nx * element_size)
+        ax.set_ylim(0, nz * element_size)
+        ax.set_zlim(0, ny * element_size)
+        ax.view_init(elev=22, azim=-62)
+        ax.set_axis_off()
+        ax.set_title(f"3-D design (density ≥ {level:g})  |  vol = {np.mean(density):.3f}", color=tc, fontsize=10)
+        self._ax_d, self._im = ax, None
         self.draw_idle()
 
     def show_grid(self, path, title=""):

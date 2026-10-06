@@ -49,7 +49,8 @@ class CoreParamsGroup(QWidget):
         outer.setSpacing(0)
 
         core = QGroupBox("Core Parameters")
-        self._design = ParamForm(select(SOLVER_PARAMS + SCENARIO_PARAMS, "m", "volfrac"))
+        # The mesh resolution lives in the Design section, with 2-D/3-D.
+        self._design = ParamForm(select(SCENARIO_PARAMS, "volfrac"))
         QVBoxLayout(core).addWidget(self._design)
         outer.addWidget(core)
 

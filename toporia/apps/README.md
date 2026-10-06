@@ -9,13 +9,15 @@ apps/
 └── gui/
     ├── app.py        starts Qt (and sets matplotlib's Qt backend first)
     ├── window.py     the main window: lays out the panels, wires the Run/Stop button
-    ├── canvas.py     the live density image and convergence curve
+    ├── canvas.py     the live density image (a 3-D design: its depth average, then a 3-D view) and convergence curve
     ├── config.py     the panels' values → a Run (cheap, so the Pipeline box can refresh)
     ├── runner.py     calls the engine's modes and routes their printed output to the log
     └── panels/       every input panel, one module each
-        ├── method.py     mesh, volume, and the method: physics model + updater, or whole
+        ├── method.py     volume, and the method: physics model + updater, or whole
+        ├── design.py     the Design section: representation, 2-D or 3-D and its depth,
+        │                 the resolution (elements per mm or element size) and the mesh it gives
         ├── pipeline.py   the Pipeline box
-        ├── specs.py      filters, objective, constraints
+        ├── specs.py      filters, objective, constraints (always shown, with why when unavailable)
         ├── loads.py      load cases
         ├── modes.py      the settings of each analysis mode
         ├── forms.py      a form generated from Param declarations

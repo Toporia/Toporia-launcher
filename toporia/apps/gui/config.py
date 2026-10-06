@@ -7,7 +7,7 @@
 
 def build_config(core, lc, filters=None, base_cfg=None, objective=None, constraints=None, interpolation=None,
                  representation=None, schedules=None, variants=None,
-                 postprocess=None):
+                 postprocess=None, design=None):
     """Read widget values and overlay them on a Run.
 
     core     — CoreParamsGroup widget (scenario fields, method and its parameters)
@@ -20,6 +20,7 @@ def build_config(core, lc, filters=None, base_cfg=None, objective=None, constrai
     schedules — ScheduleListGroup, the continuation schedules (optional)
     variants — VariantsGroup, several versions of every design (optional)
     postprocess — SpecListGroup of post-processors, applied to the final design (optional)
+    design — DesignSection: 2-D or 3-D (the depth) and the mesh resolution (optional)
     base_cfg — Run from the selected preset; provides everything the widgets do
                not expose (geometry, supports, material).  Falls back to the
                default preset if None.
@@ -47,4 +48,6 @@ def build_config(core, lc, filters=None, base_cfg=None, objective=None, constrai
         values["variants"] = variants.get_spec()
     if postprocess is not None:
         values["postprocess"] = postprocess.get_specs()
+    if design is not None:
+        values.update(design.get_values())
     return base_cfg.updated(**values)

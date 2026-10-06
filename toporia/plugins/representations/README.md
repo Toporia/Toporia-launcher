@@ -41,7 +41,7 @@ box shows the same reason, and Compare Methods skips the pairing.
 | Representation | File | Name | Variables | Reference |
 | :-- | :-- | :-- | :-- | :-- |
 | ✅ Element densities | [`element_density.py`](element_density.py) | `element_density` | one density per element; starts uniform at the volume fraction or full (`start`) | Bendsøe, *Struct. Optim.* 1989 |
-| ✅ Moving morphable components | [`mmc.py`](mmc.py) | `mmc` | 5 per bar (centre, half-length, half-thickness, angle); starts as crossing bars in an `n_x × n_y` grid | Guo, Zhang & Zhong, *J. Appl. Mech.* 2014 |
+| ✅ Moving morphable components | [`mmc.py`](mmc.py) | `mmc` | 5 per bar (centre, half-length, half-thickness, angle); starts as crossing bars in an `n_x × n_y` grid. 2-D only; 3-D components are a candidate | Guo, Zhang & Zhong, *J. Appl. Mech.* 2014 |
 
 **Using MMC.** Every variable is scaled to [0, 1] across its whole range, so the updater's
 move limit moves a bar a long way. Use `method.move` of about 0.02. With the usual 0.2,

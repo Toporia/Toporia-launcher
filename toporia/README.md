@@ -68,7 +68,7 @@ toporia/
 │   ├── params.py        every tunable value, declared once
 │   └── registry.py      finds plugins: here, in installed packages, or by hand
 ├── plugins/             THE PARTS — one folder per kind, each with a README
-│   ├── problems/        benchmark presets
+│   ├── problems/        benchmark presets, 2-D and 3-D
 │   ├── representations/ what the design variables are: element densities, moving morphable components
 │   ├── filters/         design → physical density, and back
 │   ├── interpolations/  the material law: SIMP, RAMP

@@ -11,6 +11,7 @@ from PySide6.QtWidgets import (
     QComboBox,
     QFrame,
     QHBoxLayout,
+    QLabel,
     QPushButton,
     QSizePolicy,
     QVBoxLayout,
@@ -145,7 +146,7 @@ class SpecListGroup(QWidget):
         self._rows_box.setContentsMargins(0, 0, 0, 0)
         self._rows_box.setSpacing(0)
         body.addWidget(self._rows_container)
-        add = QPushButton(f"+ Add {noun}")
+        add = self._add = QPushButton(f"+ Add {noun}")
         add.clicked.connect(lambda: self._add_row())
         body.addWidget(add)
         outer.addWidget(self._body)
@@ -208,6 +209,51 @@ class SpecListGroup(QWidget):
             self._add_row(spec)
         self._refresh_label()
         self.changed.emit()
+
+
+class ConstraintsGroup(SpecListGroup):
+    """The optimisation constraints, always shown: the volume budget, and the limits on top of it.
+
+    The volume budget (Vol fraction) is enforced by every method.  Further
+    constraints — a stress limit, say — need a method that can enforce them;
+    with one that cannot, the section stays in view, keeps its rows for later,
+    and says why and which updaters can, instead of disappearing.
+    """
+
+    def __init__(self, classes, parent=None):
+        super().__init__("Constraints", classes, noun="constraint", parent=parent)
+        layout = self._body.layout()
+        budget = QLabel("Volume budget: always enforced (Vol fraction, in Core Parameters).")
+        budget.setWordWrap(True)
+        self._note = QLabel()
+        self._note.setWordWrap(True)
+        self._note.setStyleSheet("color: #a05a00;")
+        layout.insertWidget(0, budget)
+        layout.insertWidget(1, self._note)
+        self._note.hide()
+        self._reason = ""
+
+    def available(self):
+        """Whether the selected method can enforce any constraint besides the volume budget."""
+        return bool(self._allowed)
+
+    def set_allowed(self, names, reason=""):
+        """Offer these types; with none, keep the section visible, its rows inactive, and say why."""
+        self._allowed = list(names)
+        for row in self._rows:
+            row.set_allowed(self._allowed)
+        self._rows_container.setEnabled(bool(self._allowed))
+        self._add.setEnabled(bool(self._allowed))
+        self._reason = "" if self._allowed else reason
+        self._note.setText(self._reason)
+        self._note.setVisible(bool(self._reason))
+        self._refresh_label()
+        self.changed.emit()
+
+    def _refresh_label(self):
+        super()._refresh_label()
+        if getattr(self, "_allowed", True) == [] and self._rows:
+            self._toggle.setText(self._toggle.text().replace("active)", "kept, not enforced by this method)"))
 
 
 class _ScheduleRow(_SpecRow):

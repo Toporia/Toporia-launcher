@@ -8,6 +8,10 @@ fabrication rule and get consistent sensitivities through all three.
 Without a filter, a density method produces checkerboards and a mesh-dependent result.
 This layer is not optional decoration — it is what makes the problem well posed.
 
+**In 3-D** (a scenario with a depth): the density, sensitivity and Heaviside filters work;
+the AM overhang, routing and symmetry filters are written for plane problems and are refused
+on a 3-D one, with the filters that can.
+
 **Status: 6 in Toporia · 1 with open code · 15 paper only**
 
 | Label | Meaning |

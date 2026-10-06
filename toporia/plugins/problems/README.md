@@ -5,7 +5,7 @@ material, volume target — plus the solver settings recommended for it. Two run
 a scenario and differ only in their solver are a benchmark, and that comparison is what
 Toporia exists to make.
 
-**Status: 8 in Toporia · 6 open datasets or suites · 2 paper only**
+**Status: 9 in Toporia · 6 open datasets or suites · 2 paper only**
 
 | Label | Meaning |
 | :-- | :-- |
@@ -19,6 +19,7 @@ Toporia exists to make.
 | :-- | :-- | :-- |
 | ✅ MBB beam | [`mbb_beam.py`](mbb_beam.py) | `MBB Beam` |
 | ✅ Cantilever | [`cantilever.py`](cantilever.py) | `Cantilever` |
+| ✅ Cantilever 3D | [`cantilever_3d.py`](cantilever_3d.py) | `Cantilever 3D` |
 | ✅ Three-point bending | [`three_point_bending.py`](three_point_bending.py) | `Three-Point Bending` |
 | ✅ Standard bar | [`standard_bar.py`](standard_bar.py) | `Standard Bar` |
 | ✅ Drone arm | [`drone_arm.py`](drone_arm.py) | `Drone Arm` |

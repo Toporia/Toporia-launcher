@@ -23,13 +23,13 @@ any doubt about what this repository actually does today:
 | [Material laws](toporia/plugins/interpolations/README.md) — density to stiffness | SIMP, RAMP | 0 | 4 |
 | [Schedules](toporia/plugins/schedules/README.md) — continuation, and robust variants | equal steps, geometric, linear ramp | 0 | 2 |
 | [Post-processors](toporia/plugins/postprocessors/README.md) — threshold, checks, exports | threshold, connectivity, feature size, SVG, DXF, STL | 0 | 3 |
-| [Models](toporia/plugins/models/README.md) — physics and gradients | 2-D Q4, pyMOTO elasticity | 24 | 3 |
-| [Elements](toporia/plugins/physics/README.md) — discretisation | Q4 plane stress | 6 | 3 |
+| [Models](toporia/plugins/models/README.md) — physics and gradients | 2-D Q4, 3-D H8, pyMOTO elasticity | 24 | 3 |
+| [Elements](toporia/plugins/physics/README.md) — discretisation | Q4 plane stress, H8 solid | 5 | 3 |
 | [Responses](toporia/plugins/responses/README.md) — objectives and constraints | compliance, volume, von Mises stress | 4 | 14 |
 | [Updaters](toporia/plugins/updaters/README.md) — optimisers | OC, MMA, GCMMA, SiMPL, BESO, SLSQP | 8 | 3 |
-| [Problems](toporia/plugins/problems/README.md) — benchmarks | MBB, cantilever, Michell cantilever, 3-point bending, bar, 3× drone arm | 6 | 2 |
+| [Problems](toporia/plugins/problems/README.md) — benchmarks | MBB, cantilever, 3-D cantilever, Michell cantilever, 3-point bending, bar, 3× drone arm | 6 | 2 |
 
-**55 implemented · 63 with open code elsewhere · 54 from papers only.**
+**58 implemented · 62 with open code elsewhere · 54 from papers only.**
 
 Short version of where this sits in the field: Toporia is 2-D, structured-grid, linear
 elastic today, and it covers three of the field's parameterisation families (density/SIMP,

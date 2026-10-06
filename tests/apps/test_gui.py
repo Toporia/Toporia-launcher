@@ -134,7 +134,10 @@ def test_objective_and_constraints_follow_the_method(window, name):
     expected = [cls.name for cls in responses_for(OBJECTIVE_ROLE) if cls.name in capabilities.objectives]
     assert window.objective.offered_types() == expected
     can_constrain = bool(capabilities.constraints) and capabilities.max_constraints != 0
-    assert window.constraints.isHidden() == (not can_constrain)
+    # Always in view; when the method can add nothing to the volume budget, it says why.
+    assert not window.constraints.isHidden()
+    assert window.constraints.available() == can_constrain
+    assert bool(window.constraints._reason) == (not can_constrain)
 
 
 def test_a_constraint_reaches_the_run_only_when_the_method_can_enforce_it(window):
@@ -218,7 +221,7 @@ def test_the_design_representation_panel_follows_the_method(window):
     from toporia.apps.gui import runner
     window._on_config_changed("MBB Beam")
     window.core.select_method("q4+mma")
-    assert not window.design.isHidden()
+    assert not window.design.representation.isHidden()
     window.design.load_spec({"type": "mmc", "n_x": 3})
     cfg = runner.build_config(window.core, window.lc, window.filters, base_cfg=window._base_cfg,
                               objective=window.objective, constraints=window.constraints,
@@ -232,9 +235,52 @@ def test_the_design_representation_panel_follows_the_method(window):
     assert any("would be refused" in note for note in window.pipeline.notes())
 
     window.core.select_method("levelset")   # keeps its own variables
-    assert window.design.isHidden()
+    assert window.design.representation.isHidden() and not window.design.isHidden()
     window.design.load_spec({"type": "element_density"})
     window.core.select_method("q4+oc")
+
+
+def test_the_design_section_switches_between_2d_and_3d(window):
+    window._on_config_changed("Cantilever")
+    window.core.select_method("q4+mma")
+    assert window.design.get_values() == {"m": pytest.approx(get_run("Cantilever").solver.m), "Lz": 0.0}
+    window.design.dims.setCurrentIndex(window.design.dims.findData(3))
+    assert window.core.method_name() == "h8+mma"            # the physics follows the dimension
+    window.design.depth.setValue(12.0)
+    cfg = _built(window)
+    assert cfg.scenario.Lz == 12.0 and cfg.solver.method == "h8+mma"
+    assert dict(window.pipeline.stages())["Physics"] == "3-D H8 bricks (Toporia)"
+    window.lc._rows[0].fe.setValue(30.0)                   # a 3-D load may leave the plane
+    assert _built(window).scenario.load_cases[0].Fe == 30.0
+    window.design.dims.setCurrentIndex(window.design.dims.findData(2))
+    assert window.core.method_name() == "q4+mma" and _built(window).scenario.Lz == 0.0
+    assert _built(window).scenario.load_cases[0].Fe == 0.0   # in 2-D a load stays in the plane
+
+
+def test_the_resolution_can_be_given_as_an_element_size(window):
+    window._on_config_changed("Cantilever 3D")
+    design = window.design
+    assert design.get_values() == {"m": 0.4, "Lz": 10.0}
+    assert design.counts.text().startswith("24 × 8 × 4 = 768 elements")
+    design.mode.setCurrentIndex(design.mode.findData("size"))
+    assert design.resolution.value() == pytest.approx(2.5)          # the same mesh, shown as a size
+    design.resolution.setValue(5.0)
+    assert design.get_values()["m"] == pytest.approx(0.2)
+    assert design.counts.text().startswith("12 × 4 × 2 = 96 elements")
+    design.mode.setCurrentIndex(design.mode.findData("per_mm"))
+    assert design.resolution.value() == pytest.approx(0.2)
+
+
+def test_a_3d_run_ends_with_a_3d_view(window, tmp_path):
+    pytest.importorskip("skimage")
+    from toporia.apps.gui import runner
+    window._on_config_changed("Cantilever 3D")
+    cfg = _built(window).updated(max_iter=3).with_output_dir(tmp_path)
+    density = runner.run_one(cfg, None, lambda *_: None)
+    assert density.ndim == 3
+    window.canvas.show_3d(density, 1.0 / cfg.solver.m)
+    assert window.canvas._ax_d.name == "3d"
+    window.canvas.reset()
 
 
 def _built(window):
@@ -242,7 +288,8 @@ def _built(window):
     return runner.build_config(window.core, window.lc, window.filters, base_cfg=window._base_cfg,
                                objective=window.objective, constraints=window.constraints,
                                interpolation=window.material, representation=window.design,
-                               schedules=window.schedules, variants=window.variants, postprocess=window.post)
+                               schedules=window.schedules, variants=window.variants, postprocess=window.post,
+                               design=window.design)
 
 
 def test_a_schedule_offers_only_what_can_change_and_reaches_the_run(window):

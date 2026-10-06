@@ -73,12 +73,13 @@ def _redir(log_fn):
 # The "finally" block guarantees stdout is restored even if an exception occurs.
 
 def run_one(config, on_iter, log_fn):
-    """The Run One mode, with its printed output routed to the GUI's log."""
+    """The Run One mode, with its printed output routed to the GUI's log.  Returns the final density."""
     old = _redir(log_fn)
     try:
-        _run_one(config, on_iteration=on_iter)
+        _, density = _run_one(config, on_iteration=on_iter)
     finally:
         sys.stdout = old
+    return density
 
 
 def run_sweep(config, sg, on_iter, log_fn):
