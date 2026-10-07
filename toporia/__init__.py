@@ -3,14 +3,15 @@ Toporia — open-source topology optimisation platform.
 
 Quickstart
 ----------
-    from toporia.problems import get_default_config
-    from toporia.core.runner import run_single
+    from toporia.plugins.problems import get_run
+    from toporia.engine.loop import run_single
 
-    cfg = get_default_config()          # MBB beam by default
-    density = run_single(cfg)
+    run = get_run("MBB Beam").updated(volfrac=0.4)
+    density = run_single(run)
 
-Or launch the GUI:
-    python main.py
+Or from the command line:
+    toporia run "MBB Beam" --set volfrac=0.4
+    toporia                      (no command: launches the GUI, as does python main.py)
 """
 
 __version__ = "0.1.0"

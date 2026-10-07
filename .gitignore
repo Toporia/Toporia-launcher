@@ -6,20 +6,21 @@ __pycache__/
 # C extensions
 *.so
 
-# Distribution / packaging
+# Distribution / packaging — anchored to the repository root, so a package folder
+# with one of these names (toporia/framework/parts/) is never ignored by mistake.
 .Python
-build/
-develop-eggs/
-dist/
-downloads/
-eggs/
+/build/
+/develop-eggs/
+/dist/
+/downloads/
+/eggs/
 .eggs/
-lib/
-lib64/
-parts/
-sdist/
-var/
-wheels/
+/lib/
+/lib64/
+/parts/
+/sdist/
+/var/
+/wheels/
 share/python-wheels/
 *.egg-info/
 .installed.cfg
@@ -216,3 +217,6 @@ __marimo__/
 
 # Streamlit
 .streamlit/secrets.toml
+
+# Toporia run output (density images, CSVs, run.json); every run writes here
+results/

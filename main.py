@@ -5,6 +5,6 @@ Usage:
     python main.py
 """
 
-from toporia.gui import launch
+from toporia.apps.gui import launch
 
 launch()
