@@ -14,7 +14,7 @@ commit.
 | **ORACLE** | Not integrated: run outside on the same problem, and a test compares the results. |
 
 Status: `[ ]` to do · `[~]` an agent is on it · `[x]` merged and verified.
-Lines marked *(unverified)* are from memory and still have to be found and checked by the
+The verified survey of every open code found is [SURVEY.md](SURVEY.md). Lines marked *(unverified)* are from memory and still have to be found and checked by the
 survey (wave 0).
 
 ---
@@ -34,7 +34,7 @@ first, and if a package will not install, reports it rather than working around 
 | :-- | :-- | :-- | :-- | :-- |
 | [ ] | SciPy `trust-constr`, `COBYLA`, … (already a dependency) | updater | more constrained optimisers in the `scipy_slsqp` pattern | BSD |
 | [ ] | NLopt | updater | MMA, CCSA, SLSQP, augmented Lagrangian, COBYLA, … in one wrapper | LGPL/MIT |
-| [ ] | cyipopt (IPOPT) | updater | interior point | EPL |
+| [ ] | cyipopt (IPOPT) | updater | interior point | EPL. **Blocked 2026-10-11:** no Windows wheel for Python 3.14; a source build needs pkg-config + IPOPT. Needs conda-forge or an older Python |
 | [ ] | mmapy, Deetman's MMA/GCMMA Python port | updater + oracle for `mma.py` | the reference MMA | GPL-3 *(check; GPL means optional only)* |
 | [ ] | Feppon's null-space optimizer | updater | constrained optimiser for level-set and shape problems | *(unverified)* |
 | [ ] | ParOpt | updater | interior point built for TO | LGPL *(unverified)* |
@@ -62,7 +62,7 @@ the matching MAKE item below.
 | [ ] | top99neo (Ferrari & Sigmund 2020) | volume-preserving Heaviside, continuation |
 | [ ] | top3d (Liu & Tovar 2014) / top3D125 (Ferrari & Sigmund 2020) | `h8` |
 | [ ] | Svanberg MMA / GCMMA | `mma.py` |
-| [ ] | 88-line parameterised level set (Wei, Li, Allaire & Wang 2018) | `levelset_rbf.py` |
+| [ ] | 88-line RBF level set (Wei, Li, Li & Wang, SMO 2018) | `levelset_rbf.py` |
 | [ ] | 88-line reaction–diffusion level set (Otomori et al. 2015) | RD level set |
 | [ ] | 129-line level set (Challis 2010) | HJ level set |
 | [ ] | TOBS 101-line (Picelli et al. 2021) | TOBS updater |
@@ -75,7 +75,7 @@ the matching MAKE item below.
 | [ ] | PolyStress (Giraldo-Londoño & Paulino 2021) | local stress + AL |
 | [ ] | topflow (Alexandersen 2023) | fluids |
 | [ ] | 146-line 3-D stress (Deng et al. 2021) *(unverified)* | stress in 3-D |
-| [ ] | 99-line / top88 mechanism and heat extensions | mechanism, heat |
+| [ ] | top3d (Liu & Tovar 2014) mechanism and heat instructions (the survey found that the 99-line/top88 papers do not include them) | mechanism, heat |
 
 ## Wave 3: MAKE, small (one file in an existing slot)
 
