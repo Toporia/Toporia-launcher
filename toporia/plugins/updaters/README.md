@@ -4,7 +4,7 @@ An updater turns a model's `Evaluation` (objective, volume, gradients) into the 
 design. It knows nothing about the physics that produced the numbers, so **every updater
 works with every model** — see [`framework/parts/composition.py`](../../framework/parts/composition.py).
 
-**Status: 7 in Toporia · 8 with open code · 3 paper only**
+**Status: 11 in Toporia · 8 with open code · 3 paper only**
 
 | Label | Meaning |
 | :-- | :-- |
@@ -23,12 +23,56 @@ works with every model** — see [`framework/parts/composition.py`](../../framew
 | ✅ MMA (pyMOTO) | [`pymoto_optimizers.py`](pymoto_optimizers.py) | `pymoto_mma` | any number | pyMOTO's implementation, for cross-checking ours. Optional dependency. |
 | ✅ GCMMA (pyMOTO) | [`pymoto_optimizers.py`](pymoto_optimizers.py) | `pymoto_gcmma` | any number | Globally convergent MMA with an inner loop, for strongly non-linear responses. Optional dependency. |
 | ✅ SLSQP (SciPy) | [`scipy_slsqp.py`](scipy_slsqp.py) | `scipy_slsqp` | any number | Sequential quadratic programming (Kraft 1988). Runs its own loop in the background; **the worked example in [`docs/writing-plugins.md`](../../../docs/writing-plugins.md)**. Dense quasi-Newton matrix, so coarse meshes only. Within 3 % of OC on the MBB benchmark. |
+| ✅ MMA (NLopt) | [`nlopt_optimizers.py`](nlopt_optimizers.py) | `nlopt_mma` | any number | NLopt's `LD_MMA`: Svanberg's method of moving asymptotes with the conservative-approximation safeguard. Optional dependency (`pip install nlopt`). Within 2 % of OC on the MBB benchmark. |
+| ✅ CCSAQ (NLopt) | [`nlopt_optimizers.py`](nlopt_optimizers.py) | `nlopt_ccsaq` | any number | NLopt's `LD_CCSAQ`: MMA's globally convergent relative with a quadratic model (Svanberg 2002). Optional dependency. |
+| ✅ SLSQP (NLopt) | [`nlopt_optimizers.py`](nlopt_optimizers.py) | `nlopt_slsqp` | any number | NLopt's `LD_SLSQP` (Kraft 1988), the same algorithm as `scipy_slsqp` from a second implementation. Dense, so coarse meshes only. Optional dependency. |
+| ✅ Augmented Lagrangian + L-BFGS (NLopt) | [`nlopt_optimizers.py`](nlopt_optimizers.py) | `nlopt_auglag` | any number | NLopt's `AUGLAG` with `LD_LBFGS` inside: constraints become penalties with multiplier updates, bound-constrained subproblems are solved by L-BFGS. Optional dependency. |
 
-Every updater enforces the volume budget. Only the two pyMOTO updaters can enforce a
+Every updater enforces the volume budget. Only the pyMOTO, SciPy and NLopt updaters can enforce a
 **second** constraint, such as a stress limit: `q4+pymoto_mma` runs a stress-limited
 design on Toporia's own solver. **None of Toporia's own updaters can yet** — see the
 augmented Lagrangian entry below.
 
+## NLopt updaters
+
+[NLopt](https://nlopt.readthedocs.io) is one C library with a common interface to dozens of
+optimisers. [`nlopt_optimizers.py`](nlopt_optimizers.py) wraps the four gradient-based
+algorithms that accept bounds and any number of nonlinear inequality constraints, so they
+enforce the volume budget and any further limit the scenario adds (a stress limit, say):
+
+| Updater | NLopt algorithm | What it is |
+| :-- | :-- | :-- |
+| `nlopt_mma` | [`LD_MMA`](https://nlopt.readthedocs.io/en/latest/NLopt_Algorithms/#mma-method-of-moving-asymptotes-and-ccsa) | Svanberg's method of moving asymptotes, with the conservative-approximation check of the 2002 paper: a step that would make the model optimistic is retried with a stiffer penalty. The same family as Toporia's own `mma`, from an independent implementation. |
+| `nlopt_ccsaq` | [`LD_CCSAQ`](https://nlopt.readthedocs.io/en/latest/NLopt_Algorithms/#mma-method-of-moving-asymptotes-and-ccsa) | CCSA with a quadratic (rather than separable-rational) model; MMA's globally convergent relative. |
+| `nlopt_slsqp` | [`LD_SLSQP`](https://nlopt.readthedocs.io/en/latest/NLopt_Algorithms/#slsqp) | Kraft's sequential least-squares quadratic programming. Dense matrices, so coarse meshes only. |
+| `nlopt_auglag` | [`AUGLAG`](https://nlopt.readthedocs.io/en/latest/NLopt_Algorithms/#augmented-lagrangian-algorithm) with [`LD_LBFGS`](https://nlopt.readthedocs.io/en/latest/NLopt_Algorithms/#low-storage-bfgs) | Augmented Lagrangian (Conn, Gould & Toint; Birgin & Martínez): constraints are folded into the objective with multipliers and a penalty, and each bound-constrained subproblem is solved by L-BFGS. |
+
+**Install:** `pip install nlopt` (or `pip install toporia[nlopt]`). Without it the four are
+listed but greyed out, with the install command shown.
+
+**Use:** the method is `<model>+<updater>`, so
+
+```
+toporia run "MBB Beam" --set method=q4+nlopt_mma
+toporia run "MBB Beam" --set method=q4+nlopt_auglag --set nlopt_maxeval=1000
+toporia benchmark --methods q4+oc q4+nlopt_mma q4+nlopt_ccsaq q4+nlopt_slsqp q4+nlopt_auglag
+toporia check updater:nlopt_mma
+```
+
+In the GUI they appear in the updater drop-down of the method panel (`toporia list` shows
+the same list), and their parameters appear under it.
+
+**How they run.** NLopt runs its own loop and has no per-iteration callback, so the adapter
+(an [`ExternalOptimizer`](../../framework/optimisers/external_loop.py)) runs it in a background
+thread and hands the engine each design NLopt evaluates (`reports = "evaluation"`). One
+"iteration" in the display is therefore one function evaluation, trial points of NLopt's
+inner loops included, and the iteration counts of these updaters are not comparable with
+`oc` or `mma`: compare the `solves` column. Points that land almost on top of the last one
+shown are skipped (`nlopt_report_step`), otherwise the engine's tolerance would end the
+run on the first near-duplicate trial point. Parameters: `nlopt_maxeval` and
+`nlopt_ftol_rel` (NLopt's own stopping rule, alongside the engine's), `nlopt_report_step`,
+`nlopt_rho_init` (MMA and CCSAQ: smaller means a bolder first step) and
+`nlopt_local_maxeval` (AUGLAG: evaluations per L-BFGS subproblem).
 ## Writing one for an outside optimiser
 
 The full guide, with a worked example of every plugin kind, is
@@ -86,6 +130,9 @@ the element-wise form implemented here.
 ## References
 
 - K. Svanberg, "The method of moving asymptotes", *IJNME* 24 (1987) 359–373.
+- S. G. Johnson, [The NLopt nonlinear-optimization package](https://github.com/stevengj/nlopt).
+- D. Kraft, "A software package for sequential quadratic programming", DFVLR-FB 88-28 (1988).
+- A. R. Conn, N. I. M. Gould, P. L. Toint, "A globally convergent augmented Lagrangian algorithm…", *SIAM J. Numer. Anal.* 28 (1991) 545–572; E. G. Birgin, J. M. Martínez, *Optim. Methods Softw.* 23 (2008) 177–195.
 - K. Svanberg, "A class of globally convergent optimization methods…", *SIAM J. Optim.* 12 (2002) 555–573.
 - B. Keith, D. Kim, B. S. Lazarov, T. M. Surowiec, "A simple introduction to the SiMPL method for density-based topology optimization", *SMO* 68 (2025); [arXiv:2411.19421](https://arxiv.org/abs/2411.19421).
 - X. Huang, Y. M. Xie, "Convergent and mesh-independent solutions for the bi-directional evolutionary structural optimization method", *FEAD* 43 (2007) 1039–1049.
