@@ -4,7 +4,7 @@ An updater turns a model's `Evaluation` (objective, volume, gradients) into the 
 design. It knows nothing about the physics that produced the numbers, so **every updater
 works with every model** — see [`framework/parts/composition.py`](../../framework/parts/composition.py).
 
-**Status: 16 in Toporia · 8 with open code · 3 paper only**
+**Status: 16 in Toporia · 7 with open code · 3 paper only**
 
 | Label | Meaning |
 | :-- | :-- |
@@ -82,7 +82,7 @@ listed but greyed out, with the install command shown.
 
 ```
 toporia run "MBB Beam" --set method=q4+nlopt_mma
-toporia run "MBB Beam" --set method=q4+nlopt_auglag --set nlopt_maxeval=1000
+toporia run "MBB Beam" --set method=q4+nlopt_auglag --set method.nlopt_maxeval=1000
 toporia benchmark --methods q4+oc q4+nlopt_mma q4+nlopt_ccsaq q4+nlopt_slsqp q4+nlopt_auglag
 toporia check updater:nlopt_mma
 ```

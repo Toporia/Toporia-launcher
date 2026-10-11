@@ -46,10 +46,10 @@ any doubt about what this repository actually does today:
 | [Models](toporia/plugins/models/README.md) — physics and gradients | 2-D Q4, 3-D H8, pyMOTO elasticity | 24 | 3 |
 | [Elements](toporia/plugins/physics/README.md) — discretisation | Q4 plane stress, H8 solid | 5 | 3 |
 | [Responses](toporia/plugins/responses/README.md) — objectives and constraints | compliance, volume, von Mises stress | 4 | 14 |
-| [Updaters](toporia/plugins/updaters/README.md) — optimisers | OC, MMA, GCMMA, SiMPL, BESO, SLSQP, trust-constr, NLopt (MMA, CCSAQ, SLSQP, AUGLAG), mmapy (MMA, GCMMA), null-space | 8 | 3 |
+| [Updaters](toporia/plugins/updaters/README.md) — optimisers | OC, MMA, GCMMA, SiMPL, BESO, SLSQP, trust-constr, NLopt (MMA, CCSAQ, SLSQP, AUGLAG), mmapy (MMA, GCMMA), null-space, TOBS | 7 | 3 |
 | [Problems](toporia/plugins/problems/README.md) — benchmarks | MBB, robust MBB, cantilever, 3-D cantilever, Michell cantilever, L-bracket, 3-point bending, bar, 3× drone arm | 6 | 1 |
 
-**71 implemented · 62 with open code elsewhere · 50 from papers only.**
+**72 implemented · 61 with open code elsewhere · 50 from papers only.**
 
 Short version of where this sits in the field: Toporia solves linear elasticity on
 structured grids, in 2-D and in 3-D. It covers four of the field's parameterisation
