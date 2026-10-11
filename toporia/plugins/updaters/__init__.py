@@ -9,6 +9,8 @@ UPDATERS registry.  Modules starting with an underscore are not scanned.
 
     oc.py                 optimality criteria (top88)
     mma.py                method of moving asymptotes, one volume constraint
+    conlin.py             CONLIN, convex linearisation (MMA without moving asymptotes), any number of constraints
+    oc_multi.py           optimality criteria with a multiplier per constraint
     simpl.py              entropic mirror descent on a latent variable (SiMPL)
     beso.py               bi-directional evolutionary ranking, binary designs
     beso_hard.py          hard-kill BESO: removed elements at exactly the void bound

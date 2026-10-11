@@ -4,7 +4,7 @@ An updater turns a model's `Evaluation` (objective, volume, gradients) into the 
 design. It knows nothing about the physics that produced the numbers, so **every updater
 works with every model** — see [`framework/parts/composition.py`](../../framework/parts/composition.py).
 
-**Status: 20 in Toporia · 5 with open code · 3 paper only**
+**Status: 21 in Toporia · 5 with open code · 1 paper only**
 
 | Label | Meaning |
 | :-- | :-- |
@@ -24,6 +24,8 @@ works with every model** — see [`framework/parts/composition.py`](../../framew
 | ✅ Adam (augmented Lagrangian) | [`adam.py`](adam.py) | `adam` | volume only | Adam (Kingma & Ba 2015) on the design variables, the budget an augmented-Lagrangian term, bounds by clipping. The updater neural reparameterisations need. See [its section](#adam--adam). |
 | ✅ Proportional topology optimisation | [`pto.py`](pto.py) | `pto` | volume only | Budget handed out in proportion to element energy^q, no multiplier or linearisation. A baseline. See [its section](#proportional-topology-optimisation--pto). |
 | ✅ TOBS (integer LP) | [`tobs.py`](tobs.py) | `tobs` | volume only | Binary designs by sequential integer linear programming: linearise, then flip elements optimally with HiGHS (`scipy.optimize.milp`). Own convergence test, like BESO. |
+| ✅ CONLIN | [`conlin.py`](conlin.py) | `conlin` | any number | Convex linearisation in `x` or `1/x`, MMA without the moving asymptotes; the dual (any number of multipliers) is maximised with L-BFGS-B. See [its section](#conlin--convex-linearisation). Within 0.1 % of OC on the MBB benchmark. |
+| ✅ Optimality criteria, several constraints | [`oc_multi.py`](oc_multi.py) | `oc_multi` | any number | OC with a multiplier per constraint, found by cyclic bisection. Compliance only, element densities only; handles a stress limit with a safeguard, see [its section](#oc_multi--optimality-criteria-with-several-constraints). The only one of Toporia's own OC/MMA-family updaters (besides CONLIN) that enforces a second constraint. |
 | ✅ MMA (pyMOTO) | [`pymoto_optimizers.py`](pymoto_optimizers.py) | `pymoto_mma` | any number | pyMOTO's implementation, for cross-checking ours. Optional dependency. |
 | ✅ GCMMA (pyMOTO) | [`pymoto_optimizers.py`](pymoto_optimizers.py) | `pymoto_gcmma` | any number | Globally convergent MMA with an inner loop, for strongly non-linear responses. Optional dependency. |
 | ✅ SLSQP (SciPy) | [`scipy_slsqp.py`](scipy_slsqp.py) | `scipy_slsqp` | any number | Sequential quadratic programming (Kraft 1988). Runs its own loop in the background; **the worked example in [`docs/writing-plugins.md`](../../../docs/writing-plugins.md)**. Dense quasi-Newton matrix, so coarse meshes only. Within 3 % of OC on the MBB benchmark. |
@@ -59,10 +61,83 @@ toporia run "MBB Beam" --set method=q4+scipy_trust_constr
 
 COBYQA and COBYLA (gradient-free) were tried with the same adapter but are not registered: on the MBB benchmark (192 variables) both end about 50 % above OC after 200 iterations, so they cannot pass the conformance benchmark.
 
-Every updater enforces the volume budget. Only the pyMOTO, SciPy, NLopt, mmapy and null-space updaters can enforce a
-**second** constraint, such as a stress limit: `q4+pymoto_mma` runs a stress-limited
-design on Toporia's own solver. **None of Toporia's own updaters can yet** — see the
-augmented Lagrangian entry below.
+Every updater enforces the volume budget. Only CONLIN, multi-constraint OC, and the pyMOTO, SciPy, NLopt, mmapy and null-space updaters can enforce a
+**second** constraint, such as a stress limit: `q4+pymoto_mma`, `q4+conlin` and `q4+oc_multi` run a stress-limited
+design on Toporia's own solver. `oc` and `mma` still enforce the volume only; local (per-element) stress constraints
+need the augmented Lagrangian entry below.
+
+## CONLIN — convex linearisation
+
+**What it does.** Each function (objective and constraints) is linearised not in `x` but in
+`x` for the variables with a positive derivative and in `1/x` for those with a negative one, which
+makes the approximation convex and separable; the subproblem is then solved through its dual. This
+is exactly MMA's approximation with the asymptotes fixed at 0 and infinity: [`mma.py`](mma.py)
+moves them with the design's history, CONLIN never does. The dual's multipliers (one per constraint)
+are found by L-BFGS-B, so any number of constraints work; a move limit is the only globalisation.
+
+**When to use it.** To see **what MMA's asymptotes buy**: CONLIN is the same method with them
+removed, so the comparison isolates their effect. On the MBB benchmark (`m = 0.4`, tolerance 0.01)
+CONLIN needs 56 iterations to compliance 274.46, MMA 50 iterations to 274.14 and OC 56 to 274.47: on
+this well-behaved problem the difference is small (about 12 % more iterations), because the move
+limit does the damping the asymptotes would. Where the response is more nonlinear (stress) the move
+limit has to be smaller. It is also a usable constrained updater in its own right: with a stress
+limit it reaches the same design as `oc_multi` to four digits.
+
+**How to use it.** The method is `q4+conlin` (any model).
+
+```
+toporia run "MBB Beam" --set method=q4+conlin
+toporia run "MBB Beam" --set method=q4+conlin --set method.move=0.1
+toporia check updater:conlin
+```
+
+In the GUI, choose **CONLIN (convex linearisation)** as the updater of the method panel; the move
+limit and the multiplier cap appear beside it.
+
+**Links.** Fleury & Braibant, "Structural optimization: a new dual method using mixed variables",
+[*IJNME* 23 (1986) 409–428](https://doi.org/10.1002/nme.1620230307); Fleury, "First and second
+order convex approximation strategies in structural optimization",
+[*Struct. Optim.* 1 (1989) 3–10](https://doi.org/10.1007/BF01743804). MMA: Svanberg,
+[*IJNME* 24 (1987) 359–373](https://doi.org/10.1002/nme.1620240207).
+
+## `oc_multi` — optimality criteria with several constraints
+
+**What it does.** Optimality criteria with one multiplier per constraint instead of one for the
+volume: `x_new = x · (−dC/dx ÷ Σ_j λ_j dg_j/dx)^½`, inside the move limit and bounds. The
+multipliers are found by cycling through the constraints and bisecting each `λ_j` (the others held
+fixed) until `g_j = 0` or `λ_j = 0`; the volume is evaluated exactly, the other constraints through
+their linearisation. With the volume alone it is [`oc.py`](oc.py) (same compliance to 0.1 %).
+
+**What it accepts, honestly.** The classical rule assumes every constraint's sensitivity has the
+volume's sign. A stress limit's does not (it changes sign between elements), so the rule has no
+finite answer where `Σ λ_j dg_j/dx ≤ 0`; there the element goes to its upper limit when the
+objective also wants material and to its lower limit otherwise. That keeps the update defined but
+is a safeguard, not a convergence proof: use a small move limit (0.05) with a stress limit. It
+minimises compliance only and needs one density per element, like `oc`; any number of further
+constraints are accepted.
+
+**When to use it.** For a second constraint on a plain OC workflow. Measured: MBB Beam, `m = 0.4`,
+stress limit 0.95 × the unconstrained design's peak, `method.move=0.05`, 200 iterations: peak stress
+1.2816 against a limit of 1.3005 (met), volume 0.5000 (met). At 0.9 × the peak (move 0.1) it ends 3.6 % over the
+limit: with the volume held at 0.5 that limit is at or beyond what the design can meet (pyMOTO's MMA
+meets it only by using 7 % more material), and the run reports it as a broken limit. For anything where
+the constraint is the point, prefer `conlin` or an MMA.
+
+**How to use it.** The method is `q4+oc_multi`; add a stress constraint to the scenario (GUI: Constraints
+list; CLI: a config or scenario file with `"constraints": [{"type": "stress", "limit": ...}]`).
+
+```
+toporia run "MBB Beam" --set method=q4+oc_multi
+toporia run "MBB Beam" --set method=q4+oc_multi --set method.move=0.05 --set method.oc_eta=0.5
+toporia check updater:oc_multi
+```
+
+In the GUI, choose **Optimality criteria, several constraints** as the updater; with a stress
+constraint added it is offered next to `pymoto_mma` and the other constraint-capable updaters.
+
+**Links.** Zhou & Rozvany, "The COC algorithm, Part II", *CMAME* 89 (1991) 309–336;
+Yin & Yang, "Topology optimization based on the optimality criteria method under multiple constraints",
+*Comput. Struct.* 79 (2001) 1839–1850.
 
 ## NLopt updaters
 
@@ -241,10 +316,8 @@ any other updater, and its own verdict (success, message, its counts) is written
 | Updater | Status | Reference | Why it matters |
 | :-- | :-- | :-- | :-- |
 | Augmented Lagrangian | 🔗 [PolyStress](https://link.springer.com/article/10.1007/s00158-020-02760-8) | Giraldo-Londoño & Paulino, *PRSA* 2020; *SMO* 2021 | **The missing piece for local constraints.** Turns thousands of local stress limits into a sequence of bound-constrained subproblems; proven to hundreds of millions of constraints. Would let Toporia's own updaters enforce [`responses/stress.py`](../responses/README.md). Subproblem-solver comparison: Silva et al., *IJNME* 2025. |
-| CONLIN | 📄 | Fleury, *Struct. Optim.* 1989 | MMA's predecessor: convex linearisation without moving asymptotes. Cheap to write, and the clean way to show what the asymptotes actually buy. |
 | SLP with trust region | 🔗 `scipy.optimize` | standard | Linearise and solve with move limits. The usual choice for level-set and feature-mapping problems: few variables, many constraints. (SQP is in Toporia as `scipy_slsqp`.) |
 | Interior point (IPOPT) | 🔗 IPOPT | Wächter & Biegler, *Math. Prog.* 2006 | General NLP for small-variable, many-constraint formulations. Used by GPTO and GGP. |
-| Modified OC for several constraints | 📄 | Zhou & Rozvany, *Struct. Optim.* 1991 | Extends the OC multiplier search beyond one constraint; historically the alternative to MMA. |
 
 ## Candidates — different update logic
 
