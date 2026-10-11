@@ -12,6 +12,8 @@ UPDATERS registry.  Modules starting with an underscore are not scanned.
     simpl.py              entropic mirror descent on a latent variable (SiMPL)
     beso.py               bi-directional evolutionary ranking, binary designs
     pymoto_optimizers.py  pyMOTO's MMA and globally convergent GCMMA (optional)
+    mmapy_optimizers.py   Svanberg's MMA and GCMMA via mmapy (optional, GPL-3)
+    nullspace.py          Feppon's null-space optimiser (optional, GPL-3, runs its own loop)
 
 Each works differently enough to be worth comparing: OC and MMA move densities
 continuously inside the box, SiMPL moves them in logit space so the bounds hold

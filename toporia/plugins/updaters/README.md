@@ -4,7 +4,7 @@ An updater turns a model's `Evaluation` (objective, volume, gradients) into the 
 design. It knows nothing about the physics that produced the numbers, so **every updater
 works with every model** — see [`framework/parts/composition.py`](../../framework/parts/composition.py).
 
-**Status: 12 in Toporia · 8 with open code · 3 paper only**
+**Status: 15 in Toporia · 8 with open code · 3 paper only**
 
 | Label | Meaning |
 | :-- | :-- |
@@ -28,6 +28,9 @@ works with every model** — see [`framework/parts/composition.py`](../../framew
 | ✅ SLSQP (NLopt) | [`nlopt_optimizers.py`](nlopt_optimizers.py) | `nlopt_slsqp` | any number | NLopt's `LD_SLSQP` (Kraft 1988), the same algorithm as `scipy_slsqp` from a second implementation. Dense, so coarse meshes only. Optional dependency. |
 | ✅ Augmented Lagrangian + L-BFGS (NLopt) | [`nlopt_optimizers.py`](nlopt_optimizers.py) | `nlopt_auglag` | any number | NLopt's `AUGLAG` with `LD_LBFGS` inside: constraints become penalties with multiplier updates, bound-constrained subproblems are solved by L-BFGS. Optional dependency. |
 | ✅ trust-constr (SciPy) | [`scipy_minimize.py`](scipy_minimize.py) | `scipy_trust_constr` | any number | Trust-region SQP / interior point with exact gradients; see [its entry](#scipy-optimisers-in-scipy_minimizepy). Dense, so coarse meshes only. Within 1 % of OC on the MBB benchmark. |
+| ✅ MMA (mmapy) | [`mmapy_optimizers.py`](mmapy_optimizers.py) | `mmapy_mma` | any number | Svanberg's reference MMA as ported by Arjen Deetman: the yardstick for `mma` and `pymoto_mma`. **GPL-3, optional, install it yourself** — see [below](#gpl-3-optimisers-mmapy-and-nullspace_optimizer). |
+| ✅ GCMMA (mmapy) | [`mmapy_optimizers.py`](mmapy_optimizers.py) | `mmapy_gcmma` | any number | Svanberg's globally convergent MMA with its inner iterations, same package. **GPL-3, optional.** |
+| ✅ Null-space optimiser | [`nullspace.py`](nullspace.py) | `nullspace` | any number | Feppon's null-space gradient flow: constraints are followed, not penalised. Runs its own loop in the background. **GPL-3, optional.** |
 
 ### SciPy optimisers in `scipy_minimize.py`
 
@@ -52,7 +55,7 @@ toporia run "MBB Beam" --set method=q4+scipy_trust_constr
 
 COBYQA and COBYLA (gradient-free) were tried with the same adapter but are not registered: on the MBB benchmark (192 variables) both end about 50 % above OC after 200 iterations, so they cannot pass the conformance benchmark.
 
-Every updater enforces the volume budget. Only the pyMOTO, SciPy and NLopt updaters can enforce a
+Every updater enforces the volume budget. Only the pyMOTO, SciPy, NLopt, mmapy and null-space updaters can enforce a
 **second** constraint, such as a stress limit: `q4+pymoto_mma` runs a stress-limited
 design on Toporia's own solver. **None of Toporia's own updaters can yet** — see the
 augmented Lagrangian entry below.
@@ -142,6 +145,84 @@ any other updater, and its own verdict (success, message, its counts) is written
 | Adam / L-BFGS on network weights | 🔗 [TOuNN](https://link.springer.com/article/10.1007/s00158-020-02748-4) | Hoyer et al. 2019; Chandrasekhar & Suresh, *SMO* 2021 | What neural reparameterisations use: variables are weights, the volume budget is a penalty rather than a bound. Needed if [`methods/`](../methods/README.md) gains a neural parameterisation. |
 | Proportional topology optimisation | 🔗 [ptomethod.org](http://www.ptomethod.org) | Biyikli & To, *PLoS ONE* 2015 | Non-gradient redistribution, no sensitivities. Useful only as a baseline. |
 | Metaheuristics (GA, SA, ACO) | 🔗 [topASA](https://github.com/Hossein-Rostami/Topology-Optimization-with-adaptive-Simulated-Annealing) | see Sigmund, *SMO* 2011 | Included so the platform can **demonstrate why they lose**: orders of magnitude more function evaluations at far lower resolution. Not a serious candidate. |
+
+## GPL-3 optimisers: mmapy and nullspace_optimizer
+
+Two updaters wrap libraries licensed **GPL-3**, while Toporia is Apache-2.0. They are
+therefore never bundled and never required: each adapter imports its library only when a
+run starts, declares it in `dependencies` (so the GUI greys the updater out and shows the
+install command when it is missing, and `toporia list` marks it), and you install the
+library yourself. Installing it is your decision, and the GPL then applies to the
+combination you run. Without them everything else in Toporia works unchanged.
+
+### mmapy — Svanberg's MMA and GCMMA (`mmapy_mma`, `mmapy_gcmma`)
+
+- **What it does.** Arjen Deetman's line-by-line Python port of Krister Svanberg's reference
+  MATLAB code for the method of moving asymptotes and its globally convergent variant.
+  Because it is the reference, it is the check for [`mma.py`](mma.py) (our own bisection
+  solver) and for pyMOTO's MMA: three implementations that should reach the same design.
+  `mmasub` is called once per outer iteration, so `mmapy_mma` is an ordinary updater on the
+  [flat view](../../framework/optimisers/flat_view.py). `mmapy_gcmma` also asks the model
+  for the compliance at its proposed design; if the convex approximation is not conservative
+  there it stiffens it and solves again (up to 15 inner iterations per step). Those extra
+  evaluations are counted in `solves`, and the last one is reused, not repeated, for the design
+  adopted. `run.json` records the outer and inner iteration counts.
+- **Any number of constraints**, the volume budget first (`c = 1000`, `a0 = 1`, as in the
+  package's own example). One parameter, the move limit; the objective is scaled to start at 10.
+- **Source and paper.** [GCMMA-MMA-Python](https://github.com/arjendeetman/GCMMA-MMA-Python)
+  (PyPI `mmapy`). K. Svanberg, *IJNME* 24 (1987) 359–373; *SIAM J. Optim.* 12 (2002) 555–573.
+- **Licence.** GPL-3.
+- **Install.** `pip install "toporia[mmapy]"` or `pip install mmapy`.
+- **Method names.** `q4+mmapy_mma`, `q4+mmapy_gcmma`, and the same with any other model
+  (`h8+mmapy_mma`, `pymoto_elastic+mmapy_gcmma`, …).
+- **CLI.**
+  `toporia run "MBB Beam" --set method=q4+mmapy_mma --set method.move=0.2`, or both
+  against our own: `toporia benchmark --methods q4+mma q4+mmapy_mma q4+mmapy_gcmma`;
+  conformance: `toporia check updater:mmapy_mma updater:mmapy_gcmma`.
+- **GUI.** Method stage, *Updater* picker: "MMA (mmapy)" and "GCMMA (mmapy)"; greyed out
+  with the install command until the package is installed. Also listed in *Compare Methods*.
+- **Measured** (MBB Beam, `m=0.4`, volume 0.5, stopping rule tol 0.01): `mmapy_mma` 274.135,
+  `mma` 274.139, `pymoto_mma` 274.134, OC 274.470. `mmapy_gcmma` 274.136, with 14 inner
+  iterations over 47 outer ones. With a stress limit added, the inner loop gets expensive
+  (the stress aggregate is rarely conservative), which is GCMMA's nature rather than a defect
+  of the adapter.
+
+### nullspace_optimizer — Feppon's null-space method (`nullspace`)
+
+- **What it does.** A null-space gradient flow (Feppon, Allaire & Dapogny) designed for
+  level-set and shape optimisation with many constraints. Each step is the objective's
+  descent direction projected onto the null space of the *active* constraints, plus a
+  Gauss–Newton step that restores any that are violated or nearly active. Constraints are
+  followed rather than penalised, and ones far from active are ignored. The library runs its
+  own loop (`nlspace_solve`), so this is an
+  [`ExternalOptimizer`](../../framework/optimisers/external_loop.py) like `scipy_slsqp`.
+- **Bounds.** The library has no bound argument. Its documented route is used: the
+  `bound_constraints_optimizable` decorator adds `lower − x ≤ 0` and `x − upper ≤ 0` as
+  inequality constraints and clips every trial point into the box.
+- **Parameters.** Time step (about the largest change of any element per iteration — it
+  acts as a move limit), normalised iterations, iteration limit, tolerance. Leave
+  *Normalised iterations* at its default: with a short setting the step shrinks as the gradient
+  falls and the run looks converged long before it is (the engine's design-change test then
+  stops it at about 460 compliance instead of 274 on the MBB beam).
+- **Source and paper.** [null-space-optimizer](https://gitlab.com/florian.feppon/null-space-optimizer)
+  ([documentation](https://null-space-optimizer.readthedocs.io)). F. Feppon, G. Allaire,
+  C. Dapogny, "Null space gradient flows for constrained optimization with applications to
+  shape optimization", *ESAIM: COCV* 26 (2020) 90.
+- **Licence.** GPL-3.
+- **Install.** `pip install "toporia[nullspace]"` or `pip install nullspace_optimizer`. It
+  brings its own QP solvers (OSQP and others) as dependencies.
+- **Method name.** `q4+nullspace` (and any other model).
+- **CLI.**
+  `toporia run "MBB Beam" --set method=q4+nullspace --set method.nullspace_dt=0.2`;
+  conformance: `toporia check updater:nullspace`.
+- **GUI.** Method stage, *Updater* picker: "Null-space optimiser", greyed out with the
+  install command until installed; parameters appear beside it.
+- **Measured** (MBB Beam, `m=0.4`, 200-iteration cap): compliance 274.13 against OC's 274.47.
+  It does not settle under the engine's design-change test within 200 iterations, because its
+  steps stay near the time step, and it makes several evaluations per iteration (line search).
+  It is slower than the MMA family on this problem; its strength is constrained,
+  few-variable shape problems. The library prints a harmless `fatal: not a git repository`
+  to stderr when it starts: it asks git for its own revision and the install is not a checkout.
 
 ## Notes on what has been measured here
 

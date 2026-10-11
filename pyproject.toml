@@ -27,6 +27,12 @@ pymoto = ["pymoto>=2.0"]
 # Enables the updaters nlopt_mma, nlopt_ccsaq, nlopt_slsqp and nlopt_auglag (NLopt's
 # gradient-based constrained optimisers), e.g. method="q4+nlopt_mma".
 nlopt = ["nlopt"]
+# GPL-3 optimisers, kept as extras the user chooses to install.  Toporia (Apache-2.0)
+# never bundles or requires them; they are imported only when their updater runs.
+# Enables updaters mmapy_mma and mmapy_gcmma (Svanberg's MMA/GCMMA, Python port).
+mmapy = ["mmapy>=0.3"]
+# Enables updater nullspace (Feppon's null-space optimiser for constrained problems).
+nullspace = ["nullspace_optimizer>=1.3"]
 # 3-D: pyamg is the multigrid solver for large 3-D meshes (the direct solver
 # handles small ones without it); scikit-image draws the 3-D view of a design.
 3d = ["pyamg>=5.0", "scikit-image>=0.22"]
