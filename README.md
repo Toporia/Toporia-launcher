@@ -38,9 +38,9 @@ any doubt about what this repository actually does today:
 | Layer | ✅ In Toporia | 🔗 Open code | 📄 Paper only |
 | :-- | :-- | --: | --: |
 | [Methods](toporia/plugins/methods/README.md) — how the design is described | SIMP density, RBF level set, BESO | 12 | 3 |
-| [Filters](toporia/plugins/filters/README.md) — regularisation and fabrication | density, sensitivity, Heaviside, AM overhang, symmetry, routing | 1 | 15 |
+| [Filters](toporia/plugins/filters/README.md) — regularisation and fabrication | density, sensitivity, Heaviside (fixed or volume-preserving), PDE, AM overhang, symmetry, routing | 1 | 13 |
 | [Design representations](toporia/plugins/representations/README.md) — what the variables are | element densities, moving morphable components | 2 | 3 |
-| [Material laws](toporia/plugins/interpolations/README.md) — density to stiffness | SIMP, RAMP | 0 | 4 |
+| [Material laws](toporia/plugins/interpolations/README.md) — density to stiffness | SIMP, RAMP, ordered SIMP | 0 | 3 |
 | [Schedules](toporia/plugins/schedules/README.md) — continuation, and robust variants | equal steps, geometric, linear ramp | 0 | 2 |
 | [Post-processors](toporia/plugins/postprocessors/README.md) — threshold, checks, exports | threshold, connectivity, feature size, SVG, DXF, STL | 0 | 3 |
 | [Models](toporia/plugins/models/README.md) — physics and gradients | 2-D Q4, 3-D H8, pyMOTO elasticity | 24 | 3 |
@@ -49,7 +49,7 @@ any doubt about what this repository actually does today:
 | [Updaters](toporia/plugins/updaters/README.md) — optimisers | OC, MMA, GCMMA, SiMPL, BESO, SLSQP, trust-constr, NLopt (MMA, CCSAQ, SLSQP, AUGLAG) | 8 | 3 |
 | [Problems](toporia/plugins/problems/README.md) — benchmarks | MBB, cantilever, 3-D cantilever, Michell cantilever, 3-point bending, bar, 3× drone arm | 6 | 2 |
 
-**63 implemented · 62 with open code elsewhere · 54 from papers only.**
+**66 implemented · 62 with open code elsewhere · 51 from papers only.**
 
 Short version of where this sits in the field: Toporia solves linear elasticity on
 structured grids, in 2-D and in 3-D. It covers four of the field's parameterisation

@@ -83,12 +83,12 @@ the matching MAKE item below.
 
 | | Part | Slot | Source |
 | :-- | :-- | :-- | :-- |
-| [ ] | PDE / Helmholtz filter | filter | Lazarov & Sigmund 2011; top88 |
-| [ ] | Volume-preserving Heaviside | filter | Xu, Cai & Cheng 2010; top99neo |
+| [x] | PDE / Helmholtz filter | filter | Lazarov & Sigmund 2011; top88 |
+| [x] | Volume-preserving Heaviside | filter | Xu, Cai & Cheng 2010; top99neo |
 | [ ] | Morphology: erode, dilate, open, close | filter | Sigmund 2007 |
 | [ ] | Anisotropic PDE filter | filter | Lazarov & Sigmund 2011 |
 | [ ] | Extrusion, pattern repetition, casting direction | filter | Ishii & Aomura 2004; Bendsøe & Sigmund 2003; Xia et al. 2010 |
-| [ ] | SINH, ordered SIMP, Hashin–Shtrikman | interpolation | Bruns 2005; Zuo & Saitou 2017; Bendsøe & Sigmund 1999 |
+| [~] | SINH, ordered SIMP, Hashin–Shtrikman | interpolation (ordered SIMP done; SINH and HS need the material law to see the volume response and ν) | Bruns 2005; Zuo & Saitou 2017; Bendsøe & Sigmund 1999 |
 | [ ] | Convergence-triggered continuation, continuation-free projection | schedule | Wang et al. 2011; Guest et al. 2011 |
 | [ ] | Grey level over the run, smoothed outlines | post-processor | Sigmund 2007; Subedi et al. 2020 |
 | [ ] | TOBS (integer LP via `scipy.optimize.milp`) | updater | Picelli et al. 2021 |
