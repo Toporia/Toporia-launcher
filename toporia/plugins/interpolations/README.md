@@ -15,7 +15,7 @@ the GUI's **Material law** panel. Any physics engine that declares `uses_interpo
 (the Q4 engine does) takes it; models that bring their own (pyMOTO) or none (the level
 set) ignore it, and the Pipeline box says so.
 
-**Status: 2 in Toporia · 0 with open code · 4 paper only**
+**Status: 3 in Toporia · 0 with open code · 3 paper only**
 
 | Label | Meaning |
 | :-- | :-- |
@@ -29,6 +29,7 @@ set) ignore it, and the Pipeline box says so.
 | :-- | :-- | :-- | :-- | :-- |
 | ✅ SIMP | [`simp.py`](simp.py) | `simp` | ρ^p (p = 3) | Bendsøe, *Struct. Optim.* 1989 |
 | ✅ RAMP | [`ramp.py`](ramp.py) | `ramp` | ρ / (1 + q(1 − ρ)) (q = 8) | Stolpe & Svanberg, *SMO* 2001 |
+| ✅ Ordered SIMP | [`ordered_simp.py`](ordered_simp.py) | `ordered_simp` | piecewise t^p between ordered materials | Zuo & Saitou, *SMO* 2017 |
 
 RAMP's slope at ρ = 0 is (E0 − Emin)/(1 + q), where SIMP's is zero: a void element still
 feels a sensitivity, which design-dependent loads (pressure, self-weight) need. Compare
@@ -39,10 +40,49 @@ method with each law.
 
 | Law | Reference | What it adds |
 | :-- | :-- | :-- |
-| 📄 SINH | Bruns, *SMO* 30 (2005) 428–436 | Penalises the *volume* instead of the stiffness (a sinh law on the density), with consequences for filtering and for what counts as solid. |
-| 📄 Hashin–Shtrikman-bound laws | Bendsøe & Sigmund, *Arch. Appl. Mech.* 69 (1999) 635–654 | Shows when a power law corresponds to a physically realisable composite (p large enough for the Poisson's ratio); the bounds themselves as an interpolation. |
+| 📄 SINH (needs a framework change: the volume response must take a law, see below) | Bruns, *SMO* 30 (2005) 428–436 | Penalises the *volume* instead of the stiffness (a sinh law on the density), with consequences for filtering and for what counts as solid. |
+| 📄 Hashin–Shtrikman-bound laws (needs ν, which the interface does not receive, see below) | Bendsøe & Sigmund, *Arch. Appl. Mech.* 69 (1999) 635–654 | Shows when a power law corresponds to a physically realisable composite (p large enough for the Poisson's ratio); the bounds themselves as an interpolation. |
 | 📄 Discrete material optimisation (DMO) | Stegmann & Lund, *IJNME* 62 (2005) 2009–2027 | Several candidate materials per element, each with its own weight: the classic multi-material law. Needs one design variable per material — a design representation with several fields. |
-| 📄 Ordered SIMP | Zuo & Saitou, *SMO* 55 (2017) 477–491 | Multi-material with a single variable per element, piecewise between ordered materials scaled by cost. Fits this interface directly. |
+
+## Ordered SIMP
+
+```
+t = (ρ − ρ_i) / (ρ_{i+1} − ρ_i),    E(ρ) = Emin + [f_i + t^p (f_{i+1} − f_i)] (E0 − Emin)
+```
+
+for ρ between the densities ρ_i and ρ_{i+1} of two neighbouring materials, whose moduli
+(fractions of E0) are f_i and f_{i+1}. The materials are void (0, 0), up to two grey ones
+and the solid (1, 1). One variable per element runs through all of them, and for p > 1
+the stiffness is flat just above each material's density, so the optimiser settles on
+one of the materials rather than in between. With 2 materials it is plain SIMP. Defaults:
+densities 0 / 0.4 / 0.7 / 1 with moduli 0 / 0.25 / 0.55 / 1.
+**Use it** for multi-material or graded-density designs with a single field.
+
+**Not included:** the paper's cost side (each material has a cost and the *interpolated cost*
+is constrained). Toporia's volume response constrains Σρ, so the constraint is on the mass
+fraction implied by the densities; a per-material cost would need the volume response to
+accept an interpolation, which is a framework change.
+
+Paper: W. Zuo, K. Saitou, *SMO* 55 (2017) 477–491, [doi:10.1007/s00158-016-1513-3](https://doi.org/10.1007/s00158-016-1513-3).
+
+Use it: `"interpolation": {"type": "ordered_simp", "n_materials": 3, "rho2": 0.5, "E2": 0.3}`
+in the solver JSON, the **Material law** picker in the GUI, or
+
+```
+toporia run "MBB Beam" --set method=q4+oc --set interpolation.type=ordered_simp --set interpolation.n_materials=3
+```
+
+## Not done, and why
+
+- **SINH** (Bruns, *SMO* 30 (2005) 428–436, [doi:10.1007/s00158-005-0543-3](https://doi.org/10.1007/s00158-005-0543-3)):
+  it penalises the *volume* (mass) with a sinh law while stiffness stays linear. An
+  `Interpolation` only maps ρ to stiffness, and the volume response measures Σρ without
+  asking any law. Implementing "stiffness linear" alone would be SIMP with p = 1, not SINH,
+  so it is left out until the volume response can take an interpolation.
+- **Hashin–Shtrikman bound law** (Bendsøe & Sigmund, *Arch. Appl. Mech.* 69 (1999) 635–654,
+  [doi:10.1007/s004190050248](https://doi.org/10.1007/s004190050248)): the bound depends on
+  Poisson's ratio ν, but `stiffness(density, E0, Emin)` receives only E0 and Emin, not the
+  scenario's material. Making ν reachable is a framework change.
 
 ## Writing one
 

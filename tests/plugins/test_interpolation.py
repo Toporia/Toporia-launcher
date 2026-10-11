@@ -33,7 +33,7 @@ def _final_density(run):
 
 
 def test_both_laws_are_registered_and_simp_is_the_default():
-    assert INTERPOLATIONS.names() == ["simp", "ramp"]
+    assert INTERPOLATIONS.names()[:2] == ["simp", "ramp"]
     assert _run().solver.interpolation == {"type": "simp"}
 
 
@@ -83,3 +83,38 @@ def test_a_model_with_its_own_law_says_so():
     stages = dict(pipeline_stages(_run(method="pymoto")))
     assert stages["Material"] == "inside the model"
     assert not any(kind == "interpolation" for kind, _ in pipeline_parts(_run(method="levelset")))
+
+
+# --- ordered SIMP ------------------------------------------------------------
+
+def test_ordered_simp_is_registered():
+    assert "ordered_simp" in INTERPOLATIONS.names()
+
+
+def test_ordered_simp_hits_each_materials_modulus_at_its_density():
+    from toporia.plugins.interpolations.ordered_simp import OrderedSIMP
+    law = OrderedSIMP(n_materials=4, rho2=0.4, E2=0.25, rho3=0.7, E3=0.55)
+    rho = np.array([0.0, 0.4, 0.7, 1.0])
+    assert law.stiffness(rho, 1.0, 1e-9) == pytest.approx([1e-9, 0.25, 0.55, 1.0], rel=1e-6)
+    grid = np.linspace(0.0, 1.0, 301)
+    assert np.all(np.diff(law.stiffness(grid, 1.0, 1e-9)) >= -1e-15)
+
+
+def test_ordered_simp_with_two_materials_is_simp():
+    from toporia.plugins.interpolations.ordered_simp import OrderedSIMP
+    rho = np.linspace(0.0, 1.0, 21)
+    assert np.allclose(OrderedSIMP(n_materials=2).stiffness(rho, 1.0, 1e-9), SIMP(3.0).stiffness(rho, 1.0, 1e-9))
+
+
+def test_ordered_simp_refuses_unordered_materials():
+    from toporia.plugins.interpolations.ordered_simp import OrderedSIMP
+    with pytest.raises(ValueError, match="strictly increase"):
+        OrderedSIMP(n_materials=4, rho2=0.7, rho3=0.4)
+
+
+def test_ordered_simp_runs_on_mbb():
+    run = _run(method="q4+oc", interpolation={"type": "ordered_simp"})
+    method = initialized_method(run)
+    for iteration in range(1, run.solver.max_iter + 1):
+        method.step(iteration)
+    assert np.all(np.isfinite(method.get_density()))
