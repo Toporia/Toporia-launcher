@@ -18,6 +18,9 @@
 # Which parameters may change: a part lists them in `schedulable`.  Not every
 # parameter can — the density filter's radius is built into its weights when
 # the run starts — so a schedule on any other one is refused before the run.
+# A schedule may also override the optional observe(completed, change), which
+# the engine calls after each iteration with the design change (convergence-
+# triggered continuation); the default ignores it.
 # change_parameter() below sets a value on a live part: through the part's own
 # set_parameter(name, value) when it has one (a parameter that other values
 # are derived from), else on its `settings` dict (responses) or the attribute
@@ -48,6 +51,15 @@ class Schedule(ABC):
     @abstractmethod
     def finished(self, completed):
         """True once value() will not change any more."""
+
+    def observe(self, completed, change):
+        """Optional hook: iteration number `completed` has just run, with design change `change`.
+
+        The engine calls it after every iteration.  The default does nothing, so
+        a schedule that depends only on the iteration count ignores it; one that
+        raises a parameter when the design has settled (plugins/schedules/settled.py)
+        keeps what it is told and answers value() from that.
+        """
 
     def describe(self):
         """A few words for the Pipeline box, e.g. "1 -> 3, +0.5 every 20 iterations"."""

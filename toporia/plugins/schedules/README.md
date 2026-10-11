@@ -43,7 +43,7 @@ change. Today these can be scheduled:
 A schedule on the Heaviside `beta` replaces the filter's built-in doubling, so the two never
 both set it.
 
-**Status: 3 in Toporia · 0 with open code · 2 paper only**
+**Status: 4 in Toporia · 0 with open code · 1 paper only**
 
 | Label | Meaning |
 | :-- | :-- |
@@ -58,13 +58,51 @@ both set it.
 | ✅ Equal steps | [`steps.py`](steps.py) | `steps` | start, start + step, … every `every` iterations, then `end` | SIMP / RAMP penalty continuation |
 | ✅ Multiply by a factor | [`geometric.py`](geometric.py) | `geometric` | start, start × factor, … every `every` iterations, then `end` | Heaviside β doubling (Guest, Prevost & Belytschko 2004) |
 | ✅ Linear ramp | [`linear.py`](linear.py) | `linear` | `start` for `after` iterations, then a straight line to `end` over `over` | Switching a fabrication rule on gradually; narrowing MMC edges |
+| ✅ When the design settles | [`settled.py`](settled.py) | `settled` | start, then × `factor` (or + `step`) each time the design change has been below `change_below`, within `min_every`–`max_every` iterations per level, then `end` | Heaviside β continuation that waits for the design (Wang, Lazarov & Sigmund 2011) |
 
 ## 📄 Candidates
 
 | Schedule | Reference | What it adds |
 | :-- | :-- | :-- |
-| 📄 Convergence-triggered continuation | Common practice in the projection literature, e.g. Wang, Lazarov & Sigmund, *SMO* 2011 | Raises the parameter when the design has settled, instead of after a fixed number of iterations. Needs `value()` to see the design change as well as the iteration count. |
-| 📄 Continuation-free projection | Guest, Asadpoure & Ha, *SMO* 2011 | Removes the need for a β schedule by reformulating the projection; useful as the baseline a schedule is compared with. |
+| 📄 Continuation-free projection | Guest, Asadpoure & Ha, *SMO* 2011 | Removes the need for a β schedule by reformulating the projection; useful as the baseline a schedule is compared with. It is a filter (a different projection function), not a schedule: nothing changes over time, so it belongs in `plugins/filters`. |
+
+## Waiting for the design: convergence-triggered continuation
+
+**What.** The `settled` schedule raises a parameter when the design has *settled*, not on a
+clock. Each level lasts at least `min_every` iterations; it is left as soon as the design
+change has been below `change_below` for `settle` iterations in a row, or at the latest after
+`max_every`. Each rise multiplies by `factor` (or adds `step` when that is above 0), up to
+`end`. Without it, β = 1, 2, 4, … either sharpens before the layout is found or idles on a
+design that settled long ago.
+
+**How it sees the design.** The engine tells every schedule the design change after each
+iteration through the optional hook `observe(completed, change)` (default: ignored, so
+`steps`, `geometric` and `linear` are untouched; see
+[`framework/parts/schedule.py`](../../framework/parts/schedule.py)). If nobody calls it, the
+schedule is simply "every `max_every` iterations".
+
+**When.** Projection or SIMP-penalty continuation where the right moment depends on the
+problem. Set `change_below` above the solver's `tol`, otherwise the stop on `tol` is held
+(as for any moving schedule) until the max-iterations fallback has fired. In the MBB
+comparison of `tests/plugins/test_schedules.py` the design change of the OC update stays
+above 0.03 for long stretches at large β, so the fallback decides much of the time and the
+run is not faster than the fixed clock; the schedule pays off when the design does settle.
+
+**Use it.**
+
+- **Config:** `solver.schedules = [{"path": "filters[1].beta", "type": "settled", "start": 1, "end": 64, "change_below": 0.03, "min_every": 10, "max_every": 40}]`
+- **GUI:** Schedules panel, pick *When the design settles* for the parameter (a Heaviside β needs a Heaviside filter in the filter list).
+- **CLI:**
+
+```
+toporia run "MBB Beam" --set 'method=q4+oc' \
+  --set 'filter_specs=[{"type":"density"},{"type":"heaviside","beta":1.0}]' \
+  --set 'schedules=[{"path":"filters[1].beta","type":"settled","start":1,"end":16,"change_below":0.03,"min_every":10,"max_every":40}]'
+```
+
+**Continuation-free projection** (Guest, Asadpoure & Ha 2011) is a different thing: it
+changes the projection function so that no β schedule is needed. That is a filter, so it
+stays a candidate here and is not implemented.
 
 ## Several versions of one design: robust formulations
 
@@ -101,7 +139,7 @@ angles, and an expected value (`"combine": "mean"`).
 ## Writing one
 
 Subclass `Schedule` and give it `name`, `label` and `params`; the constructor takes each one
-as a keyword. Then implement two methods:
+as a keyword. Then implement two methods (and, optionally, `observe(completed, change)` to see the design change after each iteration, as `settled` does):
 
 - `value(completed)`, the value for the iteration after `completed` finished ones;
 - `finished(completed)`, which says when that value stops changing.

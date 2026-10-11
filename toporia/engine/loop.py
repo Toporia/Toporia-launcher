@@ -154,6 +154,8 @@ def _loop(run, method, store, on_iteration):
         objective = responses[OBJECTIVE]
         density = method.get_density()
         change = method.get_change()
+        for _, schedule in schedules:
+            schedule.observe(iteration, change)     # optional: lets a schedule wait for the design to settle
         if obj0 is None:
             obj0 = objective
 

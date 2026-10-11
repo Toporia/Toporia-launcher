@@ -8,6 +8,7 @@ See framework/parts/schedule.py.
     steps.py      start, start + step, ... every so many iterations, up to end
     geometric.py  start, start x factor, ... every so many iterations, up to end
     linear.py     a straight ramp from start to end over so many iterations
+    settled.py    raised when the design change falls below a threshold (or after a maximum)
 """
 
 from toporia.framework.parts.schedule import Schedule
