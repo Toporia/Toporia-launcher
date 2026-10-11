@@ -41,15 +41,15 @@ any doubt about what this repository actually does today:
 | [Filters](toporia/plugins/filters/README.md) — regularisation and fabrication | density, sensitivity, Heaviside (fixed or volume-preserving), PDE, morphology, AM overhang, symmetry, routing, extrusion, pattern, casting | 1 | 9 |
 | [Design representations](toporia/plugins/representations/README.md) — what the variables are | element densities, moving morphable components (constant or variable thickness), B-spline fields | 1 | 2 |
 | [Material laws](toporia/plugins/interpolations/README.md) — density to stiffness | SIMP, RAMP, ordered SIMP | 0 | 3 |
-| [Schedules](toporia/plugins/schedules/README.md) — continuation, and robust variants | equal steps, geometric, linear ramp | 0 | 2 |
-| [Post-processors](toporia/plugins/postprocessors/README.md) — threshold, checks, exports | threshold, connectivity, feature size, SVG, DXF, STL | 0 | 3 |
+| [Schedules](toporia/plugins/schedules/README.md) — continuation, and robust variants | equal steps, geometric, linear ramp, when the design settles | 0 | 1 |
+| [Post-processors](toporia/plugins/postprocessors/README.md) — threshold, checks, exports | threshold, connectivity, feature size, grey level over the run, SVG, DXF, STL, smoothed outlines | 0 | 1 |
 | [Models](toporia/plugins/models/README.md) — physics and gradients | 2-D Q4, 3-D H8, pyMOTO elasticity | 24 | 3 |
 | [Elements](toporia/plugins/physics/README.md) — discretisation | Q4 plane stress, H8 solid | 5 | 3 |
 | [Responses](toporia/plugins/responses/README.md) — objectives and constraints | compliance, volume, von Mises stress | 4 | 14 |
 | [Updaters](toporia/plugins/updaters/README.md) — optimisers | OC, MMA, GCMMA, SiMPL, BESO, SLSQP, trust-constr, NLopt (MMA, CCSAQ, SLSQP, AUGLAG), mmapy (MMA, GCMMA), null-space, TOBS, CONLIN, multi-constraint OC, Adam, PTO, hard-kill BESO | 5 | 1 |
 | [Problems](toporia/plugins/problems/README.md) — benchmarks | MBB, robust MBB, cantilever, 3-D cantilever, Michell cantilever, L-bracket, 3-point bending, bar, 3× drone arm | 6 | 1 |
 
-**83 implemented · 58 with open code elsewhere · 43 from papers only.**
+**86 implemented · 58 with open code elsewhere · 40 from papers only.**
 
 Short version of where this sits in the field: Toporia solves linear elasticity on
 structured grids, in 2-D and in 3-D. It covers four of the field's parameterisation

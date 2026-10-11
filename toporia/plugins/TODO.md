@@ -89,8 +89,8 @@ the matching MAKE item below.
 | [ ] | Anisotropic PDE filter | filter | Lazarov & Sigmund 2011 |
 | [x] | Extrusion, pattern repetition, casting direction | filter | Ishii & Aomura 2004; Bendsøe & Sigmund 2003; Xia et al. 2010 |
 | [~] | SINH, ordered SIMP, Hashin–Shtrikman | interpolation (ordered SIMP done; SINH and HS need the material law to see the volume response and ν) | Bruns 2005; Zuo & Saitou 2017; Bendsøe & Sigmund 1999 |
-| [ ] | Convergence-triggered continuation, continuation-free projection | schedule | Wang et al. 2011; Guest et al. 2011 |
-| [ ] | Grey level over the run, smoothed outlines | post-processor | Sigmund 2007; Subedi et al. 2020 |
+| [~] | Convergence-triggered continuation, continuation-free projection (settled schedule done; continuation-free projection is a filter) | schedule | Wang et al. 2011; Guest et al. 2011 |
+| [x] | Grey level over the run, smoothed outlines | post-processor | Sigmund 2007; Subedi et al. 2020 |
 | [x] | TOBS (integer LP via `scipy.optimize.milp`) | updater | Picelli et al. 2021 |
 | [x] | CONLIN, multi-constraint OC | updater | Fleury 1989; Zhou & Rozvany 1991 |
 | [~] | Adam, proportional TO, simulated annealing (Adam and PTO done; SA skipped) | updater | Kingma & Ba 2015; Biyikli & To 2015 |

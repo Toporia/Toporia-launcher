@@ -29,14 +29,14 @@ Nothing is ever labelled ✅ until it is registered, tested, and reachable from 
 | [`representations/`](representations/README.md) | What the design variables are | 4 | 1 | 2 |
 | [`filters/`](filters/README.md) | How it is smoothed, projected, made manufacturable | 12 | 1 | 9 |
 | [`interpolations/`](interpolations/README.md) | How density becomes stiffness (the material law) | 3 | 0 | 3 |
-| [`schedules/`](schedules/README.md) | How a parameter changes during the run (continuation) | 3 | 0 | 2 |
-| [`postprocessors/`](postprocessors/README.md) | What is made of the finished design: threshold, checks, exports | 6 | 0 | 3 |
+| [`schedules/`](schedules/README.md) | How a parameter changes during the run (continuation) | 4 | 0 | 1 |
+| [`postprocessors/`](postprocessors/README.md) | What is made of the finished design: threshold, checks, exports | 8 | 0 | 1 |
 | [`models/`](models/README.md) | What computes the physics and the gradients | 3 | 24 | 3 |
 | [`physics/`](physics/README.md) | Element formulations and discretisation | 2 | 5 | 3 |
 | [`responses/`](responses/README.md) | What is minimised or constrained | 3 | 4 | 14 |
 | [`updaters/`](updaters/README.md) | How the design moves each iteration | 21 | 5 | 1 |
 | [`problems/`](problems/README.md) | Benchmark problems and datasets | 11 | 6 | 1 |
-| **Total** | | **83** | **58** | **43** |
+| **Total** | | **86** | **58** | **40** |
 
 The 15 selectable methods are the 14 `model+updater` pairings plus the one whole
 method; those pairings are built from the 2 models and 7 updaters counted in their own
