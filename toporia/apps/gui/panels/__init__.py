@@ -30,6 +30,7 @@ from .modes import (
     CompareLoadCasesParamsGroup,
     CompareMethodsParamsGroup,
     CompareTwoParamsGroup,
+    MethodsSweepParamsGroup,
     SensitivityParamsGroup,
     SensitivitySweep2DParamsGroup,
     SensitivitySweepParamsGroup,
@@ -50,7 +51,7 @@ from .variants import VariantsGroup
 __all__ = [
     "ParamForm", "LoadCaseRow", "LoadCasesGroup", "CoreParamsGroup", "PipelineView",
     "ObjectiveGroup", "MaterialGroup", "RepresentationGroup", "ScheduleListGroup", "SpecListGroup", "VariantsGroup", "DesignSection",
-    "ConstraintsGroup", "CompareLoadCasesParamsGroup", "CompareMethodsParamsGroup",
+    "ConstraintsGroup", "CompareLoadCasesParamsGroup", "CompareMethodsParamsGroup", "MethodsSweepParamsGroup",
     "CompareTwoParamsGroup",
     "SensitivityParamsGroup", "SensitivitySweepParamsGroup", "SensitivitySweep2DParamsGroup",
     "SweepParamsGroup", "Sweep2DParamsGroup",

@@ -54,6 +54,7 @@ FIELD_HELP = {
     "Min": _RANGE, "Max": _RANGE, "Row min": _RANGE, "Row max": _RANGE, "Col min": _RANGE, "Col max": _RANGE,
     "Rows": _GRID, "Cols": _GRID, "N rows": _COUNT, "N cols": _COUNT,
     "Base value": _BASE, "Gap (Δ)": _GAP,
+    "Values": "How many evenly spaced values of the setting: one column of the grid each.",
 }
 
 
@@ -405,3 +406,33 @@ class CompareMethodsParamsGroup(QGroupBox):
 
     def refresh(self, items):
         """The method list does not depend on the parameter paths."""
+
+
+class MethodsSweepParamsGroup(CompareMethodsParamsGroup):
+    """The ticked methods down the rows, one setting swept across the columns (Sweep Methods mode).
+
+    Shows how each optimiser reacts to the same change, e.g. the volume
+    fraction or the filter radius: every cell is a whole run, held to the same
+    problem, mesh and stopping rule, with only the method and the setting varied.
+    """
+
+    def __init__(self, parent=None):
+        super().__init__(parent)
+        self.setTitle("Sweep Methods")
+        form = QFormLayout()
+        self.param = QComboBox()
+        self.min_val = double_box(0.2, -1e6, 1e6, dec=4, step=0.05)
+        self.max_val = double_box(0.5, -1e6, 1e6, dec=4, step=0.05)
+        self.n_values = int_box(3, 1, 20)
+        for lbl, w in [("Parameter", self.param), ("Min", self.min_val), ("Max", self.max_val),
+                       ("Values", self.n_values)]:
+            _add_row(form, lbl, w)
+        self.layout().addLayout(form)
+
+    def refresh(self, items):
+        """Rebuild the swept-parameter menu from (label, path) items."""
+        fill_combo(self.param, items, prefer="volfrac")
+
+    def key(self):
+        """The parameter path swept across the columns."""
+        return self.param.currentData() or self.param.currentText()

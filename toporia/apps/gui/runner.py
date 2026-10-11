@@ -15,6 +15,7 @@ from toporia.engine.modes.check import check_parts as _check_parts
 from toporia.engine.modes.compare import compare_load_cases as _compare_lc
 from toporia.engine.modes.compare import compare_two as _compare_two
 from toporia.engine.modes.methods import compare_methods as _compare_methods
+from toporia.engine.modes.methods import sweep_methods as _sweep_methods
 from toporia.engine.modes.sensitivity import sensitivity_field as _sensitivity_field
 from toporia.engine.modes.sensitivity import sensitivity_sweep as _sens_sweep
 from toporia.engine.modes.sensitivity import sensitivity_sweep_2d as _sens_sweep_2d
@@ -162,6 +163,17 @@ def run_compare_methods(config, cmg, on_iter, log_fn):
     old = _redir(log_fn)
     try:
         grid, _ = _compare_methods(cmg.selected(), config, on_iteration=on_iter)
+    finally:
+        sys.stdout = old
+    return grid
+
+
+def run_sweep_methods(config, msg, on_iter, log_fn):
+    """msg = MethodsSweepParamsGroup.  Returns the path of the methods x setting grid, or None."""
+    old = _redir(log_fn)
+    try:
+        grid, _ = _sweep_methods(msg.selected(), msg.key(), msg.min_val.value(), msg.max_val.value(),
+                                 msg.n_values.value(), config, on_iteration=on_iter)
     finally:
         sys.stdout = old
     return grid

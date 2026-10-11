@@ -483,3 +483,27 @@ def test_post_processors_can_be_applied_to_the_last_design_without_a_new_run(win
     assert any("2 of 2 post-processors" in line for line in lines), lines
     assert list((runner.last_run_folder / "post").glob("*.svg"))
     window.post.load_specs([])
+
+
+def test_sweep_methods_puts_the_methods_down_the_rows_and_a_setting_across(window, tmp_path):
+    import csv
+
+    from toporia.apps.gui import runner
+    window.config_combo.setCurrentText("MBB Beam")
+    window.mode.setCurrentText("Sweep Methods")
+    assert not window.msg.isHidden() and window.run_btn.text() == "▶  Run: Sweep Methods"
+    window.msg.set_selected(["q4+oc", "q4+mma"])
+    window.msg.param.setCurrentIndex(window.msg.param.findData("volfrac"))
+    window.msg.min_val.setValue(0.3)
+    window.msg.max_val.setValue(0.5)
+    window.msg.n_values.setValue(2)
+    cfg = _built(window).updated(m=0.3, max_iter=2, save_every=0).with_output_dir(tmp_path)
+    grid = runner.run_sweep_methods(cfg, window.msg, None, lambda *_: None)
+    assert grid.exists()
+    with open(grid.parent / "methods_sweep.csv", encoding="utf-8") as file:
+        rows = list(csv.DictReader(file))
+    assert [(r["method"], float(r["volfrac"])) for r in rows] == [
+        ("q4+oc", 0.3), ("q4+oc", 0.5), ("q4+mma", 0.3), ("q4+mma", 0.5)]
+    assert all(r["status"] == "ran" for r in rows)
+    window.msg.set_selected(window.msg.DEFAULT)
+    window.mode.setCurrentText("Run One")

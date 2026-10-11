@@ -51,6 +51,7 @@ from .panels import (
     DesignSection,
     LoadCasesGroup,
     MaterialGroup,
+    MethodsSweepParamsGroup,
     ObjectiveGroup,
     PipelineView,
     ScheduleListGroup,
@@ -91,6 +92,10 @@ MODES = {
                         "Method comparisons on common benchmarks, e.g. S. Rojas-Labanda, M. Stolpe, "
                         '"Benchmarking optimization solvers for structural topology optimization", '
                         "Struct. Multidisc. Optim. 52 (2015) 527-547."),
+    "Sweep Methods": ("The ticked methods down the rows and one setting swept across the columns: how each "
+                      "optimiser reacts to the same change, every cell a whole run on the same problem.",
+                      "Toporia's own; method comparisons over a parameter range are common in the "
+                      "literature, e.g. Rojas-Labanda & Stolpe, Struct. Multidisc. Optim. 52 (2015) 527-547."),
     "Sensitivity": ("Two optimisations, at a setting's base value and at base + gap; the change of each "
                     "element's density divided by the gap, drawn blue to red.",
                     "Toporia's own: a finite-difference sensitivity of the final design to a setting."),
@@ -181,6 +186,7 @@ class MainWindow(QMainWindow):
         self.cg = CompareTwoParamsGroup()
         self.clcg = CompareLoadCasesParamsGroup()
         self.cmg = CompareMethodsParamsGroup()
+        self.msg = MethodsSweepParamsGroup()
         self.sens = SensitivityParamsGroup()
         self.ssg = SensitivitySweepParamsGroup()
         self.ssg2 = SensitivitySweep2DParamsGroup()
@@ -267,7 +273,7 @@ class MainWindow(QMainWindow):
         pages = (
             (self.design, self.core.volume_box, self.lc, self.objective, self.constraints),
             (self.core, self.material, self.filters, self.schedules, self.variants),
-            (mode_box, self.sg, self.sg2, self.cg, self.clcg, self.cmg, self.sens, self.ssg, self.ssg2),
+            (mode_box, self.sg, self.sg2, self.cg, self.clcg, self.cmg, self.msg, self.sens, self.ssg, self.ssg2),
             (self.post, self._build_export_box(), self.core.output_section),
         )
         for widgets in pages:
@@ -396,7 +402,7 @@ class MainWindow(QMainWindow):
         # The sweep / compare / sensitivity dropdowns list every parameter path of
         # the current setup, so they are rebuilt whenever the method, the filter
         # pipeline or the number of load cases changes.
-        self._sweep_groups = (self.sg, self.sg2, self.cg, self.sens, self.ssg, self.ssg2)
+        self._sweep_groups = (self.sg, self.sg2, self.cg, self.sens, self.ssg, self.ssg2, self.msg)
         self.lc.cases_changed.connect(self._refresh_parameter_paths)
         for group in (self.design, self.material, self.objective, self.constraints, self.filters, self.schedules):
             group.changed.connect(self._refresh_parameter_paths)
@@ -615,6 +621,7 @@ class MainWindow(QMainWindow):
         self.cg.setVisible(m == "Compare Two")
         self.clcg.setVisible(m == "Compare Load Cases")
         self.cmg.setVisible(m == "Compare Methods")
+        self.msg.setVisible(m == "Sweep Methods")
         self.sens.setVisible(m == "Sensitivity")
         self.ssg.setVisible(m == "Sensitivity Sweep")
         self.ssg2.setVisible(m == "Sensitivity Sweep 2D")
@@ -712,6 +719,10 @@ class MainWindow(QMainWindow):
                         f"Compare Methods: {cfg.scenario.Lx:g} x {cfg.scenario.Ly:g} mm, "
                         f"{len(self.cmg.selected())} methods",
                     )
+            elif mode == "Sweep Methods":
+                grid = runner.run_sweep_methods(cfg, self.msg, on_iter, self._log)
+                if grid is not None:
+                    self.canvas.show_grid(grid, f"Sweep Methods: {len(self.msg.selected())} methods x {self.msg.key()}")
             elif mode == "Compare Load Cases":
                 img = runner.run_compare_load_cases(cfg, self.clcg, on_iter, self._log)
                 self.canvas.show_grid(img, "Compare Load Cases  —  A vs B")

@@ -98,3 +98,15 @@ def test_sensitivity_sweep_2d(cfg):
     grid = sensitivity_sweep_2d("interpolation.penal", 2.0, 3.0, 1, "filters[0].rmin", 1.5, 2.0, 2,
                                 "volfrac", 0.4, 0.05, cfg)
     _assert_output(grid)
+
+
+def test_a_grid_leaves_a_skipped_run_empty_but_titled(tmp_path):
+    import matplotlib.pyplot as plt
+    import numpy as np
+
+    from toporia.engine.modes.grids import DESIGNS, save_grid
+    image = tmp_path / "design.png"
+    plt.imsave(image, np.random.default_rng(0).random((20, 60)), cmap="gray")
+    grid = save_grid([(image, "ran"), (None, "skipped: cannot enforce stress")], 1, 2,
+                     tmp_path / "grid.png", DESIGNS, fontsize=7)
+    assert grid.exists()
