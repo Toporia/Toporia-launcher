@@ -8,11 +8,11 @@ fabrication rule and get consistent sensitivities through all three.
 Without a filter, a density method produces checkerboards and a mesh-dependent result.
 This layer is not optional decoration — it is what makes the problem well posed.
 
-**In 3-D** (a scenario with a depth): the density, PDE, sensitivity and Heaviside filters work;
+**In 3-D** (a scenario with a depth): the density, PDE, sensitivity, Heaviside and morphology filters work;
 the AM overhang, routing and symmetry filters are written for plane problems and are refused
 on a 3-D one, with the filters that can.
 
-**Status: 8 in Toporia · 1 with open code · 13 paper only**
+**Status: 9 in Toporia · 1 with open code · 12 paper only**
 
 | Label | Meaning |
 | :-- | :-- |
@@ -32,6 +32,7 @@ on a 3-D one, with the filters that can.
 | ✅ AM overhang filter | [`filter_am.py`](am.py) | `am` | Langelaar, *Addit. Manuf.* 2016; *SMO* 2017 |
 | ✅ Symmetry filter | [`filter_symmetry.py`](symmetry.py) | `symmetry` | standard practice |
 | ✅ Routing radius filter | [`filter_routing.py`](routing.py) | `routing` | Toporia-specific |
+| ✅ Morphology filters: erode, dilate, open, close | [`morphology.py`](morphology.py) | `morphology` | Sigmund, *SMO* 33 (2007) 401–424 |
 
 The projection already takes an arbitrary threshold η, which is the prerequisite for the
 robust formulation below.
@@ -66,11 +67,34 @@ the derivative of η with respect to the input, so the gradient stays exact. The
 - Solver config: `{"type": "heaviside", "eta_mode": "volume_preserving"}` after the density filter.
 - CLI: `toporia run "MBB Beam" --set 'filter_specs=[{"type": "density"}, {"type": "heaviside", "eta_mode": "volume_preserving"}]'`
 
+## Morphology filters
+
+[`morphology.py`](morphology.py) replaces the density filter's weighted *mean* with a smooth
+*minimum* (erode: a point stays solid only if its whole neighbourhood is) or a smooth
+*maximum* (dilate: a point turns solid if any neighbour is). **Open** (erode, then dilate)
+removes solid members thinner than the radius; **close** (dilate, then erode) fills voids
+thinner than the radius. One filter, a `mode` option picks the operation. The neighbourhood is
+the density filter's cone of radius `rmin`; `beta` sets the sharpness (small is nearly the
+plain average, large is a hard min/max). A constant field passes through unchanged, and
+`backward` is the exact adjoint. `beta` can be scheduled, so a geometric schedule on
+`filters[1].beta` continues it, as for Heaviside.
+
+Use it behind a density filter when you want a length scale imposed on one phase only
+(minimum member size with open, minimum cavity size with close) instead of the symmetric
+blur of the density filter. On the MBB beam (`q4+oc`, density `rmin = 3`, 150 iterations) a
+`close`/`erode` after the density filter costs a few percent of compliance (about 410 to 450
+against 405) and, without a long β continuation, does not by itself make the design blacker;
+it shapes feature size rather than binarising, so combine it with Heaviside if you want 0/1.
+
+- Paper: Sigmund, *SMO* 33 (2007) 401–424, [doi:10.1007/s00158-006-0087-x](https://doi.org/10.1007/s00158-006-0087-x).
+- GUI: pick **Morphology filter** in the filter list, then the operation, radius and β.
+- Solver config: `"filter_specs": [{"type": "density", "rmin": 3.0}, {"type": "morphology", "rmin": 2.0, "beta": 16.0, "mode": "close"}]`.
+- CLI: `toporia run "MBB Beam" --set method=q4+oc --set 'filter_specs=[{"type": "density", "rmin": 3.0}, {"type": "morphology", "rmin": 2.0, "beta": 16.0, "mode": "close"}]'`
+
 ## Candidates — regularisation
 
 | Filter | Status | Reference | Why it matters |
 | :-- | :-- | :-- | :-- |
-| Morphology filters: erode, dilate, open, close | 📄 | Sigmund, *SMO* 33 (2007) 401–424 | Smooth min/max filters that give genuinely black-and-white designs and enforce feature size directly. The smooth min/max machinery already exists in [`filter_am.py`](am.py). |
 | Anisotropic / directional filters | 📄 | Lazarov & Sigmund 2011 (PDE form) | Different length scales per direction, for rolled or printed material. Falls out of the PDE filter almost free. |
 | Multi-resolution design and analysis meshes | 📄 | Nguyen, Paulino, Song & Le, *SMO* 2010; Groen et al., *IJNME* 2017 | Fine density field over a coarse FE mesh. Large speed-ups, with a known risk of artificial fine-scale artefacts. |
 
