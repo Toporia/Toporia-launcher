@@ -19,9 +19,10 @@
 
 import traceback  # for formatting Python exception messages into readable text
 
-from PySide6.QtCore import Qt
+from PySide6.QtCore import Qt, QTimer
 from PySide6.QtGui import QFont, QTextCursor
 from PySide6.QtWidgets import (
+    QAbstractSpinBox,
     QApplication,
     QButtonGroup,
     QComboBox,
@@ -119,6 +120,11 @@ class MainWindow(QMainWindow):
         self.resize(1440, 860)
         self._base_cfg = None  # set by _on_config_changed; holds geometry from selected config
         self._stop = False     # flag checked inside on_iter to interrupt the loop
+        self._running = False  # while a run draws on the canvas, the problem preview stays away
+        self._preview_timer = QTimer(self)   # edits come in bursts: redraw once they settle
+        self._preview_timer.setSingleShot(True)
+        self._preview_timer.setInterval(150)
+        self._preview_timer.timeout.connect(self.show_problem)
 
         central = QWidget()
         self.setCentralWidget(central)
@@ -262,7 +268,7 @@ class MainWindow(QMainWindow):
             (self.design, self.core.volume_box, self.lc, self.objective, self.constraints),
             (self.core, self.material, self.filters, self.schedules, self.variants),
             (mode_box, self.sg, self.sg2, self.cg, self.clcg, self.cmg, self.sens, self.ssg, self.ssg2),
-            (self.post, self.core.output_section),
+            (self.post, self._build_export_box(), self.core.output_section),
         )
         for widgets in pages:
             self._pages.addWidget(self._scroll_page(widgets))
@@ -278,6 +284,58 @@ class MainWindow(QMainWindow):
         nav.addWidget(self._next_btn)
         layout.addLayout(nav)
         return side
+
+    def _build_export_box(self):
+        """Apply the post-processors to the last design now, and open the folder the files went to."""
+        box = QWidget()
+        layout = QVBoxLayout(box)
+        layout.setContentsMargins(0, 0, 0, 0)
+        self.export_btn = QPushButton("Apply to the last design now")
+        self.export_btn.clicked.connect(self._on_export)
+        layout.addWidget(with_help(self.export_btn, lambda: text_topic(
+            "Apply to the last design now",
+            "Runs the post-processors above on the design of the last Run One, without optimising "
+            "again: change a threshold or add an export after the run, like exporting again from a "
+            "slicer. Files go to the run's post/ folder and the results are added to its run.json.",
+            "Toporia's own (the same as `toporia post <folder>` on the command line).")))
+        self.open_folder_btn = QPushButton("Open the last run's folder")
+        self.open_folder_btn.clicked.connect(self._open_last_folder)
+        layout.addWidget(self.open_folder_btn)
+        self._refresh_export_buttons()
+        return box
+
+    def _refresh_export_buttons(self):
+        from . import runner
+        done = runner.last_run_folder is not None
+        self.export_btn.setEnabled(done)
+        self.open_folder_btn.setEnabled(done)
+        tip = "" if done else "Available after a Run One has finished."
+        self.export_btn.setToolTip(tip)
+        self.open_folder_btn.setToolTip(tip)
+
+    def _on_export(self):
+        """Post-process the last design with the current list, and log what was made."""
+        from . import runner
+        specs = self.post.get_specs()
+        if not specs:
+            self._log("[Post] Add a post-processor above first.")
+            return
+        self._log(f"=== Post-processing {runner.last_run_folder} ===")
+        try:
+            done = runner.postprocess_last(specs, self._log)
+        except Exception:
+            self._log("\n[ERROR]\n" + traceback.format_exc())
+            return
+        failed = [key for key, entry in done.items() if "error" in entry]
+        self._log(f"— Done: {len(done) - len(failed)} of {len(done)} post-processors —")
+
+    def _open_last_folder(self):
+        from PySide6.QtCore import QUrl
+        from PySide6.QtGui import QDesktopServices
+
+        from . import runner
+        if runner.last_run_folder is not None:
+            QDesktopServices.openUrl(QUrl.fromLocalFile(str(runner.last_run_folder)))
 
     @staticmethod
     def _scroll_page(widgets):
@@ -347,6 +405,34 @@ class MainWindow(QMainWindow):
         self.variants.changed.connect(self._refresh_pipeline)
         self.post.changed.connect(self._refresh_pipeline)
         self.variants.robust_requested.connect(self._use_robust_projection)
+        # Any edit of the problem redraws its preview; rows added later are wired as they come.
+        self.lc.cases_changed.connect(self._watch_problem_inputs)
+        self._watch_problem_inputs()
+
+    def _watch_problem_inputs(self, *_):
+        """Redraw the problem preview after any edit on the Problem step."""
+        page = self._pages.widget(0) if hasattr(self, "_pages") else None
+        widgets = page.findChildren(QAbstractSpinBox) + page.findChildren(QComboBox) if page else []
+        for widget in widgets:
+            if widget.property("previewWired"):
+                continue
+            signal = widget.currentIndexChanged if isinstance(widget, QComboBox) else widget.valueChanged
+            signal.connect(lambda *_: self._preview_timer.start())   # the value is not a delay
+            widget.setProperty("previewWired", True)
+        self._preview_timer.start()
+
+    def show_problem(self):
+        """Draw the problem as currently set up, unless a run is drawing (slicer-style preview)."""
+        if self._running:
+            return
+        from .config import build_config
+
+        try:
+            cfg = build_config(self.core, self.lc, self.filters, base_cfg=self._base_cfg, design=self.design)
+        except (ValueError, KeyError) as error:
+            self._log(f"[Preview] {error}")
+            return
+        self.canvas.show_problem(cfg.scenario, cfg.solver.m, self.config_combo.currentText())
 
     # ── Steps ─────────────────────────────────────────────────────────────────
 
@@ -364,6 +450,8 @@ class MainWindow(QMainWindow):
         self._step_title.setText(f"<b>{index + 1}. {name}</b><br><span style='color:gray'>{about}</span>")
         self._back_btn.setEnabled(index > 0)
         self._next_btn.setEnabled(index < len(STEPS) - 1)
+        if index == 0:
+            self._preview_timer.start()   # back on the problem: show it as it is set up
         following = STEPS[index + 1][0] if index < len(STEPS) - 1 else "Next"
         self._next_btn.setText(f"{following}  ›".replace("&", "&&"))
 
@@ -553,6 +641,7 @@ class MainWindow(QMainWindow):
         self.log.clear()
         self._log(f"=== {mode} ===")
         self._stop = False
+        self._running = True
 
         # Re-label the button as Stop and rewire it to _on_stop.
         # The original connection is disconnected first to avoid double-firing.
@@ -653,6 +742,8 @@ class MainWindow(QMainWindow):
         except Exception:
             self._log("\n[ERROR]\n" + traceback.format_exc())  # unexpected error: full traceback
         finally:
+            self._running = False
+            self._refresh_export_buttons()
             # This block ALWAYS runs — even after an exception.
             # Restore the button to its Run state regardless of how the run ended.
             self.run_btn.clicked.disconnect()

@@ -426,3 +426,60 @@ def test_the_pipeline_is_drawn_as_a_network_whose_boxes_explain_themselves(windo
     window.variants.load_spec({})
     window.filters.load_specs([{"type": "density"}])
     window.core.select_method("q4+oc")
+
+
+# ── Problem preview: the problem is shown before it is solved ─────────────────
+
+
+@pytest.mark.parametrize("preset", problem_names())
+def test_every_preset_can_be_drawn_before_it_is_solved(preset):
+    import matplotlib
+    matplotlib.use("Agg")
+    import matplotlib.pyplot as plt
+
+    from toporia.apps.gui.preview import describe_problem, draw_problem
+    run = get_run(preset)
+    fig, ax = plt.subplots()
+    shown = draw_problem(ax, run.scenario, title=describe_problem(run.scenario, run.solver.m, preset))
+    plt.close(fig)
+    assert "Support" in shown and any(label.startswith("Load") for label in shown)
+
+
+def test_the_fallback_supports_and_loads_are_drawn_where_the_solver_puts_them():
+    from toporia.apps.gui.preview import supports_and_loads
+    from toporia.framework import Scenario
+    edges, points, loads = supports_and_loads(Scenario(Lx=80.0, Ly=40.0))
+    assert edges == [("left", "both")] and points == [] and loads == [(80.0, 20.0)]
+
+
+def test_the_view_shows_the_problem_until_a_run_starts(window):
+    window.config_combo.setCurrentText("Cantilever")
+    window.go_to_step(0)
+    window.show_problem()
+    assert window.canvas.showing_problem
+    assert "Cantilever:" in window.canvas._ax_d.get_title()
+    window.canvas.reset()                       # what a run does first
+    assert not window.canvas.showing_problem
+    window._running = True
+    window.show_problem()                       # a running optimisation keeps the view
+    assert not window.canvas.showing_problem
+    window._running = False
+    window.config_combo.setCurrentText("MBB Beam")
+
+
+def test_post_processors_can_be_applied_to_the_last_design_without_a_new_run(window, tmp_path):
+    from toporia.apps.gui import runner
+    window.config_combo.setCurrentText("MBB Beam")
+    cfg = _built(window).updated(max_iter=3, m=0.3, save_every=0).with_output_dir(tmp_path)
+    runner.run_one(cfg, None, lambda *_: None)
+    window._refresh_export_buttons()
+    assert window.export_btn.isEnabled()
+
+    window.post.load_specs([{"type": "threshold"}, {"type": "export_svg"}])
+    lines = []
+    window._log = lines.append
+    window._on_export()
+    del window._log
+    assert any("2 of 2 post-processors" in line for line in lines), lines
+    assert list((runner.last_run_folder / "post").glob("*.svg"))
+    window.post.load_specs([])

@@ -75,14 +75,36 @@ def _redir(log_fn):
 # The "finally" block guarantees stdout is restored even if an exception occurs.
 
 
+#: The folder of the last single run, which "Apply to the last design" post-processes again.
+last_run_folder = None
+
+
 def run_one(config, on_iter, log_fn):
     """The Run One mode, with its printed output routed to the GUI's log.  Returns the final density."""
+    global last_run_folder
     old = _redir(log_fn)
     try:
-        _, density = _run_one(config, on_iteration=on_iter)
+        store, density = _run_one(config, on_iteration=on_iter)
     finally:
         sys.stdout = old
+    last_run_folder = store.output_dir
     return density
+
+
+def postprocess_last(specs, log_fn):
+    """Apply post-processors `specs` to the last single run's design, without optimising again.
+
+    Returns {key: result} as engine.postprocess.run_postprocessors does; the
+    files land in the run's post/ folder and the results are added to its run.json.
+    """
+    from toporia.engine.postprocess import postprocess_folder
+    if last_run_folder is None:
+        raise RuntimeError("There is no finished single run yet: run one first (Mode: Run One).")
+    old = _redir(log_fn)
+    try:
+        return postprocess_folder(last_run_folder, specs)
+    finally:
+        sys.stdout = old
 
 
 def run_sweep(config, sg, on_iter, log_fn):

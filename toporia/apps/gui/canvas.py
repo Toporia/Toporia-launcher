@@ -7,6 +7,7 @@
 #
 # The canvas is updated after every optimisation step via refresh().
 # For sweep results, show_grid() loads the assembled PNG from disk and displays it.
+# Before a run, show_problem() draws the problem as it is set up (apps/gui/preview.py).
 
 import matplotlib.image as mpimg
 import matplotlib.pyplot as plt
@@ -35,6 +36,7 @@ class LiveCanvas(FigureCanvas):
         self._ax_d, self._ax_c = axes   # density axis, convergence axis
         self._im   = None               # the imshow image object (created on first refresh)
         self._line = None               # the convergence line object
+        self.showing_problem = False    # True while the problem preview is shown instead of a run
         self._setup()
 
     # ── Internal colour helpers ───────────────────────────────────────────────
@@ -71,9 +73,25 @@ class LiveCanvas(FigureCanvas):
 
     # ── Public methods called by the window ───────────────────────────────────
 
+    def show_problem(self, scenario, m, name=""):
+        """Draw the problem as set up — domain, holes, supports, loads — filling the whole canvas."""
+        from .preview import describe_problem, draw_problem
+
+        bg, tc, _ = self._colours()
+        self._fig.clf()
+        self._fig.patch.set_facecolor(bg)
+        ax = self._fig.add_subplot(1, 1, 1)
+        ax.set_facecolor(bg)
+        draw_problem(ax, scenario, tc, describe_problem(scenario, m, name))
+        self._fig.tight_layout(pad=1.5)
+        self._ax_d = ax
+        self.showing_problem = True
+        self.draw_idle()
+
     def reset(self):
         """Wipe both panels and redraw blank axes — called before each new run.
         Always rebuilds from clf() so it works even after show_grid() cleared the figure."""
+        self.showing_problem = False
         self._fig.clf()
         axes = self._fig.subplots(1, 2, gridspec_kw={"width_ratios": [2, 1]})
         self._ax_d, self._ax_c = axes
