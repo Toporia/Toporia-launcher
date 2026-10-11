@@ -4,7 +4,7 @@ An updater turns a model's `Evaluation` (objective, volume, gradients) into the 
 design. It knows nothing about the physics that produced the numbers, so **every updater
 works with every model** — see [`framework/parts/composition.py`](../../framework/parts/composition.py).
 
-**Status: 15 in Toporia · 8 with open code · 3 paper only**
+**Status: 16 in Toporia · 8 with open code · 3 paper only**
 
 | Label | Meaning |
 | :-- | :-- |
@@ -20,6 +20,7 @@ works with every model** — see [`framework/parts/composition.py`](../../framew
 | ✅ Method of moving asymptotes | [`mma.py`](mma.py) | `mma` | volume only | Convex separable subproblem, solved through its dual by bisection. The field's workhorse. |
 | ✅ Mirror descent (SiMPL) | [`simpl.py`](simpl.py) | `simpl` | volume only | Steps in `logit(x)`, so bounds hold by construction with no clipping. Its multiplier may be zero, so a non-binding volume budget simply does not act. |
 | ✅ BESO, soft kill | [`beso.py`](beso.py) | `beso` | volume only | Binary designs by sensitivity ranking and an evolutionary volume schedule. Brings its own convergence test, because a binary design's max design change never settles. |
+| ✅ TOBS (integer LP) | [`tobs.py`](tobs.py) | `tobs` | volume only | Binary designs by sequential integer linear programming: linearise, then flip elements optimally with HiGHS (`scipy.optimize.milp`). Own convergence test, like BESO. |
 | ✅ MMA (pyMOTO) | [`pymoto_optimizers.py`](pymoto_optimizers.py) | `pymoto_mma` | any number | pyMOTO's implementation, for cross-checking ours. Optional dependency. |
 | ✅ GCMMA (pyMOTO) | [`pymoto_optimizers.py`](pymoto_optimizers.py) | `pymoto_gcmma` | any number | Globally convergent MMA with an inner loop, for strongly non-linear responses. Optional dependency. |
 | ✅ SLSQP (SciPy) | [`scipy_slsqp.py`](scipy_slsqp.py) | `scipy_slsqp` | any number | Sequential quadratic programming (Kraft 1988). Runs its own loop in the background; **the worked example in [`docs/writing-plugins.md`](../../../docs/writing-plugins.md)**. Dense quasi-Newton matrix, so coarse meshes only. Within 3 % of OC on the MBB benchmark. |
@@ -100,6 +101,39 @@ run on the first near-duplicate trial point. Parameters: `nlopt_maxeval` and
 `nlopt_ftol_rel` (NLopt's own stopping rule, alongside the engine's), `nlopt_report_step`,
 `nlopt_rho_init` (MMA and CCSAQ: smaller means a bolder first step) and
 `nlopt_local_maxeval` (AUGLAG: evaluations per L-BFGS subproblem).
+
+## TOBS — binary designs by integer linear programming
+
+**What it does.** Like BESO, TOBS keeps every element strictly void or solid, but it does not
+rank elements by a threshold. Each iteration it linearises the objective and the volume at the
+current binary design and solves an **integer linear program** for the best set of flips
+(solid to void, void to solid) with HiGHS, through `scipy.optimize.milp` (no new dependency).
+Two parameters keep the linearisation honest: **ε**, the most the volume target may move per
+iteration, and **β**, the largest fraction of elements that may flip per iteration. Sensitivities
+are averaged with the previous iteration, as in the 101-line code. Started from a full domain it
+descends to the budget at ε per iteration, then trades material between places at constant volume.
+
+**When to use it.** When you want a strictly black-and-white result without a projection filter,
+and as the natural route to *explicit* constraints on binary designs (an ILP takes any number of
+linear rows; this plugin enforces the volume only). Compared with BESO it is less heuristic but
+slower per iteration (an ILP each time). On the MBB benchmark it lands within about 5 % of OC on the
+final binary design, in the same range as BESO. Use a density or sensitivity filter, as for BESO.
+
+**How to use it.** The method is `q4+tobs` (any model that gives element densities; refused with
+bars or other representations, like OC and BESO).
+
+```
+toporia run "MBB Beam" --set method=q4+tobs
+toporia run "MBB Beam" --set method=q4+tobs --set method.epsilon=0.01 --set method.beta=0.02
+toporia check updater:tobs
+```
+
+In the GUI, choose **TOBS (integer LP)** among the methods; its parameters (constraint relaxation
+ε, flip limit β, sensitivity averaging, tolerance, start from solid) appear with the method.
+
+**Links.** [101-line MATLAB code paper](https://doi.org/10.1007/s00158-020-02719-9) (Picelli,
+Sivapuram, Xie, *SMO* 2021), with code; original method: Sivapuram & Picelli, *FEAD* 139 (2018) 49–61.
+
 ## Writing one for an outside optimiser
 
 The full guide, with a worked example of every plugin kind, is
@@ -129,7 +163,6 @@ any other updater, and its own verdict (success, message, its counts) is written
 | Updater | Status | Reference | Why it matters |
 | :-- | :-- | :-- | :-- |
 | Augmented Lagrangian | 🔗 [PolyStress](https://link.springer.com/article/10.1007/s00158-020-02760-8) | Giraldo-Londoño & Paulino, *PRSA* 2020; *SMO* 2021 | **The missing piece for local constraints.** Turns thousands of local stress limits into a sequence of bound-constrained subproblems; proven to hundreds of millions of constraints. Would let Toporia's own updaters enforce [`responses/stress.py`](../responses/README.md). Subproblem-solver comparison: Silva et al., *IJNME* 2025. |
-| Sequential integer linear programming (TOBS) | 🔗 [101-line MATLAB](https://link.springer.com/article/10.1007/s00158-020-02719-9) | Sivapuram & Picelli, *FEAD* 2018; Picelli et al., *SMO* 2021 | Strict {0,1} variables with multiple constraints handled explicitly. `scipy.optimize.milp` ships HiGHS, so no new dependency. |
 | CONLIN | 📄 | Fleury, *Struct. Optim.* 1989 | MMA's predecessor: convex linearisation without moving asymptotes. Cheap to write, and the clean way to show what the asymptotes actually buy. |
 | SLP with trust region | 🔗 `scipy.optimize` | standard | Linearise and solve with move limits. The usual choice for level-set and feature-mapping problems: few variables, many constraints. (SQP is in Toporia as `scipy_slsqp`.) |
 | Interior point (IPOPT) | 🔗 IPOPT | Wächter & Biegler, *Math. Prog.* 2006 | General NLP for small-variable, many-constraint formulations. Used by GPTO and GGP. |
@@ -241,4 +274,6 @@ the element-wise form implemented here.
 - K. Svanberg, "A class of globally convergent optimization methods…", *SIAM J. Optim.* 12 (2002) 555–573.
 - B. Keith, D. Kim, B. S. Lazarov, T. M. Surowiec, "A simple introduction to the SiMPL method for density-based topology optimization", *SMO* 68 (2025); [arXiv:2411.19421](https://arxiv.org/abs/2411.19421).
 - X. Huang, Y. M. Xie, "Convergent and mesh-independent solutions for the bi-directional evolutionary structural optimization method", *FEAD* 43 (2007) 1039–1049.
+- L. F. N. Sivapuram, R. Picelli, "Topology optimization of binary structures using integer linear programming", *FEAD* 139 (2018) 49–61.
+- R. Picelli, S. Sivapuram, Y. M. Xie, "A 101-line MATLAB code for topology optimization using binary variables and integer programming", *SMO* 63 (2021) 935–954; [doi:10.1007/s00158-020-02719-9](https://doi.org/10.1007/s00158-020-02719-9).
 - O. Sigmund, "On the usefulness of non-gradient approaches in topology optimization", *SMO* 43 (2011) 589–596.
