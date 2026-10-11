@@ -35,8 +35,8 @@ first, and if a package will not install, reports it rather than working around 
 | [x] | SciPy `trust-constr`, `COBYLA`, … (already a dependency) | updater | more constrained optimisers in the `scipy_slsqp` pattern | BSD |
 | [x] | NLopt | updater | MMA, CCSA, SLSQP, augmented Lagrangian, COBYLA, … in one wrapper | LGPL/MIT |
 | [ ] | cyipopt (IPOPT) | updater | interior point | EPL. **Blocked 2026-10-11:** no Windows wheel for Python 3.14; a source build needs pkg-config + IPOPT. Needs conda-forge or an older Python |
-| [ ] | mmapy, Deetman's MMA/GCMMA Python port | updater + oracle for `mma.py` | the reference MMA | GPL-3 *(check; GPL means optional only)* |
-| [ ] | Feppon's null-space optimizer | updater | constrained optimiser for level-set and shape problems | *(unverified)* |
+| [x] | mmapy, Deetman's MMA/GCMMA Python port | updater + oracle for `mma.py` | the reference MMA | GPL-3 *(check; GPL means optional only)* |
+| [x] | Feppon's null-space optimizer | updater | constrained optimiser for level-set and shape problems | *(unverified)* |
 | [ ] | ParOpt | updater | interior point built for TO | LGPL *(unverified)* |
 | [ ] | pyMOTO, thermal / dynamics / mechanism modules | model | heat, eigenfrequency, compliant mechanism on our grids | MIT |
 | [ ] | dl4to + the SELTO datasets | problems | 3-D benchmark problems with reference solutions | *(check)* |
