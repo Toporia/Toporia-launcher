@@ -28,10 +28,10 @@ kept. To apply post-processors to a run saved earlier without optimising again:
 toporia post results/my_run threshold connectivity export_stl:thickness=3
 ```
 
-**In 3-D**: threshold, connectivity (pieces share a face), feature size and the STL solid work;
-the images show the design as seen through its depth. The SVG and DXF outlines are 2-D only.
+**In 3-D**: threshold, grey level, connectivity (pieces share a face), feature size and the STL solid work;
+the images show the design as seen through its depth. The SVG, DXF and smoothed outlines are 2-D only.
 
-**Status: 6 in Toporia · 0 with open code · 3 paper only**
+**Status: 8 in Toporia · 0 with open code · 1 paper only**
 
 | Label | Meaning |
 | :-- | :-- |
@@ -46,7 +46,9 @@ the images show the design as seen through its depth. The SVG and DXF outlines a
 | ✅ Threshold | [`threshold.py`](threshold.py) | `threshold` | Black and white at the original volume (or at a fixed level), with holes kept. The compliance of that design, measured by the referee (Q4, SIMP p = 3, no filter), next to the grey design's compliance. Methods finish with different amounts of grey, so this is the number papers compare. Later post-processors use this design. |
 | ✅ Connectivity | [`connectivity.py`](connectivity.py) | `connectivity` | The pieces of the black-and-white design, the share of material touching no support, and whether every load reaches a support. Elements touching only at a corner do not count as joined. `connectivity.png` shows floating material in red. |
 | ✅ Feature size | [`feature_size.py`](feature_size.py) | `feature_size` | The thinnest member and the smallest hole, in mm, from the distance to the other phase along the middle of each member. Good to about one element; an even width reads one less. |
+| ✅ Grey level over the run | [`grey_level.py`](grey_level.py) | `grey_level` | Sigmund's measure of non-discreteness M_nd = 4/n Σ ρ(1−ρ), in percent (0 for black and white, 100 for uniform half-density): the final value, the first and the peak, and the curve over the iterations as `grey_level.png` and `.csv` |
 | ✅ SVG outline | [`export_svg.py`](export_svg.py) | `export_svg` | The outline in mm, for figures |
+| ✅ Smoothed outline | [`smooth_outline.py`](smooth_outline.py) | `smooth_outline` | The outline fitted with smooth curves instead of the element-grid contour, as `design_smooth.svg` and `design_smooth.dxf` in mm. 2-D only |
 | ✅ DXF outline | [`export_dxf.py`](export_dxf.py) | `export_dxf` | Closed R12 polylines in mm, for CAD and laser or waterjet cutting |
 | ✅ STL solid | [`export_stl.py`](export_stl.py) | `export_stl` | The black-and-white design extruded to a thickness: one closed binary STL in mm, stepped at the element size, for 3-D printing |
 
@@ -61,13 +63,54 @@ of elements that touch only at corners. Connectivity then reports them as floati
 feature size reports a one-element member. The grey design looked fine; the manufacturable
 one is not.
 
+## Measure of non-discreteness over the run
+
+**What.** `grey_level` reports M_nd = 4/n Σ ρ(1−ρ) × 100 % (Sigmund, *SMO* 33 (2007) 401–424)
+on the final physical density, and, when it runs straight after an optimisation, over every
+iteration: `grey_level.csv` and `grey_level.png`. The metrics are `final_pct`, `first_pct`,
+`peak_pct` and `iterations`; `final_pct` and `peak_pct` become comparison columns.
+
+**When.** To see whether a method or a projection continuation really reaches black and
+white, and when; the final value alone hides a design that was grey for most of the run.
+
+**Per-iteration values** are recorded by the loop (`ResultStore.grey_levels`, a few arithmetic
+operations on the density already at hand; nothing else in `run.json` or the histories
+changes). A run loaded from a saved folder keeps no history, so `toporia post` gives only the final value.
+
+**Use.** In a config: `output.postprocess = [{"type": "grey_level"}]`. In the GUI: Post-processing
+panel, "Grey level (M_nd) over the run". Command line:
+
+```bash
+toporia run "MBB Beam" --out results/mbb --set 'postprocess=[{"type": "grey_level"}]'
+```
+
+## Smoothed outlines
+
+**What.** `smooth_outline` takes the contour of the density at the level of the black-and-white
+design (the contour `export_svg` writes) and replaces each closed loop with a smooth curve:
+a periodic smoothing spline (`method = spline`, the default, which may move the contour by
+`tolerance` element sizes), or Chaikin corner cutting (`method = chaikin`, `passes` times).
+After Subedi et al., *J. Comput. Inf. Sci. Eng.* 2020. Points are clipped to the domain.
+
+**When.** For figures and for CAD or cutting, where stair-steps from the element grid are
+unwanted. The curves are many short segments; they are not exact geometry, only close to
+the design (within about an element). 2-D only; a 3-D design is refused.
+
+**Files.** `design_smooth.svg` and `design_smooth.dxf`, in mm, written with the same code
+as the plain exporters. Metrics: `outlines`, `points`.
+
+**Use.** In a config: `output.postprocess = [{"type": "smooth_outline", "tolerance": 0.5}]`. In the GUI:
+Post-processing panel, "Smooth outline (SVG + DXF)". On a saved run:
+
+```bash
+toporia post results/mbb smooth_outline:method=chaikin,passes=3
+```
+
 ## 📄 Candidates
 
 | Post-processor | Reference | What it adds |
 | :-- | :-- | :-- |
-| 📄 Smoothed outlines | Subedi et al., *J. Comput. Inf. Sci. Eng.* 2020 (a review of geometric post-processing) | Outlines smoothed or fitted with splines, instead of contours of the element field |
 | 📄 Body-fitted re-analysis | Common practice; e.g. via FEniCS or Gmsh | Re-mesh the outline and analyse it again, free of the element grid |
-| 📄 Measure of non-discreteness over the run | Sigmund, *SMO* 33 (2007) | Grey level plotted over the iterations rather than at the end only |
 
 ## Writing one
 

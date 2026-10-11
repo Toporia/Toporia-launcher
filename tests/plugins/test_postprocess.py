@@ -8,6 +8,8 @@ saved run.  Each one is checked here on designs whose answer is known.
 
 import json
 import struct
+import types
+from xml.etree import ElementTree
 
 import numpy as np
 import pytest
@@ -22,6 +24,8 @@ from toporia.plugins.postprocessors._measure import clip_to_box, outlines, polyg
 from toporia.plugins.postprocessors.export_dxf import ExportDXF
 from toporia.plugins.postprocessors.export_stl import ExportSTL
 from toporia.plugins.postprocessors.feature_size import thinnest
+from toporia.plugins.postprocessors.grey_level import GreyLevel
+from toporia.plugins.postprocessors.smooth_outline import SmoothOutline, smoothed
 from toporia.plugins.postprocessors.threshold import Threshold
 from toporia.plugins.problems import get_run
 
@@ -43,7 +47,7 @@ def _shape(problem):
 
 
 def test_all_six_are_registered():
-    assert POSTPROCESSORS.names() == ALL
+    assert set(ALL) <= set(POSTPROCESSORS.names())
 
 
 # ── Threshold ─────────────────────────────────────────────────────────────────
@@ -242,3 +246,64 @@ def test_compare_methods_gets_the_same_columns_for_every_method(tmp_path):
         assert not any(key.startswith("export_svg.") for key in row)     # files, not numbers to compare
     table = (tmp_path / "compare_methods" / "methods.csv").read_text(encoding="utf-8").splitlines()[0]
     assert "threshold.compliance" in table and "threshold.compliance" in format_table(rows)
+
+
+# ── Grey level and smoothed outlines ──────────────────────────────────────────
+
+def test_the_two_new_ones_are_registered():
+    assert {"grey_level", "smooth_outline"} <= set(POSTPROCESSORS.names())
+
+
+def test_grey_level_is_zero_for_black_and_white_and_100_for_half(tmp_path):
+    shape = _shape(_result(np.zeros((10, 30)), tmp_path).problem)
+    black_white = (np.arange(np.prod(shape)).reshape(shape) % 2).astype(float)
+    assert GreyLevel().process(_result(black_white, tmp_path))["final_pct"] == 0.0
+    assert GreyLevel().process(_result(np.full(shape, 0.5), tmp_path))["final_pct"] == pytest.approx(100.0)
+
+
+def test_grey_level_over_the_run_is_plotted(tmp_path):
+    run = _run(postprocess=[{"type": "grey_level"}], max_iter=6).with_output_dir(tmp_path)
+    store, density = run_single_with_store(run)
+    assert len(store.grey_levels) == 6
+    record = json.loads((tmp_path / "run.json").read_text())["postprocess"]["grey_level"]
+    assert record["metrics"]["iterations"] == 6
+    assert record["metrics"]["final_pct"] == pytest.approx(100 * 4 * np.mean(density * (1 - density)))
+    assert sorted(record["files"]) == ["post/grey_level.csv", "post/grey_level.png"]
+    assert (tmp_path / "post" / "grey_level.png").stat().st_size > 0
+    again = postprocess_folder(tmp_path, [{"type": "grey_level"}])     # a saved run keeps no history
+    assert again["grey_level"]["metrics"]["iterations"] is None and again["grey_level"]["files"] == []
+
+
+def _slanted(tmp_path):
+    problem = _result(np.zeros((20, 40)), tmp_path).problem
+    rows, columns = np.indices((problem.nely, problem.nelx))
+    return _result((np.abs(rows - columns * 0.5 - 4) < 3).astype(float), tmp_path)
+
+
+@pytest.mark.parametrize("method", ["spline", "chaikin"])
+def test_the_smoothed_outline_is_closed_and_stays_within_an_element(tmp_path, method):
+    result = _slanted(tmp_path)
+    h = min(result.problem.dx, result.problem.dy)
+    raw = outlines(result)
+    smooth = smoothed(result, method, 0.5, 3)
+    assert len(smooth) == len(raw) >= 1
+    for loop, original in zip(smooth, raw):
+        assert np.allclose(loop[0], loop[-1])
+        gap = np.linalg.norm(loop[:, None, :] - original[None, :, :], axis=2).min(axis=1)
+        assert gap.max() <= h
+
+
+def test_the_smoothed_outline_is_written_as_svg_and_dxf(tmp_path):
+    result = _slanted(tmp_path)
+    metrics = SmoothOutline().process(result)
+    svg = ElementTree.parse(tmp_path / "post" / "design_smooth.svg").getroot()
+    assert svg.tag.endswith("svg") and svg.find(".//{http://www.w3.org/2000/svg}path").get("d").startswith("M ")
+    text = (tmp_path / "post" / "design_smooth.dxf").read_text(encoding="ascii").split("\n")
+    assert text.count("POLYLINE") == metrics["outlines"] >= 1 and text[-2:] == ["EOF", ""]
+
+
+def test_the_smoothed_outline_refuses_3d(tmp_path):
+    result = _slanted(tmp_path)
+    result.problem = types.SimpleNamespace(dims=3)
+    with pytest.raises(ValueError, match="2-D only"):
+        SmoothOutline().process(result)

@@ -120,7 +120,8 @@ def run_single_with_store(run, on_iteration=None):
     geometry = method.geometry()
     if geometry:
         save_geometry(run.output.dir, geometry)
-    store.postprocess = run_postprocessors(run, method.get_density(), run.output.dir, geometry)
+    store.postprocess = run_postprocessors(run, method.get_density(), run.output.dir, geometry,
+                                       history={"grey_level": store.grey_levels})
     store.save_json("run.json", run_record(
         run, iterations=iteration, stop_reason=stop_reason, responses=final, limits=limits,
         optimiser=optimiser, postprocess=store.postprocess,

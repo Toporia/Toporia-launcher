@@ -50,7 +50,7 @@ def check_postprocess(run):
             raise ImportError(f"Post-processor {cls.name!r} needs {', '.join(missing)}: {install_hint(missing)}")
 
 
-def run_postprocessors(run, density, folder, geometry=None, problem=None):
+def run_postprocessors(run, density, folder, geometry=None, problem=None, history=None):
     """Apply run.output.postprocess to `density`; return {key: {"type", "metrics", "files"} or {"type", "error"}}."""
     specs = run.output.postprocess
     if not specs:
@@ -60,7 +60,7 @@ def run_postprocessors(run, density, folder, geometry=None, problem=None):
         problem = make_problem(run.scenario, run.solver.m)
     folder = Path(folder)
     result = Result(density=np.asarray(density, dtype=float), problem=problem, run=run,
-                    folder=folder / FOLDER, geometry=geometry)
+                    folder=folder / FOLDER, geometry=geometry, history=history)
     done = {}
     for key, cls, processor in _instances(specs):
         written = len(result.files)

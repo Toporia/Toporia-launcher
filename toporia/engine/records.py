@@ -51,6 +51,8 @@ class ResultStore:
         self.volumes = []  # mean density (= material fraction) each iteration
         self.responses = {}  # name -> per-iteration list, for every response a
         # method reports (constraint values, beta, ...)
+        self.grey_levels = []  # Sigmund's measure of non-discreteness 4/n Σ ρ(1−ρ) each iteration;
+        # kept apart from `responses` so run.json and the compared histories are unchanged
         self.stop_reason = None  # set by the runner when the loop ends
         self.postprocess = {}  # what the post-processors made of the final design
 
@@ -58,6 +60,7 @@ class ResultStore:
         """Append one iteration's data and optionally save a density snapshot."""
         self.objectives.append(float(objective))
         self.volumes.append(float(volume))
+        self.grey_levels.append(float(4.0 * np.mean(density * (1.0 - density))))
         # Methods may report any number of extra scalars; keep them all so the
         # comparison engine can plot more than compliance without a contract change.
         for name, value in (responses or {}).items():

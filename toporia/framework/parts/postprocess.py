@@ -39,12 +39,18 @@ class Result:
     geometry  explicit outlines from the design representation, when it has
               them (moving morphable components: one closed polygon per bar,
               in mm); None for a density design
+    history   the per-iteration record of the run ({"grey_level": [...]}), or
+              None when the design was loaded from a saved run
     """
     density: np.ndarray
     problem: object
     run: object
     folder: Path
     geometry: list | None = None
+    #: The run's per-iteration record, {name: [value per iteration]} (today "grey_level"), when the
+    #: Result comes straight from a run; None for a design loaded from a saved folder, which keeps
+    #: no history.  A post-processor that wants it must work without.
+    history: dict | None = None
     #: The black-and-white design, once a post-processor (threshold) has made one.
     binary: np.ndarray | None = None
     #: The level the black-and-white design was cut at (0.5 until a threshold says otherwise).

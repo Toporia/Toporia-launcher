@@ -11,6 +11,8 @@ See framework/parts/postprocess.py.
     export_svg.py    outlines as SVG (figures, the web)
     export_dxf.py    outlines as DXF (CAD, laser and waterjet cutting)
     export_stl.py    the design extruded to a solid, as STL (3-D printing)
+    grey_level.py    the measure of non-discreteness, final and over the iterations
+    smooth_outline.py  the outline fitted with smooth curves, as SVG and DXF
     _measure.py      shared: the referee compliance, contours, image files
 """
 
