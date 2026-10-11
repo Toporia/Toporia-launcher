@@ -132,3 +132,4 @@ C++ engines (GridapTopOpt.jl, TopOpt.jl, TopOpt_in_PETSc, MOOSE, OpenLSTO) stay 
 - [ ] The console's `obj=` column prints the change from the first iteration (`engine/loop.py`), which reads as a negative compliance; label it `Δobj` or print the objective.
 - [ ] `model:pymoto_elastic` fails its gradient check (0.62 %) already on 9ced06d: environment change (numpy 2.4 / pymoto 2.0.1?), a separate task.
 - [ ] L-bracket dimensions and load point, and the robust-paper DOI, were written from memory: check against Le et al. 2010 and Wang, Lazarov & Sigmund 2011.
+- [ ] `--set 'representation={...}'` with a JSON value that arrives as a plain string (PowerShell 5.1 strips the quotes) crashes in `engine/pipeline.py` with AttributeError; give a clear error instead.
