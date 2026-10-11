@@ -39,6 +39,13 @@ class HeavisideFilter(Filter):
 
     name = "heaviside"
     label = "Heaviside projection"
+    reference = (
+        'J. K. Guest, J. H. Prevost, T. Belytschko, "Achieving minimum length scale in topology'
+        ' optimization using nodal design variables and projection functions", IJNME 61 (2004)'
+        ' 238-254; the tanh form with threshold eta from F. Wang, B. S. Lazarov, O. Sigmund, "On'
+        ' projection methods, convergence and robust formulations in topology optimization", Struct.'
+        ' Multidisc. Optim. 43 (2011) 767-784.'
+    )
     dims = (2, 3)           # pointwise: any dimension
     order = 30
     params = (

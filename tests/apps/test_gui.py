@@ -336,3 +336,64 @@ def test_post_processors_can_be_switched_on_in_any_combination(window):
     window.core.select_method("levelset")                     # any method's design can be post-processed
     assert not window.post.isHidden() and len(_built(window).output.postprocess) == 2
     window.post.load_specs([])
+
+
+# ── Help: every option says what it is and where it comes from ────────────────
+
+REGISTRIES = ("methods", "models", "updaters", "filters", "interpolations", "responses",
+              "representations", "schedules", "postprocessors")
+
+
+def _all_plugin_classes():
+    import importlib
+    for package in REGISTRIES:
+        module = importlib.import_module(f"toporia.plugins.{package}")
+        yield from getattr(module, package.upper()).classes()
+
+
+@pytest.mark.parametrize("cls", list(_all_plugin_classes()), ids=lambda c: c.name)
+def test_every_plugin_says_where_it_comes_from(cls):
+    assert cls.__dict__.get("reference"), f"{cls.__name__} declares no reference"
+
+
+@pytest.mark.parametrize("preset", problem_names())
+def test_every_preset_says_what_it_is_and_where_it_comes_from(preset):
+    from toporia.plugins.problems import problem_info
+    about, reference = problem_info(preset)
+    assert about and reference
+
+
+def test_every_help_button_in_the_window_opens_a_sourced_topic(window):
+    from toporia.apps.gui.help import UNSTATED, HelpButton, HelpWindow
+    window._on_config_changed("MBB Beam")
+    buttons = window.findChildren(HelpButton)
+    assert len(buttons) > 50
+    for button in buttons:
+        topic = button.topic()
+        assert topic.title and topic.section("What it is"), topic
+        assert topic.section("Where it is from") not in ("", UNSTATED), topic.title
+    buttons[0].open_help()
+    help_window = HelpWindow.instance()
+    assert help_window.topic is buttons[0].topic() or help_window.topic.title == buttons[0].topic().title
+    help_window.close()
+
+
+@pytest.mark.parametrize("cls", [c for _, c in PLUGINS], ids=[i for i, _ in PLUGINS])
+def test_every_generated_parameter_has_a_help_button(app, cls):
+    from toporia.apps.gui.help import HelpButton
+    from toporia.apps.gui.panels import ParamForm
+    form = ParamForm(cls.params, owner=cls)
+    buttons = form.findChildren(HelpButton)
+    assert len(buttons) == len(cls.params)
+    for button, param in zip(buttons, cls.params, strict=True):
+        assert button.topic().title.startswith(param.label)
+
+
+def test_a_dropdowns_help_follows_the_selection(window):
+    window._on_config_changed("MBB Beam")
+    window.core.select_method("q4+oc")
+    row = window.filters._rows[0]
+    assert "Bruns" in row.type_topic().section("Where it is from")
+    row.load_spec({"type": "heaviside"})
+    assert "Guest" in row.type_topic().section("Where it is from")
+    window.filters.load_specs([{"type": "density"}])

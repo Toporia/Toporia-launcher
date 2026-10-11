@@ -68,6 +68,10 @@ class ExportSTL(PostProcessor):
 
     name = "export_stl"
     label = "Export solid (STL)"
+    reference = (
+        "Toporia's own export, to binary STL (the stereolithography format of 3D Systems), ready"
+        ' for a slicer.'
+    )
     order = 70
     table_metrics = ()          # files, not numbers to compare
     dims = (2, 3)

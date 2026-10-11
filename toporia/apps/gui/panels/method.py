@@ -64,20 +64,21 @@ class CoreParamsGroup(QWidget):
         mark_availability(self.approach, METHODS.classes())
         add_tooltip_row(selector, "Method", self.approach,
                          "Pick a physics model and an updater separately (any pair works), or a whole "
-                         "method that brings its own design representation and update.")
+                         "method that brings its own design representation and update.",
+                         topic=self._method_topic)
         opt.body_layout.addLayout(selector)
 
         # One selector and one parameter panel per part; whole methods get a panel each.
         self.model, self._model_forms, self._model_row = self._part_selector(
-            opt, "Physics model", MODELS.classes(),
+            opt, "Physics model", MODELS,
             "What is solved: the physics engine, and with it which objectives and constraints "
             "can be computed.")
         self.updater, self._updater_forms, self._updater_row = self._part_selector(
-            opt, "Updater", UPDATERS.classes(),
+            opt, "Updater", UPDATERS,
             "How the design moves from one iteration to the next.")
         self._method_forms = {}
         for cls in METHODS.classes():
-            form = ParamForm(cls.params)
+            form = ParamForm(cls.params, owner=cls)
             self._method_forms[cls.name] = form
             opt.body_layout.addWidget(form)
         outer.addWidget(opt)
@@ -95,24 +96,44 @@ class CoreParamsGroup(QWidget):
         self._on_method_changed()
 
     @staticmethod
-    def _part_selector(section, title, classes, tooltip):
+    def _part_selector(section, title, registry, tooltip):
         """A titled selector for one part, with that part's parameter panel under it."""
+        from ..help import plugin_topic
+
+        classes = registry.classes()
         box = QWidget()
         layout = QVBoxLayout(box)
         layout.setContentsMargins(0, 4, 0, 0)
         layout.setSpacing(2)
         row = QFormLayout()
         combo = QComboBox()
-        add_tooltip_row(row, title, combo, tooltip)
+        add_tooltip_row(row, title, combo, tooltip,
+                        topic=lambda: plugin_topic(registry.get(combo.currentData()), title.lower()))
         layout.addLayout(row)
         forms = {}
         for cls in classes:
             combo.addItem(cls.label, userData=cls.name)
-            forms[cls.name] = ParamForm(cls.params)
+            forms[cls.name] = ParamForm(cls.params, owner=cls)
             layout.addWidget(forms[cls.name])
         mark_availability(combo, classes)
         section.body_layout.addWidget(box)
         return combo, forms, box
+
+    def _method_topic(self):
+        """Help on the "Method" choice: assembling from parts, or the whole method selected."""
+        from toporia.plugins.methods import method_class
+
+        from ..help import plugin_topic, text_topic
+
+        if self._composed():
+            return text_topic(
+                "Physics model + updater",
+                "The method is assembled from two parts chosen below: a physics model (what is "
+                "solved, and which responses it computes) and an updater (how the design moves). "
+                "Any model works with any updater; the help of each says where it comes from.",
+                "Toporia's own split. It follows the two halves of the top88 code (Andreassen et al. "
+                "2011), whose finite element analysis and optimality criteria update are separate steps.")
+        return plugin_topic(method_class(self.approach.currentData()), "whole method")
 
     def _composed(self):
         return self.approach.currentData() == self.PARTS

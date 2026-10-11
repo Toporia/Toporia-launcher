@@ -46,6 +46,11 @@ class RoutingRadiusFilter(Filter):
 
     name = "routing"
     label = "Routing radius filter"
+    reference = (
+        "Toporia's own: a smooth morphological closing for a round router bit, inspired by the"
+        ' smooth erode/dilate filters of O. Sigmund, "Morphology-based black and white filters for'
+        ' topology optimization", Struct. Multidisc. Optim. 33 (2007) 401-424.'
+    )
     order = 50
     params = (
         Param("radius_mm", 2.0, "Radius", "Router tool radius.",

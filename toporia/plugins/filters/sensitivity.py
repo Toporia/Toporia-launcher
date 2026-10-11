@@ -31,6 +31,10 @@ class SensitivityFilter(Filter):
 
     name = "sensitivity"
     label = "Sensitivity filter"
+    reference = (
+        "Sigmund's heuristic sensitivity filter (Struct. Optim. 1997), as in the 99-line code"
+        ' (Sigmund 2001) and top88 (Andreassen et al. 2011).'
+    )
     dims = (2, 3)
     order = 20
     params = (RMIN,)

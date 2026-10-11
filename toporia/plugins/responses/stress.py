@@ -63,6 +63,11 @@ class VonMisesStress(Response):
     """A limit on the peak von Mises stress, through a p-norm of the relaxed element stresses."""
     name = "stress"
     label = "Peak von Mises stress"
+    reference = (
+        'p-norm aggregation with adaptive scaling: C. Le, J. Norato, T. Bruns, C. Ha, D.'
+        ' Tortorelli, "Stress-based topology optimization for continua", Struct. Multidisc. Optim.'
+        " 41 (2010) 605-620; the rho^q relaxation as in pyMOTO's stress example."
+    )
     order = 30
     roles = (CONSTRAINT_ROLE,)
     params = (

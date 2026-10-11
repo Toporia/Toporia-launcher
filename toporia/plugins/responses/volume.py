@@ -23,6 +23,10 @@ class Volume(Response):
     """The total physical material; as an objective it needs a further constraint."""
     name = "volume"
     label = "Material volume"
+    reference = (
+        "Least material under a stress limit, as in pyMOTO's stress example and in C. Le et al.,"
+        ' Struct. Multidisc. Optim. 41 (2010) 605-620.'
+    )
     order = 20
     roles = (OBJECTIVE_ROLE,)
     needs_constraint = True

@@ -22,6 +22,10 @@ from toporia.framework import EdgeConstraint, LoadCase, PointLoad, Scenario, Sol
 
 NAME = "Cantilever 3D"
 ORDER = 22
+ABOUT = ('A 60 x 20 mm cantilever extruded 10 mm deep, clamped over one face and loaded along the'
+         ' bottom edge of the free end.')
+REFERENCE = ('The benchmark of top3d: K. Liu, A. Tovar, "An efficient 3D topology optimization code'
+             ' written in Matlab", Struct. Multidisc. Optim. 50 (2014) 1175-1196.')
 
 
 def scenario() -> Scenario:

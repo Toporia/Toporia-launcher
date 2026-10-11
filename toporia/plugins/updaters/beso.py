@@ -66,6 +66,12 @@ class BESOUpdater(Updater):
 
     name = "beso"
     label = "BESO (soft kill)"
+    reference = (
+        'X. Huang, Y. M. Xie, "Convergent and mesh-independent solutions for the bi-directional'
+        ' evolutionary structural optimization method", Finite Elem. Anal. Des. 43 (2007) 1039-1049;'
+        ' X. Huang, Y. M. Xie, "Evolutionary Topology Optimization of Continuum Structures", Wiley'
+        ' (2010).'
+    )
     order = 60
     params = (
         Param("er", 0.02, "Evolution rate",

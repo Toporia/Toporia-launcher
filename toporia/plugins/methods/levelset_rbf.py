@@ -37,6 +37,10 @@ class LevelSetRBFMethod(OptimizationMethod):
 
     name = "levelset"
     label = "RBF level set"
+    reference = (
+        'A port of TOPRBF.m (Luo et al.); radial-basis-function level sets after Wang & Wang, CMAME'
+        ' 2006.'
+    )
     order = 30
     params = (
         Param(

@@ -18,6 +18,7 @@ from PySide6.QtWidgets import (
     QWidget,
 )
 
+from ..help import HelpButton, plugin_topic, text_topic, with_help
 from .common import (
     CollapsibleSection,
     mark_availability,
@@ -26,7 +27,7 @@ from .forms import ParamForm
 
 
 class _SpecRow(QWidget):
-    """One spec: a type selector, that type's generated parameters, and optionally ✕."""
+    """One spec: a type selector with its "?", that type's generated parameters, and optionally ✕."""
 
     changed = Signal()  # the selected type changed
 
@@ -40,6 +41,8 @@ class _SpecRow(QWidget):
         header = QHBoxLayout()
         self._type = QComboBox()
         header.addWidget(self._type, 1)
+        self.help_button = HelpButton(self.type_topic)
+        header.addWidget(self.help_button)
         if on_remove is not None:
             remove = QPushButton("✕")
             remove.setFixedWidth(28)
@@ -50,7 +53,7 @@ class _SpecRow(QWidget):
         self._wanted = self._classes[0].name if self._classes else None  # kept while it is not offered
         self._forms = {}
         for cls in self._classes:
-            self._forms[cls.name] = ParamForm(cls.params, self)
+            self._forms[cls.name] = ParamForm(cls.params, self, owner=cls)
             outer.addWidget(self._forms[cls.name])
         self._fill_types([cls.name for cls in self._classes])
 
@@ -88,6 +91,12 @@ class _SpecRow(QWidget):
         for name, form in self._forms.items():
             form.setVisible(name == key)
         self.changed.emit()
+
+    def type_topic(self):
+        """Help on the type selected now."""
+        key = self._type.currentData() or self._wanted
+        cls = next(c for c in self._classes if c.name == key)
+        return plugin_topic(cls)
 
     def offered_types(self):
         """The types currently offered by the selector, in menu order."""
@@ -271,7 +280,12 @@ class _ScheduleRow(_SpecRow):
             "The parameter this schedule changes during the run. Only parameters "
             "their part allows to change mid-run are offered."
         )
-        self.layout().insertWidget(0, self._path)
+        self.layout().insertWidget(0, with_help(self._path, lambda: text_topic(
+            "Scheduled parameter",
+            "The parameter this schedule changes during the run, from its start value to its end "
+            "value. Only parameters whose part allows a change mid-run are offered.",
+            "Continuation, as for the SIMP penalty and the projection sharpness: O. Sigmund, J. Petersson, "
+            '"Numerical instabilities in topology optimization", Struct. Optim. 16 (1998) 68-75.')))
         self.set_paths(paths)
         if spec:
             self.load_spec(spec)

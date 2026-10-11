@@ -162,5 +162,7 @@ class Scenario:
 SCENARIO_PARAMS = (
     Param("volfrac", 0.5, "Vol fraction",
           "Target fraction of solid material allowed in the design.",
-          min=0.01, max=1.0, step=0.05, decimals=3),
+          min=0.01, max=1.0, step=0.05, decimals=3,
+          source="The volume constraint of Sigmund's 99-line code (Struct. Multidisc. Optim. 21 (2001) "
+                 "120-127) and top88 (Andreassen et al. 2011), where 0.5 is the MBB beam's value."),
 )

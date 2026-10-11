@@ -14,16 +14,21 @@ PENAL = Param(
     "penal", 3.0, "Penalty p",
     "SIMP penalty exponent. Higher values push intermediate densities toward solid or void.",
     min=1.0, max=10.0, step=0.5, decimals=1,
+    source="SIMP (Bendsoe, Structural Optimization 1 (1989) 193-202); p = 3 is the value of the "
+           "99-line code and top88.",
 )
 
 MOVE = Param(
     "move", 0.2, "Move limit",
     "Largest change of any element's density in a single update.",
     min=0.01, max=1.0, step=0.05, decimals=2,
+    source="The move limit of the optimality criteria update in the 99-line code and top88, "
+           "where it is 0.2.",
 )
 
 RMIN = Param(
     "rmin", 1.5, "Radius",
     "Filter radius in elements. Sets the minimum member size and suppresses checkerboarding.",
     min=0.5, max=20.0, step=0.5, decimals=2, units="el",
+    source="rmin of the 99-line code and top88, measured in elements; 1.5 is top88's MBB value.",
 )

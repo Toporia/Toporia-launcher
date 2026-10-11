@@ -24,6 +24,11 @@ class MMAUpdater(Updater):
 
     name = "mma"
     label = "Method of moving asymptotes"
+    reference = (
+        'K. Svanberg, "The method of moving asymptotes - a new method for structural optimization",'
+        ' Int. J. Numer. Meth. Eng. 24 (1987) 359-373; the one-constraint form follows the MMA'
+        ' variant of top88.'
+    )
     order = 20
     params = (
         MOVE,

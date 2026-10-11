@@ -15,6 +15,9 @@ from . import drone_arm
 
 NAME = "Drone Arm (Camera View)"
 ORDER = 60
+ABOUT = ("The drone arm with an area near the bottom centre that must stay empty for a camera's"
+         ' view.')
+REFERENCE = "Toporia's own application case."
 
 
 def scenario() -> Scenario:

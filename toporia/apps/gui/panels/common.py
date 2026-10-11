@@ -1,7 +1,7 @@
 # apps/gui/panels/common.py — small pieces every panel uses.
 #
 #   CollapsibleSection     a titled section that folds open and shut
-#   add_tooltip_row        a form row whose label and editor share a tooltip
+#   add_tooltip_row        a form row whose label and editor share a tooltip, with a "?"
 #   double_box, int_box    spin boxes in one line
 #   mark_availability      grey out plugins whose optional package is not installed
 #   fill_combo             (re)fill a parameter-path dropdown, keeping the selection
@@ -47,12 +47,19 @@ def int_box(v, lo, hi):
     return s
 
 
-def add_tooltip_row(form, label, widget, tooltip):
-    """Add a form row where both the label and editor explain the parameter."""
+def add_tooltip_row(form, label, widget, tooltip, source="", topic=None):
+    """Add a form row where the label, the editor and a "?" explain the option.
+
+    The "?" shows `tooltip` and `source` (where the option comes from), or,
+    when given, whatever topic `topic()` returns at click time — for a
+    dropdown, the help of the entry selected then.
+    """
+    from ..help import text_topic, with_help
+
     lbl = QLabel(label)
     lbl.setToolTip(tooltip)
     widget.setToolTip(tooltip)
-    form.addRow(lbl, widget)
+    form.addRow(lbl, with_help(widget, topic or (lambda: text_topic(label, tooltip, source))))
 
 
 class CollapsibleSection(QWidget):

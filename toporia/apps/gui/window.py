@@ -40,6 +40,7 @@ from PySide6.QtWidgets import (
 )
 
 from .canvas import LiveCanvas
+from .help import problem_topic, text_topic, with_help
 from .panels import (
     CompareLoadCasesParamsGroup,
     CompareMethodsParamsGroup,
@@ -72,18 +73,35 @@ STEPS = (
     ("Post & Export", "What happens to the finished design: clean-up, measurements and files."),
 )
 
-MODES = (
-    "Run One",
-    "Sweep",
-    "Sweep 2D",
-    "Compare Two",
-    "Compare Load Cases",
-    "Compare Methods",
-    "Sensitivity",
-    "Sensitivity Sweep",
-    "Sensitivity Sweep 2D",
-    "Check Parts",
-)
+#: Every kind of run, with what it does and where it comes from, for the Mode "?".
+MODES = {
+    "Run One": ("One optimisation of the problem as set up in the steps before.",
+                "Toporia's own."),
+    "Sweep": ("One setting stepped through a range of values, one design per value, shown as a grid.",
+              "Toporia's own parameter study."),
+    "Sweep 2D": ("Two settings stepped together, one along the rows and one along the columns.",
+                 "Toporia's own parameter study."),
+    "Compare Two": ("Two designs side by side, differing in one setting.",
+                    "Toporia's own."),
+    "Compare Load Cases": ("Two designs side by side, each optimised for its own set of load cases.",
+                           "Toporia's own."),
+    "Compare Methods": ("The ticked methods on the same problem, mesh, filters and stopping rule, with one "
+                        "image of the designs and one table of results, each design re-analysed the same way.",
+                        "Method comparisons on common benchmarks, e.g. S. Rojas-Labanda, M. Stolpe, "
+                        '"Benchmarking optimization solvers for structural topology optimization", '
+                        "Struct. Multidisc. Optim. 52 (2015) 527-547."),
+    "Sensitivity": ("Two optimisations, at a setting's base value and at base + gap; the change of each "
+                    "element's density divided by the gap, drawn blue to red.",
+                    "Toporia's own: a finite-difference sensitivity of the final design to a setting."),
+    "Sensitivity Sweep": ("The sensitivity above, repeated over a sweep of a second setting.",
+                          "Toporia's own."),
+    "Sensitivity Sweep 2D": ("The sensitivity above, repeated over a two-setting sweep.",
+                             "Toporia's own."),
+    "Check Parts": ("The conformance test on every part of the selected pipeline: its interface, its "
+                    "gradients against finite differences, and a small benchmark.",
+                    "Toporia's own (toporia.checks); gradient checks by finite differences are standard "
+                    "practice for adjoint sensitivities."),
+}
 
 
 class _StopRequested(Exception):
@@ -191,7 +209,7 @@ class MainWindow(QMainWindow):
         self.config_combo.addItems(problem_names())
         self.config_combo.setCurrentText(DEFAULT_PROBLEM)
         self.config_combo.setToolTip("A ready-made problem: loads every step below with its settings.")
-        row.addWidget(self.config_combo)
+        row.addWidget(with_help(self.config_combo, lambda: problem_topic(self.config_combo.currentText())))
         row.addSpacing(24)
 
         self._step_buttons = QButtonGroup(self)
@@ -237,7 +255,7 @@ class MainWindow(QMainWindow):
         mode_row = QHBoxLayout(mode_box)
         mode_row.setContentsMargins(0, 0, 0, 0)
         mode_row.addWidget(QLabel("Mode:"))
-        mode_row.addWidget(self.mode, 1)
+        mode_row.addWidget(with_help(self.mode, self._mode_topic), 1)
 
         self._pages = QStackedWidget()
         pages = (
@@ -342,6 +360,12 @@ class MainWindow(QMainWindow):
         self._next_btn.setEnabled(index < len(STEPS) - 1)
         following = STEPS[index + 1][0] if index < len(STEPS) - 1 else "Next"
         self._next_btn.setText(f"{following}  ›".replace("&", "&&"))
+
+    def _mode_topic(self):
+        """Help on the selected kind of run."""
+        mode = self.mode.currentText()
+        what, source = MODES[mode]
+        return text_topic(f"Mode: {mode}", what, source)
 
     def _show_run_label(self):
         """'▶  Run', naming the mode when it is not a single run."""

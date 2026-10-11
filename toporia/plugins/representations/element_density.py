@@ -20,6 +20,10 @@ class ElementDensity(Representation):
 
     name = "element_density"
     label = "Element densities"
+    reference = (
+        'One density per element: M. P. Bendsoe, Structural Optimization 1 (1989) 193-202;'
+        " Sigmund's 99-line code (2001)."
+    )
     order = 10
     element_wise = True
     dims = (2, 3)

@@ -33,6 +33,10 @@ class Connectivity(PostProcessor):
 
     name = "connectivity"
     label = "Connectivity check"
+    reference = (
+        "Toporia's own check: the connected pieces of the black-and-white design, from the loads to"
+        ' the supports.'
+    )
     order = 20
     table_metrics = ("pieces", "floating_fraction", "loads_connected")
     dims = (2, 3)

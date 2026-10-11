@@ -15,6 +15,9 @@ class Linear(Schedule):
 
     name = "linear"
     label = "Linear ramp"
+    reference = (
+        "Toporia's own: a straight ramp between two values, a common continuation variant."
+    )
     order = 30
     params = (START, END,
               Param("after", 0, "Hold for", "Iterations at the start value before the ramp begins.",

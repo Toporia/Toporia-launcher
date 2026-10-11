@@ -17,6 +17,9 @@ class ExportSVG(PostProcessor):
 
     name = "export_svg"
     label = "Export outline (SVG)"
+    reference = (
+        "Toporia's own export, to the W3C SVG format."
+    )
     order = 50
     table_metrics = ()          # files, not numbers to compare
     params = (SOURCE,)

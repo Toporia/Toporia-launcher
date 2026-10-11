@@ -14,6 +14,8 @@ from toporia.framework import LoadCase, PointConstraint, PointLoad, Scenario
 
 NAME = "Three-Point Bending"
 ORDER = 30
+ABOUT = 'A beam on a pinned and a roller support with a load at the middle of the top edge.'
+REFERENCE = 'The three-point bending test of materials testing, as a full (not halved) beam.'
 
 
 def scenario() -> Scenario:

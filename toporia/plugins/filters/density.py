@@ -25,6 +25,11 @@ class DensityFilter(Filter):
 
     name = "density"
     label = "Density filter"
+    reference = (
+        'T. E. Bruns, D. A. Tortorelli, "Topology optimization of non-linear elastic structures and'
+        ' compliant mechanisms", CMAME 190 (2001) 3443-3459; B. Bourdin, "Filters in topology'
+        ' optimization", IJNME 50 (2001) 2143-2158.'
+    )
     dims = (2, 3)
     order = 10
     params = (RMIN,)
