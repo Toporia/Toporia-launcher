@@ -48,11 +48,12 @@ class CoreParamsGroup(QWidget):
         outer.setContentsMargins(0, 0, 0, 0)
         outer.setSpacing(0)
 
-        core = QGroupBox("Core Parameters")
+        core = QGroupBox("Material budget")
         # The mesh resolution lives in the Design section, with 2-D/3-D.
         self._design = ParamForm(select(SCENARIO_PARAMS, "volfrac"))
         QVBoxLayout(core).addWidget(self._design)
         outer.addWidget(core)
+        self.volume_box = core   # the window may move it to the problem definition
 
         opt = CollapsibleSection("Method", expanded=True)
         selector = QFormLayout()
@@ -87,6 +88,7 @@ class CoreParamsGroup(QWidget):
             section = CollapsibleSection(title, expanded=False)
             section.body_layout.addWidget(form)
             outer.addWidget(section)
+        self.output_section = section   # the window may move it next to the exports
 
         for combo in (self.approach, self.model, self.updater):
             combo.currentIndexChanged.connect(self._on_method_changed)

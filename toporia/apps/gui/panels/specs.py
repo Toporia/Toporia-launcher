@@ -228,7 +228,7 @@ class ConstraintsGroup(SpecListGroup):
     def __init__(self, classes, parent=None):
         super().__init__("Constraints", classes, noun="constraint", parent=parent)
         layout = self._body.layout()
-        budget = QLabel("Volume budget: always enforced (Vol fraction, in Core Parameters).")
+        budget = QLabel("Volume budget: always enforced (Vol fraction, under Material budget).")
         budget.setWordWrap(True)
         self._note = QLabel()
         self._note.setWordWrap(True)
