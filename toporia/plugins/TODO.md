@@ -51,6 +51,8 @@ first, and if a package will not install, reports it rather than working around 
 
 ## Wave 2: BRIDGE, MATLAB codes run unchanged
 
+**Blocked 2026-10-11:** the MATLAB Engine for R2026a supports Python ≤ 3.13 only (engine 26.2 = R2026b is the first for 3.14). Options: a Python 3.13 environment, MATLAB R2026b, or a `matlab -batch` subprocess bridge (final result only). Waiting for the user's choice.
+
 One generic bridge first (MATLAB Engine for Python, `dependencies = ("matlab.engine",)`),
 then each code is a small wrapper that hands it our mesh size, loads, supports and volume.
 Each comes in as a **whole method** (it cannot be split into parts) and as the **oracle** for
