@@ -32,8 +32,8 @@ first, and if a package will not install, reports it rather than working around 
 
 | | Package | Slot | Gives | Licence |
 | :-- | :-- | :-- | :-- | :-- |
-| [ ] | SciPy `trust-constr`, `COBYLA`, … (already a dependency) | updater | more constrained optimisers in the `scipy_slsqp` pattern | BSD |
-| [ ] | NLopt | updater | MMA, CCSA, SLSQP, augmented Lagrangian, COBYLA, … in one wrapper | LGPL/MIT |
+| [x] | SciPy `trust-constr`, `COBYLA`, … (already a dependency) | updater | more constrained optimisers in the `scipy_slsqp` pattern | BSD |
+| [x] | NLopt | updater | MMA, CCSA, SLSQP, augmented Lagrangian, COBYLA, … in one wrapper | LGPL/MIT |
 | [ ] | cyipopt (IPOPT) | updater | interior point | EPL. **Blocked 2026-10-11:** no Windows wheel for Python 3.14; a source build needs pkg-config + IPOPT. Needs conda-forge or an older Python |
 | [ ] | mmapy, Deetman's MMA/GCMMA Python port | updater + oracle for `mma.py` | the reference MMA | GPL-3 *(check; GPL means optional only)* |
 | [ ] | Feppon's null-space optimizer | updater | constrained optimiser for level-set and shape problems | *(unverified)* |
