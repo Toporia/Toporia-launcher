@@ -78,7 +78,23 @@ minimised. This is a solver setting, not a schedule; see
 solver.variants = {"path": "filters[1].eta", "values": [0.75, 0.5, 0.25], "combine": "worst"}
 ```
 
-In the GUI it is the **Variants (robust design)** panel, and its button fills in the robust
+**The ready-made recipe.** The preset **`MBB Beam (Robust)`**
+([`problems/mbb_beam_robust.py`](../problems/mbb_beam_robust.py)) ships all of it: a density
+filter followed by a Heaviside projection, the three η values 0.75 / 0.5 / 0.25 as variants
+(worst case, the intermediate design shown), and the `geometric` schedule on
+`filters[1].beta`, 1 → 64 doubled every 25 iterations. The paper is
+[Wang, Lazarov & Sigmund (2011)](https://doi.org/10.1007/s00158-010-0602-y); the η triplet is
+theirs, the β sequence is the usual doubling continuation rather than a copy of their
+iteration counts. Use it:
+
+- **GUI:** pick `MBB Beam (Robust)` in the problem list; the Variants and Schedules panels
+  are filled in. On any other problem, add a Heaviside filter, press the robust button in
+  the Variants panel, and add a geometric schedule on the Heaviside β.
+- **CLI:** `toporia run "MBB Beam (Robust)"`; `toporia export "MBB Beam (Robust)" DIR` writes
+  the scenario and solver JSON (with `variants` and `schedules`) to edit; to use it on
+  another problem, `toporia run "<problem>" DIR/solver.json`.
+
+Each design costs three physics solves, which the run's solve count shows. In the GUI it is the **Variants (robust design)** panel, and its button fills in the robust
 projection. The same setting covers uncertain loads, e.g. `load_cases[0].Fa` at three
 angles, and an expected value (`"combine": "mean"`).
 

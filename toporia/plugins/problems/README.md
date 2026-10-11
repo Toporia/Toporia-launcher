@@ -5,7 +5,7 @@ material, volume target — plus the solver settings recommended for it. Two run
 a scenario and differ only in their solver are a benchmark, and that comparison is what
 Toporia exists to make.
 
-**Status: 9 in Toporia · 6 open datasets or suites · 2 paper only**
+**Status: 11 in Toporia · 6 open datasets or suites · 1 paper only**
 
 | Label | Meaning |
 | :-- | :-- |
@@ -26,8 +26,13 @@ Toporia exists to make.
 | ✅ Drone arm, camera view | [`drone_arm_camera_view.py`](drone_arm_camera_view.py) | `Drone Arm (Camera View)` |
 | ✅ Drone arm, point loads | [`drone_arm_point_loads.py`](drone_arm_point_loads.py) | `Drone Arm (Point Loads)` |
 | ✅ Michell cantilever | [`michell_cantilever.py`](michell_cantilever.py) | `Michell Cantilever` |
+| ✅ L-bracket | [`l_bracket.py`](l_bracket.py) | `L-bracket` |
+| ✅ MBB beam, robust | [`mbb_beam_robust.py`](mbb_beam_robust.py) | `MBB Beam (Robust)` |
 
-All eight are 2-D compliance problems, which matches what the library can currently solve.
+All are compliance problems, which matches what the library can currently solve (the
+cantilever 3D is the one 3-D case). Run any of them with `toporia run "<menu name>"`;
+`toporia list` shows the names, `--out DIR` chooses the output folder and
+`--set PATH=VALUE` overrides a parameter, e.g. `toporia run "L-bracket" --set m=1`.
 
 The **Michell cantilever** carries a point load to a clamped circular support. Its optimal
 layout is known analytically (Michell 1904: orthogonal spirals leaving the circle at 45°),
@@ -36,6 +41,27 @@ number. The analytical optimum is a truss of infinitely many members, so compare
 rather than exact values. Run every method on it with **Compare Methods** in the GUI, or
 `toporia benchmark --methods q4+oc q4+mma levelset --problems "Michell Cantilever"`.
 
+### L-bracket
+
+A 100 × 100 mm square with the top-right 60 × 60 mm removed (forced empty), so both arms
+are 40 mm wide. The top edge of the vertical arm is clamped and a downward point load acts
+at mid-height of the free end of the horizontal arm; the volume fraction is 0.4. It is the
+standard **stress-concentration benchmark**: the re-entrant corner at (40, 40) is a stress
+singularity that a compliance objective happily leaves sharp, and the case exists to show
+a stress constraint rounding it off (Duysinx & Bendsøe 1998; Le et al. 2010, which use this
+geometry). The preset minimises compliance, which is what `q4+oc` can run:
+`toporia run "L-bracket"`. The stress-limited version needs an updater that accepts a
+second constraint (`q4+pymoto_mma`, see [`responses/`](../responses/README.md)) together
+with `constraints=[{"type": "stress", "limit": ...}]` in the scenario.
+
+### MBB beam, robust
+
+The MBB half-beam again, but every design is evaluated eroded / intermediate / dilated
+(Heaviside η = 0.75 / 0.5 / 0.25) and the worst compliance is minimised, with β doubled
+from 1 to 64. It shows the robust formulation of Wang, Lazarov & Sigmund (2011) end to end:
+`toporia run "MBB Beam (Robust)"`. What it is and how to build it by hand is in the
+[schedules README](../schedules/README.md#several-versions-of-one-design-robust-formulations).
+
 ## 📄 Canonical benchmarks not here yet
 
 Each of these exists specifically to exercise something compliance cannot, so they only
@@ -43,8 +69,24 @@ become useful alongside the matching response in [`responses/`](../responses/REA
 
 | Problem | Reference | What it tests |
 | :-- | :-- | :-- |
-| 📄 L-bracket | Duysinx & Bendsøe, *IJNME* 1998 | The standard stress-concentration benchmark: the re-entrant corner that a compliance objective happily leaves sharp. |
-| 📄 Force inverter | Sigmund, *Mech. Struct. Mach.* 1997 | The standard compliant-mechanism benchmark, and where one-node hinges show up. |
+| 📄 Force inverter | Sigmund, *Mech. Struct. Mach.* 25 (1997) 493–524; Bendsøe & Sigmund, *Topology Optimization* (2003) | The standard compliant-mechanism benchmark, and where one-node hinges show up. |
+
+**Why the force inverter is not a preset.** Its geometry is easy (a symmetry half-domain,
+an input force on one edge, an output on the opposite one), but the objective is to
+*maximise the output displacement against an output spring*, with a spring at the input
+too. Preset geometry alone would silently optimise compliance, which gives a stiff
+structure, the opposite of a mechanism, so it is left out. What is missing:
+
+- an **output-displacement response**: `u_out = lᵀu`, with `l` a unit vector at the output
+  node(s) and the objective `-u_out`;
+- **input and output springs**: stiffnesses `k_in` and `k_out` added to the diagonal of
+  the stiffness matrix at those degrees of freedom (the scenario has no spring type today,
+  only fixed supports and point loads);
+- the **gradient**: one adjoint solve per iteration with `l` as the load, through the
+  physics `adjoint()` and `mutual_energy()` (see
+  [`framework/parts/physics.py`](../../framework/parts/physics.py)), the way the stress
+  response does it; the response is not self-adjoint, so its sensitivities are signed and
+  the usual OC update needs a negative-sensitivity guard (MMA is the safe pairing).
 
 Further standard cases, each tied to a response Toporia does not have yet: half-wheel and
 bridge (compliance, alternative load paths), column (buckling), heat sink (thermal),
