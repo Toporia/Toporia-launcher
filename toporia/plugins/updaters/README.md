@@ -4,7 +4,7 @@ An updater turns a model's `Evaluation` (objective, volume, gradients) into the 
 design. It knows nothing about the physics that produced the numbers, so **every updater
 works with every model** — see [`framework/parts/composition.py`](../../framework/parts/composition.py).
 
-**Status: 16 in Toporia · 7 with open code · 3 paper only**
+**Status: 20 in Toporia · 5 with open code · 3 paper only**
 
 | Label | Meaning |
 | :-- | :-- |
@@ -20,6 +20,9 @@ works with every model** — see [`framework/parts/composition.py`](../../framew
 | ✅ Method of moving asymptotes | [`mma.py`](mma.py) | `mma` | volume only | Convex separable subproblem, solved through its dual by bisection. The field's workhorse. |
 | ✅ Mirror descent (SiMPL) | [`simpl.py`](simpl.py) | `simpl` | volume only | Steps in `logit(x)`, so bounds hold by construction with no clipping. Its multiplier may be zero, so a non-binding volume budget simply does not act. |
 | ✅ BESO, soft kill | [`beso.py`](beso.py) | `beso` | volume only | Binary designs by sensitivity ranking and an evolutionary volume schedule. Brings its own convergence test, because a binary design's max design change never settles. |
+| ✅ BESO, hard kill | [`beso_hard.py`](beso_hard.py) | `beso_hard` | volume only | Soft-kill BESO's code with removed elements set to exactly the void bound; they return only through filtered neighbour sensitivities. See [its section](#beso-hard-kill--beso_hard). |
+| ✅ Adam (augmented Lagrangian) | [`adam.py`](adam.py) | `adam` | volume only | Adam (Kingma & Ba 2015) on the design variables, the budget an augmented-Lagrangian term, bounds by clipping. The updater neural reparameterisations need. See [its section](#adam--adam). |
+| ✅ Proportional topology optimisation | [`pto.py`](pto.py) | `pto` | volume only | Budget handed out in proportion to element energy^q, no multiplier or linearisation. A baseline. See [its section](#proportional-topology-optimisation--pto). |
 | ✅ TOBS (integer LP) | [`tobs.py`](tobs.py) | `tobs` | volume only | Binary designs by sequential integer linear programming: linearise, then flip elements optimally with HiGHS (`scipy.optimize.milp`). Own convergence test, like BESO. |
 | ✅ MMA (pyMOTO) | [`pymoto_optimizers.py`](pymoto_optimizers.py) | `pymoto_mma` | any number | pyMOTO's implementation, for cross-checking ours. Optional dependency. |
 | ✅ GCMMA (pyMOTO) | [`pymoto_optimizers.py`](pymoto_optimizers.py) | `pymoto_gcmma` | any number | Globally convergent MMA with an inner loop, for strongly non-linear responses. Optional dependency. |
@@ -134,6 +137,81 @@ In the GUI, choose **TOBS (integer LP)** among the methods; its parameters (cons
 **Links.** [101-line MATLAB code paper](https://doi.org/10.1007/s00158-020-02719-9) (Picelli,
 Sivapuram, Xie, *SMO* 2021), with code; original method: Sivapuram & Picelli, *FEAD* 139 (2018) 49–61.
 
+## BESO, hard kill — `beso_hard`
+
+**What it does.** Soft-kill BESO's ranking, volume schedule, addition limit and convergence test
+([`beso.py`](beso.py); `beso_hard` subclasses it, nothing is copied), but a removed element is set
+to exactly the void bound (0, so Emin stiffness: to the solver it is absent) instead of `void_density`.
+Under SIMP such an element has no strain energy and so no sensitivity of its own: it can come back only
+through the **filtered** sensitivities of its solid neighbours. The mesh is not literally shrunk (the stiffness
+matrix would change size every iteration).
+
+**When to use it.** To see the hard-kill behaviour that Zhou & Rozvany (2001) criticised: re-admission is decided by
+the filter's smoothing, and with no filter nothing ever returns. With the default density filter it behaves
+like soft kill on the MBB beam (compliance 285.4 against 285.2, OC 274.5).
+
+**How to use it.** `q4+beso_hard` (element densities only, like `beso`).
+
+```
+toporia run "MBB Beam" --set method=q4+beso_hard --set method.er=0.02
+toporia check updater:beso_hard
+```
+
+GUI: choose **BESO (hard kill)** in the Updater picker; the same parameters as BESO except the void density.
+
+**Links.** Huang & Xie, *Evolutionary Topology Optimization of Continuum Structures*, Wiley 2010;
+Zhou & Rozvany, *SMO* 21 (2001) 80–83; [BESO2D (RMIT)](https://www.rmit.edu.au/research/centres-collaborations/centre-for-innovative-structures-and-materials/software),
+[`calculix/beso`](https://github.com/calculix/beso).
+
+## Adam — `adam`
+
+**What it does.** Adam (Kingma & Ba, ICLR 2015) on the design variables, with the volume budget folded in as an
+**augmented-Lagrangian** term (multiplier updated every iteration; switch it off for the plain quadratic penalty
+TOuNN uses). The objective is normalised by its first value so the learning rate means the same on every problem.
+**Bounds by clipping**, not a sigmoid: pinned (passive/void) elements are honoured exactly, a saturated sigmoid
+variable can hardly come back, and projected Adam is what runs on network weights (infinite bounds, so the clip does nothing).
+
+**When to use it.** It is the updater a neural reparameterisation will use, where the variables are weights and
+a constraint cannot be a bound; it also runs on plain element densities. On the MBB beam it lands within 1 % of OC (277.2 vs 274.5),
+but it is a penalty method: the budget is held to a percent or so, not exactly (the plain-density run is tuned for it:
+Adam's usual β₁ = 0.9 ends 7–9 % over the budget, so the default is 0.5), and the learning rate must decay or the design
+never settles under the engine's tolerance.
+
+**How to use it.** `q4+adam`.
+
+```
+toporia run "MBB Beam" --set method=q4+adam --set method.lr=0.05 --set method.penalty=3
+toporia check updater:adam
+```
+
+GUI: **Adam (augmented Lagrangian)** in the Updater picker; parameters learning rate, decay, β₁, β₂, penalty, multiplier update.
+
+**Links.** [Adam, arXiv:1412.6980](https://arxiv.org/abs/1412.6980); [TOuNN](https://link.springer.com/article/10.1007/s00158-020-02748-4)
+(Chandrasekhar & Suresh, *SMO* 63 (2021) 1135–1149); Nocedal & Wright, *Numerical Optimization* §17.4.
+
+## Proportional topology optimisation — `pto`
+
+**What it does.** Each iteration the volume budget is allocated to the elements in proportion to their energy raised to *q*;
+the proportionality constant is found by bisection, so the budget is spent exactly and the cap-and-redistribute loop of the
+paper is covered by the clipping. The old density is partly retained (`relax`) and moves are limited (`move`).
+**Energy proxy:** an `Evaluation` carries no element strain energies, only gradients, so the updater uses the objective gradient
+magnitude −dC/dx, which for compliance under SIMP is the energy times p/x (the PTO papers treat the two as equivalent); no framework change.
+
+**When to use it.** As a baseline: no multiplier, no linearisation, no theory. Undamped it flip-flops and ends 70–100 % above OC; with
+the defaults (q = 3, retained material 0.8) it reaches 287.5 against OC's 274.5 (+4.8 %). Expect noisier convergence than OC: it usually uses all 200 iterations, and the result moves a few percent with
+`q` and `relax`.
+
+**How to use it.** `q4+pto`.
+
+```
+toporia run "MBB Beam" --set method=q4+pto --set method.q=3 --set method.relax=0.2
+toporia check updater:pto
+```
+
+GUI: **Proportional topology optimisation** in the Updater picker; parameters move limit, exponent q, retained material.
+
+**Links.** Biyikli & To, *PLoS ONE* 10 (2015) e0145041; [ptomethod.org](http://www.ptomethod.org).
+
 ## Writing one for an outside optimiser
 
 The full guide, with a worked example of every plugin kind, is
@@ -172,11 +250,8 @@ any other updater, and its own verdict (success, message, its counts) is written
 
 | Updater | Status | Reference | Why it matters |
 | :-- | :-- | :-- | :-- |
-| Hard-kill ESO / BESO variants | 🔗 [BESO2D (RMIT)](https://www.rmit.edu.au/research/centres-collaborations/centre-for-innovative-structures-and-materials/software), [`calculix/beso`](https://github.com/calculix/beso) | Xie & Steven 1993; Huang & Xie 2007, 2010 | Soft kill is implemented here; hard kill removes elements from the mesh entirely. Validity critique worth reading alongside: Zhou & Rozvany, *SMO* 2001. |
 | Floating projection | 📄 | Huang, *CMAME* 2021 | Reaches binary designs from a continuous formulation without a projection filter's β continuation. |
 | Discrete variable sequential approximation | 🔗 DVTOPCRA | Liang & Cheng 2019 | Integer design variables via sequential approximate integer programming. |
-| Adam / L-BFGS on network weights | 🔗 [TOuNN](https://link.springer.com/article/10.1007/s00158-020-02748-4) | Hoyer et al. 2019; Chandrasekhar & Suresh, *SMO* 2021 | What neural reparameterisations use: variables are weights, the volume budget is a penalty rather than a bound. Needed if [`methods/`](../methods/README.md) gains a neural parameterisation. |
-| Proportional topology optimisation | 🔗 [ptomethod.org](http://www.ptomethod.org) | Biyikli & To, *PLoS ONE* 2015 | Non-gradient redistribution, no sensitivities. Useful only as a baseline. |
 | Metaheuristics (GA, SA, ACO) | 🔗 [topASA](https://github.com/Hossein-Rostami/Topology-Optimization-with-adaptive-Simulated-Annealing) | see Sigmund, *SMO* 2011 | Included so the platform can **demonstrate why they lose**: orders of magnitude more function evaluations at far lower resolution. Not a serious candidate. |
 
 ## GPL-3 optimisers: mmapy and nullspace_optimizer

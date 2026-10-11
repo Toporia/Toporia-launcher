@@ -11,7 +11,10 @@ UPDATERS registry.  Modules starting with an underscore are not scanned.
     mma.py                method of moving asymptotes, one volume constraint
     simpl.py              entropic mirror descent on a latent variable (SiMPL)
     beso.py               bi-directional evolutionary ranking, binary designs
-    pymoto_optimizers.py  pyMOTO's MMA and globally convergent GCMMA (optional)
+    beso_hard.py          hard-kill BESO: removed elements at exactly the void bound
+    adam.py               Adam with the volume budget as an augmented Lagrangian
+    pto.py                proportional topology optimisation (baseline)
+    pymoto_optimizers.py pyMOTO's MMA and globally convergent GCMMA (optional)
     mmapy_optimizers.py   Svanberg's MMA and GCMMA via mmapy (optional, GPL-3)
     nullspace.py          Feppon's null-space optimiser (optional, GPL-3, runs its own loop)
 
