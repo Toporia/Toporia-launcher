@@ -4,7 +4,7 @@ An updater turns a model's `Evaluation` (objective, volume, gradients) into the 
 design. It knows nothing about the physics that produced the numbers, so **every updater
 works with every model** — see [`framework/parts/composition.py`](../../framework/parts/composition.py).
 
-**Status: 11 in Toporia · 8 with open code · 3 paper only**
+**Status: 12 in Toporia · 8 with open code · 3 paper only**
 
 | Label | Meaning |
 | :-- | :-- |
@@ -27,6 +27,30 @@ works with every model** — see [`framework/parts/composition.py`](../../framew
 | ✅ CCSAQ (NLopt) | [`nlopt_optimizers.py`](nlopt_optimizers.py) | `nlopt_ccsaq` | any number | NLopt's `LD_CCSAQ`: MMA's globally convergent relative with a quadratic model (Svanberg 2002). Optional dependency. |
 | ✅ SLSQP (NLopt) | [`nlopt_optimizers.py`](nlopt_optimizers.py) | `nlopt_slsqp` | any number | NLopt's `LD_SLSQP` (Kraft 1988), the same algorithm as `scipy_slsqp` from a second implementation. Dense, so coarse meshes only. Optional dependency. |
 | ✅ Augmented Lagrangian + L-BFGS (NLopt) | [`nlopt_optimizers.py`](nlopt_optimizers.py) | `nlopt_auglag` | any number | NLopt's `AUGLAG` with `LD_LBFGS` inside: constraints become penalties with multiplier updates, bound-constrained subproblems are solved by L-BFGS. Optional dependency. |
+| ✅ trust-constr (SciPy) | [`scipy_minimize.py`](scipy_minimize.py) | `scipy_trust_constr` | any number | Trust-region SQP / interior point with exact gradients; see [its entry](#scipy-optimisers-in-scipy_minimizepy). Dense, so coarse meshes only. Within 1 % of OC on the MBB benchmark. |
+
+### SciPy optimisers in `scipy_minimize.py`
+
+One more `scipy.optimize.minimize` method, wrapped like `scipy_slsqp` (the adapter calls
+the library, [`ExternalOptimizer`](../../framework/optimisers/external_loop.py) runs it in a
+background thread). It takes bounds and any number of constraints, and shows up in the GUI
+(Method ▸ Physics model + updater ▸ Updater) and in `toporia list` automatically, with
+its parameters. Pair it with any model, e.g. `q4+scipy_trust_constr`:
+
+```
+toporia run "MBB Beam" --set method=q4+scipy_trust_constr
+```
+
+- **`scipy_trust_constr`**: SciPy's
+  [`trust-constr`](https://docs.scipy.org/doc/scipy/reference/optimize.minimize-trustconstr.html),
+  a trust-region method (Conn, Gould & Toint, *Trust-Region Methods*, SIAM 2000) that
+  handles the volume budget (and a stress limit, if the scenario has one) as a
+  `NonlinearConstraint` with exact Jacobians. The curvature model defaults to SR1: on
+  compliance under SIMP it reached OC's compliance in about 50 iterations where BFGS had not
+  after 200. The objective is scaled to start at 100 for the same reason (measured, see the
+  comment in the file). Parameters: iterations, tolerance, initial trust radius, Hessian.
+
+COBYQA and COBYLA (gradient-free) were tried with the same adapter but are not registered: on the MBB benchmark (192 variables) both end about 50 % above OC after 200 iterations, so they cannot pass the conformance benchmark.
 
 Every updater enforces the volume budget. Only the pyMOTO, SciPy and NLopt updaters can enforce a
 **second** constraint, such as a stress limit: `q4+pymoto_mma` runs a stress-limited
