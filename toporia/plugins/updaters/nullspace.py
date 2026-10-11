@@ -47,6 +47,8 @@
 #   optimization with applications to shape optimization", ESAIM: COCV 26 (2020) 90.
 #   https://gitlab.com/florian.feppon/null-space-optimizer
 
+import warnings
+
 import numpy as np
 
 from toporia.framework.optimisers.external_loop import ExternalOptimizer, Verdict
@@ -66,6 +68,10 @@ def import_nullspace():
         if exc.name != "nullspace_optimizer":
             raise
         raise ImportError(IMPORT_HINT) from exc
+    # The library calls OSQP with options OSQP has since renamed, which warns on every
+    # QP solve (hundreds per run).  Silence only those, only from OSQP itself.
+    warnings.filterwarnings("ignore", category=DeprecationWarning, module=r"osqp\.")
+    warnings.filterwarnings("ignore", category=PendingDeprecationWarning, module=r"osqp\.")
     return nullspace_optimizer
 
 
@@ -139,7 +145,7 @@ class NullspaceUpdater(ExternalOptimizer):
         results = nso.nlspace_solve(problem_class(), {
             "dt": dt, "maxit": int(self.settings["nullspace_maxit"]), "tol": tolerance,
             "itnormalisation": int(self.settings["nullspace_normalise"]),
-            "qp_solver_options": {"polish": 0},   # polishing only prints a note
+            "qp_solver_options": {"polishing": 0},   # polishing only prints a note
             "debug": -2,      # silent: the engine's console is the place for progress
         })
         step = float(results["||dx||"][-1])
