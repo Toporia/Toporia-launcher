@@ -28,7 +28,7 @@ with every representation. Updaters whose rule moves each element's density on i
 with another representation is refused before the run, with the reason. The GUI's Pipeline
 box shows the same reason, and Compare Methods skips the pairing.
 
-**Status: 2 in Toporia · 2 with open code · 3 paper only**
+**Status: 4 in Toporia · 1 with open code · 2 paper only**
 
 | Label | Meaning |
 | :-- | :-- |
@@ -42,6 +42,8 @@ box shows the same reason, and Compare Methods skips the pairing.
 | :-- | :-- | :-- | :-- | :-- |
 | ✅ Element densities | [`element_density.py`](element_density.py) | `element_density` | one density per element; starts uniform at the volume fraction or full (`start`) | Bendsøe, *Struct. Optim.* 1989 |
 | ✅ Moving morphable components | [`mmc.py`](mmc.py) | `mmc` | 5 per bar (centre, half-length, half-thickness, angle); starts as crossing bars in an `n_x × n_y` grid. 2-D only; 3-D components are a candidate | Guo, Zhang & Zhong, *J. Appl. Mech.* 2014 |
+| ✅ Variable-thickness MMC | [`mmc.py`](mmc.py) with `thickness = variable` | `mmc` | the same bars with the half-thickness at both ends and the middle (7 per bar), joined by a parabola, as in MMC188. 2-D only | Zhang, Yuan, Zhang & Guo, *SMO* 2016 |
+| ✅ B-spline field | [`bspline.py`](bspline.py) | `bspline` | the coefficients of a tensor-product B-spline (degree 2 or 3) on a coarse control grid; the density is the spline at the element centres. 2-D and 3-D | Qian, *CMAME* 2013 |
 
 **Using MMC.** Every variable is scaled to [0, 1] across its whole range, so the updater's
 move limit moves a bar a long way. Use `method.move` of about 0.02. With the usual 0.2,
@@ -54,20 +56,82 @@ Differences from the reference code MMC188:
 
 - the union of the bars is a smooth product, not a maximum;
 - the Heaviside is a tanh about one element wide, taken at element centres;
-- a bar's thickness is constant along its length.
+- by default a bar's thickness is constant along its length; `thickness = variable` gives the reference's varying thickness (below).
 
 Each change simplifies the gradient; `toporia check representation:mmc` checks that
 gradient against finite differences.
 
+### Variable-thickness MMC
+
+**What it does.** The same bars as above, but each one can taper or bulge. Its half-thickness
+is given at the left end, the middle and the right end (`t1`, `t2`, `t3`), and the thickness in
+between is the parabola through them, as in MMC188. A bar has 7 variables instead of 5. With
+`t1 = t2 = t3` it is the constant bar, and the default `thickness = constant` is unchanged
+to the bit.
+
+**When to use it.** When tapered members suit the load path (cantilever arms, fans of bars
+at a support), or when the constant-thickness bars cannot reach a good compliance. It has
+more freedom, so it needs more iterations: on the MBB beam (m = 0.5, MMA, move 0.02)
+60 iterations give about 251 and 150 give about 236, against about 234 for constant bars at 60
+(element densities: about 218).
+
+**Paper.** W. Zhang, J. Yuan, J. Zhang, X. Guo, "A new topology optimization approach based on
+Moving Morphable Components (MMC) and the ersatz material model", *Struct. Multidisc. Optim.*
+53 (2016) 1243-1260.
+
+**How to use it.** In a config, `solver.representation = {"type": "mmc", "thickness": "variable"}`.
+In the GUI, pick *Moving morphable components* in the Design representation panel and set
+*Thickness along a bar* to *Varying along the bar*. On the command line:
+
+```
+toporia run "MBB Beam" --set method=q4+mma --set representation.type=mmc \
+    --set representation.thickness=variable --set method.move=0.02 --set max_iter=150
+```
+
+Keep `method.move` at about 0.02, as for constant bars. `toporia check representation:mmc`
+checks the constant form; the varying form's gradient is checked against finite differences
+in `tests/plugins/test_representation.py`.
+
+### B-spline fields
+
+**What it does.** The variables are the coefficients of a tensor-product B-spline on a coarse
+control grid (`n_x` × `n_y`, and `n_z` in 3-D). The element density is the spline evaluated at
+the element centres. That map is linear and fixed, so `backward` is its transpose. The basis
+functions are non-negative and sum to one, so coefficients in [0, 1] give densities in
+[0, 1] with no clipping: a field of ones is all ones, and the start design (every
+coefficient equal to the volume fraction) is that density everywhere.
+
+**When to use it.** For a smooth density field with a built-in length scale and far fewer
+variables than elements: refine the mesh and the problem does not grow. The control grid sets
+the finest feature, so choose it about as fine as the thinnest member you want. The field is
+not made black and white by the representation, so use the usual material law (and a
+projection filter) for that. It works in 2-D and 3-D, and with MMA, GCMMA and SLSQP; element
+updaters (OC, BESO, SiMPL) are refused.
+
+On the MBB beam (MMA, tol 0, 150 iterations) a 36 × 12 grid reaches a compliance of about
+246 with degree 2 and 264 with degree 3 (element densities: about 218 at 60 iterations); a
+24 × 8 grid gives about 297 and stops early on the design-change tolerance.
+
+**Paper.** X. Qian, "Topology optimization in B-spline space", *Comput. Methods Appl. Mech.
+Engrg.* 265 (2013) 15-35.
+
+**How to use it.** In a config, `solver.representation = {"type": "bspline", "n_x": 36, "n_y": 12, "degree": 2}`.
+In the GUI, pick *B-spline field* in the Design representation panel. On the command line:
+
+```
+toporia run "MBB Beam" --set method=q4+mma --set representation.type=bspline \
+    --set representation.n_x=36 --set representation.n_y=12 --set representation.degree=2 \
+    --set tol=0 --set max_iter=150
+```
+
+`toporia check representation:bspline` passes (finite-difference `backward`, a short `q4+mma` run).
 ## Candidates
 
 | Representation | Code | Reference | What it adds |
 | :-- | :-- | :-- | :-- |
 | 📄 Moving morphable voids (MMV) | — | Zhang et al., *CMAME* 2017 | Holes instead of bars, carved out of a solid domain: the dual of MMC. |
-| 🔗 Variable-thickness MMC | MMC188 | Zhang, Yuan, Zhang & Guo, *SMO* 2016 | Thickness varying linearly along each bar (two more variables per bar), as the reference code does. |
 | 🔗 Geometry projection / feature mapping | [GPTO](https://github.com/jnorato/GPTO), [GGP](https://github.com/topggp/GGP-Matlab) | Norato, Bell & Tortorelli, *IJNME* 2015; Wein, Dunning & Norato, *SMO* 2020 (review) | Bars with round ends, projected through a signed distance and a size variable that can switch each bar off. |
 | 📄 Neural-network reparameterisation | — | Hoyer, Sohl-Dickstein & Greydanus, arXiv 2019; Chandrasekhar & Suresh, *SMO* 2021 | Network weights as the variables, its output as the density field: an implicit regulariser. Needs an autodiff library, declared through `dependencies`. |
-| 📄 B-spline fields | — | Qian, *CMAME* 2013 | A smooth field from a few coefficients: built-in length-scale control and few variables. |
 
 ## Writing one
 
@@ -90,4 +154,5 @@ run with `q4+mma`. A worked example (a mirror-symmetric design) is in
 - M. P. Bendsøe, "Optimal shape design as a material distribution problem", *Structural Optimization* 1 (1989) 193–202.
 - X. Guo, W. Zhang, W. Zhong, "Doing topology optimization explicitly and geometrically — a new moving morphable components based framework", *Journal of Applied Mechanics* 81 (2014) 081009.
 - W. Zhang, J. Yuan, J. Zhang, X. Guo, "A new topology optimization approach based on Moving Morphable Components (MMC) and the ersatz material model", *SMO* 53 (2016).
+- X. Qian, "Topology optimization in B-spline space", *Comput. Methods Appl. Mech. Engrg.* 265 (2013) 15-35.
 - J. A. Norato, B. K. Bell, D. A. Tortorelli, "A geometry projection method for continuum-based topology optimization with discrete elements", *IJNME* (2015).

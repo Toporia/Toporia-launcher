@@ -6,7 +6,11 @@ found by the REPRESENTATIONS registry.  A solver names one by type:
 
     element_density.py   one density per element (the classic; the default)
     mmc.py               moving morphable components: bars by position, length,
-                         thickness and angle (Guo, Zhang & Zhong 2014)
+                         thickness and angle (Guo, Zhang & Zhong 2014); with
+                         thickness = variable the thickness changes along each
+                         bar (Zhang, Yuan, Zhang & Guo 2016)
+    bspline.py           a coarse grid of B-spline coefficients, evaluated at the
+                         element centres (Qian 2013)
 """
 
 from toporia.framework.parts.representation import Representation
