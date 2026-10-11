@@ -96,8 +96,8 @@ the matching MAKE item below.
 | [ ] | Adam, proportional TO, simulated annealing | updater | Kingma & Ba 2015; Biyikli & To 2015 |
 | [ ] | Hard-kill BESO, floating projection | updater | Huang & Xie 2010; Huang 2021 |
 | [ ] | Variable-thickness MMC, MMV, B-spline fields | representation | Zhang et al. 2016, 2017; Qian 2013 |
-| [ ] | L-bracket, force inverter | problem | Duysinx & Bendsøe 1998; Sigmund 1997 |
-| [ ] | Robust three-field preset (variants over `heaviside.eta`) | preset | Wang, Lazarov & Sigmund 2011 |
+| [~] | L-bracket, force inverter (L-bracket done; the force inverter needs an output-displacement response with springs) | problem | Duysinx & Bendsøe 1998; Sigmund 1997 |
+| [x] | Robust three-field preset (variants over `heaviside.eta`) | preset | Wang, Lazarov & Sigmund 2011 |
 | [ ] | Compliant mechanism (output displacement, uses `adjoint()`) | response | Sigmund 1997 |
 
 ## Wave 4: MAKE, medium (new physics feature group or whole method)
@@ -126,3 +126,9 @@ the matching MAKE item below.
 
 Fracture, fatigue, crashworthiness, residual stress: research problems, not ports. Julia and
 C++ engines (GridapTopOpt.jl, TopOpt.jl, TopOpt_in_PETSc, MOOSE, OpenLSTO) stay oracles.
+
+## Small fixes noticed on the way
+
+- [ ] The console's `obj=` column prints the change from the first iteration (`engine/loop.py`), which reads as a negative compliance; label it `Δobj` or print the objective.
+- [ ] `model:pymoto_elastic` fails its gradient check (0.62 %) already on 9ced06d: environment change (numpy 2.4 / pymoto 2.0.1?), a separate task.
+- [ ] L-bracket dimensions and load point, and the robust-paper DOI, were written from memory: check against Le et al. 2010 and Wang, Lazarov & Sigmund 2011.
