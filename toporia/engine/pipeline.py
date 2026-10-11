@@ -10,10 +10,14 @@
 # Whole methods (the RBF level set) do not split into parts; for those the
 # chain is the method itself.
 #
+# pipeline_graph() gives the same chain as a network of boxes, for the GUI to draw.
+#
 # pipeline_parts() is the one answer to "which plugins does this run use": the
 # console line, the GUI's Pipeline box, run.json's record of every part and
 # the Check Parts mode all start from it.  A part that comes from another
 # installed package is shown with that package's name and version.
+
+from dataclasses import dataclass, field
 
 from toporia.framework.parts.composition import ComposedMethod, explain
 from toporia.framework.registry import install_hint, missing_dependencies
@@ -325,6 +329,95 @@ def _describe_schedules(run):
     except (KeyError, ValueError, TypeError) as error:
         described = [f"cannot be read: {error}"]
     return [("Schedules", "; ".join(described))] if described else []
+
+
+@dataclass
+class GraphNode:
+    """One box of the pipeline network: a part of the run (or the volume budget, which is not a plugin).
+
+    kind   : "design", "filter", "material", "physics", "method", "objective", "constraint",
+             "budget", "updater" or "postprocessor"
+    title  : what the box is in the chain, e.g. "Filter 2"
+    label  : the part's label, e.g. "Heaviside projection"
+    cls    : the plugin class, or None for what is not a plugin
+    badges : what changes it: schedules ("↻ ...") and variants ("⧉ ...")
+    """
+
+    kind: str
+    title: str
+    label: str
+    cls: object = None
+    badges: list = field(default_factory=list)
+
+
+def pipeline_graph(run):
+    """The run as a network, for drawing: (loop, after).
+
+    `loop` is the iteration as rows of GraphNodes, top to bottom, one row per
+    stage (the responses share a row); the last row's output goes back to the
+    first.  `after` is the post-processing chain applied to the final design.
+    Schedules and variants become badges on the node whose parameter they change.
+    """
+    from toporia.plugins.methods import method_class
+
+    found = registries()
+    method_cls = method_class(run.solver.method)
+    capabilities = method_cls.capabilities
+    keyed = {}
+
+    def node(key, kind, title, cls, label=None):
+        made = GraphNode(kind, title, label or (cls.label if cls is not None else ""), cls)
+        keyed[key] = made
+        return made
+
+    objective_cls = found["response"].get(run.scenario.objective.get("type", "compliance"))
+    responses = [node("objective", "objective", "Objective", objective_cls)]
+    responses += [node(f"constraints[{i}]", "constraint", "Constraint", found["response"].get(spec["type"]))
+                  for i, spec in enumerate(run.scenario.constraints)]
+    responses.append(GraphNode("budget", "Constraint", "Volume budget"))
+
+    if not issubclass(method_cls, ComposedMethod):
+        loop = [[node("method", "method", "Whole method", method_cls)], responses]
+    else:
+        representation = _representation(found, run.solver) if capabilities.accepts_representation else None
+        loop = [[node("representation", "design", "Design", representation,
+                      label=None if representation else f"{capabilities.variable_kind} per element")]]
+        if capabilities.accepts_filters:
+            loop += [[node(f"filters[{i}]", "filter", f"Filter {i + 1}",
+                           found["filter"].get(spec.get("type", "density")))]
+                     for i, spec in enumerate(run.solver.filter_specs)]
+        if capabilities.accepts_interpolation:
+            loop.append([node("interpolation", "material", "Material law",
+                              found["interpolation"].get(run.solver.interpolation.get("type", "simp")))])
+        loop.append([node("model", "physics", "Physics", method_cls.model)])
+        loop.append(responses)
+        loop.append([node("updater", "updater", "Updater", method_cls.updater)])
+
+    def owner(path):
+        prefix, _, name = path.rpartition(".")
+        if prefix == "method":
+            updater = getattr(method_cls, "updater", None)
+            if updater is not None and name in {p.name for p in updater.params}:
+                return keyed.get("updater")
+            return keyed.get("model") or keyed.get("method")
+        return keyed.get(prefix)
+
+    for spec in run.solver.schedules:
+        target = owner(spec.get("path", ""))
+        if target is not None:
+            name = spec["path"].rpartition(".")[2]
+            span = [spec.get("start"), spec.get("end")]
+            moves = " → ".join(f"{v:g}" for v in span) if all(isinstance(v, int | float) for v in span) else ""
+            target.badges.append(f"↻ {name} {moves}".rstrip())
+    variants = run.solver.variants or {}
+    target = owner(variants.get("path", "")) if variants.get("path") else None
+    if target is not None:
+        values = ", ".join(f"{v:g}" for v in variants.get("values", ()))
+        target.badges.append(f"⧉ {variants['path'].rpartition('.')[2]} = {values}")
+
+    after = [GraphNode("postprocessor", f"Step {i + 1}", cls.label, cls)
+             for i, cls in enumerate(found["postprocessor"].get(spec["type"]) for spec in run.output.postprocess)]
+    return loop, after
 
 
 def describe_pipeline(run):

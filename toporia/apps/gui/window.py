@@ -135,7 +135,7 @@ class MainWindow(QMainWindow):
         body.addWidget(self._build_view())
         body.addWidget(self._build_overview())
         body.setStretchFactor(1, 1)
-        body.setSizes([380, 780, 280])
+        body.setSizes([390, 720, 330])
         outer.addWidget(body, 1)
 
         self._wire_panels()
@@ -292,6 +292,12 @@ class MainWindow(QMainWindow):
         layout.setSpacing(8)
         for widget in widgets:
             layout.addWidget(widget)
+        # Long entries (parameter paths, method names) may not widen the sidebar: dropdowns
+        # shrink to the space there is and show the whole entry when opened.
+        for combo in page.findChildren(QComboBox):
+            combo.setSizeAdjustPolicy(QComboBox.AdjustToMinimumContentsLengthWithIcon)
+            combo.setMinimumContentsLength(8)
+        scroll.setHorizontalScrollBarPolicy(Qt.ScrollBarAlwaysOff)
         scroll.setWidget(page)
         return scroll
 
@@ -490,7 +496,7 @@ class MainWindow(QMainWindow):
 
     def _refresh_pipeline(self):
         """Show the chain the current selections describe, and why any part is unavailable."""
-        from toporia.engine.pipeline import pipeline_notes, pipeline_stages
+        from toporia.engine.pipeline import pipeline_graph, pipeline_notes, pipeline_stages
 
         from .config import build_config
 
@@ -509,7 +515,8 @@ class MainWindow(QMainWindow):
                 postprocess=self.post,
                 design=self.design,
             )
-            self.pipeline.show_pipeline(pipeline_stages(cfg), pipeline_notes(cfg.solver.method, cfg))
+            self.pipeline.show_pipeline(pipeline_stages(cfg), pipeline_notes(cfg.solver.method, cfg),
+                                        graph=pipeline_graph(cfg))
         except (ValueError, KeyError) as error:
             self.pipeline.show_pipeline([], [f"Cannot describe this selection: {error}"])
 

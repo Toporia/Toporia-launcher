@@ -397,3 +397,32 @@ def test_a_dropdowns_help_follows_the_selection(window):
     row.load_spec({"type": "heaviside"})
     assert "Guest" in row.type_topic().section("Where it is from")
     window.filters.load_specs([{"type": "density"}])
+
+
+def test_the_pipeline_is_drawn_as_a_network_whose_boxes_explain_themselves(window):
+    from toporia.apps.gui.panels.pipeline import node_topic
+    window._on_config_changed("MBB Beam")
+    window.core.select_method("q4+mma")
+    window._use_robust_projection()
+    window.schedules.load_specs([{"path": "interpolation.penal", "type": "steps", "start": 1.0, "end": 3.0,
+                                  "step": 0.5, "every": 20}])
+    nodes = window.pipeline.graph.nodes()
+    titles = [n.title for n in nodes]
+    assert titles == ["Design", "Filter 1", "Filter 2", "Material law", "Physics", "Objective", "Constraint",
+                      "Updater"]
+    by_title = {n.title: n for n in nodes}
+    assert by_title["Filter 2"].badges == ["⧉ eta = 0.75, 0.5, 0.25"]
+    assert by_title["Material law"].badges == ["↻ penal 1 → 3"]
+    for node in nodes:
+        assert node_topic(node).section("Where it is from")
+    assert "Guest" in node_topic(by_title["Filter 2"]).section("Where it is from")
+
+    window.post.load_specs([{"type": "threshold"}])
+    assert [n.label for n in window.pipeline.graph.nodes()][-1] == "Threshold to black and white"
+    window.core.select_method("levelset")
+    assert window.pipeline.graph.nodes()[0].title == "Whole method"
+    window.post.load_specs([])
+    window.schedules.load_specs([])
+    window.variants.load_spec({})
+    window.filters.load_specs([{"type": "density"}])
+    window.core.select_method("q4+oc")
