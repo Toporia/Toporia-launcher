@@ -8,11 +8,11 @@ fabrication rule and get consistent sensitivities through all three.
 Without a filter, a density method produces checkerboards and a mesh-dependent result.
 This layer is not optional decoration — it is what makes the problem well posed.
 
-**In 3-D** (a scenario with a depth): the density, sensitivity and Heaviside filters work;
+**In 3-D** (a scenario with a depth): the density, PDE, sensitivity and Heaviside filters work;
 the AM overhang, routing and symmetry filters are written for plane problems and are refused
 on a 3-D one, with the filters that can.
 
-**Status: 6 in Toporia · 1 with open code · 15 paper only**
+**Status: 8 in Toporia · 1 with open code · 13 paper only**
 
 | Label | Meaning |
 | :-- | :-- |
@@ -27,6 +27,8 @@ on a 3-D one, with the filters that can.
 | ✅ Density filter | [`filter_density.py`](density.py) | `density` | Bruns & Tortorelli, *CMAME* 2001; Bourdin, *IJNME* 2001 |
 | ✅ Sensitivity filter | [`filter_sensitivity.py`](sensitivity.py) | `sensitivity` | Sigmund, *Struct. Optim.* 1997 |
 | ✅ Heaviside projection, free threshold η | [`filter_heaviside.py`](heaviside.py) | `heaviside` | Guest et al., *IJNME* 2004; `tanh` form from Wang, Lazarov & Sigmund, *SMO* 2011 |
+| ✅ PDE / Helmholtz filter (open code: top82.m) | [`pde.py`](pde.py) | `pde` | Lazarov & Sigmund, *IJNME* 86 (2011) 765–781; Andreassen et al., *SMO* 43 (2011) |
+| ✅ Volume-preserving Heaviside (open code: top99neo) | [`heaviside.py`](heaviside.py), `eta_mode = volume_preserving` | `heaviside` | Xu, Cai & Cheng, *SMO* 41 (2010) 495–505; Ferrari & Sigmund, *SMO* 62 (2020) |
 | ✅ AM overhang filter | [`filter_am.py`](am.py) | `am` | Langelaar, *Addit. Manuf.* 2016; *SMO* 2017 |
 | ✅ Symmetry filter | [`filter_symmetry.py`](symmetry.py) | `symmetry` | standard practice |
 | ✅ Routing radius filter | [`filter_routing.py`](routing.py) | `routing` | Toporia-specific |
@@ -34,13 +36,41 @@ on a 3-D one, with the filters that can.
 The projection already takes an arbitrary threshold η, which is the prerequisite for the
 robust formulation below.
 
+## The PDE filter
+
+[`pde.py`](pde.py) smooths the design by solving `−r²∇²ρ̄ + ρ̄ = ρ` with Neumann
+boundaries on the design mesh (Q4 in 2-D, H8 in 3-D), with `r = rmin / (2√3)`. The FE
+matrix is assembled and factorised once; each iteration is one back-substitution, and
+`backward` is the exact adjoint (the operator is symmetric). It uses the same `rmin` as the
+density filter, so the two compare directly: on the MBB beam with `q4+oc` at `rmin = 3`
+the compliances are close. A constant field passes through unchanged and volume is
+conserved. Like the density filter it does not treat passive elements specially. It is the
+route to anisotropic filters and unstructured meshes.
+
+- Paper: Lazarov & Sigmund, *IJNME* 86 (2011) 765–781. Code: the PDE section of the top88 paper
+  (Andreassen et al., *SMO* 43 (2011)) and DTU's open `top82.m`.
+- GUI: pick **PDE (Helmholtz) filter** in the filter list.
+- Solver config: `"filter_specs": [{"type": "pde", "rmin": 3.0}]`.
+- CLI: `toporia run "MBB Beam" --set method=q4+oc --set 'filter_specs=[{"type": "pde", "rmin": 3.0}]'`
+
+## Volume-preserving Heaviside
+
+The Heaviside projection normally uses a fixed threshold η, which shifts the volume as β
+grows. With `eta_mode = "volume_preserving"` the filter solves for η on every forward pass
+(bisection) so the projected mean density equals the input's, and the backward pass includes
+the derivative of η with respect to the input, so the gradient stays exact. The default
+(`"fixed"`) is unchanged.
+
+- Papers: Xu, Cai & Cheng, *SMO* 41 (2010) 495–505; Ferrari & Sigmund, *SMO* 62 (2020) (open code: `top99neo.m`).
+- GUI: choose **Threshold mode: Volume preserving** on the Heaviside filter.
+- Solver config: `{"type": "heaviside", "eta_mode": "volume_preserving"}` after the density filter.
+- CLI: `toporia run "MBB Beam" --set 'filter_specs=[{"type": "density"}, {"type": "heaviside", "eta_mode": "volume_preserving"}]'`
+
 ## Candidates — regularisation
 
 | Filter | Status | Reference | Why it matters |
 | :-- | :-- | :-- | :-- |
-| PDE / Helmholtz filter | 📄 | Lazarov & Sigmund, *IJNME* 86 (2011) 765–781 | Filtering as a solve of `−r²∇²ρ̄ + ρ̄ = ρ̃` with Neumann boundaries. No neighbour lists and no stored weight matrix, so memory is constant in the radius, it scales to distributed memory, and **it is the only density filter that transfers to unstructured meshes and 3-D** — which matters now that a pyMOTO model exists. Our [`filter_density.py`](density.py) builds an n×n weight matrix in a four-deep Python loop, the slowest part of starting a fine run. |
 | Morphology filters: erode, dilate, open, close | 📄 | Sigmund, *SMO* 33 (2007) 401–424 | Smooth min/max filters that give genuinely black-and-white designs and enforce feature size directly. The smooth min/max machinery already exists in [`filter_am.py`](am.py). |
-| Volume-preserving Heaviside | 📄 | Xu, Cai & Cheng, *SMO* 41 (2010) 495–505 | Adjusts η each iteration so projection does not change the volume. About twenty lines on the existing filter. |
 | Anisotropic / directional filters | 📄 | Lazarov & Sigmund 2011 (PDE form) | Different length scales per direction, for rolled or printed material. Falls out of the PDE filter almost free. |
 | Multi-resolution design and analysis meshes | 📄 | Nguyen, Paulino, Song & Le, *SMO* 2010; Groen et al., *IJNME* 2017 | Fine density field over a coarse FE mesh. Large speed-ups, with a known risk of artificial fine-scale artefacts. |
 

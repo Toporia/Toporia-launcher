@@ -19,6 +19,27 @@
 #
 # Backward pass (pointwise chain rule):
 #   dx = β·sech²(β·(x − η)) / num
+#
+# Volume-preserving mode (eta_mode = "volume_preserving"):
+#   a fixed η makes the projection change the volume (η = 0.5 adds material
+#   where the field is mostly grey above 0.5, and so on), which the optimiser
+#   then has to fight.  Instead η is found on every forward pass so that
+#
+#       mean(projected) = mean(input)
+#
+#   Projected volume falls monotonically as η rises (η = 0 gives a field
+#   above the input, η = 1 one below it), so bisection on [0, 1] always
+#   brackets the root.  The backward pass must include how η moves with the
+#   input.  With p_j = ∂ρ̄_j/∂x_j and S = Σ ∂ρ̄_i/∂η, differentiating the
+#   volume equation gives dη/dx_j = (1 − p_j) / S and so
+#
+#       out_j = s_j·p_j + (Σ_i s_i ∂ρ̄_i/∂η) · (1 − p_j) / S
+#
+#   Sketch:   x ──bisect η──> η(x) ──project──> ρ̄,  mean ρ̄ = mean x
+#
+# References: Xu, Cai & Cheng, SMO 41 (2010) 495-505; Ferrari & Sigmund,
+#   "A new generation 99 line Matlab code ... (top99neo)", SMO 62 (2020)
+#   2211-2228, which solves for η the same way (open code: top99neo.m).
 
 import numpy as np
 
@@ -35,6 +56,8 @@ class HeavisideFilter(Filter):
     eta           : threshold position (0.5 maps x=0.5 → xf=0.5)
     beta_max      : upper limit for beta ramp (32 is a common choice)
     beta_interval : number of iterations between each doubling of beta
+    eta_mode      : "fixed" uses eta as given; "volume_preserving" solves for
+                    eta every pass so the projection keeps the mean density
     """
 
     name = "heaviside"
@@ -50,12 +73,19 @@ class HeavisideFilter(Filter):
               min=1.0, max=512.0, step=8.0, decimals=0),
         Param("beta_interval", 25, "beta interval", "Iterations between each doubling of beta.",
               min=1, max=500),
+        Param("eta_mode", "fixed", "Threshold mode",
+              "Fixed: use the threshold as given. Volume preserving: pick the threshold every "
+              "iteration so the projection does not change the volume (Xu, Cai & Cheng 2010).",
+              choices=(("fixed", "Fixed"), ("volume_preserving", "Volume preserving"))),
     )
 
     schedulable = ("beta", "eta")
 
-    def __init__(self, beta=1.0, eta=0.5, beta_max=32.0, beta_interval=25):
-        self.beta          = float(beta)
+    def __init__(self, beta=1.0, eta=0.5, beta_max=32.0, beta_interval=25, eta_mode="fixed"):
+        if eta_mode not in ("fixed", "volume_preserving"):
+            raise ValueError(f"eta_mode must be 'fixed' or 'volume_preserving', got {eta_mode!r}")
+        self.eta_mode      = eta_mode
+        self.beta         = float(beta)
         self.eta           = float(eta)
         self.beta_max      = float(beta_max)
         self.beta_interval = int(beta_interval)
@@ -67,12 +97,47 @@ class HeavisideFilter(Filter):
             self._beta_scheduled = True
         setattr(self, name, float(value))
 
+    def _project(self, x, e):
+        """The projected field for threshold e (a scalar)."""
+        b   = self.beta
+        num = np.tanh(b * e) + np.tanh(b * (1.0 - e))
+        return (np.tanh(b * e) + np.tanh(b * (x - e))) / num
+
+    def _volume_preserving_eta(self, x):
+        """The threshold at which the projection keeps the mean of x (bisection on [0, 1])."""
+        target, lo, hi = float(np.mean(x)), 0.0, 1.0
+        for _ in range(60):
+            mid = 0.5 * (lo + hi)
+            if np.mean(self._project(x, mid)) > target:
+                lo = mid        # too much material: raise the threshold
+            else:
+                hi = mid
+        return 0.5 * (lo + hi)
+
+    def _d_eta(self, x, e):
+        """∂(projected)/∂η, elementwise, at threshold e."""
+        b = self.beta
+        t0, t1, tx = np.tanh(b * e), np.tanh(b * (1.0 - e)), np.tanh(b * (x - e))
+        num  = t0 + t1
+        dnum = b * ((1.0 - t0 ** 2) - (1.0 - t1 ** 2))
+        dtop = b * ((1.0 - t0 ** 2) - (1.0 - tx ** 2))
+        return (dtop * num - (t0 + tx) * dnum) / num ** 2
+
     def forward(self, x):
+        if self.eta_mode == "volume_preserving":
+            self.eta = self._volume_preserving_eta(x)    # kept so a run can report it
         b, e = self.beta, self.eta
         num  = np.tanh(b * e) + np.tanh(b * (1.0 - e))
         return (np.tanh(b * e) + np.tanh(b * (x - e))) / num
 
     def backward(self, x_in, sensitivity):
+        if self.eta_mode == "volume_preserving":
+            b   = self.beta
+            e   = self._volume_preserving_eta(x_in)   # x_in is what entered forward(): the same root
+            num = np.tanh(b * e) + np.tanh(b * (1.0 - e))
+            p   = b * (1.0 - np.tanh(b * (x_in - e)) ** 2) / num
+            d_eta = self._d_eta(x_in, e)
+            return sensitivity * p + np.sum(sensitivity * d_eta) * (1.0 - p) / np.sum(d_eta)
         b, e = self.beta, self.eta
         num  = np.tanh(b * e) + np.tanh(b * (1.0 - e))
         dx   = b * (1.0 - np.tanh(b * (x_in - e)) ** 2) / num
