@@ -8,11 +8,11 @@ fabrication rule and get consistent sensitivities through all three.
 Without a filter, a density method produces checkerboards and a mesh-dependent result.
 This layer is not optional decoration — it is what makes the problem well posed.
 
-**In 3-D** (a scenario with a depth): the density, PDE, sensitivity, Heaviside and morphology filters work;
+**In 3-D** (a scenario with a depth): the density, PDE, sensitivity, Heaviside, morphology, extrusion, pattern and casting filters work;
 the AM overhang, routing and symmetry filters are written for plane problems and are refused
 on a 3-D one, with the filters that can.
 
-**Status: 9 in Toporia · 1 with open code · 12 paper only**
+**Status: 12 in Toporia · 1 with open code · 9 paper only**
 
 | Label | Meaning |
 | :-- | :-- |
@@ -33,6 +33,9 @@ on a 3-D one, with the filters that can.
 | ✅ Symmetry filter | [`filter_symmetry.py`](symmetry.py) | `symmetry` | standard practice |
 | ✅ Routing radius filter | [`filter_routing.py`](routing.py) | `routing` | Toporia-specific |
 | ✅ Morphology filters: erode, dilate, open, close | [`morphology.py`](morphology.py) | `morphology` | Sigmund, *SMO* 33 (2007) 401–424 |
+| ✅ Extrusion (constant cross-section) | [`extrusion.py`](extrusion.py) | `extrusion` | Ishii & Aomura, *JSME Int. J.* 47 (2004) |
+| ✅ Pattern repetition | [`pattern.py`](pattern.py) | `pattern` | Bendsøe & Sigmund, *Topology Optimization*, Springer 2003; Almeida, Paulino & Silva, *SMO* 39 (2009) |
+| ✅ Casting (no undercuts) | [`casting.py`](casting.py) | `casting` | Gersborg & Andreasen, *SMO* 44 (2011) 875–881; Xia et al., *CMAME* 2010 |
 
 The projection already takes an arbitrary threshold η, which is the prerequisite for the
 robust formulation below.
@@ -91,6 +94,63 @@ it shapes feature size rather than binarising, so combine it with Heaviside if y
 - Solver config: `"filter_specs": [{"type": "density", "rmin": 3.0}, {"type": "morphology", "rmin": 2.0, "beta": 16.0, "mode": "close"}]`.
 - CLI: `toporia run "MBB Beam" --set method=q4+oc --set 'filter_specs=[{"type": "density", "rmin": 3.0}, {"type": "morphology", "rmin": 2.0, "beta": 16.0, "mode": "close"}]'`
 
+## Extrusion, pattern repetition and casting
+
+Three manufacturing rules that are cheap to impose on a density field. The first two are
+averages over a set of elements broadcast back — the same linear, self-adjoint operator as
+[`symmetry.py`](symmetry.py) — and the third is a directional sweep in the spirit of
+[`am.py`](am.py). None treats passive or void elements specially (as the symmetry filter
+does not): the model re-imposes them on the physical density afterwards. All three work in
+2-D and 3-D, and go after the density filter in the chain.
+
+### Extrusion
+
+[`extrusion.py`](extrusion.py) makes the density constant along one axis: each line of
+elements parallel to it carries the line's mean (forward = average and broadcast, backward =
+the same operation, its exact adjoint). Use it in 3-D for a part of constant cross-section
+(an extruded or rolled profile). In 2-D, "constant along x" means a design made of
+full-length strips and "constant along y" of full-height columns — rarely a good structure,
+but it is the cross-section of the 3-D idea and handy for teaching.
+
+- Paper: Ishii & Aomura, "Topology optimization for the extruded three dimensional structure
+  with constant cross section", *JSME Int. J. Series A* 47 (2004) 198–206.
+- GUI: pick **Extrusion (constant cross-section)** in the filter list and choose the axis.
+- Solver config: `"filter_specs": [{"type": "density"}, {"type": "extrusion", "axis": "z"}]`
+  (`z` needs a 3-D problem).
+- CLI: `toporia run "MBB Beam" --set method=q4+oc --set 'filter_specs=[{"type": "density"}, {"type": "extrusion", "axis": "y"}]'`
+
+### Pattern repetition
+
+[`pattern.py`](pattern.py) folds the domain into `nx × ny (× nz)` identical cells: elements
+at the same place in their cell share one density, their mean. Use it for repeating
+structures (a truss bay, a lattice unit). The element count along each axis must divide by
+the number of repeats; otherwise setup refuses with an error naming the axis and count
+(cells of unequal size would not be identical, and dropping a remainder would change the
+problem) — adjust the mesh resolution or the domain length.
+
+- Papers: Bendsøe & Sigmund, *Topology Optimization: Theory, Methods and Applications*,
+  Springer 2003; Almeida, Paulino & Silva, *SMO* 39 (2009) 359–371.
+- GUI: pick **Pattern repetition** and set the repeats in x, y (and z).
+- Solver config: `"filter_specs": [{"type": "density"}, {"type": "pattern", "nx": 2, "ny": 1}]`
+- CLI: `toporia run "MBB Beam" --set method=q4+oc --set 'filter_specs=[{"type": "density"}, {"type": "pattern", "nx": 2}]'`
+
+### Casting (no undercuts)
+
+[`casting.py`](casting.py) keeps the design castable in a one-piece mould: along the draw
+direction the density may only decrease, away from the parting plane. It is the running
+minimum along each line, smoothed (`ρ_k = smin(x_k, ρ_{k−1})`) so the gradient is exact,
+by one reverse sweep. The output is monotone to within √ε/2 = 5·10⁻⁴ (the smoothing).
+`"+y"` means the mould is drawn off toward +y, so the parting plane is the low-y face; `-y`
+the reverse; likewise x, and z in 3-D. This is the cumulative smooth-minimum form of the
+explicit casting parameterisation, not Xia et al.'s level-set formulation.
+
+- Papers: Gersborg & Andreasen, "An explicit parameterization for casting constraints in
+  gradient driven topology optimization", *SMO* 44 (2011) 875–881; Xia, Shi, Wang & Liu,
+  *CMAME* 2010.
+- GUI: pick **Casting (no undercuts)** and choose the draw direction.
+- Solver config: `"filter_specs": [{"type": "density"}, {"type": "casting", "direction": "+y"}]`
+- CLI: `toporia run "MBB Beam" --set method=q4+oc --set 'filter_specs=[{"type": "density"}, {"type": "casting", "direction": "+y"}]'`
+
 ## Candidates — regularisation
 
 | Filter | Status | Reference | Why it matters |
@@ -108,7 +168,7 @@ it shapes feature size rather than binarising, so combine it with Heaviside if y
 
 ## Candidates — fabrication
 
-The AM overhang filter is implemented. Everything else in this table is a manufacturing
+The AM overhang, extrusion, pattern-repetition and casting filters are implemented. Everything else in this table is a manufacturing
 rule Toporia cannot yet express, and this is where commercial "generative design" tools
 actually differentiate.
 
@@ -116,10 +176,7 @@ actually differentiate.
 | :-- | :-- | :-- | :-- |
 | Projection-based self-support | 📄 | Gaynor & Guest, *SMO* 2016 | An alternative overhang treatment to Langelaar's layer-wise filter; worth having both to compare. |
 | Enclosed void / powder removal | 📄 | Li et al., *SMO* 2016; Liu et al. 2015 | A virtual temperature field that only heats up inside disconnected voids, penalised to zero. Cheap and elegant. |
-| Casting and moulding directionality | 📄 | Xia, Shi, Wang & Liu, *CMAME* 2010; Guest & Zhu 2012 | No undercuts relative to a parting direction: a monotone projection along the draw axis. |
 | Machining accessibility | 📄 | Langelaar, *CAD* 2019; Lee, Nomura & Dede 2020 | Every solid point reachable by a tool from an allowed set of directions. A generalisation of the AM filter's directional sweep. |
-| Extrusion / 2.5-D milling | 📄 | Ishii & Aomura 2004 | Density constant along one axis — structurally the same operator as [`filter_symmetry.py`](symmetry.py). |
-| Pattern repetition | 📄 | Bendsøe & Sigmund, *Topology Optimization*, Springer 2003 | Folds the design onto a repeating unit. Same machinery as the symmetry filter. |
 | Residual stress / distortion aware | 📄 | Allaire & Jakabčin 2018; Miki & Yamada, *FEAD* 2021 | An inherent-strain model of the build inside the loop, so the *printed* shape is optimised rather than the designed one. |
 | Fibre orientation for composites | 🔗 FRC-TOuNN | Chandrasekhar, Sridhara & Suresh, *CAD* 2022 | Continuous fibre angle alongside density; the angle field itself needs regularising for printable tow paths. |
 
