@@ -19,6 +19,7 @@ line.
 | change or extend Toporia, starting today | [docs/quickstart.md](docs/quickstart.md) |
 | understand how the code fits together | [toporia/README.md](toporia/README.md) |
 | add any kind of part, with a worked example of each | [docs/writing-plugins.md](docs/writing-plugins.md) |
+| see every code in the library, where it comes from, and what is still to add | [toporia/plugins/LIBRARY.md](toporia/plugins/LIBRARY.md) |
 | see what exists in the field, and what is here | [toporia/plugins/README.md](toporia/plugins/README.md) |
 
 ## What is implemented, and what is not
