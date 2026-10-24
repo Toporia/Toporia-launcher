@@ -32,8 +32,9 @@ class SensitivityFilter(Filter):
     name = "sensitivity"
     label = "Sensitivity filter"
     reference = (
-        "Sigmund's heuristic sensitivity filter (Struct. Optim. 1997), as in the 99-line code"
-        ' (Sigmund 2001) and top88 (Andreassen et al. 2011).'
+        'O. Sigmund, "On the design of compliant mechanisms using topology optimization", Mech.'
+        ' Struct. Mach. 25 (1997) 493-524; as in the 99-line code (Sigmund 2001) and top88'
+        ' (Andreassen et al. 2011).'
     )
     dims = (2, 3)
     order = 20

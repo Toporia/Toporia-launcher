@@ -31,7 +31,7 @@ different answer to "what *is* the design?".
 
 | Method | File | Name | Reference |
 | :-- | :-- | :-- | :-- |
-| ✅ RBF level set | [`levelset_rbf.py`](levelset_rbf.py) | `levelset` | Wang & Wang, *CMAME* 2006 |
+| ✅ RBF level set | [`levelset_rbf.py`](levelset_rbf.py) | `levelset` | Wang & Wang, *IJNME* 2006; TOPRBF code: Wei, Li, Li & Wang, *SMO* 2018 |
 
 Older names are still accepted and expand through `PRESETS` in
 [`__init__.py`](__init__.py): `density` → `q4+oc`, `density_mma` → `q4+mma`,

@@ -25,7 +25,7 @@ on a 3-D one, with the filters that can.
 | Filter | File | Registry name | Reference |
 | :-- | :-- | :-- | :-- |
 | ✅ Density filter | [`filter_density.py`](density.py) | `density` | Bruns & Tortorelli, *CMAME* 2001; Bourdin, *IJNME* 2001 |
-| ✅ Sensitivity filter | [`filter_sensitivity.py`](sensitivity.py) | `sensitivity` | Sigmund, *Struct. Optim.* 1997 |
+| ✅ Sensitivity filter | [`filter_sensitivity.py`](sensitivity.py) | `sensitivity` | Sigmund, *Mech. Struct. Mach.* 1997 |
 | ✅ Heaviside projection, free threshold η | [`filter_heaviside.py`](heaviside.py) | `heaviside` | Guest et al., *IJNME* 2004; `tanh` form from Wang, Lazarov & Sigmund, *SMO* 2011 |
 | ✅ AM overhang filter | [`filter_am.py`](am.py) | `am` | Langelaar, *Addit. Manuf.* 2016; *SMO* 2017 |
 | ✅ Symmetry filter | [`filter_symmetry.py`](symmetry.py) | `symmetry` | standard practice |

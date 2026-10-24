@@ -154,7 +154,10 @@ class PymotoElasticModel(Model):
                 domain, bc=self._fixed_dofs(domain), e_modulus=1.0,
                 poisson_ratio=scenario.nu, plane="stress",
             )(s_stiffness)
-            s_u = pym.LinSolve()(s_K, s_f)
+            # pyMOTO would pick PARDISO when pypardiso happens to be installed, which
+            # changes the results and their gradients slightly; SciPy's exact sparse LU
+            # is what it uses otherwise, so pin it and get the same run everywhere.
+            s_u = pym.LinSolve(solver=pym.solvers.SolverSparseLU())(s_K, s_f)
             s_per_case = pym.EinSum("ij,ij->j")(s_u, s_f)   # compliance per load case
             self.s_compliance = pym.EinSum("j,j->")(s_per_case, s_w)
             self.s_volume = pym.EinSum("i->")(s_physical)

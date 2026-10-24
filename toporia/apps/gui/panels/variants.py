@@ -15,7 +15,7 @@ from .common import CollapsibleSection, add_tooltip_row, double_box, fill_combo,
 ROBUST = ('Robust formulation: F. Wang, B. S. Lazarov, O. Sigmund, "On projection methods, convergence '
           'and robust formulations in topology optimization", Struct. Multidisc. Optim. 43 (2011) 767-784.')
 KS = ('Smooth maximum (the Kreisselmeier-Steinhauser function): G. Kreisselmeier, R. Steinhauser, '
-      '"Systematic control design by optimizing a vector performance index", IFAC Proceedings 12 (1979).')
+      '"Systematic control design by optimizing a vector performance index", IFAC Proc. Vol. 12(7) (1979) 113-117.')
 
 
 class VariantsGroup(QWidget):
