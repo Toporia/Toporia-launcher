@@ -69,6 +69,10 @@ class MorphologyFilter(Filter):
     """
 
     name = "morphology"
+    reference = (
+        'O. Sigmund, "Morphology-based black and white filters for topology optimization", '
+        'Struct. Multidisc. Optim. 33 (2007) 401-424.'
+    )
     label = "Morphology filter (erode / dilate / open / close)"
     dims = (2, 3)
     order = 35

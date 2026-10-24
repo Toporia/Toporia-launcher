@@ -21,6 +21,10 @@ from . import mbb_beam
 
 NAME = "MBB Beam (Robust)"
 ORDER = 15
+ABOUT = ('The MBB beam solved robustly: the worst of the eroded, intermediate and dilated designs'
+         ' (Heaviside thresholds 0.75 / 0.5 / 0.25), with a doubling continuation of the sharpness.')
+REFERENCE = ('F. Wang, B. S. Lazarov and O. Sigmund, "On projection methods, convergence and robust'
+             ' formulations in topology optimization", Struct. Multidisc. Optim. 43 (2011) 767-784.')
 
 
 def scenario():

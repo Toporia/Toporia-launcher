@@ -34,6 +34,11 @@ class PatternFilter(Filter):
     """
 
     name = "pattern"
+    reference = (
+        'M. P. Bendsoe and O. Sigmund, Topology Optimization, Springer 2003; S. R. M. de '
+        'Almeida, G. H. Paulino and E. C. N. Silva, Struct. Multidisc. Optim. 39 (2009) '
+        '359-371.'
+    )
     label = "Pattern repetition"
     order = 80
     dims = (2, 3)

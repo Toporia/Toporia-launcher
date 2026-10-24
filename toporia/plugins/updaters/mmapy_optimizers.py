@@ -74,6 +74,11 @@ class MmapyMMAUpdater(Updater):
     """Svanberg's method of moving asymptotes, as ported by mmapy, with any number of constraints."""
 
     name = "mmapy_mma"
+    reference = (
+        'K. Svanberg, "The method of moving asymptotes", Int. J. Numer. Meth. Eng. 24 (1987) '
+        '359-373, through the mmapy Python port by A. Deetman '
+        '(github.com/arjendeetman/GCMMA-MMA-Python, GPL-3).'
+    )
     label = "MMA (mmapy)"
     order = 32
     params = (MOVE,)
@@ -116,6 +121,12 @@ class MmapyGCMMAUpdater(Updater):
     """Svanberg's globally convergent MMA, as ported by mmapy: inner iterations until conservative."""
 
     name = "mmapy_gcmma"
+    reference = (
+        'K. Svanberg, "A class of globally convergent optimization methods based on '
+        'conservative convex separable approximations", SIAM J. Optim. 12 (2002) 555-573, '
+        'through the mmapy Python port by A. Deetman '
+        '(github.com/arjendeetman/GCMMA-MMA-Python, GPL-3).'
+    )
     label = "GCMMA (mmapy)"
     order = 42
     params = (MOVE,)

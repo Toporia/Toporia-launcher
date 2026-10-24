@@ -80,6 +80,11 @@ class SmoothOutline(PostProcessor):
     """The contour of the design fitted with smooth curves, as SVG and DXF in millimetres."""
 
     name = "smooth_outline"
+    reference = (
+        'Smoothing of extracted outlines as reviewed in Subedi et al., J. Comput. Inf. Sci. '
+        'Eng. (2020); periodic smoothing splines (SciPy splprep) or Chaikin corner cutting '
+        '(Chaikin 1974).'
+    )
     label = "Smooth outline (SVG + DXF)"
     order = 55
     table_metrics = ()          # files, not numbers to compare

@@ -69,6 +69,10 @@ class ScipyTrustConstr(ExternalOptimizer):
     """SciPy's trust-constr: trust-region SQP / interior point, any number of constraints."""
 
     name = "scipy_trust_constr"
+    reference = (
+        "SciPy's trust-constr (scipy.optimize.minimize); A. R. Conn, N. I. M. Gould and P. L. "
+        'Toint, Trust-Region Methods, SIAM 2000.'
+    )
     label = "trust-constr (SciPy)"
     order = 71
     params = (

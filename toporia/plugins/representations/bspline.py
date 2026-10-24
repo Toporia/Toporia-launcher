@@ -63,6 +63,10 @@ class BSplineField(Representation):
     """The element density is a tensor-product B-spline of a coarse grid of coefficients."""
 
     name = "bspline"
+    reference = (
+        'X. Qian, "Topology optimization in B-spline space", Comput. Methods Appl. Mech. Eng. '
+        '265 (2013) 15-35.'
+    )
     label = "B-spline field"
     order = 30
     element_wise = False

@@ -169,6 +169,10 @@ class NLoptMMA(_CCSAFamily):
     """NLopt's MMA (Svanberg), with the conservative-approximation safeguard of the 2002 paper."""
 
     name = "nlopt_mma"
+    reference = (
+        'NLopt LD_MMA (S. G. Johnson, github.com/stevengj/nlopt); K. Svanberg, Int. J. Numer. '
+        'Meth. Eng. 24 (1987) 359-373 and SIAM J. Optim. 12 (2002) 555-573.'
+    )
     label = "MMA (NLopt)"
     order = 80
     algorithm = "LD_MMA"
@@ -178,6 +182,10 @@ class NLoptCCSAQ(_CCSAFamily):
     """NLopt's CCSA with a quadratic model: MMA's globally convergent relative (Svanberg 2002)."""
 
     name = "nlopt_ccsaq"
+    reference = (
+        'NLopt LD_CCSAQ (S. G. Johnson, github.com/stevengj/nlopt); K. Svanberg, SIAM J. '
+        'Optim. 12 (2002) 555-573.'
+    )
     label = "CCSAQ (NLopt)"
     order = 81
     algorithm = "LD_CCSAQ"
@@ -187,6 +195,10 @@ class NLoptSLSQP(NLoptOptimizer):
     """NLopt's SLSQP (Kraft 1988): sequential quadratic programming with a dense quasi-Newton matrix."""
 
     name = "nlopt_slsqp"
+    reference = (
+        'NLopt LD_SLSQP (S. G. Johnson, github.com/stevengj/nlopt); D. Kraft, "A software '
+        'package for sequential quadratic programming", DFVLR-FB 88-28, 1988.'
+    )
     label = "SLSQP (NLopt)"
     order = 82
     algorithm = "LD_SLSQP"
@@ -197,6 +209,11 @@ class NLoptAugLag(NLoptOptimizer):
     """NLopt's augmented Lagrangian: the constraints become penalties, L-BFGS solves each bound-constrained subproblem."""
 
     name = "nlopt_auglag"
+    reference = (
+        'NLopt AUGLAG with LD_LBFGS (S. G. Johnson, github.com/stevengj/nlopt); A. R. Conn, '
+        'N. I. M. Gould and P. L. Toint, SIAM J. Numer. Anal. 28 (1991) 545-572; E. G. Birgin '
+        'and J. M. Martinez, Optim. Methods Softw. 23 (2008) 177-195.'
+    )
     label = "Augmented Lagrangian + L-BFGS (NLopt)"
     order = 83
     algorithm = "AUGLAG"

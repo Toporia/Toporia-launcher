@@ -52,6 +52,11 @@ class CastingFilter(Filter):
     _EPS = 1e-6     # smoothing of the min; sets the monotonicity tolerance sqrt(eps)/2
 
     name = "casting"
+    reference = (
+        'A. R. Gersborg and C. S. Andreasen, "An explicit parameterization for casting '
+        'constraints in gradient driven topology optimization", Struct. Multidisc. Optim. 44 '
+        '(2011) 875-881.'
+    )
     label = "Casting (no undercuts)"
     order = 90
     dims = (2, 3)

@@ -48,6 +48,10 @@ class PTOUpdater(Updater):
     """Proportional topology optimisation: material allocated in proportion to element energy^q."""
 
     name = "pto"
+    reference = (
+        'E. Biyikli and A. C. To, "Proportional topology optimization: a new non-sensitivity '
+        'method for structural optimization", PLoS ONE 10 (2015) e0145041 (ptomethod.org).'
+    )
     label = "Proportional topology optimisation"
     order = 80
     params = (

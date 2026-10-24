@@ -60,6 +60,12 @@ class MultiConstraintOC(Updater):
     """Optimality criteria with a multiplier per constraint, found by cyclic bisection."""
 
     name = "oc_multi"
+    reference = (
+        'Optimality criteria with one multiplier per constraint, after M. Zhou and G. I. N. '
+        'Rozvany, "The COC algorithm, Part II: Topological, geometrical and generalized shape '
+        'optimization", Comput. Methods Appl. Mech. Eng. 89 (1991) 309-336; Toporia\'s own '
+        'version.'
+    )
     label = "Optimality criteria, several constraints"
     order = 15
     params = (

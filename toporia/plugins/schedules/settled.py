@@ -25,6 +25,11 @@ class Settled(Schedule):
     """start, then x factor (or + step) each time the design settles, up to end."""
 
     name = "settled"
+    reference = (
+        'Continuation raised when the design has settled, common practice in the projection '
+        'literature, e.g. F. Wang, B. S. Lazarov and O. Sigmund, Struct. Multidisc. Optim. 43 '
+        "(2011) 767-784; Toporia's own rule."
+    )
     label = "When the design settles"
     order = 40
     params = (START,

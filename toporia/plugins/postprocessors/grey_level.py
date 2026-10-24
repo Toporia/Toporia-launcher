@@ -30,6 +30,10 @@ class GreyLevel(PostProcessor):
     """The measure of non-discreteness M_nd in percent, final and over the iterations."""
 
     name = "grey_level"
+    reference = (
+        'The measure of non-discreteness of O. Sigmund, "Morphology-based black and white '
+        'filters for topology optimization", Struct. Multidisc. Optim. 33 (2007) 401-424.'
+    )
     label = "Grey level (M_nd) over the run"
     order = 20
     table_metrics = ("final_pct", "peak_pct")

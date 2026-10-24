@@ -507,3 +507,30 @@ def test_sweep_methods_puts_the_methods_down_the_rows_and_a_setting_across(windo
     assert all(r["status"] == "ran" for r in rows)
     window.msg.set_selected(window.msg.DEFAULT)
     window.mode.setCurrentText("Run One")
+
+
+# ── Every part can be picked: nothing registered is out of reach of the GUI ────────────────
+
+def _menu_texts(window):
+    """Every entry of every drop-down and list in the window."""
+    texts = set()
+    for combo in window.findChildren(QtWidgets.QComboBox):
+        texts.update(combo.itemText(i).strip() for i in range(combo.count()))
+    for widget in window.findChildren(QtWidgets.QListWidget):
+        texts.update(widget.item(i).text().strip() for i in range(widget.count()))
+    return "\n".join(texts)
+
+
+def test_every_registered_part_and_preset_can_be_picked_in_the_gui(window):
+    import importlib
+    window.post._add_row()                          # the post-processor and schedule lists build
+    window._on_config_changed("MBB Beam (Robust)")  # their drop-downs per row; a robust preset
+    window.schedules._add_row()                     # has schedulable paths, so a row can be added
+    texts = _menu_texts(window)
+    missing = [f"{package}:{cls.name}"
+               for package in REGISTRIES
+               for cls in getattr(importlib.import_module(f"toporia.plugins.{package}"),
+                                  package.upper()).classes()
+               if (cls.label or cls.name) not in texts and cls.name not in texts]
+    missing += [f"problem:{name}" for name in problem_names() if name not in texts]
+    assert not missing, f"not reachable from the GUI: {missing}"

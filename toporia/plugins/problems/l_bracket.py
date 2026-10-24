@@ -32,6 +32,11 @@ from toporia.framework import EdgeConstraint, EnforcedArea, LoadCase, PointLoad,
 
 NAME = "L-bracket"
 ORDER = 70
+ABOUT = ('An L-shaped plate clamped along its top edge and loaded at the tip of its lower arm: the'
+         ' standard stress benchmark, where a compliance design leaves the re-entrant corner sharp.')
+REFERENCE = ('P. Duysinx and M. P. Bendsoe, Int. J. Numer. Meth. Eng. 43 (1998) 1453-1478; C. Le, J.'
+             ' Norato, T. Bruns, C. Ha and D. Tortorelli, Struct. Multidisc. Optim. 41 (2010) 605-620.'
+             ' Dimensions as commonly used, not checked against the papers.')
 
 
 def scenario() -> Scenario:

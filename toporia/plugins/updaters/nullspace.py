@@ -113,6 +113,12 @@ class NullspaceUpdater(ExternalOptimizer):
     """Feppon's null-space optimiser: constraints followed, not penalised; any number of them."""
 
     name = "nullspace"
+    reference = (
+        'F. Feppon, G. Allaire and C. Dapogny, "Null space gradient flows for constrained '
+        'optimization with applications to shape optimization", ESAIM: COCV 26 (2020) 90, '
+        'through the nullspace_optimizer package '
+        '(gitlab.com/florian.feppon/null-space-optimizer, GPL-3).'
+    )
     label = "Null-space optimiser"
     order = 80
     dependencies = ("nullspace_optimizer",)

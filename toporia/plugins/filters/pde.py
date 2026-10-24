@@ -77,6 +77,12 @@ class PdeFilter(Filter):
     """
 
     name = "pde"
+    reference = (
+        'B. S. Lazarov and O. Sigmund, "Filters in topology optimization based on '
+        'Helmholtz-type differential equations", Int. J. Numer. Meth. Eng. 86 (2011) 765-781; '
+        'implemented as in the PDE-filter variant of top88 (Andreassen et al., Struct. '
+        'Multidisc. Optim. 43 (2011) 1-16).'
+    )
     label = "PDE (Helmholtz) filter"
     dims = (2, 3)
     order = 11

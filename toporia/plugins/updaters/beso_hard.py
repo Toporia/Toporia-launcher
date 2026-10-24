@@ -39,6 +39,11 @@ class HardKillBESOUpdater(BESOUpdater):
     """Hard-kill BESO: removed elements sit exactly at the void bound."""
 
     name = "beso_hard"
+    reference = (
+        'X. Huang and Y. M. Xie, Evolutionary Topology Optimization of Continuum Structures, '
+        'Wiley 2010 (hard-kill BESO); critique: M. Zhou and G. I. N. Rozvany, Struct. '
+        'Multidisc. Optim. 21 (2001) 80-83.'
+    )
     label = "BESO (hard kill)"
     order = 61
     # No residual density to set: removed means void.

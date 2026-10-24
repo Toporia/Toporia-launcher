@@ -52,6 +52,12 @@ class ConlinUpdater(Updater):
     """CONLIN: convex linearisation in x or 1/x, solved through its dual, any number of constraints."""
 
     name = "conlin"
+    reference = (
+        'C. Fleury and V. Braibant, "Structural optimization: a new dual method using mixed '
+        'variables", Int. J. Numer. Meth. Eng. 23 (1986) 409-428; C. Fleury, "First and '
+        'second order convex approximation strategies in structural optimization", Struct. '
+        'Optim. 1 (1989) 3-10.'
+    )
     label = "CONLIN (convex linearisation)"
     order = 25
     params = (

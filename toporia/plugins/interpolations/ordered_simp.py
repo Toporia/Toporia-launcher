@@ -35,6 +35,10 @@ class OrderedSIMP(Interpolation):
     """Piecewise SIMP between an ordered list of materials (void, up to two grey ones, solid)."""
 
     name = "ordered_simp"
+    reference = (
+        'W. Zuo and K. Saitou, "Multi-material topology optimization using ordered SIMP '
+        'interpolation", Struct. Multidisc. Optim. 55 (2017) 477-491.'
+    )
     label = "Ordered SIMP (multi-material)"
     order = 30
     schedulable = ("penal",)

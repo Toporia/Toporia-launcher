@@ -58,6 +58,11 @@ class AdamUpdater(Updater):
     """Adam steps on the design, the volume budget as an augmented-Lagrangian term."""
 
     name = "adam"
+    reference = (
+        'D. P. Kingma and J. Ba, "Adam: a method for stochastic optimization", ICLR 2015; the '
+        'penalised volume budget as in A. Chandrasekhar and K. Suresh, "TOuNN", Struct. '
+        'Multidisc. Optim. 63 (2021) 1135-1149.'
+    )
     label = "Adam (augmented Lagrangian)"
     order = 70
     params = (
