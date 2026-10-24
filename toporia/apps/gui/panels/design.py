@@ -43,20 +43,27 @@ class DesignSection(QWidget):
         self.dims.addItem("3-D (extruded to a depth)", userData=3)
         add_tooltip_row(form, "Dimensions", self.dims,
                         "2-D solves the case's rectangle in plane stress. 3-D extrudes it to the depth "
-                        "below: holes go through, supports and loads act through the thickness.")
+                        "below: holes go through, supports and loads act through the thickness.",
+                        "2-D: four-node plane-stress elements as in top88 (Andreassen et al. 2011). "
+                        "3-D: eight-node bricks as in top3d (Liu & Tovar, Struct. Multidisc. Optim. 50 (2014)).")
         self.depth = double_box(10.0, 0.1, 10000.0, dec=2, step=1.0)
         self.depth.setSuffix(" mm")
         self._depth_label = QLabel("Depth")
         self._depth_label.setToolTip("How deep the 3-D box is (Scenario.Lz).")
-        form.addRow(self._depth_label, self.depth)
+        from ..help import text_topic, with_help
+
+        form.addRow(self._depth_label, with_help(self.depth, lambda: text_topic(
+            "Depth", "How deep the 3-D box is: the case's rectangle is extruded to this depth (Scenario.Lz).")))
         self.mode = QComboBox()
         self.mode.addItem("Elements per mm", userData=PER_MM)
         self.mode.addItem("Element size (mm)", userData=SIZE)
         add_tooltip_row(form, "Resolution as", self.mode,
-                        "Enter the mesh resolution as elements per mm, or as the edge length of one element.")
+                        "Enter the mesh resolution as elements per mm, or as the edge length of one element.",
+                        "Toporia's own: the mesh follows from the case's size in millimetres.")
         self.resolution = double_box(1.0, 0.001, 1000.0, dec=3, step=0.1)
         add_tooltip_row(form, "Resolution", self.resolution,
-                        "Finer meshes give finer designs but take longer, much more so in 3-D.")
+                        "Finer meshes give finer designs but take longer, much more so in 3-D.",
+                        "Toporia's own: top88 sets the element counts nelx and nely directly instead.")
         self.counts = QLabel()
         self.counts.setToolTip("The mesh this resolution gives for the case, and its number of elements.")
         form.addRow("Mesh", self.counts)

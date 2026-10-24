@@ -4,6 +4,8 @@ Each module in this package defines:
 
     NAME        display name, shown in the GUI and accepted by the CLI
     ORDER       menu position (lower first)
+    ABOUT       one sentence on what the problem is (optional)
+    REFERENCE   where it comes from (optional); both are shown in the GUI's help
     scenario()  -> Scenario   what is being solved
     solver()    -> Solver     recommended settings (optional; defaults otherwise)
 
@@ -52,9 +54,15 @@ def get_run(name):
     return Run(scenario=module.scenario(), solver=solver)
 
 
+def problem_info(name):
+    """What the named problem is and where it comes from, as (about, reference); empty when not stated."""
+    module = _modules()[name]
+    return getattr(module, "ABOUT", ""), getattr(module, "REFERENCE", "")
+
+
 def get_default_run():
     """Return the default startup problem (the MBB beam) as a Run."""
     return get_run(DEFAULT_PROBLEM)
 
 
-__all__ = ["DEFAULT_PROBLEM", "get_default_run", "get_run", "problem_names"]
+__all__ = ["DEFAULT_PROBLEM", "get_default_run", "get_run", "problem_info", "problem_names"]

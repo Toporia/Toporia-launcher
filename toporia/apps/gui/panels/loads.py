@@ -57,6 +57,17 @@ class LoadCaseRow(QWidget):
 
         # The ✕ button calls on_remove(self) — passing *this row* as the argument
         # so the parent LoadCasesGroup knows which row to delete.
+        from ..help import HelpButton, text_topic
+
+        row.addWidget(HelpButton(lambda: text_topic(
+            "Load case",
+            "One load case: the problem's loads, all with this magnitude and direction.\n"
+            "Fmag: the force magnitude.\n"
+            "Angle°: the direction in the plane, 0 = +x, 90 = +y, 270 = -y.\n"
+            "Weight: how much this case counts; the objective is the weighted sum over the cases.\n"
+            "Elev°: 3-D only, the elevation out of the xy plane, 90 = +z.",
+            "Several load cases with a weighted sum of compliances, as in the multiple-load extension "
+            "of Sigmund's 99-line code (2001) and top88 (Andreassen et al. 2011).")))
         btn = QPushButton("✕")
         btn.setFixedWidth(28)
         btn.setToolTip("Remove load case")

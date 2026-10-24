@@ -36,6 +36,10 @@ class FeatureSize(PostProcessor):
 
     name = "feature_size"
     label = "Feature size"
+    reference = (
+        "Toporia's own measurement, of the length scale that filters and projections promise"
+        ' (Sigmund 2007; Wang, Lazarov & Sigmund 2011).'
+    )
     order = 30
     table_metrics = ("min_member_mm", "min_hole_mm")
     dims = (2, 3)

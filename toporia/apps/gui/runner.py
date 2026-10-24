@@ -15,6 +15,7 @@ from toporia.engine.modes.check import check_parts as _check_parts
 from toporia.engine.modes.compare import compare_load_cases as _compare_lc
 from toporia.engine.modes.compare import compare_two as _compare_two
 from toporia.engine.modes.methods import compare_methods as _compare_methods
+from toporia.engine.modes.methods import sweep_methods as _sweep_methods
 from toporia.engine.modes.sensitivity import sensitivity_field as _sensitivity_field
 from toporia.engine.modes.sensitivity import sensitivity_sweep as _sens_sweep
 from toporia.engine.modes.sensitivity import sensitivity_sweep_2d as _sens_sweep_2d
@@ -75,14 +76,36 @@ def _redir(log_fn):
 # The "finally" block guarantees stdout is restored even if an exception occurs.
 
 
+#: The folder of the last single run, which "Apply to the last design" post-processes again.
+last_run_folder = None
+
+
 def run_one(config, on_iter, log_fn):
     """The Run One mode, with its printed output routed to the GUI's log.  Returns the final density."""
+    global last_run_folder
     old = _redir(log_fn)
     try:
-        _, density = _run_one(config, on_iteration=on_iter)
+        store, density = _run_one(config, on_iteration=on_iter)
     finally:
         sys.stdout = old
+    last_run_folder = store.output_dir
     return density
+
+
+def postprocess_last(specs, log_fn):
+    """Apply post-processors `specs` to the last single run's design, without optimising again.
+
+    Returns {key: result} as engine.postprocess.run_postprocessors does; the
+    files land in the run's post/ folder and the results are added to its run.json.
+    """
+    from toporia.engine.postprocess import postprocess_folder
+    if last_run_folder is None:
+        raise RuntimeError("There is no finished single run yet: run one first (Mode: Run One).")
+    old = _redir(log_fn)
+    try:
+        return postprocess_folder(last_run_folder, specs)
+    finally:
+        sys.stdout = old
 
 
 def run_sweep(config, sg, on_iter, log_fn):
@@ -140,6 +163,17 @@ def run_compare_methods(config, cmg, on_iter, log_fn):
     old = _redir(log_fn)
     try:
         grid, _ = _compare_methods(cmg.selected(), config, on_iteration=on_iter)
+    finally:
+        sys.stdout = old
+    return grid
+
+
+def run_sweep_methods(config, msg, on_iter, log_fn):
+    """msg = MethodsSweepParamsGroup.  Returns the path of the methods x setting grid, or None."""
+    old = _redir(log_fn)
+    try:
+        grid, _ = _sweep_methods(msg.selected(), msg.key(), msg.min_val.value(), msg.max_val.value(),
+                                 msg.n_values.value(), config, on_iteration=on_iter)
     finally:
         sys.stdout = old
     return grid

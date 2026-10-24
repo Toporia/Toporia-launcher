@@ -15,6 +15,10 @@ class Geometric(Schedule):
 
     name = "geometric"
     label = "Multiply by a factor"
+    reference = (
+        'Multiplying by a factor is the usual beta continuation of a Heaviside projection (Guest et'
+        ' al. 2004; Wang, Lazarov & Sigmund 2011).'
+    )
     order = 20
     params = (START,
               Param("end", 64.0, "End", "Value it reaches and then keeps.",

@@ -36,6 +36,11 @@ class ScipySLSQP(ExternalOptimizer):
 
     name = "scipy_slsqp"
     label = "SLSQP (SciPy)"
+    reference = (
+        'D. Kraft, "A software package for sequential quadratic programming", DFVLR-FB 88-28'
+        ' (1988), as scipy.optimize.minimize(method="SLSQP"):'
+        ' https://docs.scipy.org/doc/scipy/reference/optimize.minimize-slsqp.html'
+    )
     order = 70
     params = (
         Param("slsqp_maxiter", 200, "SLSQP iterations",

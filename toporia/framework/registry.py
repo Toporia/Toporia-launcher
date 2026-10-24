@@ -78,6 +78,8 @@ class Registry:
       aliases      : extra accepted names, e.g. for configs written before a rename
       order        : menu position, lower first (default 100); ties sort by name
       dependencies : import names of optional packages it needs, e.g. ("pymoto",)
+      reference    : where it comes from or what inspired it (a paper, a code, a
+                     library, or "Toporia's own"); shown in the GUI's help window
     """
 
     def __init__(self, kind, base, package, group=None):

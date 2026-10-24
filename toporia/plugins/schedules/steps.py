@@ -15,6 +15,10 @@ class Steps(Schedule):
 
     name = "steps"
     label = "Equal steps"
+    reference = (
+        'The classic SIMP continuation, p raised in steps; see O. Sigmund, J. Petersson, "Numerical'
+        ' instabilities in topology optimization", Struct. Optim. 16 (1998) 68-75.'
+    )
     order = 10
     params = (START, END,
               Param("step", 0.5, "Step", "Change at each step, taken towards the end value.",

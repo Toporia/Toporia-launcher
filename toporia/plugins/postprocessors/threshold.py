@@ -24,6 +24,11 @@ class Threshold(PostProcessor):
 
     name = "threshold"
     label = "Threshold to black and white"
+    reference = (
+        'Cutting to black and white and analysing again, as method comparisons do, e.g. S.'
+        ' Rojas-Labanda, M. Stolpe, "Benchmarking optimization solvers for structural topology'
+        ' optimization", Struct. Multidisc. Optim. 52 (2015) 527-547.'
+    )
     order = 10
     table_metrics = ("compliance", "increase_pct")
     dims = (2, 3)

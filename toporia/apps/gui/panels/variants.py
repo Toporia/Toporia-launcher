@@ -11,6 +11,12 @@ from PySide6.QtWidgets import QCheckBox, QComboBox, QFormLayout, QLineEdit, QPus
 
 from .common import CollapsibleSection, add_tooltip_row, double_box, fill_combo, int_box
 
+#: Where variants come from, for the "?" beside each of their settings.
+ROBUST = ('Robust formulation: F. Wang, B. S. Lazarov, O. Sigmund, "On projection methods, convergence '
+          'and robust formulations in topology optimization", Struct. Multidisc. Optim. 43 (2011) 767-784.')
+KS = ('Smooth maximum (the Kreisselmeier-Steinhauser function): G. Kreisselmeier, R. Steinhauser, '
+      '"Systematic control design by optimizing a vector performance index", IFAC Proceedings 12 (1979).')
+
 
 class VariantsGroup(QWidget):
     """Variants of each design (robust design, uncertain loads): off by default."""
@@ -37,20 +43,24 @@ class VariantsGroup(QWidget):
             self.combine.addItem(label, userData=key)
         self.nominal = int_box(1, 0, 20)
         self.sharpness = double_box(50.0, 1.0, 1000.0, dec=1, step=10.0)
-        add_tooltip_row(form, "Parameter", self.path, "The parameter that differs between the versions.")
-        add_tooltip_row(form, "Values", self.values, "One version per value, separated by commas.")
+        add_tooltip_row(form, "Parameter", self.path, "The parameter that differs between the versions.", ROBUST)
+        add_tooltip_row(form, "Values", self.values, "One version per value, separated by commas.", ROBUST)
         add_tooltip_row(form, "Combine", self.combine,
-                        "Worst case: a smooth maximum, for robust design. Mean: an expected value.")
+                        "Worst case: a smooth maximum, for robust design. Mean: an expected value.", ROBUST)
         add_tooltip_row(form, "Shown version", self.nominal,
-                        "Which version (counting from 0) is drawn and held to the volume budget.")
+                        "Which version (counting from 0) is drawn and held to the volume budget.", ROBUST)
         add_tooltip_row(form, "Sharpness", self.sharpness,
-                        "Of the smooth maximum: within log(n)/sharpness of the true worst case.")
+                        "Of the smooth maximum: within log(n)/sharpness of the true worst case.", KS)
         self._section.body_layout.addWidget(form_widget)
         robust = QPushButton("Robust projection: eroded / intermediate / dilated")
         robust.setToolTip("Wang, Lazarov & Sigmund (2011): the worst of three Heaviside thresholds, "
                           "for a minimum length scale and tolerance to manufacturing error.")
         robust.clicked.connect(self.robust_requested.emit)
-        self._section.body_layout.addWidget(robust)
+        from ..help import text_topic, with_help
+
+        self._section.body_layout.addWidget(with_help(robust, lambda: text_topic(
+            "Robust projection", robust.toolTip() + " Adds a Heaviside projection when there is none, and "
+            "three versions of its threshold eta (0.75, 0.5, 0.25).", ROBUST)))
 
         self.enabled.toggled.connect(self._on_enabled)
         for signal in (self.path.currentIndexChanged, self.values.editingFinished,

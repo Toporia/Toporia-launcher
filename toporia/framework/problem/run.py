@@ -52,7 +52,7 @@ class Output:
 OUTPUT_PARAMS = (
     Param("save_every", 10, "Save every N",
           "Save an intermediate density image every N iterations. Use 0 for final only.",
-          min=0, max=1000),
+          min=0, max=1000, source="Toporia's own."),
 )
 
 

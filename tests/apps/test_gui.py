@@ -336,3 +336,174 @@ def test_post_processors_can_be_switched_on_in_any_combination(window):
     window.core.select_method("levelset")                     # any method's design can be post-processed
     assert not window.post.isHidden() and len(_built(window).output.postprocess) == 2
     window.post.load_specs([])
+
+
+# ── Help: every option says what it is and where it comes from ────────────────
+
+REGISTRIES = ("methods", "models", "updaters", "filters", "interpolations", "responses",
+              "representations", "schedules", "postprocessors")
+
+
+def _all_plugin_classes():
+    import importlib
+    for package in REGISTRIES:
+        module = importlib.import_module(f"toporia.plugins.{package}")
+        yield from getattr(module, package.upper()).classes()
+
+
+@pytest.mark.parametrize("cls", list(_all_plugin_classes()), ids=lambda c: c.name)
+def test_every_plugin_says_where_it_comes_from(cls):
+    assert cls.__dict__.get("reference"), f"{cls.__name__} declares no reference"
+
+
+@pytest.mark.parametrize("preset", problem_names())
+def test_every_preset_says_what_it_is_and_where_it_comes_from(preset):
+    from toporia.plugins.problems import problem_info
+    about, reference = problem_info(preset)
+    assert about and reference
+
+
+def test_every_help_button_in_the_window_opens_a_sourced_topic(window):
+    from toporia.apps.gui.help import UNSTATED, HelpButton, HelpWindow
+    window._on_config_changed("MBB Beam")
+    buttons = window.findChildren(HelpButton)
+    assert len(buttons) > 50
+    for button in buttons:
+        topic = button.topic()
+        assert topic.title and topic.section("What it is"), topic
+        assert topic.section("Where it is from") not in ("", UNSTATED), topic.title
+    buttons[0].open_help()
+    help_window = HelpWindow.instance()
+    assert help_window.topic is buttons[0].topic() or help_window.topic.title == buttons[0].topic().title
+    help_window.close()
+
+
+@pytest.mark.parametrize("cls", [c for _, c in PLUGINS], ids=[i for i, _ in PLUGINS])
+def test_every_generated_parameter_has_a_help_button(app, cls):
+    from toporia.apps.gui.help import HelpButton
+    from toporia.apps.gui.panels import ParamForm
+    form = ParamForm(cls.params, owner=cls)
+    buttons = form.findChildren(HelpButton)
+    assert len(buttons) == len(cls.params)
+    for button, param in zip(buttons, cls.params, strict=True):
+        assert button.topic().title.startswith(param.label)
+
+
+def test_a_dropdowns_help_follows_the_selection(window):
+    window._on_config_changed("MBB Beam")
+    window.core.select_method("q4+oc")
+    row = window.filters._rows[0]
+    assert "Bruns" in row.type_topic().section("Where it is from")
+    row.load_spec({"type": "heaviside"})
+    assert "Guest" in row.type_topic().section("Where it is from")
+    window.filters.load_specs([{"type": "density"}])
+
+
+def test_the_pipeline_is_drawn_as_a_network_whose_boxes_explain_themselves(window):
+    from toporia.apps.gui.panels.pipeline import node_topic
+    window._on_config_changed("MBB Beam")
+    window.core.select_method("q4+mma")
+    window._use_robust_projection()
+    window.schedules.load_specs([{"path": "interpolation.penal", "type": "steps", "start": 1.0, "end": 3.0,
+                                  "step": 0.5, "every": 20}])
+    nodes = window.pipeline.graph.nodes()
+    titles = [n.title for n in nodes]
+    assert titles == ["Design", "Filter 1", "Filter 2", "Material law", "Physics", "Objective", "Constraint",
+                      "Updater"]
+    by_title = {n.title: n for n in nodes}
+    assert by_title["Filter 2"].badges == ["⧉ eta = 0.75, 0.5, 0.25"]
+    assert by_title["Material law"].badges == ["↻ penal 1 → 3"]
+    for node in nodes:
+        assert node_topic(node).section("Where it is from")
+    assert "Guest" in node_topic(by_title["Filter 2"]).section("Where it is from")
+
+    window.post.load_specs([{"type": "threshold"}])
+    assert [n.label for n in window.pipeline.graph.nodes()][-1] == "Threshold to black and white"
+    window.core.select_method("levelset")
+    assert window.pipeline.graph.nodes()[0].title == "Whole method"
+    window.post.load_specs([])
+    window.schedules.load_specs([])
+    window.variants.load_spec({})
+    window.filters.load_specs([{"type": "density"}])
+    window.core.select_method("q4+oc")
+
+
+# ── Problem preview: the problem is shown before it is solved ─────────────────
+
+
+@pytest.mark.parametrize("preset", problem_names())
+def test_every_preset_can_be_drawn_before_it_is_solved(preset):
+    import matplotlib
+    matplotlib.use("Agg")
+    import matplotlib.pyplot as plt
+
+    from toporia.apps.gui.preview import describe_problem, draw_problem
+    run = get_run(preset)
+    fig, ax = plt.subplots()
+    shown = draw_problem(ax, run.scenario, title=describe_problem(run.scenario, run.solver.m, preset))
+    plt.close(fig)
+    assert "Support" in shown and any(label.startswith("Load") for label in shown)
+
+
+def test_the_fallback_supports_and_loads_are_drawn_where_the_solver_puts_them():
+    from toporia.apps.gui.preview import supports_and_loads
+    from toporia.framework import Scenario
+    edges, points, loads = supports_and_loads(Scenario(Lx=80.0, Ly=40.0))
+    assert edges == [("left", "both")] and points == [] and loads == [(80.0, 20.0)]
+
+
+def test_the_view_shows_the_problem_until_a_run_starts(window):
+    window.config_combo.setCurrentText("Cantilever")
+    window.go_to_step(0)
+    window.show_problem()
+    assert window.canvas.showing_problem
+    assert "Cantilever:" in window.canvas._ax_d.get_title()
+    window.canvas.reset()                       # what a run does first
+    assert not window.canvas.showing_problem
+    window._running = True
+    window.show_problem()                       # a running optimisation keeps the view
+    assert not window.canvas.showing_problem
+    window._running = False
+    window.config_combo.setCurrentText("MBB Beam")
+
+
+def test_post_processors_can_be_applied_to_the_last_design_without_a_new_run(window, tmp_path):
+    from toporia.apps.gui import runner
+    window.config_combo.setCurrentText("MBB Beam")
+    cfg = _built(window).updated(max_iter=3, m=0.3, save_every=0).with_output_dir(tmp_path)
+    runner.run_one(cfg, None, lambda *_: None)
+    window._refresh_export_buttons()
+    assert window.export_btn.isEnabled()
+
+    window.post.load_specs([{"type": "threshold"}, {"type": "export_svg"}])
+    lines = []
+    window._log = lines.append
+    window._on_export()
+    del window._log
+    assert any("2 of 2 post-processors" in line for line in lines), lines
+    assert list((runner.last_run_folder / "post").glob("*.svg"))
+    window.post.load_specs([])
+
+
+def test_sweep_methods_puts_the_methods_down_the_rows_and_a_setting_across(window, tmp_path):
+    import csv
+
+    from toporia.apps.gui import runner
+    window.config_combo.setCurrentText("MBB Beam")
+    window.mode.setCurrentText("Sweep Methods")
+    assert not window.msg.isHidden() and window.run_btn.text() == "▶  Run: Sweep Methods"
+    window.msg.set_selected(["q4+oc", "q4+mma"])
+    window.msg.param.setCurrentIndex(window.msg.param.findData("volfrac"))
+    window.msg.min_val.setValue(0.3)
+    window.msg.max_val.setValue(0.5)
+    window.msg.n_values.setValue(2)
+    cfg = _built(window).updated(m=0.3, max_iter=2, save_every=0).with_output_dir(tmp_path)
+    grid = runner.run_sweep_methods(cfg, window.msg, None, lambda *_: None)
+    assert grid.exists()
+    with open(grid.parent / "methods_sweep.csv", encoding="utf-8") as file:
+        rows = list(csv.DictReader(file))
+    assert [(r["method"], float(r["volfrac"])) for r in rows] == [
+        ("q4+oc", 0.3), ("q4+oc", 0.5), ("q4+mma", 0.3), ("q4+mma", 0.5)]
+    assert all(r["status"] == "ran" for r in rows)
+    window.msg.set_selected(window.msg.DEFAULT)
+    window.mode.setCurrentText("Run One")

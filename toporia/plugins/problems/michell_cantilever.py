@@ -26,6 +26,10 @@ from toporia.framework import HoleConfig, LoadCase, PointLoad, Scenario, Solver
 
 NAME = "Michell Cantilever"
 ORDER = 25
+ABOUT = ('A point load carried to a clamped ring: one of the few problems whose optimal layout is'
+         ' known analytically, so it checks that a method finds the right shape.')
+REFERENCE = ('A. G. M. Michell, "The limits of economy of material in frame-structures", Philosophical'
+             ' Magazine 8 (1904) 589-597.')
 
 
 def scenario() -> Scenario:

@@ -63,6 +63,12 @@ class AMFilter(Filter):
 
     name = "am"
     label = "AM overhang filter"
+    reference = (
+        'A port of AMfilter.m: M. Langelaar, "An additive manufacturing filter for topology'
+        ' optimization of print-ready designs", Struct. Multidisc. Optim. 55 (2017) 871-883; M.'
+        ' Langelaar, "Topology optimization of 3D self-supporting structures for additive'
+        ' manufacturing", Addit. Manuf. 12 (2016) 60-70.'
+    )
     order = 40
     params = (
         Param(

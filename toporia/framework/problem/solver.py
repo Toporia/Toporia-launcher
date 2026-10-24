@@ -79,10 +79,15 @@ class Solver:
 SOLVER_PARAMS = (
     Param("m", 1.0, "Mesh res m",
           "Elements per millimetre. Higher values give finer designs but slower FEA.",
-          min=0.1, max=5.0, step=0.1, decimals=2, units="el/mm"),
+          min=0.1, max=5.0, step=0.1, decimals=2, units="el/mm",
+          source="Toporia's own: the mesh follows from a size in millimetres, where top88 "
+                 "sets the element counts nelx and nely directly."),
     Param("max_iter", 100, "Max iters",
-          "Maximum number of optimisation iterations before stopping.", min=1, max=2000),
+          "Maximum number of optimisation iterations before stopping.", min=1, max=2000,
+          source="A safety cap on the loop; top88 has none and relies on the tolerance alone."),
     Param("tol", 0.01, "Tolerance",
           "Stop when the design change reported by the method falls below this value.",
-          min=0.0, max=1.0, step=0.005, decimals=4),
+          min=0.0, max=1.0, step=0.005, decimals=4,
+          source="The stopping rule of the 99-line code and top88: stop when the largest density "
+                 "change falls below 0.01."),
 )

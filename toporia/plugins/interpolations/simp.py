@@ -19,6 +19,10 @@ class SIMP(Interpolation):
 
     name = "simp"
     label = "SIMP (power law)"
+    reference = (
+        'M. P. Bendsoe, "Optimal shape design as a material distribution problem", Structural'
+        ' Optimization 1 (1989) 193-202.'
+    )
     order = 10
     params = (PENAL,)
     schedulable = ("penal",)    # continuation p = 1 -> 3 is common practice

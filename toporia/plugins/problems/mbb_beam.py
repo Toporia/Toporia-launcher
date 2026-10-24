@@ -30,6 +30,11 @@ from toporia.framework import EdgeConstraint, LoadCase, PointConstraint, PointLo
 
 NAME = "MBB Beam"
 ORDER = 10
+ABOUT = ('The left half of a simply supported beam loaded at its centre, using symmetry: the'
+         ' canonical benchmark of topology optimisation.')
+REFERENCE = ("Named after Messerschmitt-Bölkow-Blohm; the half-beam setup and settings of Sigmund's"
+             ' 99-line code (2001) and top88 (Andreassen et al., Struct. Multidisc. Optim. 43 (2011)'
+             ' 1-16).')
 
 
 def scenario() -> Scenario:

@@ -79,6 +79,10 @@ class MovingMorphableComponents(Representation):
 
     name = "mmc"
     label = "Moving morphable components"
+    reference = (
+        'X. Guo, W. Zhang, W. Zhong, "Doing topology optimization explicitly and geometrically - a'
+        ' new moving morphable components based framework", J. Appl. Mech. 81 (2014) 081009.'
+    )
     order = 20
     element_wise = False
     advice = ("Its variables are positions, lengths and angles across the whole domain, so the "

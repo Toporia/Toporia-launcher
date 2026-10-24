@@ -8,6 +8,9 @@ from toporia.framework import HoleConfig, LoadCase, Scenario
 
 NAME = "Drone Arm"
 ORDER = 50
+ABOUT = ('A 200 x 85 mm drone arm bracket: bolted to the frame at two holes, loaded at eight motor'
+         ' holes in two load cases.')
+REFERENCE = "Toporia's own application case."
 
 
 def scenario() -> Scenario:

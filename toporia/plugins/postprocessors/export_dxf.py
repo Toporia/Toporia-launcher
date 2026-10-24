@@ -31,6 +31,9 @@ class ExportDXF(PostProcessor):
 
     name = "export_dxf"
     label = "Export outline (DXF)"
+    reference = (
+        "Toporia's own export, to Autodesk's DXF format."
+    )
     order = 60
     table_metrics = ()          # files, not numbers to compare
     params = (SOURCE,)

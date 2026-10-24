@@ -11,6 +11,8 @@ from toporia.framework import LoadCase, PointConstraint, PointLoad, Scenario
 
 NAME = "Drone Arm (Point Loads)"
 ORDER = 70
+ABOUT = "The drone arm's layout with point supports and point loads instead of holes and rings."
+REFERENCE = "Toporia's own application case."
 
 
 def scenario() -> Scenario:

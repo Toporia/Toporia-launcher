@@ -14,6 +14,8 @@ from toporia.framework import EdgeConstraint, LoadCase, PointLoad, Scenario
 
 NAME = "Standard Bar"
 ORDER = 40
+ABOUT = 'A rectangular bar clamped along its left edge with a single load.'
+REFERENCE = "Toporia's own simple test case."
 
 
 def scenario() -> Scenario:

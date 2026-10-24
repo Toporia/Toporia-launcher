@@ -97,6 +97,11 @@ class SiMPLUpdater(Updater):
 
     name = "simpl"
     label = "Mirror descent (SiMPL)"
+    reference = (
+        'B. Keith, D. Kim, B. S. Lazarov, T. M. Surowiec, "A simple introduction to the SiMPL'
+        ' method for density-based topology optimization", Struct. Multidisc. Optim. 68 (2025);'
+        ' https://arxiv.org/abs/2411.19421'
+    )
     order = 30
     params = (
         Param("step", 1.0, "Step size",

@@ -33,6 +33,10 @@ class SymmetryFilter(Filter):
 
     name = "symmetry"
     label = "Symmetry filter"
+    reference = (
+        "Toporia's own: mirror averaging, the usual way to impose symmetry (see M. P. Bendsoe, O."
+        ' Sigmund, Topology Optimization, Springer 2003).'
+    )
     order = 60
     params = (
         Param("axis", "left_right", "Axis", "Mirror-average the density field around this centreline.",

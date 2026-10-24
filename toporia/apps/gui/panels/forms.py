@@ -6,13 +6,20 @@
 
 from PySide6.QtWidgets import QCheckBox, QComboBox, QDoubleSpinBox, QFormLayout, QLabel, QSpinBox, QWidget
 
+from ..help import param_topic, with_help
+
 _UNBOUNDED = 1e9   # spin boxes need finite limits; used when a Param has none
 
 
 class ParamForm(QWidget):
-    """A form with one row per Param.  Values go in and out as plain dicts."""
+    """A form with one row per Param.  Values go in and out as plain dicts.
 
-    def __init__(self, params, parent=None):
+    Every row has a "?" that explains the parameter and where it comes from;
+    `owner` is the plugin class that declares the parameters, whose reference
+    stands in for a parameter that has no source of its own.
+    """
+
+    def __init__(self, params, parent=None, owner=None):
         super().__init__(parent)
         self._params = tuple(params)
         self._editors = {}
@@ -24,7 +31,7 @@ class ParamForm(QWidget):
             if param.help:
                 label.setToolTip(param.help)
                 editor.setToolTip(param.help)
-            form.addRow(label, editor)
+            form.addRow(label, with_help(editor, lambda p=param: param_topic(p, owner)))
             self._editors[param.name] = editor
         self.set_values({})
 

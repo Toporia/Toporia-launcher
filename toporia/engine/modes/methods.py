@@ -4,6 +4,8 @@
 #                     one image of every final design, one table of numbers
 #   benchmark         the same over several problems: the comparison Toporia
 #                     exists to make, with only the method varying
+#   sweep_methods     the methods down the rows, one setting swept across the
+#                     columns: how each optimiser reacts to that setting
 #
 # Every method is held to the same scenario, mesh, filters, iteration limit and
 # tolerance; only the method and its own parameters change.  A method that
@@ -31,6 +33,8 @@
 import csv
 import time
 from pathlib import Path
+
+import numpy as np
 
 from toporia.engine.loop import run_single_with_store
 from toporia.engine.postprocess import table_metrics
@@ -97,6 +101,42 @@ def benchmark(methods, problems, overrides=None, output_dir=None, on_iteration=N
         _write_table(all_rows, output_dir / "benchmark.csv")
     print("\n" + format_table(all_rows))
     return all_rows
+
+
+def sweep_methods(methods, parameter, min_val, max_val, n_values, base_config, on_iteration=None):
+    """Every method in `methods` at `n_values` linearly spaced values of `parameter`.
+
+    The grid has one row per method and one column per value; a method that
+    cannot solve the problem fills its row with the reason.  Returns (path of
+    methods_sweep_grid.png, rows), one row per cell with the COLUMNS and the
+    swept parameter's value.  Results go to <output>/sweep_methods_<parameter>/.
+    """
+    folder = mode_folder(base_config, f"sweep_methods_{parameter}")
+    methods = list(dict.fromkeys(methods))
+    values = np.linspace(min_val, max_val, n_values)
+    rows, images = [], []
+    for i, name in enumerate(methods):
+        for j, value in enumerate(values):
+            print(f"\n=== [{i * len(values) + j + 1}/{len(methods) * len(values)}] {name}, {parameter} = {value:.4g} ===")
+            run = with_values(base_config, [(parameter, value)])
+            cell = folder / f"{parameter}_{value:.4f}"
+            row = _run_method(name, run, cell, on_iteration)
+            row[parameter] = float(value)
+            rows.append(row)
+            title = f"{row['method']}   {parameter} = {value:.3g}"
+            if row["status"] == "ran":
+                images.append((cell / _folder_name(row["method"]) / "final_density.png",
+                               f"{title}\nC = {row['referee_compliance']:.3g}"))
+            else:
+                images.append((None, f"{title}\nskipped: {row['stop_reason']}"))
+
+    _write_table(rows, folder / "methods_sweep.csv")
+    print("\n" + format_table(rows))
+    grid = None
+    if any(image is not None for image, _ in images):
+        grid = save_grid(images, len(methods), len(values), folder / "methods_sweep_grid.png", DESIGNS, fontsize=7)
+        print(f"\nSaved methods x {parameter} grid -> {grid}")
+    return grid, rows
 
 
 # ── One method ────────────────────────────────────────────────────────────────

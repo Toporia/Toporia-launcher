@@ -508,6 +508,19 @@ physics engines default to `(2,)`. Only widen that once the part handles the thi
 A part that does not work in the problem's dimension is refused before the run, with the
 parts that do. `toporia check` runs a 3-D-only part on the same problems extruded.
 
+## Where it comes from
+
+Say what your plugin is based on, in one line on the class:
+
+```python
+reference = 'K. Svanberg, "The method of moving asymptotes", IJNME 24 (1987) 359-373.'
+```
+
+A paper, a code, a library (with its address), or "Toporia's own" with what inspired it.
+The GUI shows it, with the class docstring and the parameters, in the help window opened
+by the "?" beside the plugin's dropdown. A `Param` may carry its own `source=`; without one,
+its "?" points to the plugin's reference.
+
 ## Optional dependencies
 
 If your plugin needs a package Toporia does not require, import it inside your methods
@@ -538,7 +551,7 @@ reported (in `toporia list` and the GUI's log) and the others still load. In a n
 
 ## Checklist
 
-- [ ] `name`, `label`, `params` declared; citation in the module docstring
+- [ ] `name`, `label`, `params` declared; `reference` says where it comes from
 - [ ] capabilities honest: `objectives`, `max_constraints` / `requires` / `exact_adjoint` / `dims`
 - [ ] optional packages in `dependencies`, imported lazily
 - [ ] `toporia check kind:name` passes

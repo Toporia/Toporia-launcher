@@ -30,6 +30,9 @@ class Param:
     decimals : GUI display precision for floats
     choices  : for kind "choice", a tuple of (value, label) pairs
     units    : shown next to the label, e.g. "mm" or "°"
+    source   : where the parameter, or its usual value, comes from (a paper,
+               a code, or "Toporia's own"); shown in the GUI's help window.
+               Empty means: the same source as the plugin that declares it.
     """
 
     name: str
@@ -43,6 +46,7 @@ class Param:
     decimals: int | None = None
     choices: tuple = ()
     units: str = ""
+    source: str = ""
 
     def __post_init__(self):
         kind = self.kind or _infer_kind(self.default, self.choices)

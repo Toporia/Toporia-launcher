@@ -15,12 +15,14 @@ from PySide6.QtWidgets import (
     QComboBox,
     QFormLayout,
     QGroupBox,
+    QHBoxLayout,
     QLabel,
     QListWidget,
     QListWidgetItem,
     QVBoxLayout,
 )
 
+from ..help import HelpButton, plugin_topic, text_topic, with_help
 from .common import (
     double_box,
     fill_combo,
@@ -29,6 +31,36 @@ from .common import (
     section_label,
 )
 from .loads import LoadCasesGroup
+
+#: Where the study tools come from, for every row's "?".
+STUDY_SOURCE = ("Toporia's own study tools: whole optimisations repeated at different settings, and "
+                "finite-difference sensitivities of the final design to a setting.")
+
+_PARAMETER = ("Which setting is varied. Every numeric setting of the current setup is offered, by its "
+              "path, e.g. volfrac or filters[0].rmin.")
+_RANGE = "The first and last value; the values in between are evenly spaced."
+_GRID = "How many designs: rows x cols evenly spaced values, optimised one by one and shown as a grid."
+_COUNT = "How many values along this direction of the grid."
+_BASE = "The setting's value for the reference design."
+_GAP = ("How far the second design's value lies from the base. Each element's change in density, "
+        "divided by this gap, is the finite-difference sensitivity shown.")
+
+#: What each row label means, for its "?".
+FIELD_HELP = {
+    "Parameter": _PARAMETER, "Sens. parameter": _PARAMETER, "Sweep parameter": _PARAMETER,
+    "Row param": _PARAMETER, "Col param": _PARAMETER, "Row parameter": _PARAMETER, "Col parameter": _PARAMETER,
+    "Value A": "The setting's value for the first design.",
+    "Value B": "The setting's value for the second design, optimised and shown beside the first.",
+    "Min": _RANGE, "Max": _RANGE, "Row min": _RANGE, "Row max": _RANGE, "Col min": _RANGE, "Col max": _RANGE,
+    "Rows": _GRID, "Cols": _GRID, "N rows": _COUNT, "N cols": _COUNT,
+    "Base value": _BASE, "Gap (Δ)": _GAP,
+    "Values": "How many evenly spaced values of the setting: one column of the grid each.",
+}
+
+
+def _add_row(form, label, widget):
+    """A form row with a "?" that explains it."""
+    form.addRow(label, with_help(widget, lambda: text_topic(label, FIELD_HELP.get(label, ""), STUDY_SOURCE)))
 
 
 class CompareLoadCasesParamsGroup(QGroupBox):
@@ -78,7 +110,7 @@ class SensitivityParamsGroup(QGroupBox):
         self.base_value = double_box(0.30, -1e6, 1e6, dec=4, step=0.05)
         self.gap = double_box(0.05, 1e-6, 1e6, dec=4, step=0.01)
         for lbl, w in [("Parameter", self.param), ("Base value", self.base_value), ("Gap (Δ)", self.gap)]:
-            f.addRow(lbl, w)
+            _add_row(f, lbl, w)
 
     def refresh(self, items):
         """Rebuild the parameter menu from (label, path) items."""
@@ -103,7 +135,7 @@ class CompareTwoParamsGroup(QGroupBox):
         self.value_a = double_box(0.20, -1e6, 1e6, dec=4, step=0.05)
         self.value_b = double_box(0.40, -1e6, 1e6, dec=4, step=0.05)
         for lbl, w in [("Parameter", self.param), ("Value A", self.value_a), ("Value B", self.value_b)]:
-            f.addRow(lbl, w)
+            _add_row(f, lbl, w)
 
     def refresh(self, items):
         """Rebuild the parameter menu from (label, path) items."""
@@ -132,7 +164,7 @@ class SweepParamsGroup(QGroupBox):
             ("Rows", self.n_rows),
             ("Cols", self.n_cols),
         ]:
-            f.addRow(lbl, w)
+            _add_row(f, lbl, w)
 
     def refresh(self, items):
         """Rebuild the parameter menu from (label, path) items."""
@@ -167,7 +199,7 @@ class Sweep2DParamsGroup(QGroupBox):
             ("Col max", self.col_max),
             ("N cols", self.n_cols),
         ]:
-            f.addRow(lbl, w)
+            _add_row(f, lbl, w)
 
     def refresh(self, items):
         """Rebuild both parameter menus from (label, path) items."""
@@ -206,7 +238,7 @@ class SensitivitySweepParamsGroup(QGroupBox):
             ("Base value", self.base_value),
             ("Gap (Δ)", self.gap),
         ]:
-            f.addRow(lbl, w)
+            _add_row(f, lbl, w)
 
         f.addRow(section_label("Sweep"))
         self.sweep_param = QComboBox()
@@ -221,7 +253,7 @@ class SensitivitySweepParamsGroup(QGroupBox):
             ("Rows", self.n_rows),
             ("Cols", self.n_cols),
         ]:
-            f.addRow(lbl, w)
+            _add_row(f, lbl, w)
 
     def refresh(self, items):
         """Rebuild both parameter menus from (label, path) items."""
@@ -257,7 +289,7 @@ class SensitivitySweep2DParamsGroup(QGroupBox):
             ("Base value", self.base_value),
             ("Gap (Δ)", self.gap),
         ]:
-            f.addRow(lbl, w)
+            _add_row(f, lbl, w)
 
         f.addRow(section_label("Row sweep"))
         self.row_param = QComboBox()
@@ -270,7 +302,7 @@ class SensitivitySweep2DParamsGroup(QGroupBox):
             ("Row max", self.row_max),
             ("N rows", self.n_rows),
         ]:
-            f.addRow(lbl, w)
+            _add_row(f, lbl, w)
 
         f.addRow(section_label("Col sweep"))
         self.col_param = QComboBox()
@@ -283,7 +315,7 @@ class SensitivitySweep2DParamsGroup(QGroupBox):
             ("Col max", self.col_max),
             ("N cols", self.n_cols),
         ]:
-            f.addRow(lbl, w)
+            _add_row(f, lbl, w)
 
     def refresh(self, items):
         """Rebuild the three parameter menus from (label, path) items."""
@@ -345,6 +377,18 @@ class CompareMethodsParamsGroup(QGroupBox):
             self.methods.addItem(item)
         self.methods.setMinimumHeight(180)
         layout.addWidget(self.methods)
+        explain = QHBoxLayout()
+        explain.addWidget(QLabel("About the highlighted method:"))
+        explain.addWidget(HelpButton(self.highlighted_topic))
+        explain.addStretch(1)
+        layout.addLayout(explain)
+
+    def highlighted_topic(self):
+        """Help on the method highlighted in the list (the first, when none is)."""
+        from toporia.plugins.methods import method_class
+
+        item = self.methods.currentItem() or self.methods.item(0)
+        return plugin_topic(method_class(item.data(Qt.UserRole)), "method")
 
     def selected(self):
         """The ticked methods' names, in list order."""
@@ -362,3 +406,33 @@ class CompareMethodsParamsGroup(QGroupBox):
 
     def refresh(self, items):
         """The method list does not depend on the parameter paths."""
+
+
+class MethodsSweepParamsGroup(CompareMethodsParamsGroup):
+    """The ticked methods down the rows, one setting swept across the columns (Sweep Methods mode).
+
+    Shows how each optimiser reacts to the same change, e.g. the volume
+    fraction or the filter radius: every cell is a whole run, held to the same
+    problem, mesh and stopping rule, with only the method and the setting varied.
+    """
+
+    def __init__(self, parent=None):
+        super().__init__(parent)
+        self.setTitle("Sweep Methods")
+        form = QFormLayout()
+        self.param = QComboBox()
+        self.min_val = double_box(0.2, -1e6, 1e6, dec=4, step=0.05)
+        self.max_val = double_box(0.5, -1e6, 1e6, dec=4, step=0.05)
+        self.n_values = int_box(3, 1, 20)
+        for lbl, w in [("Parameter", self.param), ("Min", self.min_val), ("Max", self.max_val),
+                       ("Values", self.n_values)]:
+            _add_row(form, lbl, w)
+        self.layout().addLayout(form)
+
+    def refresh(self, items):
+        """Rebuild the swept-parameter menu from (label, path) items."""
+        fill_combo(self.param, items, prefer="volfrac")
+
+    def key(self):
+        """The parameter path swept across the columns."""
+        return self.param.currentData() or self.param.currentText()

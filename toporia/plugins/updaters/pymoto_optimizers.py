@@ -65,6 +65,10 @@ class PymotoMMAUpdater(Updater):
 
     name = "pymoto_mma"
     label = "MMA (pyMOTO)"
+    reference = (
+        "K. Svanberg, Int. J. Numer. Meth. Eng. 24 (1987) 359-373, in pyMOTO's implementation:"
+        ' https://github.com/aatmdelissen/pyMOTO'
+    )
     order = 30
     params = (MOVE,)
     max_constraints = None   # pyMOTO's MMA takes any number of constraints
@@ -102,5 +106,10 @@ class PymotoGCMMAUpdater(PymotoMMAUpdater):
 
     name = "pymoto_gcmma"
     label = "GCMMA (pyMOTO)"
+    reference = (
+        'K. Svanberg, "A class of globally convergent optimization methods based on conservative'
+        ' convex separable approximations", SIAM J. Optim. 12 (2002) 555-573, in pyMOTO\'s'
+        ' implementation: https://github.com/aatmdelissen/pyMOTO'
+    )
     order = 40
     version = "GCMMA"

@@ -10,6 +10,7 @@
 # Keeping them here means each mode file only says what it varies and what it
 # draws, and every mode prints and saves the same way.
 
+import textwrap
 import time
 from pathlib import Path
 
@@ -63,14 +64,23 @@ FIGURES = {"pixels_per_inch": 120, "smallest_cell": (4.0, 2.5), "dpi": 150,
 
 
 def save_grid(images, n_rows, n_cols, path, look, fontsize):
-    """Lay out `images`, a row-major list of (image path, title), as one PNG; return its path."""
-    height, width = mpimg.imread(str(images[0][0])).shape[:2]
+    """Lay out `images`, a row-major list of (image path, title), as one PNG; return its path.
+
+    An image path of None leaves its cell empty but for the title, written across the
+    middle of the cell (a run that was skipped, and why).
+    """
+    first = next(image for image, _ in images if image is not None)
+    height, width = mpimg.imread(str(first)).shape[:2]
     cell_w = max(look["smallest_cell"][0], width / look["pixels_per_inch"])
     cell_h = max(look["smallest_cell"][1], height / look["pixels_per_inch"])
     fig, axes = plt.subplots(n_rows, n_cols, squeeze=False, figsize=(cell_w * n_cols, cell_h * n_rows))
     for ax, (image, title) in zip(axes.flat, images, strict=False):
-        ax.imshow(mpimg.imread(str(image)), **look["show"])
-        ax.set_title(title, fontsize=fontsize)
+        if image is None:
+            ax.text(0.5, 0.5, "\n".join(textwrap.fill(line, 38) for line in title.split("\n")),
+                    ha="center", va="center", fontsize=fontsize, color="gray", transform=ax.transAxes)
+        else:
+            ax.imshow(mpimg.imread(str(image)), **look["show"])
+            ax.set_title(title, fontsize=fontsize)
         ax.axis("off")
         if look["equal_aspect"]:
             ax.axis("equal")
