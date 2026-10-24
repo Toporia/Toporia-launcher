@@ -24,7 +24,8 @@ NAME = "Cantilever"
 ORDER = 20
 ABOUT = 'A beam clamped along one end with a point load at mid-height of the free end.'
 REFERENCE = ("A classic benchmark, e.g. the cantilever example of Sigmund's 99-line code (Struct."
-             ' Multidisc. Optim. 21 (2001) 120-127).')
+             ' Multidisc. Optim. 21 (2001) 120-127).'
+             ' Papers: https://doi.org/10.1007/s001580050176')
 
 
 def scenario() -> Scenario:

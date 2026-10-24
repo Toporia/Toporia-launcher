@@ -172,6 +172,7 @@ class NLoptMMA(_CCSAFamily):
     reference = (
         'NLopt LD_MMA (S. G. Johnson, github.com/stevengj/nlopt); K. Svanberg, Int. J. Numer. '
         'Meth. Eng. 24 (1987) 359-373 and SIAM J. Optim. 12 (2002) 555-573.'
+        ' Papers: https://doi.org/10.1002/nme.1620240207 https://doi.org/10.1137/S1052623499362822'
     )
     label = "MMA (NLopt)"
     order = 80
@@ -185,6 +186,7 @@ class NLoptCCSAQ(_CCSAFamily):
     reference = (
         'NLopt LD_CCSAQ (S. G. Johnson, github.com/stevengj/nlopt); K. Svanberg, SIAM J. '
         'Optim. 12 (2002) 555-573.'
+        ' Papers: https://doi.org/10.1137/S1052623499362822'
     )
     label = "CCSAQ (NLopt)"
     order = 81
@@ -213,6 +215,7 @@ class NLoptAugLag(NLoptOptimizer):
         'NLopt AUGLAG with LD_LBFGS (S. G. Johnson, github.com/stevengj/nlopt); A. R. Conn, '
         'N. I. M. Gould and P. L. Toint, SIAM J. Numer. Anal. 28 (1991) 545-572; E. G. Birgin '
         'and J. M. Martinez, Optim. Methods Softw. 23 (2008) 177-195.'
+        ' Papers: https://doi.org/10.1137/0728030 https://doi.org/10.1080/10556780701577730'
     )
     label = "Augmented Lagrangian + L-BFGS (NLopt)"
     order = 83

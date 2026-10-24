@@ -26,6 +26,7 @@ class Volume(Response):
     reference = (
         "Least material under a stress limit, as in pyMOTO's stress example and in C. Le et al.,"
         ' Struct. Multidisc. Optim. 41 (2010) 605-620.'
+        ' Papers: https://doi.org/10.1007/s00158-009-0440-y'
     )
     order = 20
     roles = (OBJECTIVE_ROLE,)

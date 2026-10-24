@@ -34,6 +34,7 @@ class SensitivityFilter(Filter):
     reference = (
         "Sigmund's heuristic sensitivity filter (Struct. Optim. 1997), as in the 99-line code"
         ' (Sigmund 2001) and top88 (Andreassen et al. 2011).'
+        ' Papers: https://doi.org/10.1080/08905459708945415 https://doi.org/10.1007/s001580050176 https://doi.org/10.1007/s00158-010-0594-7'
     )
     dims = (2, 3)
     order = 20

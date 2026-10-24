@@ -19,6 +19,7 @@ class H8Model(AssembledModel):
     reference = (
         'K. Liu, A. Tovar, "An efficient 3D topology optimization code written in Matlab", Struct.'
         ' Multidisc. Optim. 50 (2014) 1175-1196 (top3d).'
+        ' Papers: https://doi.org/10.1007/s00158-014-1107-x'
     )
     order = 15
     physics = H8Solid

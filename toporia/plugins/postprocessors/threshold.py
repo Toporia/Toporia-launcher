@@ -28,6 +28,7 @@ class Threshold(PostProcessor):
         'Cutting to black and white and analysing again, as method comparisons do, e.g. S.'
         ' Rojas-Labanda, M. Stolpe, "Benchmarking optimization solvers for structural topology'
         ' optimization", Struct. Multidisc. Optim. 52 (2015) 527-547.'
+        ' Papers: https://doi.org/10.1007/s00158-015-1250-z'
     )
     order = 10
     table_metrics = ("compliance", "increase_pct")

@@ -68,6 +68,7 @@ class PymotoMMAUpdater(Updater):
     reference = (
         "K. Svanberg, Int. J. Numer. Meth. Eng. 24 (1987) 359-373, in pyMOTO's implementation:"
         ' https://github.com/aatmdelissen/pyMOTO'
+        ' Papers: https://doi.org/10.1002/nme.1620240207'
     )
     order = 30
     params = (MOVE,)
@@ -110,6 +111,7 @@ class PymotoGCMMAUpdater(PymotoMMAUpdater):
         'K. Svanberg, "A class of globally convergent optimization methods based on conservative'
         ' convex separable approximations", SIAM J. Optim. 12 (2002) 555-573, in pyMOTO\'s'
         ' implementation: https://github.com/aatmdelissen/pyMOTO'
+        ' Papers: https://doi.org/10.1137/S1052623499362822'
     )
     order = 40
     version = "GCMMA"

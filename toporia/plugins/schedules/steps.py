@@ -18,6 +18,7 @@ class Steps(Schedule):
     reference = (
         'The classic SIMP continuation, p raised in steps; see O. Sigmund, J. Petersson, "Numerical'
         ' instabilities in topology optimization", Struct. Optim. 16 (1998) 68-75.'
+        ' Papers: https://doi.org/10.1007/BF01214002'
     )
     order = 10
     params = (START, END,

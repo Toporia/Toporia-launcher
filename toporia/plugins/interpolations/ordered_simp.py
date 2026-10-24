@@ -38,6 +38,7 @@ class OrderedSIMP(Interpolation):
     reference = (
         'W. Zuo and K. Saitou, "Multi-material topology optimization using ordered SIMP '
         'interpolation", Struct. Multidisc. Optim. 55 (2017) 477-491.'
+        ' Papers: https://doi.org/10.1007/s00158-016-1513-3'
     )
     label = "Ordered SIMP (multi-material)"
     order = 30

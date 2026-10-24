@@ -82,6 +82,7 @@ class PdeFilter(Filter):
         'Helmholtz-type differential equations", Int. J. Numer. Meth. Eng. 86 (2011) 765-781; '
         'implemented as in the PDE-filter variant of top88 (Andreassen et al., Struct. '
         'Multidisc. Optim. 43 (2011) 1-16).'
+        ' Papers: https://doi.org/10.1002/nme.3072 https://doi.org/10.1007/s00158-010-0594-7'
     )
     label = "PDE (Helmholtz) filter"
     dims = (2, 3)

@@ -36,7 +36,8 @@ ABOUT = ('An L-shaped plate clamped along its top edge and loaded at the tip of 
          ' standard stress benchmark, where a compliance design leaves the re-entrant corner sharp.')
 REFERENCE = ('P. Duysinx and M. P. Bendsoe, Int. J. Numer. Meth. Eng. 43 (1998) 1453-1478; C. Le, J.'
              ' Norato, T. Bruns, C. Ha and D. Tortorelli, Struct. Multidisc. Optim. 41 (2010) 605-620.'
-             ' Dimensions as commonly used, not checked against the papers.')
+             ' Dimensions as commonly used, not checked against the papers.'
+             ' Papers: https://doi.org/10.1002/%28SICI%291097-0207%2819981230%2943:8%3C1453::AID-NME480%3E3.0.CO%3B2-2 https://doi.org/10.1007/s00158-009-0440-y')
 
 
 def scenario() -> Scenario:

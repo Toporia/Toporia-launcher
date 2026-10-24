@@ -67,6 +67,7 @@ class VonMisesStress(Response):
         'p-norm aggregation with adaptive scaling: C. Le, J. Norato, T. Bruns, C. Ha, D.'
         ' Tortorelli, "Stress-based topology optimization for continua", Struct. Multidisc. Optim.'
         " 41 (2010) 605-620; the rho^q relaxation as in pyMOTO's stress example."
+        ' Papers: https://doi.org/10.1007/s00158-009-0440-y'
     )
     order = 30
     roles = (CONSTRAINT_ROLE,)

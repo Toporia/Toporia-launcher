@@ -82,6 +82,7 @@ class MovingMorphableComponents(Representation):
     reference = (
         'X. Guo, W. Zhang, W. Zhong, "Doing topology optimization explicitly and geometrically - a'
         ' new moving morphable components based framework", J. Appl. Mech. 81 (2014) 081009.'
+        ' Papers: https://doi.org/10.1115/1.4027609 https://doi.org/10.1007/s00158-015-1372-3'
     )
     order = 20
     element_wise = False

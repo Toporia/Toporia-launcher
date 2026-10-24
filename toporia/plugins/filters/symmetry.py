@@ -36,6 +36,7 @@ class SymmetryFilter(Filter):
     reference = (
         "Toporia's own: mirror averaging, the usual way to impose symmetry (see M. P. Bendsoe, O."
         ' Sigmund, Topology Optimization, Springer 2003).'
+        ' Papers: https://doi.org/10.1007/978-3-662-05086-6'
     )
     order = 60
     params = (

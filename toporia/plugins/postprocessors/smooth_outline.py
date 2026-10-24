@@ -84,6 +84,7 @@ class SmoothOutline(PostProcessor):
         'Smoothing of extracted outlines as reviewed in Subedi et al., J. Comput. Inf. Sci. '
         'Eng. (2020); periodic smoothing splines (SciPy splprep) or Chaikin corner cutting '
         '(Chaikin 1974).'
+        ' Papers: https://doi.org/10.1115/1.4047429 https://doi.org/10.1016/0146-664X%2874%2990028-8'
     )
     label = "Smooth outline (SVG + DXF)"
     order = 55

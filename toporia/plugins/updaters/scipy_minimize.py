@@ -72,6 +72,7 @@ class ScipyTrustConstr(ExternalOptimizer):
     reference = (
         "SciPy's trust-constr (scipy.optimize.minimize); A. R. Conn, N. I. M. Gould and P. L. "
         'Toint, Trust-Region Methods, SIAM 2000.'
+        ' Papers: https://doi.org/10.1137/1.9780898719857'
     )
     label = "trust-constr (SciPy)"
     order = 71

@@ -65,6 +65,7 @@ class MultiConstraintOC(Updater):
         'Rozvany, "The COC algorithm, Part II: Topological, geometrical and generalized shape '
         'optimization", Comput. Methods Appl. Mech. Eng. 89 (1991) 309-336; Toporia\'s own '
         'version.'
+        ' Papers: https://doi.org/10.1016/0045-7825%2891%2990046-9'
     )
     label = "Optimality criteria, several constraints"
     order = 15

@@ -62,6 +62,7 @@ class AdamUpdater(Updater):
         'D. P. Kingma and J. Ba, "Adam: a method for stochastic optimization", ICLR 2015; the '
         'penalised volume budget as in A. Chandrasekhar and K. Suresh, "TOuNN", Struct. '
         'Multidisc. Optim. 63 (2021) 1135-1149.'
+        ' Papers: https://arxiv.org/abs/1412.6980 https://doi.org/10.1007/s00158-020-02748-4'
     )
     label = "Adam (augmented Lagrangian)"
     order = 70

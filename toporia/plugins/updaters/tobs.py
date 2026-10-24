@@ -71,6 +71,7 @@ class TOBSUpdater(Updater):
         'R. Sivapuram and Y. M. Xie, "A 101-line MATLAB code for topology optimization using '
         'binary variables and integer programming", Struct. Multidisc. Optim. 63 (2021) '
         '935-954. The integer program is solved with HiGHS through scipy.optimize.milp.'
+        ' Papers: https://doi.org/10.1016/j.finel.2017.10.006 https://doi.org/10.1007/s00158-020-02719-9'
     )
     label = "TOBS (integer LP)"
     order = 65

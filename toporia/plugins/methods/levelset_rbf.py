@@ -40,6 +40,7 @@ class LevelSetRBFMethod(OptimizationMethod):
     reference = (
         'A port of TOPRBF.m (Luo et al.); radial-basis-function level sets after Wang & Wang, CMAME'
         ' 2006.'
+        ' Papers: https://doi.org/10.1002/nme.1536 https://doi.org/10.1007/s00158-018-1904-8'
     )
     order = 30
     params = (

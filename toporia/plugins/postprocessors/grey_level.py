@@ -33,6 +33,7 @@ class GreyLevel(PostProcessor):
     reference = (
         'The measure of non-discreteness of O. Sigmund, "Morphology-based black and white '
         'filters for topology optimization", Struct. Multidisc. Optim. 33 (2007) 401-424.'
+        ' Papers: https://doi.org/10.1007/s00158-006-0087-x'
     )
     label = "Grey level (M_nd) over the run"
     order = 20

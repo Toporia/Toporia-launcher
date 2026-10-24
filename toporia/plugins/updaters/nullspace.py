@@ -118,6 +118,7 @@ class NullspaceUpdater(ExternalOptimizer):
         'optimization with applications to shape optimization", ESAIM: COCV 26 (2020) 90, '
         'through the nullspace_optimizer package '
         '(gitlab.com/florian.feppon/null-space-optimizer, GPL-3).'
+        ' Papers: https://doi.org/10.1051/cocv/2020015'
     )
     label = "Null-space optimiser"
     order = 80

@@ -43,6 +43,7 @@ class HardKillBESOUpdater(BESOUpdater):
         'X. Huang and Y. M. Xie, Evolutionary Topology Optimization of Continuum Structures, '
         'Wiley 2010 (hard-kill BESO); critique: M. Zhou and G. I. N. Rozvany, Struct. '
         'Multidisc. Optim. 21 (2001) 80-83.'
+        ' Papers: https://doi.org/10.1002/9780470689486 https://doi.org/10.1007/s001580050170'
     )
     label = "BESO (hard kill)"
     order = 61

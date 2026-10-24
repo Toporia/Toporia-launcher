@@ -22,6 +22,7 @@ class SIMP(Interpolation):
     reference = (
         'M. P. Bendsoe, "Optimal shape design as a material distribution problem", Structural'
         ' Optimization 1 (1989) 193-202.'
+        ' Papers: https://doi.org/10.1007/BF01650949'
     )
     order = 10
     params = (PENAL,)

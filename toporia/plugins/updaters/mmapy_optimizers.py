@@ -78,6 +78,7 @@ class MmapyMMAUpdater(Updater):
         'K. Svanberg, "The method of moving asymptotes", Int. J. Numer. Meth. Eng. 24 (1987) '
         '359-373, through the mmapy Python port by A. Deetman '
         '(github.com/arjendeetman/GCMMA-MMA-Python, GPL-3).'
+        ' Papers: https://doi.org/10.1002/nme.1620240207'
     )
     label = "MMA (mmapy)"
     order = 32
@@ -126,6 +127,7 @@ class MmapyGCMMAUpdater(Updater):
         'conservative convex separable approximations", SIAM J. Optim. 12 (2002) 555-573, '
         'through the mmapy Python port by A. Deetman '
         '(github.com/arjendeetman/GCMMA-MMA-Python, GPL-3).'
+        ' Papers: https://doi.org/10.1137/S1052623499362822'
     )
     label = "GCMMA (mmapy)"
     order = 42

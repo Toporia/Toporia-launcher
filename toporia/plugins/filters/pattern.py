@@ -38,6 +38,7 @@ class PatternFilter(Filter):
         'M. P. Bendsoe and O. Sigmund, Topology Optimization, Springer 2003; S. R. M. de '
         'Almeida, G. H. Paulino and E. C. N. Silva, Struct. Multidisc. Optim. 39 (2009) '
         '359-371.'
+        ' Papers: https://doi.org/10.1007/978-3-662-05086-6 https://doi.org/10.1007/s00158-008-0332-6'
     )
     label = "Pattern repetition"
     order = 80

@@ -101,6 +101,7 @@ class SiMPLUpdater(Updater):
         'B. Keith, D. Kim, B. S. Lazarov, T. M. Surowiec, "A simple introduction to the SiMPL'
         ' method for density-based topology optimization", Struct. Multidisc. Optim. 68 (2025);'
         ' https://arxiv.org/abs/2411.19421'
+        ' Papers: https://doi.org/10.1007/s00158-025-04008-9'
     )
     order = 30
     params = (

@@ -28,6 +28,7 @@ class MMAUpdater(Updater):
         'K. Svanberg, "The method of moving asymptotes - a new method for structural optimization",'
         ' Int. J. Numer. Meth. Eng. 24 (1987) 359-373; the one-constraint form follows the MMA'
         ' variant of top88.'
+        ' Papers: https://doi.org/10.1002/nme.1620240207 https://doi.org/10.1007/s00158-010-0594-7'
     )
     order = 20
     params = (

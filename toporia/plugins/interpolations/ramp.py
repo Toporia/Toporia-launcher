@@ -26,6 +26,7 @@ class RAMP(Interpolation):
     reference = (
         'M. Stolpe, K. Svanberg, "An alternative interpolation scheme for minimum compliance'
         ' topology optimization", Struct. Multidisc. Optim. 22 (2001) 116-124.'
+        ' Papers: https://doi.org/10.1007/s001580100129'
     )
     order = 20
     schedulable = ("q",)

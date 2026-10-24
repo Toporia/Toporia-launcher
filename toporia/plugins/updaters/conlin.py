@@ -57,6 +57,7 @@ class ConlinUpdater(Updater):
         'variables", Int. J. Numer. Meth. Eng. 23 (1986) 409-428; C. Fleury, "First and '
         'second order convex approximation strategies in structural optimization", Struct. '
         'Optim. 1 (1989) 3-10.'
+        ' Papers: https://doi.org/10.1002/nme.1620230307 https://doi.org/10.1007/BF01743804'
     )
     label = "CONLIN (convex linearisation)"
     order = 25

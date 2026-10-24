@@ -34,7 +34,8 @@ ABOUT = ('The left half of a simply supported beam loaded at its centre, using s
          ' canonical benchmark of topology optimisation.')
 REFERENCE = ("Named after Messerschmitt-Bölkow-Blohm; the half-beam setup and settings of Sigmund's"
              ' 99-line code (2001) and top88 (Andreassen et al., Struct. Multidisc. Optim. 43 (2011)'
-             ' 1-16).')
+             ' 1-16).'
+             ' Papers: https://doi.org/10.1007/s001580050176 https://doi.org/10.1007/s00158-010-0594-7')
 
 
 def scenario() -> Scenario:

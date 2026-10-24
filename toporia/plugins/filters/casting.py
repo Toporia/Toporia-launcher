@@ -56,6 +56,7 @@ class CastingFilter(Filter):
         'A. R. Gersborg and C. S. Andreasen, "An explicit parameterization for casting '
         'constraints in gradient driven topology optimization", Struct. Multidisc. Optim. 44 '
         '(2011) 875-881.'
+        ' Papers: https://doi.org/10.1007/s00158-011-0632-0'
     )
     label = "Casting (no undercuts)"
     order = 90

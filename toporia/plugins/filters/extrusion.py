@@ -42,6 +42,7 @@ class ExtrusionFilter(Filter):
     reference = (
         'K. Ishii and S. Aomura, "Topology optimization for the extruded three dimensional '
         'structure with constant cross section", JSME Int. J. Series A 47 (2004) 198-206.'
+        ' Papers: https://doi.org/10.1299/jsmea.47.198'
     )
     label = "Extrusion (constant cross-section)"
     order = 70

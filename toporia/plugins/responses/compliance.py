@@ -21,6 +21,7 @@ class Compliance(Response):
     reference = (
         'The classic objective of topology optimisation: M. P. Bendsoe, O. Sigmund, Topology'
         ' Optimization: Theory, Methods and Applications, Springer 2003.'
+        ' Papers: https://doi.org/10.1007/978-3-662-05086-6'
     )
     order = 10
     roles = (OBJECTIVE_ROLE,)

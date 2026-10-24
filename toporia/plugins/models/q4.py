@@ -26,6 +26,7 @@ class Q4Model(AssembledModel):
         'The physics half of the top88 code: E. Andreassen, A. Clausen, M. Schevenels, B. S.'
         ' Lazarov, O. Sigmund, "Efficient topology optimization in MATLAB using 88 lines of code",'
         ' Struct. Multidisc. Optim. 43 (2011) 1-16.'
+        ' Papers: https://doi.org/10.1007/s00158-010-0594-7'
     )
     order = 10
     physics = Q4PlaneStress

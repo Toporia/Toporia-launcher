@@ -71,6 +71,7 @@ class BESOUpdater(Updater):
         ' evolutionary structural optimization method", Finite Elem. Anal. Des. 43 (2007) 1039-1049;'
         ' X. Huang, Y. M. Xie, "Evolutionary Topology Optimization of Continuum Structures", Wiley'
         ' (2010).'
+        ' Papers: https://doi.org/10.1016/j.finel.2007.06.006 https://doi.org/10.1002/9780470689486'
     )
     order = 60
     params = (

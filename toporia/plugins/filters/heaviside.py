@@ -68,6 +68,7 @@ class HeavisideFilter(Filter):
         ' 238-254; the tanh form with threshold eta from F. Wang, B. S. Lazarov, O. Sigmund, "On'
         ' projection methods, convergence and robust formulations in topology optimization", Struct.'
         ' Multidisc. Optim. 43 (2011) 767-784.'
+        ' Papers: https://doi.org/10.1002/nme.1064 https://doi.org/10.1007/s00158-010-0602-y https://doi.org/10.1007/s00158-020-02629-w'
     )
     dims = (2, 3)           # pointwise: any dimension
     order = 30

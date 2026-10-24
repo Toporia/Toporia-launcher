@@ -51,6 +51,7 @@ class PTOUpdater(Updater):
     reference = (
         'E. Biyikli and A. C. To, "Proportional topology optimization: a new non-sensitivity '
         'method for structural optimization", PLoS ONE 10 (2015) e0145041 (ptomethod.org).'
+        ' Papers: https://doi.org/10.1371/journal.pone.0145041'
     )
     label = "Proportional topology optimisation"
     order = 80

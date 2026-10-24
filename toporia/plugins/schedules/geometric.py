@@ -18,6 +18,7 @@ class Geometric(Schedule):
     reference = (
         'Multiplying by a factor is the usual beta continuation of a Heaviside projection (Guest et'
         ' al. 2004; Wang, Lazarov & Sigmund 2011).'
+        ' Papers: https://doi.org/10.1002/nme.1064 https://doi.org/10.1007/s00158-010-0602-y'
     )
     order = 20
     params = (START,

@@ -26,6 +26,7 @@ class OCUpdater(Updater):
         ' written in Matlab", Struct. Multidisc. Optim. 21 (2001) 120-127, as written in top88: E.'
         ' Andreassen, A. Clausen, M. Schevenels, B. S. Lazarov, O. Sigmund, "Efficient topology'
         ' optimization in MATLAB using 88 lines of code", Struct. Multidisc. Optim. 43 (2011) 1-16.'
+        ' Papers: https://doi.org/10.1007/s001580050176 https://doi.org/10.1007/s00158-010-0594-7'
     )
     order = 10
     params = (MOVE,)

@@ -66,6 +66,7 @@ class BSplineField(Representation):
     reference = (
         'X. Qian, "Topology optimization in B-spline space", Comput. Methods Appl. Mech. Eng. '
         '265 (2013) 15-35.'
+        ' Papers: https://doi.org/10.1016/j.cma.2013.06.001'
     )
     label = "B-spline field"
     order = 30

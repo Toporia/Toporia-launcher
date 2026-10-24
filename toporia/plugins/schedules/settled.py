@@ -29,6 +29,7 @@ class Settled(Schedule):
         'Continuation raised when the design has settled, common practice in the projection '
         'literature, e.g. F. Wang, B. S. Lazarov and O. Sigmund, Struct. Multidisc. Optim. 43 '
         "(2011) 767-784; Toporia's own rule."
+        ' Papers: https://doi.org/10.1007/s00158-010-0602-y'
     )
     label = "When the design settles"
     order = 40

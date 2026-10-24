@@ -29,6 +29,7 @@ class DensityFilter(Filter):
         'T. E. Bruns, D. A. Tortorelli, "Topology optimization of non-linear elastic structures and'
         ' compliant mechanisms", CMAME 190 (2001) 3443-3459; B. Bourdin, "Filters in topology'
         ' optimization", IJNME 50 (2001) 2143-2158.'
+        ' Papers: https://doi.org/10.1016/S0045-7825%2800%2900278-4 https://doi.org/10.1002/nme.116 https://doi.org/10.1007/s00158-010-0594-7'
     )
     dims = (2, 3)
     order = 10
