@@ -9,6 +9,10 @@ Those lists are a map of the field, not a promise. They exist so that anyone ope
 repository can see at a glance where Toporia sits in topology optimisation as a whole, and
 what the next honest step is.
 
+**For the short version, read [LIBRARY.md](LIBRARY.md).** It lists every part in the
+library, where each comes from, and what to add next. This page explains the layout and the
+markers.
+
 ## Status labels
 
 Every entry in every table in this library carries exactly one of these:
