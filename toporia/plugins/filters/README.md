@@ -12,7 +12,7 @@ This layer is not optional decoration — it is what makes the problem well pose
 the AM overhang, routing and symmetry filters are written for plane problems and are refused
 on a 3-D one, with the filters that can.
 
-**Status: 11 plugins in Toporia (Heaviside includes a volume-preserving option) · 1 with open code · 9 paper only**
+**Status: 12 plugins in Toporia (Heaviside includes a volume-preserving option) · 1 with open code · 8 paper only**
 
 | Label | Meaning |
 | :-- | :-- |
@@ -28,6 +28,7 @@ on a 3-D one, with the filters that can.
 | ✅ Sensitivity filter | [`filter_sensitivity.py`](sensitivity.py) | `sensitivity` | Sigmund, *Struct. Optim.* 1997 |
 | ✅ Heaviside projection, free threshold η | [`filter_heaviside.py`](heaviside.py) | `heaviside` | Guest et al., *IJNME* 2004; `tanh` form from Wang, Lazarov & Sigmund, *SMO* 2011 |
 | ✅ PDE / Helmholtz filter (open code: top82.m) | [`pde.py`](pde.py) | `pde` | Lazarov & Sigmund, *IJNME* 86 (2011) 765–781; Andreassen et al., *SMO* 43 (2011) |
+| ✅ Anisotropic PDE / Helmholtz filter | [`pde_anisotropic.py`](pde_anisotropic.py) | `pde_anisotropic` | Axis-aligned directional extension of Lazarov & Sigmund 2011; conservative cell-centred finite volumes. |
 | ✅ Volume-preserving Heaviside (open code: top99neo) | [`heaviside.py`](heaviside.py), `eta_mode = volume_preserving` | `heaviside` | Xu, Cai & Cheng, *SMO* 41 (2010) 495–505; Ferrari & Sigmund, *SMO* 62 (2020) |
 | ✅ AM overhang filter | [`filter_am.py`](am.py) | `am` | Langelaar, *Addit. Manuf.* 2016; *SMO* 2017 |
 | ✅ Symmetry filter | [`filter_symmetry.py`](symmetry.py) | `symmetry` | standard practice |
@@ -56,6 +57,31 @@ route to anisotropic filters and unstructured meshes.
 - GUI: pick **PDE (Helmholtz) filter** in the filter list.
 - Solver config: `"filter_specs": [{"type": "pde", "rmin": 3.0}]`.
 - CLI: `toporia run "MBB Beam" --set method=q4+oc --set 'filter_specs=[{"type": "pde", "rmin": 3.0}]'`
+
+## Anisotropic PDE filter
+
+[`pde_anisotropic.py`](pde_anisotropic.py) solves
+`−div(D grad(ρ̄)) + ρ̄ = ρ` with zero boundary flux. The diagonal tensor has entries
+`rmin_x²/12`, `rmin_y²/12` and, in 3-D, `rmin_z²/12`, in mesh coordinates.
+Radii are measured in elements. A zero radius leaves that direction unsmoothed;
+all radii zero give the identity. The default radii are 3 along x and 1.5 along y/z.
+
+This is Toporia's directional extension of
+[Lazarov & Sigmund (2011)](https://doi.org/10.1002/nme.3072). Cell-centred finite
+volumes give a symmetric operator with a non-negative inverse, so constants,
+volume and density bounds are preserved even for strongly unequal radii. One
+factorisation serves both forward filtering and the exact adjoint. Axes align
+with the grid; rotated diffusion tensors are not part of this filter.
+The existing `pde` uses nodal finite elements: equal directional radii recover
+the isotropic PDE, with a different discrete operator. Its old results are unchanged.
+
+- GUI: choose **Anisotropic PDE (Helmholtz) filter** and set the x/y/z radii.
+- Solver config: `"filter_specs": [{"type":"pde_anisotropic","rmin_x":3,"rmin_y":1.5}]`.
+- Verified CLI example (PowerShell 7 or Bash): `toporia run "MBB Beam" --set method=q4+oc --set 'filter_specs=[{"type":"pde_anisotropic","rmin_x":3,"rmin_y":1.5}]' --set m=0.3 --set max_iter=40`.
+
+Tests cover 2-D/3-D conservation and adjoints, strong-anisotropy density bounds,
+zero-radius directions, directional point-response moments, the discrete cosine
+solution, and second-order convergence to the continuous Neumann solution.
 
 ## Volume-preserving Heaviside
 
@@ -155,7 +181,6 @@ explicit casting parameterisation, not Xia et al.'s level-set formulation.
 
 | Filter | Status | Reference | Why it matters |
 | :-- | :-- | :-- | :-- |
-| Anisotropic / directional filters | 📄 | Lazarov & Sigmund 2011 (PDE form) | Different length scales per direction, for rolled or printed material. Falls out of the PDE filter almost free. |
 | Multi-resolution design and analysis meshes | 📄 | Nguyen, Paulino, Song & Le, *SMO* 2010; Groen et al., *IJNME* 2017 | Fine density field over a coarse FE mesh. Large speed-ups, with a known risk of artificial fine-scale artefacts. |
 
 ## Candidates — length scale

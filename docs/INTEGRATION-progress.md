@@ -62,7 +62,7 @@ or partial logs are not evidence of a full-suite pass.
 
 ## Sequential queue after stabilisation
 
-### Completed: linearised buckling
+### Completed: linearised buckling (`b9f7a7f`)
 
 Recovered the five new files from `e081d88` into this checkout, without changing
 the old worktree or rebasing its branch. Added a BUCKLING interface section and
@@ -90,20 +90,43 @@ Catalogue counts are now registry-based: 72 selectable plugins, seven underlying
 physics engines, 16 presets. No implementations were removed; old totals counted
 composed pairings and parameter variants as additional implementations.
 
+### Completed: anisotropic PDE filter
+
+Added `filters/pde_anisotropic.py` as an
+independent axis-aligned Helmholtz filter with x/y/z radii. It uses conservative
+cell-centred finite volumes, a symmetric monotone matrix, one cached factorisation,
+and the exact adjoint. This preserves bounds at strong anisotropy and makes zero
+directional radii meaningful. The original nodal-FE `pde` is unchanged; equal radii
+solve the same isotropic PDE with a different discretisation.
+
+The 25 new/existing PDE tests pass. Filter conformance passes with largest adjoint
+error 1.7e-10. The CLI example (MBB, radii 3/1.5, 18 × 6 mesh, 40 iterations) is
+feasible at volume 0.499927 and compliance 319.90983. All 45 focused PDE, GUI,
+registry and golden tests pass. The full native suite passes: **1940 passed,
+one optional multigrid test skipped**, in 31 min 05 sec
+(`results/anisotropic-native-full.log`). Ruff and `git diff --check` pass.
+
+The first anisotropic full run (`results/anisotropic-full.log`) ended without a
+pytest summary at the TOBS benchmark after native CVXOPT import diagnostics,
+despite using normal library settings. This is an intermittent Windows sandbox
+issue, not explained by thread overrides alone. Automatic approval permitted the
+same suite to run outside the sandbox, with all outputs still under `results/`.
+That run completed without the diagnostic. No installed packages or global
+environment settings were changed, and no dependency checks were disabled.
+
 ### Remaining sequence
 
-1. Anisotropic PDE filter.
-2. Moving morphable voids.
-3. Floating projection.
-4. Simulated annealing: bounded evaluation budget; register only if conformance passes.
-5. Compliant mechanism response, port springs and force-inverter preset; pyMOTO cross-check.
-6. Geometry projection.
-7. Reaction-diffusion level set.
-8. Hamilton-Jacobi level set and topological derivative.
-9. Phase field.
-10. Explicit length scale, machining accessibility and projection-based self-support.
-11. Multiresolution design and analysis meshes.
-12. Neural reparameterisation (TOuNN), subject to dependency support on this Python/Windows setup.
+1. Moving morphable voids.
+2. Floating projection.
+3. Simulated annealing: bounded evaluation budget; register only if conformance passes.
+4. Compliant mechanism response, port springs and force-inverter preset; pyMOTO cross-check.
+5. Geometry projection.
+6. Reaction-diffusion level set.
+7. Hamilton-Jacobi level set and topological derivative.
+8. Phase field.
+9. Explicit length scale, machining accessibility and projection-based self-support.
+10. Multiresolution design and analysis meshes.
+11. Neural reparameterisation (TOuNN), subject to dependency support on this Python/Windows setup.
 
 Heat conduction, thermal/dynamic pyMOTO models, eigenfrequency, harmonic response,
 local stress with augmented Lagrangian, and nonlinear elasticity are already

@@ -24,7 +24,7 @@ A test (`tests/apps/test_gui.py`) fails if a part ever stops being reachable fro
 | **Wraps** | Calls an outside Python package. That package is installed separately. Parts whose package is missing are greyed out in the app, with the install command. |
 | **Own** | Toporia's own idea or standard practice. |
 
-## In the library today: 72 selectable parts and 16 benchmark problems
+## In the library today: 73 selectable parts and 16 benchmark problems
 
 The selectable parts include models and whole methods; their seven underlying
 physics engines are counted separately in the [catalogue totals](README.md).
@@ -43,6 +43,7 @@ physics engines are counted separately in the [catalogue totals](README.md).
 | :-- | :-- | :-- | :-- | :-- |
 | Density filter | `density` | [density.py](filters/density.py) | Port | top88 (Andreassen et al. 2011); Bruns & Tortorelli 2001; Bourdin 2001 · papers [1](https://doi.org/10.1016/S0045-7825%2800%2900278-4) [2](https://doi.org/10.1002/nme.116) [3](https://doi.org/10.1007/s00158-010-0594-7) |
 | PDE (Helmholtz) filter | `pde` | [pde.py](filters/pde.py) | Port | the PDE variant of top88 (top82.m); Lazarov & Sigmund 2011 · papers [1](https://doi.org/10.1002/nme.3072) [2](https://doi.org/10.1007/s00158-010-0594-7) |
+| Anisotropic PDE (Helmholtz) filter | `pde_anisotropic` | [pde_anisotropic.py](filters/pde_anisotropic.py) | Paper | Directional extension of Lazarov & Sigmund 2011, using conservative cell-centred finite volumes · [paper](https://doi.org/10.1002/nme.3072) |
 | Sensitivity filter | `sensitivity` | [sensitivity.py](filters/sensitivity.py) | Port | Sigmund 1997, as in the 99-line code and top88 · papers [1](https://doi.org/10.1080/08905459708945415) [2](https://doi.org/10.1007/s001580050176) [3](https://doi.org/10.1007/s00158-010-0594-7) |
 | Heaviside projection (fixed or volume-preserving threshold) | `heaviside` | [heaviside.py](filters/heaviside.py) | Paper | Guest et al. 2004; Wang, Lazarov & Sigmund 2011; volume-preserving as in top99neo (Ferrari & Sigmund 2020) · papers [1](https://doi.org/10.1002/nme.1064) [2](https://doi.org/10.1007/s00158-010-0602-y) [3](https://doi.org/10.1007/s00158-020-02629-w) |
 | Morphology filter (erode / dilate / open / close) | `morphology` | [morphology.py](filters/morphology.py) | Paper | Sigmund, *SMO* 2007 · [paper](https://doi.org/10.1007/s00158-006-0087-x) |
@@ -177,7 +178,6 @@ Listed from least to most effort. "Code" means open code exists (port it, or che
 
 | What | Kind | Source | Notes |
 | :-- | :-- | :-- | :-- |
-| Anisotropic PDE filter | filter | Paper: Lazarov & Sigmund 2011 · [paper](https://doi.org/10.1002/nme.3072) | a small extension of `pde` |
 | Moving morphable voids (MMV) | representation | Paper: Zhang et al., *CMAME* 2017 · [paper](https://doi.org/10.1016/j.cma.2017.05.002) | holes instead of bars |
 | Floating projection | optimiser | Paper: Huang, *Eng. Struct.* 2020 · [paper](https://doi.org/10.1016/j.engstruct.2020.110330) | binary designs without β continuation |
 | Simulated annealing | optimiser | Code: topASA | a "why it loses" baseline |

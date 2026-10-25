@@ -86,7 +86,7 @@ the matching MAKE item below.
 | [x] | PDE / Helmholtz filter | filter | Lazarov & Sigmund 2011; top88 |
 | [x] | Volume-preserving Heaviside | filter | Xu, Cai & Cheng 2010; top99neo |
 | [x] | Morphology: erode, dilate, open, close | filter | Sigmund 2007 |
-| [ ] | Anisotropic PDE filter | filter | Lazarov & Sigmund 2011 |
+| [x] | Anisotropic PDE filter | filter | Directional Helmholtz extension of Lazarov & Sigmund 2011, conservative finite volumes |
 | [x] | Extrusion, pattern repetition, casting direction | filter | Ishii & Aomura 2004; Bendsøe & Sigmund 2003; Xia et al. 2010 |
 | [~] | SINH, ordered SIMP, Hashin–Shtrikman | interpolation (ordered SIMP done; SINH and HS need the material law to see the volume response and ν) | Bruns 2005; Zuo & Saitou 2017; Bendsøe & Sigmund 1999 |
 | [~] | Convergence-triggered continuation, continuation-free projection (settled schedule done; continuation-free projection is a filter) | schedule | Wang et al. 2011; Guest et al. 2011 |

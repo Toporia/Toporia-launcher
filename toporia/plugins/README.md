@@ -31,7 +31,7 @@ Nothing is ever labelled ✅ until it is registered, tested, and reachable from 
 | :-- | :-- | --: | --: | --: |
 | [`methods/`](methods/README.md) | Whole methods; composed pairs are counted through their parts | 1 | 12 | 2 |
 | [`representations/`](representations/README.md) | What the design variables are | 3 | 1 | 2 |
-| [`filters/`](filters/README.md) | How it is smoothed, projected, made manufacturable | 11 | 1 | 9 |
+| [`filters/`](filters/README.md) | How it is smoothed, projected, made manufacturable | 12 | 1 | 8 |
 | [`interpolations/`](interpolations/README.md) | How density becomes stiffness (the material law) | 3 | 0 | 3 |
 | [`schedules/`](schedules/README.md) | How a parameter changes during the run (continuation) | 4 | 0 | 1 |
 | [`postprocessors/`](postprocessors/README.md) | What is made of the finished design: threshold, checks, exports | 8 | 0 | 1 |
@@ -40,9 +40,9 @@ Nothing is ever labelled ✅ until it is registered, tested, and reachable from 
 | [`responses/`](responses/README.md) | What is minimised or constrained | 10 | 4 | 13 |
 | [`updaters/`](updaters/README.md) | How the design moves each iteration | 22 | 4 | 1 |
 | [`problems/`](problems/README.md) | Benchmark problems and datasets | 16 | 6 | 1 |
-| **Total** | | **95** | **57** | **39** |
+| **Total** | | **96** | **57** | **38** |
 
-The implementation total is **72 registered selectable parts + 7 physics engines +
+The implementation total is **73 registered selectable parts + 7 physics engines +
 16 presets**. Counts follow registry classes: parameter options such as variable
 MMC thickness or volume-preserving Heaviside do not add another plugin. The 10
 models and 22 updaters form 220 named pairings; a pairing must support the chosen

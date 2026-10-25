@@ -39,7 +39,7 @@ any doubt about what this repository actually does today:
 | Layer | ✅ In Toporia | 🔗 Open code | 📄 Paper only |
 | :-- | :-- | --: | --: |
 | [Methods](toporia/plugins/methods/README.md) — how the design is described | SIMP density, RBF level set, BESO | 12 | 3 |
-| [Filters](toporia/plugins/filters/README.md) — regularisation and fabrication | density, sensitivity, Heaviside (fixed or volume-preserving), PDE, morphology, AM overhang, symmetry, routing, extrusion, pattern, casting | 1 | 9 |
+| [Filters](toporia/plugins/filters/README.md) — regularisation and fabrication | density, sensitivity, Heaviside (fixed or volume-preserving), PDE (isotropic or anisotropic), morphology, AM overhang, symmetry, routing, extrusion, pattern, casting | 1 | 8 |
 | [Design representations](toporia/plugins/representations/README.md) — what the variables are | element densities, moving morphable components (constant or variable thickness), B-spline fields | 1 | 2 |
 | [Material laws](toporia/plugins/interpolations/README.md) — density to stiffness | SIMP, RAMP, ordered SIMP | 0 | 3 |
 | [Schedules](toporia/plugins/schedules/README.md) — continuation, and robust variants | equal steps, geometric, linear ramp, when the design settles | 0 | 1 |
@@ -50,8 +50,8 @@ any doubt about what this repository actually does today:
 | [Updaters](toporia/plugins/updaters/README.md) — optimisers | OC, MMA, GCMMA, SiMPL, BESO, SLSQP, trust-constr, NLopt (MMA, CCSAQ, SLSQP, AUGLAG), mmapy (MMA, GCMMA), null-space, TOBS, CONLIN, multi-constraint OC, Adam, PTO, hard-kill BESO, augmented Lagrangian | 4 | 1 |
 | [Problems](toporia/plugins/problems/README.md) — benchmarks | MBB, robust MBB, cantilever, 3-D cantilever, Michell cantilever, L-bracket, L-bracket (local stress), heat sink, vibrating beam, column buckling, non-linear cantilever, 3-point bending, bar, 3× drone arm | 6 | 1 |
 
-**95 implementations: 72 selectable plugins, 7 physics engines and 16 presets.
-57 catalogue entries have open code elsewhere; 39 are paper-only.**
+**96 implementations: 73 selectable plugins, 7 physics engines and 16 presets.
+57 catalogue entries have open code elsewhere; 38 are paper-only.**
 Plugin counts follow the registries; composed pairings and parameter options are
 not counted again as additional implementations.
 
