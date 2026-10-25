@@ -38,12 +38,20 @@ def _subset(settings, params):
 
 def _combine(model_capabilities, updater):
     """A composed method can do what its model computes AND its updater handles."""
-    objectives = model_capabilities.objectives
+    from toporia.plugins.responses import RESPONSES
+
+    def allowed(name):
+        required = getattr(RESPONSES.get(name), "only_with_updaters", ())
+        return not required or updater.name in required
+
+    objectives = tuple(o for o in model_capabilities.objectives if allowed(o))
     if updater.objectives is not None:
         objectives = tuple(o for o in objectives if o in updater.objectives)
     limits = [n for n in (model_capabilities.max_constraints, updater.max_constraints) if n is not None]
     max_constraints = min(limits) if limits else None
-    constraints = model_capabilities.constraints if max_constraints != 0 else ()
+    constraints = tuple(c for c in model_capabilities.constraints if allowed(c)) if max_constraints != 0 else ()
+    if updater.constraints is not None:
+        constraints = tuple(c for c in constraints if c in updater.constraints)
     if not constraints:
         objectives = tuple(o for o in objectives if o not in model_capabilities.needs_constraint)
     return replace(model_capabilities, objectives=objectives, constraints=constraints,
@@ -233,7 +241,7 @@ def _check_response_updaters(model, updater_cls):
     understand it in `only_with_updaters`; any other updater would treat it as a
     plain constraint and quietly solve the wrong problem.
     """
-    for response in [getattr(model, "objective_response", None), *getattr(model, "constraints", ())]:
+    for response in [getattr(model, "objective", None), *getattr(model, "constraints", ())]:
         allowed = getattr(response, "only_with_updaters", ())
         if allowed and updater_cls.name not in allowed:
             raise ValueError(

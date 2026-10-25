@@ -8,10 +8,13 @@ method menu or not — and pin the rules the composition itself enforces.
 import importlib.util
 import itertools
 import warnings
+from dataclasses import replace
 
 import numpy as np
 import pytest
 
+from toporia.checks.model import _model_run
+from toporia.engine.loop import initialized_method
 from toporia.framework import Param
 from toporia.framework.parts.composition import ComposedMethod, compose
 from toporia.framework.parts.method import OBJECTIVE
@@ -27,6 +30,19 @@ from toporia.plugins.updaters.oc import OCUpdater
 from toporia.plugins.updaters.simpl import SiMPLUpdater
 
 PAIRS = list(itertools.product(MODELS.classes(), UPDATERS.classes()))
+
+
+def test_local_stress_is_only_offered_to_its_multiplier_updater():
+    assert "local_stress" not in method_class("q4+oc_multi").capabilities.constraints
+    assert "local_stress" not in method_class("q4+pymoto_mma").capabilities.constraints
+    assert method_class("q4+augmented_lagrangian").capabilities.constraints == ("local_stress",)
+
+
+def test_pymoto_vibration_refuses_compliance_before_building_its_network():
+    from toporia.plugins.models.pymoto_dynamic import PymotoDynamicModel
+    run = get_run("MBB Beam")
+    with pytest.raises(ValueError, match="cannot minimise 'compliance'"):
+        PymotoDynamicModel().initialize(make_problem(run.scenario, 0.3), run.solver, {})
 
 
 def _require_pymoto():
@@ -93,11 +109,28 @@ def test_a_parameter_clash_between_model_and_updater_is_rejected():
 def test_every_model_works_with_every_updater(model_cls, updater_cls):
     if _needs_pymoto(model_cls, updater_cls):
         _require_pymoto()
+    cls = _compose(model_cls, updater_cls)
+    if not cls.capabilities.objectives:
+        run = _model_run(model_cls, "MBB Beam").updated(
+            method=f"{model_cls.name}+{updater_cls.name}", constraints=[])
+        with pytest.raises(ValueError, match="cannot minimise"):
+            initialized_method(run)
+        return
+    run = _model_run(model_cls, "MBB Beam").updated(constraints=[], max_iter=3)
+    # Exercise a compatible objective; all models keep the same benchmark mesh.
+    objective = "compliance" if "compliance" in cls.capabilities.objectives else cls.capabilities.objectives[0]
+    run = replace(run, scenario=replace(run.scenario, objective={"type": objective}))
+    method = cls()
+    method.initialize(make_problem(run.scenario, run.solver.m), run.solver)
+    try:
+        for iteration in range(1, 4):
+            method.step(iteration)
+    finally:
+        method.close()
     three_d = 3 in model_cls.capabilities.dims and 2 not in model_cls.capabilities.dims
-    method = _run(_compose(model_cls, updater_cls), **({"Lz": 10.0} if three_d else {}))
 
     density = method.get_density()
-    assert density.shape == ((3, 6, 18) if three_d else (6, 18))      # a 3-D model runs on the box
+    assert density.shape == ((2, 6, 18) if three_d else (6, 18))      # a 3-D model runs on the box
     assert np.all(np.isfinite(density))
     assert density.min() >= -1e-9 and density.max() <= 1 + 1e-9
     assert np.isfinite(method.get_responses()[OBJECTIVE])

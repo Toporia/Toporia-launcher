@@ -287,7 +287,7 @@ def test_the_smoothed_outline_is_closed_and_stays_within_an_element(tmp_path, me
     raw = outlines(result)
     smooth = smoothed(result, method, 0.5, 3)
     assert len(smooth) == len(raw) >= 1
-    for loop, original in zip(smooth, raw):
+    for loop, original in zip(smooth, raw, strict=True):
         assert np.allclose(loop[0], loop[-1])
         gap = np.linalg.norm(loop[:, None, :] - original[None, :, :], axis=2).min(axis=1)
         assert gap.max() <= h

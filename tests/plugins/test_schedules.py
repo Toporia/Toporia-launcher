@@ -176,7 +176,7 @@ def test_settled_falls_back_to_max_every_and_stops_at_the_end_value():
 def test_settled_can_add_a_step_and_count_down():
     assert _drive(_settled(start=1, end=3, step=1), [0.0] * 8) == [1, 1, 1, 2, 2, 2, 3, 3]
     down = _drive(_settled(start=8, end=1, factor=2, min_every=1, max_every=2), [0.5] * 12)
-    assert down[0] == 8 and down[-1] == 1 and all(a >= b for a, b in zip(down, down[1:]))
+    assert down[0] == 8 and down[-1] == 1 and all(a >= b for a, b in zip(down, down[1:], strict=False))
 
 
 def test_settled_waits_for_consecutive_settled_iterations():
@@ -198,6 +198,6 @@ def test_settled_beta_run_against_the_geometric_continuation():
         store, density = run_single_with_store(run)
         found[name] = (len(store.objectives), store.objectives[-1], grey_level(density),
                        max(store.responses["filters[1].beta"]))
-    for iterations, compliance, grey, beta in found.values():
+    for _iterations, compliance, grey, beta in found.values():
         assert beta == 64 and np.isfinite(compliance) and grey < 0.1
     print("geometric vs settled (iterations, compliance, grey, final beta):", found)

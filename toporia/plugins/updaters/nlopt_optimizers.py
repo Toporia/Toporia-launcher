@@ -94,7 +94,7 @@ class NLoptOptimizer(ExternalOptimizer):
         """Hook for subclasses: set algorithm-specific options on the nlopt.opt object."""
 
     def run(self, flat, x0, iterate):
-        import nlopt                 # lazy, so the module imports (and is listed) without it
+        import nlopt  # lazy, so the module imports (and is listed) without it
 
         opt = nlopt.opt(getattr(nlopt, self.algorithm), flat.n)
         opt.set_lower_bounds(np.asarray(flat.lower, dtype=float))

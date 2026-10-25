@@ -83,9 +83,10 @@ class ScipyTrustConstr(ExternalOptimizer):
         Param("trust_constr_gtol", 1e-6, "trust-constr tolerance",
               "SciPy's gtol: stop when the optimality (KKT) residual is below this. The "
               "objective is scaled to start at 100.", min=1e-12, max=1e-1, step=1e-6, decimals=10),
-        Param("trust_constr_radius", 0.1, "initial trust radius",
-              "Starting trust-region radius. Design variables live in [0, 1], so 0.1 allows a "
-              "large first move; smaller is steadier.", min=1e-4, max=10.0, step=0.01, decimals=4),
+        Param("trust_constr_radius", 0.5, "initial trust radius",
+              "Starting trust-region radius in the solver's scaled coordinates. "
+              "Smaller is steadier, but a tiny first step can meet the design-change "
+              "tolerance before the design has improved.", min=1e-4, max=10.0, step=0.01, decimals=4),
         Param("trust_constr_hessian", "sr1", "Hessian approximation",
               "How trust-constr models curvature from gradient differences. SR1 follows the "
               "negative curvature of compliance under SIMP and converged far faster here than "
@@ -99,13 +100,20 @@ class ScipyTrustConstr(ExternalOptimizer):
     flat_objective_scale = 100.0
     reports = "iteration"           # SciPy calls back once per iteration
 
+    # With feasible bounds, SciPy scales the trust region by the bound slacks.
+    # At radius 0.1 the first MBB step is only 0.0054, below Toporia's 0.01
+    # stopping tolerance. Radius 0.5 starts with a meaningful step and reaches
+    # compliance 278.5 versus OC's 274.5 under the unchanged stopping rule.
+
     def run(self, flat, x0, iterate):
         # NonlinearConstraint takes lb <= g(x) <= ub; Toporia's g <= 0 is (-inf, 0].
         constraint = NonlinearConstraint(flat.g, -np.inf, 0.0, jac=flat.dg)
         result = minimize(
             flat.f, x0, jac=flat.df, method="trust-constr",
             hess=SR1() if self.settings["trust_constr_hessian"] == "sr1" else BFGS(),
-            bounds=Bounds(flat.lower, flat.upper), constraints=[constraint],
+            # Physical densities and geometry parameters must remain in their
+            # box during trial solves as well as at the final optimum.
+            bounds=Bounds(flat.lower, flat.upper, keep_feasible=True), constraints=[constraint],
             callback=_moves_only(iterate, x0),
             options={"maxiter": self.settings["trust_constr_maxiter"],
                      "gtol": self.settings["trust_constr_gtol"],

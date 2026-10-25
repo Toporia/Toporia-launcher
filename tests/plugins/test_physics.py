@@ -147,7 +147,7 @@ class _DeclaredOnly(Response):
 
 def test_a_model_offers_exactly_what_its_engine_provides_features_for():
     full, partial = Q4Model.capabilities, _EnergyOnlyModel.capabilities
-    assert set(full.objectives) == {"compliance", "volume"} and full.constraints == ("stress",)
+    assert set(full.objectives) == {"compliance", "volume"} and full.constraints == ("stress", "local_stress")
     assert set(partial.objectives) == {"compliance", "volume"} and partial.constraints == ()
     assert full.accepts_filters and full.needs_constraint == ("volume",)
 

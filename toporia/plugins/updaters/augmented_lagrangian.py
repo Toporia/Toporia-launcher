@@ -45,6 +45,7 @@ class AugmentedLagrangianUpdater(MMAUpdater):
 
     objectives = ("volume", "compliance")
     max_constraints = None
+    constraints = ("local_stress",)
     schedulable = ("move",)
 
     def initialize(self, model, settings):

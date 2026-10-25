@@ -11,12 +11,10 @@ from toporia.framework.parts.response import CONSTRAINT_ROLE, OBJECTIVE_ROLE
 from toporia.framework.problem.mesh import make_problem
 
 from .common import (
-    WITH_HOLES,
     check_declaration,
     gradient_check,
-    in_dims,
-    small_run,
 )
+from .model import _model_run
 from .report import Report
 
 # ── Response ──────────────────────────────────────────────────────────────────
@@ -39,7 +37,9 @@ def check_response(cls):
     if not engines:
         report.add("gradient vs finite differences", None, f"no registered engine provides {cls.requires}")
     for model_cls in engines:
-        run = in_dims(small_run(WITH_HOLES, m=0.3, volfrac=0.4), model_cls.capabilities.dims)
+        # Use the model's load scale as in model conformance: the default
+        # benchmark load can snap a random grey nonlinear design.
+        run = _model_run(model_cls)
         problem = make_problem(run.scenario, run.solver.m)
         engine = model_cls.physics()
         engine.initialize(problem, resolve_params(model_cls.name, model_cls.params, {}))

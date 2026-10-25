@@ -28,6 +28,8 @@ class Updater(ABC):
     #: How many scenario constraints it can enforce besides the volume budget;
     #: None means any number.  The conservative default is none.
     max_constraints = 0
+    #: Constraint types it can enforce; None means any ordinary constraint.
+    constraints = None
     #: True when it works on framework.optimisers.flat_view.FlatProblem rather than on the design array.
     flat_view = False
     #: True when it runs its own loop in the background (framework/optimisers/external_loop.py).

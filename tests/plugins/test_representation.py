@@ -22,8 +22,8 @@ from toporia.plugins.catalog import parameter_paths
 from toporia.plugins.methods import method_class
 from toporia.plugins.problems import get_run
 from toporia.plugins.representations import REPRESENTATIONS
-from toporia.plugins.representations.element_density import ElementDensity
 from toporia.plugins.representations.bspline import BSplineField
+from toporia.plugins.representations.element_density import ElementDensity
 from toporia.plugins.representations.mmc import PER_BAR, PER_BAR_VARIABLE, MovingMorphableComponents
 
 MMC = {"type": "mmc"}

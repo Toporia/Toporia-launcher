@@ -18,7 +18,7 @@
 from toporia.framework.params import Param
 from toporia.framework.parts.schedule import Schedule
 
-from ._common import END, START, format_number, towards
+from ._common import START, format_number, towards
 
 
 class Settled(Schedule):

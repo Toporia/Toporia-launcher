@@ -29,9 +29,11 @@ STRESS = {"type": "stress", "limit": 10.0}
 # ── Declarations ──────────────────────────────────────────────────────────────
 
 def test_responses_are_discovered_with_their_roles():
-    assert RESPONSES.names() == ["compliance", "volume", "stress"]
-    assert [c.name for c in responses_for(OBJECTIVE_ROLE)] == ["compliance", "volume"]
-    assert [c.name for c in responses_for(CONSTRAINT_ROLE)] == ["stress"]
+    assert RESPONSES.names() == ["compliance", "thermal_compliance", "dynamic_compliance", "end_compliance",
+                                 "volume", "stress", "local_stress", "eigenfrequency", "eigenfrequency_limit"]
+    assert [c.name for c in responses_for(OBJECTIVE_ROLE)] == [
+        "compliance", "thermal_compliance", "dynamic_compliance", "end_compliance", "volume", "eigenfrequency"]
+    assert [c.name for c in responses_for(CONSTRAINT_ROLE)] == ["stress", "local_stress", "eigenfrequency_limit"]
 
 
 def test_the_default_scenario_minimises_compliance_under_the_volume_budget_only():

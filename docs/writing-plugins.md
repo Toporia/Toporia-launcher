@@ -127,6 +127,10 @@ class ProjectedGradient(Updater):
 Declare honestly what it can do: `objectives` (which responses it may minimise; `None`
 means any) and `max_constraints` (how many constraints besides the volume budget; `None`
 means any number). The GUI only offers what the pairing can do, and explains the rest.
+An updater that handles only certain constraint types also declares `constraints`,
+for example `("local_stress",)` for the augmented-Lagrangian updater; `None` allows
+any type that is otherwise compatible. A response can restrict its updater through
+`only_with_updaters`, so a penalty is never offered as an ordinary constraint.
 
 ## An updater: a library that runs its own loop
 

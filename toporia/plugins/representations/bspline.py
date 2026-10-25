@@ -95,7 +95,7 @@ class BSplineField(Representation):
         # Control points per axis, in the order of problem.shape (z, y, x or y, x).
         counts = (self.n_z, self.n_y, self.n_x)[-len(problem.shape):]
         self.grid = counts
-        self.matrices = [basis_matrix(n, c, self.degree) for n, c in zip(problem.shape, counts)]
+        self.matrices = [basis_matrix(n, c, self.degree) for n, c in zip(problem.shape, counts, strict=True)]
         self._start = np.full(counts, problem.scenario.volfrac).reshape(-1)
 
     def initial(self):

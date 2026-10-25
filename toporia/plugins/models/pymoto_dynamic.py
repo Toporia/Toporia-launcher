@@ -114,6 +114,9 @@ class PymotoDynamicModel(PymotoElasticModel):
     )
 
     def initialize(self, problem, solver, settings):
+        reasons = self.capabilities.problems_with(problem.scenario)
+        if reasons:
+            raise ValueError(f"{self.label}: {'; '.join(reasons)}")
         pym = import_pymoto()
         modules = _network_modules(pym)
         self.problem = problem
