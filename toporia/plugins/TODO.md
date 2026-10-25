@@ -95,7 +95,7 @@ the matching MAKE item below.
 | [x] | CONLIN, multi-constraint OC | updater | Fleury 1989; Zhou & Rozvany 1991 |
 | [~] | Adam, proportional TO, simulated annealing (Adam and PTO done; SA skipped) | updater | Kingma & Ba 2015; Biyikli & To 2015 |
 | [~] | Hard-kill BESO, floating projection (hard-kill done) | updater | Huang & Xie 2010; Huang 2021 |
-| [~] | Variable-thickness MMC, MMV, B-spline fields (MMV still to do) | representation | Zhang et al. 2016, 2017; Qian 2013 |
+| [x] | Variable-thickness MMC, MMV (restricted 2D superellipses), B-spline fields | representation | Zhang et al. 2016, 2017; Qian 2013 |
 | [~] | L-bracket, force inverter (L-bracket done; the force inverter needs an output-displacement response with springs) | problem | Duysinx & Bendsøe 1998; Sigmund 1997 |
 | [x] | Robust three-field preset (variants over `heaviside.eta`) | preset | Wang, Lazarov & Sigmund 2011 |
 | [ ] | Compliant mechanism (output displacement, uses `adjoint()`) | response | Sigmund 1997 |

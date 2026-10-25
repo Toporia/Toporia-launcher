@@ -114,19 +114,46 @@ same suite to run outside the sandbox, with all outputs still under `results/`.
 That run completed without the diagnostic. No installed packages or global
 environment settings were changed, and no dependency checks were disabled.
 
+### Completed: moving morphable voids
+
+Added `representations/mmv.py`: a restricted 2-D geometric dual of MMC with
+one superelliptical hole per initial layout cell and five variables per hole.
+Holes can translate, rotate, resize, intersect and merge. The exact adjoint
+reuses MMC's tested prefix/suffix product kernel with the opposite sign; the
+existing MMC implementation is unchanged. The GUI exposes the new representation.
+
+This own paper-based variant follows the MMV principle in section 2 of
+arXiv:1704.06060 (DOI 10.1016/j.cma.2017.05.002). It does not claim the paper's
+3-D B-spline surfaces or FE DOF elimination. The fixed hole set and mesh-scale
+lower axis bounds limit the achievable geometry; these limits are documented.
+
+All 13 MMV tests pass, including a resolved single-hole analytic-area check,
+rotated/overlapping-hole finite differences and finite gradients at saturated
+overlaps. Representation conformance passes (largest relative gradient error
+1.3e-7). The 60-iteration CLI MBB example reaches compliance 360.929 and volume
+0.499948 against a 0.5 limit. Its geometry export contains the individual void
+boundaries. `results/mmv-validation/validation.png` compares initial and final fields.
+
+The focused run passes all 819 collected tests, covering representations, the GUI,
+all plugin checks and goldens (`results/mmv-focused.log`). The analytic-area test
+was added after that run was collected and passes in the 13-test MMV run. The full
+native suite passes: **1955 passed, one optional multigrid test skipped**, in
+26 min 33 sec (`results/mmv-native-full.log`, `results/mmv-full.xml`). Ruff and
+`git diff --check` pass. No installed package or global setting was changed.
+Catalogue totals are 74 selectable plugins, seven physics engines and 16 presets.
+
 ### Remaining sequence
 
-1. Moving morphable voids.
-2. Floating projection.
-3. Simulated annealing: bounded evaluation budget; register only if conformance passes.
-4. Compliant mechanism response, port springs and force-inverter preset; pyMOTO cross-check.
-5. Geometry projection.
-6. Reaction-diffusion level set.
-7. Hamilton-Jacobi level set and topological derivative.
-8. Phase field.
-9. Explicit length scale, machining accessibility and projection-based self-support.
-10. Multiresolution design and analysis meshes.
-11. Neural reparameterisation (TOuNN), subject to dependency support on this Python/Windows setup.
+1. Floating projection.
+2. Simulated annealing: bounded evaluation budget; register only if conformance passes.
+3. Compliant mechanism response, port springs and force-inverter preset; pyMOTO cross-check.
+4. Geometry projection.
+5. Reaction-diffusion level set.
+6. Hamilton-Jacobi level set and topological derivative.
+7. Phase field.
+8. Explicit length scale, machining accessibility and projection-based self-support.
+9. Multiresolution design and analysis meshes.
+10. Neural reparameterisation (TOuNN), subject to dependency support on this Python/Windows setup.
 
 Heat conduction, thermal/dynamic pyMOTO models, eigenfrequency, harmonic response,
 local stress with augmented Lagrangian, and nonlinear elasticity are already

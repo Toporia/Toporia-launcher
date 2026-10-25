@@ -11,6 +11,8 @@ found by the REPRESENTATIONS registry.  A solver names one by type:
                          bar (Zhang, Yuan, Zhang & Guo 2016)
     bspline.py           a coarse grid of B-spline coefficients, evaluated at the
                          element centres (Qian 2013)
+    mmv.py               moving superelliptical holes, the restricted 2-D dual
+                         of MMC (MMV framework: Zhang et al. 2017)
 """
 
 from toporia.framework.parts.representation import Representation

@@ -28,7 +28,7 @@ with every representation. Updaters whose rule moves each element's density on i
 with another representation is refused before the run, with the reason. The GUI's Pipeline
 box shows the same reason, and Compare Methods skips the pairing.
 
-**Status: 3 plugins in Toporia (MMC includes two thickness options) · 1 with open code · 2 paper only**
+**Status: 4 plugins in Toporia (MMC includes two thickness options) · 1 with open code · 1 paper only**
 
 | Label | Meaning |
 | :-- | :-- |
@@ -43,6 +43,7 @@ box shows the same reason, and Compare Methods skips the pairing.
 | ✅ Element densities | [`element_density.py`](element_density.py) | `element_density` | one density per element; starts uniform at the volume fraction or full (`start`) | Bendsøe, *Struct. Optim.* 1989 |
 | ✅ Moving morphable components | [`mmc.py`](mmc.py) | `mmc` | 5 per bar (centre, half-length, half-thickness, angle); starts as crossing bars in an `n_x × n_y` grid. 2-D only; 3-D components are a candidate | Guo, Zhang & Zhong, *J. Appl. Mech.* 2014 |
 | ✅ Variable-thickness MMC | [`mmc.py`](mmc.py) with `thickness = variable` | `mmc` | the same bars with the half-thickness at both ends and the middle (7 per bar), joined by a parabola, as in MMC188. 2-D only | Zhang, Yuan, Zhang & Guo, *SMO* 2016 |
+| ✅ Moving morphable voids | [`mmv.py`](mmv.py) | `mmv` | 5 per superelliptical hole; solid outside their union. Restricted 2-D variant | Zhang et al., *CMAME* 2017 |
 | ✅ B-spline field | [`bspline.py`](bspline.py) | `bspline` | the coefficients of a tensor-product B-spline (degree 2 or 3) on a coarse control grid; the density is the spline at the element centres. 2-D and 3-D | Qian, *CMAME* 2013 |
 
 **Using MMC.** Every variable is scaled to [0, 1] across its whole range, so the updater's
@@ -125,11 +126,41 @@ toporia run "MBB Beam" --set method=q4+mma --set representation.type=bspline \
 ```
 
 `toporia check representation:bspline` passes (finite-difference `backward`, a short `q4+mma` run).
+### Moving morphable voids
+
+`mmv` starts with one hole in each cell of an `n_x` × `n_y` layout. Each has
+five normalised variables: centre x/y, two half-axes and angle. The same
+sixth-order superellipse as MMC describes the hole. Material density is
+`product(1 - H(phi_i))`, with MMC's smoothed tanh boundary; the adjoint uses
+prefix/suffix products so fully void overlaps never cause division by zero.
+`start_size` sets the initial half-axes relative to the layout cell. Holes can
+move, resize, rotate and merge. Their number is fixed; new holes cannot nucleate.
+The inherited `outlines()` export returns the individual hole boundaries.
+
+This is an own restricted 2-D implementation of the MMV idea, not a port of
+the cited 3-D implementation. It retains the full ersatz FE mesh and does not
+implement the paper's B-spline surfaces, FE DOF removal or CAD reconstruction.
+Choose enough initial holes for the desired topology, and resolve boundaries
+with the mesh before reducing `edge_width`. Hole axes have mesh-scale lower
+bounds, so this family cannot exactly remove a hole by shrinking it to zero.
+Use MMA with `method.move` about 0.02; element-wise updaters such as OC are refused.
+
+```
+toporia run "MBB Beam" --set method=q4+mma --set representation.type=mmv \
+    --set method.move=0.02 --set m=0.5 --set tol=0 --set max_iter=60
+```
+
+`toporia check representation:mmv` checks the adjoint and a short optimisation.
+Additional tests cover rotated/overlapping holes, saturation and feasible optimisation.
+The reference is W. Zhang et al., *CMAME* 322 (2017) 590–614,
+[DOI 10.1016/j.cma.2017.05.002](https://doi.org/10.1016/j.cma.2017.05.002);
+the [authors' manuscript](https://arxiv.org/abs/1704.06060), section 2,
+describes MMV as the geometric dual of MMC.
+
 ## Candidates
 
 | Representation | Code | Reference | What it adds |
 | :-- | :-- | :-- | :-- |
-| 📄 Moving morphable voids (MMV) | — | Zhang et al., *CMAME* 2017 | Holes instead of bars, carved out of a solid domain: the dual of MMC. |
 | 🔗 Geometry projection / feature mapping | [GPTO](https://github.com/jnorato/GPTO), [GGP](https://github.com/topggp/GGP-Matlab) | Norato, Bell & Tortorelli, *IJNME* 2015; Wein, Dunning & Norato, *SMO* 2020 (review) | Bars with round ends, projected through a signed distance and a size variable that can switch each bar off. |
 | 📄 Neural-network reparameterisation | — | Hoyer, Sohl-Dickstein & Greydanus, arXiv 2019; Chandrasekhar & Suresh, *SMO* 2021 | Network weights as the variables, its output as the density field: an implicit regulariser. Needs an autodiff library, declared through `dependencies`. |
 

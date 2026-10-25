@@ -24,7 +24,7 @@ A test (`tests/apps/test_gui.py`) fails if a part ever stops being reachable fro
 | **Wraps** | Calls an outside Python package. That package is installed separately. Parts whose package is missing are greyed out in the app, with the install command. |
 | **Own** | Toporia's own idea or standard practice. |
 
-## In the library today: 73 selectable parts and 16 benchmark problems
+## In the library today: 74 selectable parts and 16 benchmark problems
 
 The selectable parts include models and whole methods; their seven underlying
 physics engines are counted separately in the [catalogue totals](README.md).
@@ -35,6 +35,7 @@ physics engines are counted separately in the [catalogue totals](README.md).
 | :-- | :-- | :-- | :-- | :-- |
 | Element densities | `element_density` | [element_density.py](representations/element_density.py) | Own | Bendsøe 1989; Sigmund's 99-line code · papers [1](https://doi.org/10.1007/BF01650949) [2](https://doi.org/10.1007/s001580050176) |
 | Moving morphable components (constant or variable thickness) | `mmc` | [mmc.py](representations/mmc.py) | Paper | Guo, Zhang & Zhong 2014; variable thickness as in MMC188 (Zhang et al., *SMO* 2016) · papers [1](https://doi.org/10.1115/1.4027609) [2](https://doi.org/10.1007/s00158-015-1372-3) |
+| Moving morphable voids (restricted 2D superellipses) | `mmv` | [mmv.py](representations/mmv.py) | Paper | Zhang et al., *CMAME* 2017; own geometric dual of MMC, without B-spline surfaces or FE pruning · [paper](https://doi.org/10.1016/j.cma.2017.05.002) |
 | B-spline field | `bspline` | [bspline.py](representations/bspline.py) | Paper | Qian, *CMAME* 2013 · [paper](https://doi.org/10.1016/j.cma.2013.06.001) |
 
 ### Filters: design to physical density, and fabrication rules ([folder](filters/README.md))
@@ -178,7 +179,6 @@ Listed from least to most effort. "Code" means open code exists (port it, or che
 
 | What | Kind | Source | Notes |
 | :-- | :-- | :-- | :-- |
-| Moving morphable voids (MMV) | representation | Paper: Zhang et al., *CMAME* 2017 · [paper](https://doi.org/10.1016/j.cma.2017.05.002) | holes instead of bars |
 | Floating projection | optimiser | Paper: Huang, *Eng. Struct.* 2020 · [paper](https://doi.org/10.1016/j.engstruct.2020.110330) | binary designs without β continuation |
 | Simulated annealing | optimiser | Code: topASA | a "why it loses" baseline |
 | Compliant mechanism (output displacement) and the force-inverter benchmark | objective + problem | Paper: Sigmund 1997 · [paper](https://doi.org/10.1080/08905459708945415) | needs springs at input and output |
