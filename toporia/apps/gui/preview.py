@@ -29,14 +29,14 @@ def supports_and_loads(scenario):
     """The supports and load points a run will use, with the problem builder's fallback.
 
     Returns (edges, points, loads): [(edge, dof)], [(x, y, dof)], [(x, y)].  A
-    scenario with no supports at all is clamped on its left edge, and one with
+    scenario with no hard supports or positive springs is clamped on its left edge, and one with
     no load points is loaded at mid-height of its right edge — as framework/problem/mesh.py does.
     """
     edges = [(c.edge, c.dof) for c in scenario.edge_constraints]
     points = [(c.x, c.y, c.dof) for c in scenario.point_constraints]
     points += [(h.cx, h.cy, "both") for h in scenario.holes if h.kind == "fixed"]
     loads = [(p.x, p.y) for p in scenario.point_loads] + [(h.cx, h.cy) for h in scenario.holes if h.kind == "load"]
-    if not edges and not points:
+    if not edges and not points and not any(s.stiffness > 0 for s in scenario.point_springs):
         edges = [("left", "both")]
     if not loads:
         loads = [(scenario.Lx, scenario.Ly / 2)]
@@ -97,6 +97,28 @@ def draw_problem(ax, scenario, text_colour="#222", title=""):
         ax.plot([x], [y], marker="o", markersize=4, color=LOAD, linestyle="none")
     legend["Load" if len(cases) <= 1 else f"Loads ({len(cases)} cases)"] = Line2D(
         [], [], color=LOAD, marker=">", linewidth=1.6)
+
+    for spring in scenario.point_springs:
+        colour = "#27803e"
+        horizontal = spring.dof == "x"
+        coord, extent = (spring.x, Lx) if horizontal else (spring.y, Ly)
+        sign = 1 if coord >= 0.5 * extent else -1
+        distance = sign * 0.10 * size
+        along = [distance * i / 10 for i in range(11)]
+        across = [0 if i in (0, 10) else (-1) ** i * 0.012 * size for i in range(11)]
+        xs = [spring.x + (a if horizontal else b) for a, b in zip(along, across, strict=True)]
+        ys = [spring.y + (b if horizontal else a) for a, b in zip(along, across, strict=True)]
+        ax.plot(xs, ys, color=colour, linewidth=1.2)
+        ax.text(xs[-1], ys[-1] + 0.025 * size, f"k={spring.stiffness:g}",
+                color=colour, fontsize=7, ha="center")
+        legend["Ground spring"] = Line2D([], [], color=colour, linewidth=1.2)
+
+    if scenario.objective.get("type") == "output_displacement":
+        x, y = scenario.objective.get("x", 60.0), scenario.objective.get("y", 10.0)
+        angle = math.radians(scenario.objective.get("angle", 180.0))
+        ax.annotate("", xy=(x + length * math.cos(angle), y + length * math.sin(angle)), xytext=(x, y),
+                    arrowprops=dict(arrowstyle="-|>", color="#8c3fb0", linewidth=1.8))
+        legend["Desired output"] = Line2D([], [], color="#8c3fb0", marker="<", linewidth=1.8)
 
     pad = 0.2 * size
     ax.set_xlim(-pad, Lx + pad)

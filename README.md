@@ -38,20 +38,20 @@ any doubt about what this repository actually does today:
 
 | Layer | ✅ In Toporia | 🔗 Open code | 📄 Paper only |
 | :-- | :-- | --: | --: |
-| [Methods](toporia/plugins/methods/README.md) — how the design is described | SIMP density, RBF level set, BESO | 12 | 3 |
+| [Methods](toporia/plugins/methods/README.md) — how the design is described | SIMP density, RBF level set, BESO | 12 | 2 |
 | [Filters](toporia/plugins/filters/README.md) — regularisation and fabrication | density, sensitivity, Heaviside (fixed or volume-preserving), PDE (isotropic or anisotropic), morphology, AM overhang, symmetry, routing, extrusion, pattern, casting | 1 | 8 |
 | [Design representations](toporia/plugins/representations/README.md) — what the variables are | element densities, moving morphable components (constant or variable thickness), moving morphable voids (2D), B-spline fields | 1 | 1 |
 | [Material laws](toporia/plugins/interpolations/README.md) — density to stiffness | SIMP, RAMP, ordered SIMP | 0 | 3 |
 | [Schedules](toporia/plugins/schedules/README.md) — continuation, and robust variants | equal steps, geometric, linear ramp, when the design settles | 0 | 1 |
 | [Post-processors](toporia/plugins/postprocessors/README.md) — threshold, checks, exports | threshold, connectivity, feature size, grey level over the run, SVG, DXF, STL, smoothed outlines | 0 | 1 |
-| [Models](toporia/plugins/models/README.md) — physics and gradients | 2-D Q4, 3-D H8, pyMOTO elasticity; heat (2-D, 3-D, pyMOTO); vibration (Q4, pyMOTO); large deformation; linearised buckling | 24 | 3 |
-| [Elements](toporia/plugins/physics/README.md) — discretisation | Q4 plane stress, H8 solid, Q4 and H8 heat, Q4 with mass, Q4 large deformation, Q4 buckling | 5 | 3 |
-| [Responses](toporia/plugins/responses/README.md) — objectives and constraints | compliance, volume, von Mises stress (peak and local), thermal compliance, end compliance, eigenfrequency, dynamic compliance, buckling load factor | 4 | 13 |
+| [Models](toporia/plugins/models/README.md) — physics and gradients | 2-D Q4, 3-D H8, pyMOTO elasticity; heat (2-D, 3-D, pyMOTO); vibration (Q4, pyMOTO); large deformation; linearised buckling; port springs and compliant mechanisms | 24 | 3 |
+| [Elements](toporia/plugins/physics/README.md) — discretisation | Q4 plane stress, H8 solid, Q4 and H8 heat, Q4 with mass, Q4 large deformation, Q4 buckling, Q4 with port springs | 5 | 3 |
+| [Responses](toporia/plugins/responses/README.md) — objectives and constraints | compliance, volume, von Mises stress (peak and local), thermal compliance, end compliance, eigenfrequency, dynamic compliance, buckling load factor, signed output displacement | 4 | 12 |
 | [Updaters](toporia/plugins/updaters/README.md) — optimisers | OC, MMA, GCMMA, SiMPL, BESO, SLSQP, trust-constr, NLopt (MMA, CCSAQ, SLSQP, AUGLAG), mmapy (MMA, GCMMA), null-space, TOBS, CONLIN, multi-constraint OC, Adam, PTO, hard-kill BESO, augmented Lagrangian, floating projection | 4 | 0 |
-| [Problems](toporia/plugins/problems/README.md) — benchmarks | MBB, robust MBB, cantilever, 3-D cantilever, Michell cantilever, L-bracket, L-bracket (local stress), heat sink, vibrating beam, column buckling, non-linear cantilever, 3-point bending, bar, 3× drone arm | 6 | 1 |
+| [Problems](toporia/plugins/problems/README.md) — benchmarks | MBB, robust MBB, cantilever, 3-D cantilever, Michell cantilever, L-bracket, L-bracket (local stress), heat sink, vibrating beam, column buckling, non-linear cantilever, force inverter, 3-point bending, bar, 3× drone arm | 6 | 0 |
 
-**98 implementations: 75 selectable plugins, 7 physics engines and 16 presets.
-57 catalogue entries have open code elsewhere; 36 are paper-only.**
+**102 implementations: 77 selectable plugins, 8 physics engines and 17 presets.
+57 catalogue entries have open code elsewhere; 34 are paper-only.**
 Plugin counts follow the registries; composed pairings and parameter options are
 not counted again as additional implementations.
 

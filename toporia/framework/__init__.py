@@ -44,13 +44,14 @@ from toporia.framework.problem.scenario import (
     LoadCase,
     PointConstraint,
     PointLoad,
+    PointSpring,
     Scenario,
 )
 from toporia.framework.problem.solver import SOLVER_PARAMS, Solver
 
 __all__ = [
     "Scenario", "Solver", "Output", "Run",
-    "LoadCase", "HoleConfig", "EdgeConstraint", "PointConstraint", "PointLoad", "EnforcedArea",
+    "LoadCase", "HoleConfig", "EdgeConstraint", "PointConstraint", "PointLoad", "PointSpring", "EnforcedArea",
     "SCENARIO_PARAMS", "SOLVER_PARAMS", "OUTPUT_PARAMS",
     "apply_param", "read_param",
     "BaseProblem", "RectangularProblem", "BoxProblem", "make_problem", "projection",

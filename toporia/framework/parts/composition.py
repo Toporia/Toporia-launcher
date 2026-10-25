@@ -97,6 +97,8 @@ class ComposedMethod(OptimizationMethod):
         if type(self).model is None or type(self).updater is None:
             raise TypeError(f"{type(self).__name__} must set both `model` and `updater`")
         settings = self.resolve_params(solver)
+        if problem.scenario.point_springs and not self.capabilities.supports_springs:
+            raise ValueError(f"{type(self).__name__} does not support point springs")
         self.problem = problem
         self._model = self._build_model(problem, solver) if solver.variants else type(self).model()
         self._updater = type(self).updater()

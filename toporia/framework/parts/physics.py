@@ -58,6 +58,7 @@ class Physics(ABC):
     params = ()
     provides = ()
     uses_interpolation = False
+    supports_springs = False
     #: The problem dimensions the engine solves: (2,) plane, (3,) solid.
     dims = (2,)
 
@@ -230,3 +231,20 @@ class BucklingPhysics:
         a simple eigenvalue; an aggregate must include a complete repeated cluster.
         """
         raise NotImplementedError(f"{type(self).__name__} does not provide {BUCKLING!r}")
+
+
+# ── POINT_DISPLACEMENT ───────────────────────────────────────────────────────
+
+POINT_DISPLACEMENT = "point_displacement"
+
+
+class PointDisplacementPhysics:
+    """Opaque displacement probes, independent of the backend's DOF numbering."""
+
+    def point_probe(self, x, y, angle):
+        """Opaque unit virtual load in `angle` degrees at the nearest node to x/y."""
+        raise NotImplementedError(f"{type(self).__name__} does not provide {POINT_DISPLACEMENT!r}")
+
+    def probe_displacement(self, state, case, probe):
+        """Signed displacement in the probe direction for one real load case."""
+        raise NotImplementedError(f"{type(self).__name__} does not provide {POINT_DISPLACEMENT!r}")

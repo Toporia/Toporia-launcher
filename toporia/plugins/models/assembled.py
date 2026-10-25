@@ -44,6 +44,7 @@ def _capabilities(physics):
     return Capabilities(variable_kind="density", accepts_filters=True,
                         accepts_interpolation=physics.uses_interpolation, accepts_representation=True,
                         dims=tuple(getattr(physics, "dims", (2,))),
+                        supports_springs=getattr(physics, "supports_springs", False),
                         objectives=tuple(cls.name for cls in objectives),
                         constraints=tuple(cls.name for cls in computable(CONSTRAINT_ROLE)),
                         max_constraints=None,
@@ -86,6 +87,8 @@ class AssembledModel(Model):
 
     def initialize(self, problem, solver, settings):
         scenario = problem.scenario
+        if scenario.point_springs and not self.capabilities.supports_springs:
+            raise ValueError(f"{type(self).__name__} does not support point springs")
         self.problem = problem
 
         n_total = int(np.prod(problem.shape))

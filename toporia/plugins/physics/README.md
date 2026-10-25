@@ -5,7 +5,7 @@ from [`models/`](../models/README.md) because the same physics can be discretise
 ways, and the choice of element is itself a thing worth comparing: it decides what the
 density field can resolve and where the classic numerical artefacts come from.
 
-**Status: 7 in Toporia · 5 with open code · 3 paper only**
+**Status: 8 in Toporia · 5 with open code · 3 paper only**
 
 | Label | Meaning |
 | :-- | :-- |
@@ -18,6 +18,7 @@ density field can resolve and where the classic numerical artefacts come from.
 | Element | File | Scope |
 | :-- | :-- | :-- |
 | ✅ Q4 plane stress | [`q4_plane_stress.py`](q4_plane_stress.py) | Bilinear quadrilateral, 2 DOF per node, structured grid, column-major numbering, analytic element stiffness. The top88 element. 2-D. |
+| ✅ Q4 port springs and probes | [`q4_mechanism.py`](q4_mechanism.py) | Separate subclass with density-independent springs, signed point probes and one shared state/adjoint LU. External work includes spring energy. Adds the `point_displacement` feature; 2-D small-displacement elasticity. |
 | ✅ Q4 linearised buckling | [`q4_buckling.py`](q4_buckling.py) | Static Q4 plus geometric stiffness, positive buckling factors and the adjoint sensitivity through the prebuckling displacement. 2-D. |
 | ✅ Q4 large deformation | [`q4_nonlinear.py`](q4_nonlinear.py) | The same Q4 element with geometric non-linearity: total Lagrangian, Green–Lagrange strain, St Venant–Kirchhoff material, 2 × 2 Gauss, internal force and tangent stiffness per element, Newton–Raphson with load steps (halved automatically where Newton struggles). Provides `end_compliance`. 2-D. |
 | ✅ H8 solid | [`h8_solid.py`](h8_solid.py) | Trilinear brick, 3 DOF per node, 2 × 2 × 2 Gauss integration, the element of Liu & Tovar's top3d. 3-D: a scenario with a depth `Lz`. Direct sparse solver, or conjugate gradients with algebraic multigrid (optional `pyamg`) for large meshes. |

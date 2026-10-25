@@ -542,6 +542,25 @@ dependencies = ("nlopt",)
 Where it is missing, the GUI greys the plugin out with the install command, and a run
 asking for it stops at once with that command — instead of failing part-way.
 
+## Point springs and displacement probes
+
+`Scenario.point_springs` contains `PointSpring(x, y, stiffness, dof)` data, with
+2-D coordinates in mm and `dof` equal to `x` or `y`. A physics engine declares
+`supports_springs = True` only when it includes these density-independent
+stiffnesses in both real and adjoint systems. Assembled models propagate the
+flag to method capabilities; other methods reject spring scenarios. Positive
+springs suppress the mesh builder's default clamp, so an engine must check
+rigid-body restraint before solving a spring-only system.
+
+For signed point output, provide `POINT_DISPLACEMENT` and implement
+`PointDisplacementPhysics.point_probe(x, y, angle)` and
+`probe_displacement(state, case, probe)`. The probe is opaque to responses and
+must be usable as a virtual load in `adjoint`. Together with `STRESS`'s existing
+`mutual_energy`, this supports output-displacement gradients without a response
+indexing backend DOFs. See `plugins/physics/q4_mechanism.py` and
+`plugins/responses/output_displacement.py`. Both feature/interface names are
+exported through `toporia.api`.
+
 ## Packaging, outside this repository
 
 Put the plugin in your own package, import only from `toporia.api`, and declare it in your

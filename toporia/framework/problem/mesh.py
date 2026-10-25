@@ -275,7 +275,7 @@ class RectangularProblem(BaseProblem):
 
         # Fallback: if no BCs are defined, use simple defaults so FEA is always solvable.
         has_any_fixed = np.any(self.fixed_nodes) or np.any(self.fixed_x_nodes) or np.any(self.fixed_y_nodes)
-        if not has_any_fixed:
+        if not has_any_fixed and not any(s.stiffness > 0 for s in cfg.point_springs):
             self.fixed_nodes[:, 0] = True
         if not np.any(self.load_nodes):
             self.load_nodes[self.nely // 2, self.nelx] = True

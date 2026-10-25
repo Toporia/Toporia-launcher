@@ -567,3 +567,21 @@ def test_the_heat_sink_preset_offers_thermal_compliance_and_runs_from_the_gui(wi
     # Choosing the model alone offers it too, and the structural objectives disappear.
     window.core.select_method("q4_heat+mma")
     assert "thermal_compliance" in window.objective.offered_types() and "compliance" not in window.objective.offered_types()
+
+
+def test_the_force_inverter_preserves_springs_and_its_signed_output_in_the_gui(window):
+    import numpy as np
+
+    from toporia.apps.gui import runner
+    from toporia.engine.loop import initialized_method
+    window._on_config_changed("Force Inverter")
+    assert window.core.method_name() == "q4_mechanism+mma"
+    assert "output_displacement" in window.objective.offered_types()
+    run = runner.build_config(window.core, window.lc, window.filters, base_cfg=window._base_cfg,
+                              objective=window.objective)
+    assert run.scenario.point_springs == get_run("Force Inverter").scenario.point_springs
+    assert run.scenario.objective == get_run("Force Inverter").scenario.objective
+    method = initialized_method(run.updated(m=0.2, max_iter=2, tol=0.0, save_every=0))
+    method.step(1)
+    method.step(2)
+    assert np.isfinite(method.get_responses()["output_displacement"])

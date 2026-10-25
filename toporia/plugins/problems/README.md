@@ -5,7 +5,7 @@ material, volume target — plus the solver settings recommended for it. Two run
 a scenario and differ only in their solver are a benchmark, and that comparison is what
 Toporia exists to make.
 
-**Status: 16 in Toporia · 6 open datasets or suites · 1 paper only**
+**Status: 17 in Toporia · 6 open datasets or suites · 0 paper only**
 
 | Label | Meaning |
 | :-- | :-- |
@@ -33,6 +33,7 @@ Toporia exists to make.
 | ✅ Heat sink | [`heat_sink.py`](heat_sink.py) | `Heat Sink` |
 | ✅ Vibrating beam | [`vibrating_beam.py`](vibrating_beam.py) | `Vibrating Beam` |
 | ✅ Column buckling | [`column_buckling.py`](column_buckling.py) | `Column Buckling` |
+| ✅ Force inverter | [`force_inverter.py`](force_inverter.py) | `Force Inverter` |
 
 The preset selects a response its physics can compute: structural compliance,
 thermal compliance, eigenfrequency, or nonlinear end compliance. Column Buckling
@@ -155,36 +156,43 @@ the conservative aggregate constraint was satisfied too. The paper's MATLAB
 geometry/results are not reproduced here, and pyMOTO supplies the optimiser,
 not an independent buckling solver.
 
-## 📄 Canonical benchmarks not here yet
+## Force inverter
 
-Each of these exists specifically to exercise something compliance cannot, so they only
-become useful alongside the matching response in [`responses/`](../responses/README.md).
+The `Force Inverter` preset uses a 40 × 40 mm square, fixed at its two left
+corners. A force of 0.001 points right at the left midpoint. The desired output
+motion is leftward at the right midpoint. Both ports have x-direction ground
+springs of stiffness 0.01. The material budget is 0.4. These are Toporia's own
+dimensions and values, following [Sigmund's 1997 formulation](https://doi.org/10.1080/08905459708945415),
+not a reproduction of a particular figure. The force is chosen small; the
+model assumes linear, small-displacement elasticity.
 
-| Problem | Reference | What it tests |
-| :-- | :-- | :-- |
-| 📄 Force inverter | Sigmund, *Mech. Struct. Mach.* 25 (1997) 493–524; Bendsøe & Sigmund, *Topology Optimization* (2003) | The standard compliant-mechanism benchmark, and where one-node hinges show up. |
+The preset chooses `q4_mechanism+mma` and a density filter. The signed objective
+is `-output_displacement`, measured in the chosen direction, so a negative
+objective means successful inversion. Springs are physical scenario data:
+`point_springs = [PointSpring(x, y, stiffness, dof="x"), ...]`. They survive JSON
+and GUI round trips. The existing preview shows the springs and desired output;
+spring geometry/stiffness is edited through scenario JSON or indexed CLI paths.
+Other models reject these springs rather than silently dropping them.
 
-**Why the force inverter is not a preset.** Its geometry is easy (a symmetry half-domain,
-an input force on one edge, an output on the opposite one), but the objective is to
-*maximise the output displacement against an output spring*, with a spring at the input
-too. Preset geometry alone would silently optimise compliance, which gives a stiff
-structure, the opposite of a mechanism, so it is left out. What is missing:
+```
+toporia run "Force Inverter" --set m=0.4 --set save_every=0 --out results/mechanism-validation
+toporia run "Force Inverter" --set m=0.4 --set 'point_springs[1].stiffness=0.02'
+toporia check model:q4_mechanism response:output_displacement
+```
 
-- an **output-displacement response**: `u_out = lᵀu`, with `l` a unit vector at the output
-  node(s) and the objective `-u_out`;
-- **input and output springs**: stiffnesses `k_in` and `k_out` added to the diagonal of
-  the stiffness matrix at those degrees of freedom (the scenario has no spring type today,
-  only fixed supports and point loads);
-- the **gradient**: one adjoint solve per iteration with `l` as the load, through the
-  physics `adjoint()` and `mutual_energy()` (see
-  [`framework/parts/physics.py`](../../framework/parts/physics.py)), the way the stress
-  response does it; the response is not self-adjoint, so its sensitivities are signed and
-  the usual OC update needs a negative-sensitivity guard (MMA is the safe pairing).
+The first example (16 × 16 elements) stops at iteration 111 and reports
+desired output displacement **0.0258618**, objective **-0.0258618** and volume
+**0.399998**. Tests check the passive transfer bound
+`abs(u_out) <= F_in/(2*sqrt(k_in*k_out))`, finite-difference gradients with
+springs, and an independent pyMOTO FE/backpropagation comparison.
+This is a topology concept: a density filter alone does not rule out point
+hinges, guarantee stress limits or establish nonlinear/fabrication performance.
 
-Further standard cases, each tied to a response Toporia does not have yet: half-wheel and
-bridge (compliance, alternative load paths), column (buckling), heat sink (thermal),
-double pipe and bend (fluid pressure drop), and the photonic mode converter and
-beam-splitter from the ceviche challenges.
+## Further benchmark candidates
+
+Half-wheel and bridge (alternative load paths), double pipe and bend (fluid
+pressure drop), and photonic mode converters and beam splitters from the
+ceviche challenges remain possible additions alongside their required physics.
 
 ## 🔗 Open datasets and benchmark suites
 

@@ -10,6 +10,7 @@
 # Coordinates are in mm, measured from the bottom-left corner of the domain.
 
 from dataclasses import dataclass, field
+from math import isfinite
 
 from toporia.framework.params import Param
 
@@ -101,6 +102,29 @@ class PointLoad:
     y: float
 
 
+@dataclass
+class PointSpring:
+    """Density-independent spring to ground at a nearest mesh node (N/mm).
+
+    `dof` is one displacement component, x or y. Coincident springs add.
+    Coordinates are in mm from the domain origin. Supported only by models
+    that explicitly declare spring support; other models reject the scenario.
+    """
+    x: float
+    y: float
+    stiffness: float
+    dof: str = "x"
+
+    def __post_init__(self):
+        if self.dof not in ("x", "y"):
+            raise ValueError("PointSpring.dof must be 'x' or 'y'")
+        # JSON loading normalises declared floats; construction must do the same
+        # so integer inputs do not change scenario fingerprints after a round trip.
+        self.x, self.y, self.stiffness = float(self.x), float(self.y), float(self.stiffness)
+        if not all(isfinite(value) for value in (self.x, self.y, self.stiffness)) or self.stiffness < 0:
+            raise ValueError("PointSpring coordinates/stiffness must be finite and stiffness non-negative")
+
+
 @dataclass(frozen=True)
 class Scenario:
     """The physical problem: domain, supports, loads, material and material budget.
@@ -108,7 +132,7 @@ class Scenario:
     Frozen, so a scenario can be shared between runs without one run changing
     another's problem; use dataclasses.replace or Run.updated for variants.
 
-    If no supports or load points are given, the problem builder falls back to
+    If no hard supports, positive springs or load points are given, the builder falls back to
     a clamped left edge and a mid-height load on the right, so Scenario() on
     its own is always solvable.
     """
@@ -156,6 +180,10 @@ class Scenario:
     E0:   float = 1.0     # Young's modulus of solid material
     Emin: float = 1e-9    # stiffness of void; keeps the stiffness matrix non-singular
     nu:   float = 0.3     # Poisson's ratio
+
+    # Ground springs at physical ports. Appended to preserve positional field
+    # order for existing Scenario callers; unsupported models reject them.
+    point_springs: list[PointSpring] = field(default_factory=list)
 
 
 # Param declarations for the scenario fields the GUI and sweeps expose.

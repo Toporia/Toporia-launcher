@@ -58,10 +58,14 @@ class Capabilities:
     constraints: tuple = ()
     max_constraints: int | None = 0
     needs_constraint: tuple = ()
+    #: Whether density-independent point springs enter the state and adjoint systems.
+    supports_springs: bool = False
 
     def problems_with(self, scenario):
         """Return why the method cannot solve `scenario` — an empty list when it can."""
         reasons = []
+        if scenario.point_springs and not self.supports_springs:
+            reasons.append("it does not support point springs (choose a spring-capable model)")
         objective = scenario.objective.get("type", "compliance")
         if objective not in self.objectives:
             reasons.append(f"it cannot minimise {objective!r} (it can minimise: {', '.join(self.objectives)})")

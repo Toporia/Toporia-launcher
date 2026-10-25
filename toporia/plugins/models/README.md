@@ -6,7 +6,7 @@ here — see [`framework.parts.model.Model`](../../framework/parts/model.py). Sw
 how Toporia reaches new physics, new dimensions and new mesh types without touching a
 single update rule.
 
-**Status: 10 in Toporia · 24 with open code · 3 paper only**
+**Status: 11 in Toporia · 24 with open code · 3 paper only**
 
 | Label | Meaning |
 | :-- | :-- |
@@ -20,6 +20,7 @@ single update rule.
 | :-- | :-- | :-- | :-- |
 | ✅ 2-D Q4 plane stress | [`q4.py`](q4.py) | `q4` | Toporia's own engine: 2-D plane stress, structured grid, SIMP, direct sparse solve. Provides compliance, volume and stress; accepts the filter pipeline. |
 | ✅ 2-D Q4 with buckling | [`q4_buckling.py`](q4_buckling.py) | `q4_buckling` | Adds the `buckling_load` objective/constraint, retaining compliance, volume, stress, filters and material laws. |
+| ✅ 2-D Q4 compliant mechanism | [`q4_mechanism.py`](q4_mechanism.py) | `q4_mechanism` | Linear Q4 with density-independent point springs, opaque point-displacement probes and signed output sensitivities. Shared sparse LU for all real and virtual loads. |
 | ✅ 2-D Q4 with vibration | [`q4_dynamic.py`](q4_dynamic.py) | `q4_dynamic` | Static elasticity, natural frequencies and harmonic response. |
 | ✅ Vibration, pyMOTO | [`pymoto_dynamic.py`](pymoto_dynamic.py) | `pymoto_dynamic` | Independent pyMOTO eigenproblem and sensitivities; optional dependency. |
 | ✅ 2-D Q4, large deformation | [`q4_nonlinear.py`](q4_nonlinear.py) | `q4_nonlinear` | Geometrically non-linear elasticity (large displacements, small strains) on Q4: total Lagrangian, Green–Lagrange strain, St Venant–Kirchhoff material, Newton–Raphson with load steps. Provides end compliance and volume; accepts the filter pipeline. See below. |
@@ -28,6 +29,26 @@ single update rule.
 | ✅ 2-D Q4 heat conduction | [`q4_heat.py`](q4_heat.py) | `q4_heat` | Steady heat conduction on Toporia's Q4 grid: uniform heat generation, supports as heat sinks, conductivity from the material law. Provides thermal compliance and volume; accepts the filter pipeline. |
 | ✅ 3-D H8 heat conduction | [`h8_heat.py`](h8_heat.py) | `h8_heat` | The same on eight-node bricks (a scenario with a depth). |
 | ✅ Heat conduction, pyMOTO | [`pymoto_heat.py`](pymoto_heat.py) | `pymoto_heat` | pyMOTO's `AssemblePoisson` network: the cross-check of `q4_heat`, giving the same thermal compliance to 1e-9. Optional dependency (`pip install pymoto`). |
+
+### Compliant mechanisms (`q4_mechanism`)
+
+The separate [physics engine](../physics/q4_mechanism.py) adds ground springs
+to the stiffness matrix and uses that same matrix for every adjoint. It accepts
+`Scenario.point_springs`, each a `PointSpring(x, y, stiffness, dof="x")`; `dof`
+can also be `y`. Coordinates are in mm and snap to the nearest node. Coincident
+spring stiffnesses add. Positive springs count as supports, so a spring-only
+scenario does not acquire an unrequested default clamp. Rigid-body restraint is
+checked before solving. Other models reject spring scenarios; they never
+silently omit these stiffnesses.
+
+Compliance is external work `f^T*u`, including spring energy; its density
+derivative differentiates the material stiffness only. The new
+`output_displacement` response maximises signed motion at an output point with
+one virtual-load solve. Use MMA for its mixed-sign gradients. The existing
+`q4` source and results are unchanged. See [Force Inverter](../problems/README.md#force-inverter)
+for a runnable example. An optional independent pyMOTO assembly and backpropagated
+gradient agree in `tests/plugins/test_mechanism_pymoto.py`; this is a cross-check,
+not another selectable pyMOTO model.
 
 ### Buckling (`q4_buckling`)
 
@@ -82,7 +103,7 @@ Ordered roughly by what they add beyond what we already have.
 
 | Engine | Language / licence | Scope | What it would add |
 | :-- | :-- | :-- | :-- |
-| 🔗 [pyMOTO](https://github.com/aatmdelissen/pyMOTO) | Python · MIT | Module/Signal graph with backpropagated sensitivities; 2-D and 3-D statics and dynamics, thermal, thermo-mechanical, compliant mechanisms, stress, multigrid-preconditioned CG | Already a dependency, but only the elastic part is wrapped. Its thermal, dynamic and 3-D modules are unused. **The cheapest next step in this whole plugins.** |
+| 🔗 [pyMOTO](https://github.com/aatmdelissen/pyMOTO) | Python · MIT | Module/Signal graph with backpropagated sensitivities; 2-D and 3-D statics and dynamics, thermal, thermo-mechanical, compliant mechanisms, stress, multigrid-preconditioned CG | Elastic, thermal and dynamic models are wrapped. Spring-loaded output displacement is independently cross-checked in tests; selectable mechanism, thermo-mechanical and 3-D network models remain possible additions. |
 | 🔗 [JAX-FEM](https://github.com/deepmodeling/jax-fem) | Python/JAX · Apache-2 | Differentiable GPU FEM; hyperelasticity, plasticity, 3-D unstructured | GPU scale and non-linear materials, with AD instead of hand-derived adjoints. The natural host for anything neural. |
 | 🔗 [FEniTop](https://github.com/missionlab/fenitop) | Python/FEniCSx | 2-D and 3-D SIMP over MPI, problems stated in weak form | Unstructured meshes, real geometry, parallel runs, arbitrary PDEs through UFL. Jia, Wang & Zhang, *SMO* 2024. |
 | 🔗 [TopOpt_in_PETSc](https://github.com/topopt/TopOpt_in_PETSc) | C++ · open | Fully parallel 3-D minimum compliance on Cartesian grids | The upper bound on resolution — the code behind the giga-voxel wing in Aage et al., *Nature* 2017. [Python wrapper](https://github.com/thsmit/TopOpt_in_PETSc_wrapped_in_Python) and a [transient variant](https://github.com/topopt/TopOpt_in_PETSc_Transient) exist. |

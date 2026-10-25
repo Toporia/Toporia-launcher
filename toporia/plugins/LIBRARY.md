@@ -24,9 +24,9 @@ A test (`tests/apps/test_gui.py`) fails if a part ever stops being reachable fro
 | **Wraps** | Calls an outside Python package. That package is installed separately. Parts whose package is missing are greyed out in the app, with the install command. |
 | **Own** | Toporia's own idea or standard practice. |
 
-## In the library today: 75 selectable parts and 16 benchmark problems
+## In the library today: 77 selectable parts and 17 benchmark problems
 
-The selectable parts include models and whole methods; their seven underlying
+The selectable parts include models and whole methods; their eight underlying
 physics engines are counted separately in the [catalogue totals](README.md).
 
 ### Design representations: what the design variables are ([folder](representations/README.md))
@@ -68,6 +68,7 @@ physics engines are counted separately in the [catalogue totals](README.md).
 | In the app | Name | File | Came in | From |
 | :-- | :-- | :-- | :-- | :-- |
 | 2-D Q4 plane stress (Toporia) | `q4` | [q4.py](models/q4.py), [q4_plane_stress.py](physics/q4_plane_stress.py) | Port | the physics half of top88 · [paper](https://doi.org/10.1007/s00158-010-0594-7) |
+| 2-D Q4 compliant mechanism (Toporia) | `q4_mechanism` | [q4_mechanism.py](models/q4_mechanism.py), [q4_mechanism.py](physics/q4_mechanism.py) | Paper | Own port-spring Q4 engine; optional independent pyMOTO assembly/backpropagation check · [paper](https://doi.org/10.1080/08905459708945415) |
 | 2-D Q4 with buckling (Toporia) | `q4_buckling` | [q4_buckling.py](models/q4_buckling.py), [q4_buckling.py](physics/q4_buckling.py) | Paper | Ferrari, Sigmund & Guest 2021; Toporia's p-norm aggregate and column geometry · [paper](https://doi.org/10.1007/s00158-021-02854-x) |
 | 2-D Q4, large deformation (Toporia) | `q4_nonlinear` | [q4_nonlinear.py](models/q4_nonlinear.py), [q4_nonlinear.py](physics/q4_nonlinear.py) | Paper | Buhl, Pedersen & Sigmund, *SMO* 2000; energy interpolation after Wang, Lazarov, Sigmund & Jensen, *CMAME* 2014; open reference: Han et al. 2021 · papers [1](https://doi.org/10.1007/s001580050089) [2](https://doi.org/10.1016/j.cma.2014.03.021) [3](https://doi.org/10.1007/s00158-020-02816-9) |
 | 3-D H8 bricks (Toporia) | `h8` | [h8.py](models/h8.py), [h8_solid.py](physics/h8_solid.py) | Port | top3d (Liu & Tovar, *SMO* 2014) · [paper](https://doi.org/10.1007/s00158-014-1107-x) |
@@ -83,6 +84,7 @@ physics engines are counted separately in the [catalogue totals](README.md).
 | In the app | Name | File | Came in | From |
 | :-- | :-- | :-- | :-- | :-- |
 | Compliance | `compliance` | [compliance.py](responses/compliance.py) | Own | the classic objective (Bendsøe & Sigmund 2003) · [paper](https://doi.org/10.1007/978-3-662-05086-6) |
+| Output displacement (maximise) | `output_displacement` | [output_displacement.py](responses/output_displacement.py) | Paper | Signed point output, one shared spring-augmented adjoint · [paper](https://doi.org/10.1080/08905459708945415) |
 | Material volume | `volume` | [volume.py](responses/volume.py) | Own | as in Le et al. 2010 and pyMOTO's stress example · [paper](https://doi.org/10.1007/s00158-009-0440-y) |
 | Local von Mises stress (augmented Lagrangian) | `local_stress` | [local_stress.py](responses/local_stress.py) | Paper | Giraldo-Londoño & Paulino, *SMO* 2021 (PolyStress); Senhora et al., *SMO* 2020 · papers [1](https://doi.org/10.1007/s00158-020-02760-8) [2](https://doi.org/10.1007/s00158-020-02573-9) |
 | End compliance (non-linear) | `end_compliance` | [end_compliance.py](responses/end_compliance.py) | Paper | Buhl, Pedersen & Sigmund, *SMO* 2000 · [paper](https://doi.org/10.1007/s001580050089) |
@@ -168,6 +170,7 @@ and the preset *MBB Beam (Robust)*.
 | Heat Sink | [heat_sink.py](problems/heat_sink.py) | Bendsøe & Sigmund 2003, section 1.5; Gersborg-Hansen et al. 2006 · [paper](https://doi.org/10.1007/s00158-005-0584-3) |
 | Standard Bar | [standard_bar.py](problems/standard_bar.py) | Toporia's own |
 | Drone Arm, Drone Arm (Camera View), Drone Arm (Point Loads) | [drone_arm.py](problems/drone_arm.py), [drone_arm_camera_view.py](problems/drone_arm_camera_view.py), [drone_arm_point_loads.py](problems/drone_arm_point_loads.py) | Toporia's own application case |
+| Force Inverter | [force_inverter.py](problems/force_inverter.py) | Own 40 × 40 geometry and port values following Sigmund 1997; signed output and input/output ground springs · [paper](https://doi.org/10.1080/08905459708945415) |
 
 ---
 
@@ -189,8 +192,6 @@ Listed from least to most effort. "Code" means open code exists (port it, or che
 
 | What | Kind | Source | Notes |
 | :-- | :-- | :-- | :-- |
-| Compliant mechanism (output displacement) and the force-inverter benchmark | objective + problem | Paper: Sigmund 1997 · [paper](https://doi.org/10.1080/08905459708945415) | needs springs at input and output |
-| pyMOTO's mechanism module | model | Code: [pyMOTO](https://github.com/aatmdelissen/pyMOTO) | thermal and dynamic models are already implemented |
 | Reference results from the original MATLAB codes (top88, top99neo, top3d, TOBS, MMC, the level-set codes) | tests | Code: run once in GNU Octave or MATLAB · papers [1](https://doi.org/10.1007/s00158-010-0594-7) [2](https://doi.org/10.1007/s00158-020-02629-w) [3](https://doi.org/10.1007/s00158-014-1107-x) [4](https://doi.org/10.1007/s00158-020-02719-9) [5](https://doi.org/10.1007/s00158-015-1372-3) [6](https://doi.org/10.1007/s00158-018-1904-8) [7](https://doi.org/10.1007/s00158-014-1190-z) | proves the Python versions give the same answers |
 
 ### Medium: new physics or a whole method

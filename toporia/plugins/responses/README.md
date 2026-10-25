@@ -9,7 +9,7 @@ case — self-adjoint, one solve, no aggregation. Everything else needs its own 
 usually an aggregation function (p-norm or Kreisselmeier–Steinhauser) or an augmented
 Lagrangian to survive thousands of local constraints.
 
-**Status: 10 in Toporia · 4 with open code · 13 paper only**
+**Status: 11 in Toporia · 4 with open code · 12 paper only**
 
 | Label | Meaning |
 | :-- | :-- |
@@ -23,6 +23,7 @@ Lagrangian to survive thousands of local constraints.
 | :-- | :-- | :-- | :-- | :-- |
 | ✅ Compliance | [`compliance.py`](compliance.py) | `compliance` | objective | `q4`, `pymoto_elastic` |
 | ✅ End compliance (non-linear) | [`end_compliance.py`](end_compliance.py) | `end_compliance` | objective | `q4_nonlinear` |
+| ✅ Output displacement (maximise) | [`output_displacement.py`](output_displacement.py) | `output_displacement` | objective | `q4_mechanism` |
 | ✅ Material volume | [`volume.py`](volume.py) | `volume` | objective | `q4`, `pymoto_elastic` |
 | ✅ Peak von Mises stress | [`stress.py`](stress.py) | `stress` | constraint | `q4`, `pymoto_elastic` |
 | ✅ Buckling load factor | [`buckling.py`](buckling.py) | `buckling_load` | objective or constraint | `q4_buckling` |
@@ -31,6 +32,28 @@ Lagrangian to survive thousands of local constraints.
 | ✅ Fundamental frequency (maximise) | [`eigenfrequency.py`](eigenfrequency.py) | `eigenfrequency` | objective | `q4_dynamic`, `pymoto_dynamic` |
 | ✅ Fundamental frequency (at least) | [`eigenfrequency.py`](eigenfrequency.py) | `eigenfrequency_limit` | constraint | `q4_dynamic` |
 | ✅ Dynamic compliance (harmonic load) | [`dynamic_compliance.py`](dynamic_compliance.py) | `dynamic_compliance` | objective | `q4_dynamic` |
+
+### Output displacement
+
+For a unit virtual load `l` in the desired output direction, the objective is
+`J = -sum(w * l^T*u)`. Positive reported `output_displacement` means motion in
+that direction. Parameters `x` and `y` locate the port in mm; `angle` is in
+degrees (0 is +x, 90 is +y, 180 is -x). The point snaps to the nearest mesh node.
+For each real load `K*u=f`, a shared virtual solve `K*psi=l` gives
+`dJ/drho_e = dE/drho_e * sum(w * psi_e^T*KE*u_e)`. This gradient has both signs;
+OC and other compliance-only updaters are not offered for this objective.
+
+Input/output ground springs are specified in the scenario, not hidden in the
+response. They enter both state and adjoint stiffness; their own density
+derivative is zero. The [force-inverter example](../problems/README.md#force-inverter)
+uses MMA and a density filter. This is linear small-displacement mechanism
+design: point hinges and mesh dependence remain possible. The filter alone
+does not guarantee a manufacturable hinge or a stress limit.
+
+Reference: O. Sigmund, "On the Design of Compliant Mechanisms Using Topology
+Optimization", *Mechanics of Structures and Machines* 25 (1997) 493–524,
+[DOI](https://doi.org/10.1080/08905459708945415). Own implementation, independently
+checked against pyMOTO; the paper's figures are not reproduced.
 
 ### Buckling load factor
 
@@ -138,7 +161,6 @@ non-linear module, so there is no pyMOTO version.
 
 | Response | Status | Reference | Why it is hard |
 | :-- | :-- | :-- | :-- |
-| Compliant mechanisms | 📄 | Sigmund, *Mech. Struct. Mach.* 1997; Sigmund, *SMO* 2001 | Maximise output displacement against a spring. Not self-adjoint, and prone to one-node hinges that only a length-scale filter suppresses. |
 | Non-linear stability | 📄 | Dalklint, Wallin & Tortorelli, *CMAME* 2023 | Finite strain plus critical-point tracking; the tangent stiffness depends on displacement. |
 | Transient response | 🔗 PolyDyna (with the paper) | Giraldo-Londoño & Paulino, *SMO* 2021 | Time-domain adjoints that integrate backwards over the history. The frequency-domain (harmonic) case is [`dynamic_compliance`](dynamic_compliance.py). |
 | Fatigue and damage | 📄 | Oest & Lund, *SMO* 2017 | Load-history dependent; needs cycle counting inside the loop. |

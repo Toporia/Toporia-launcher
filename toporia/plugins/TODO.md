@@ -96,9 +96,9 @@ the matching MAKE item below.
 | [x] | Adam and PTO done; SA evaluated and not registered (misses performance gate) | updater / experiment | Kingma & Ba 2015; Biyikli & To 2015; [SA evaluation](../../experiments/README.md) |
 | [x] | Hard-kill BESO, floating projection (internal β continuation) | updater | Huang & Xie 2010; Huang 2020, 2021 |
 | [x] | Variable-thickness MMC, MMV (restricted 2D superellipses), B-spline fields | representation | Zhang et al. 2016, 2017; Qian 2013 |
-| [~] | L-bracket, force inverter (L-bracket done; the force inverter needs an output-displacement response with springs) | problem | Duysinx & Bendsøe 1998; Sigmund 1997 |
+| [x] | L-bracket, force inverter (own geometry, signed output and physical port springs) | problem | Duysinx & Bendsøe 1998; Sigmund 1997 |
 | [x] | Robust three-field preset (variants over `heaviside.eta`) | preset | Wang, Lazarov & Sigmund 2011 |
-| [ ] | Compliant mechanism (output displacement, uses `adjoint()`) | response | Sigmund 1997 |
+| [x] | Compliant mechanism (signed output displacement, shared spring-augmented adjoint; pyMOTO cross-check) | response | Sigmund 1997 |
 
 ## Wave 4: MAKE, medium (new physics feature group or whole method)
 

@@ -38,7 +38,15 @@ from toporia.framework.parts.filter import Filter
 from toporia.framework.parts.interpolation import Interpolation
 from toporia.framework.parts.method import OBJECTIVE, Capabilities, OptimizationMethod
 from toporia.framework.parts.model import ConstraintValue, Evaluation, Model
-from toporia.framework.parts.physics import BUCKLING, ELASTIC_ENERGY, STRESS, BucklingPhysics, Physics
+from toporia.framework.parts.physics import (
+    BUCKLING,
+    ELASTIC_ENERGY,
+    POINT_DISPLACEMENT,
+    STRESS,
+    BucklingPhysics,
+    Physics,
+    PointDisplacementPhysics,
+)
 from toporia.framework.parts.postprocess import PostProcessor, Result
 from toporia.framework.parts.representation import Representation
 from toporia.framework.parts.response import CONSTRAINT_ROLE, OBJECTIVE_ROLE, Response, ResponseValue
@@ -74,6 +82,7 @@ def plugin_errors():
 __all__ = [
     # what is optimised
     "Model", "AssembledModel", "Physics", "ELASTIC_ENERGY", "STRESS", "BUCKLING", "BucklingPhysics",
+    "POINT_DISPLACEMENT", "PointDisplacementPhysics",
     "Evaluation", "ConstraintValue",
     # how the design moves
     "Updater", "ExternalOptimizer", "Verdict", "FlatProblem", "VOLUME_BUDGET",

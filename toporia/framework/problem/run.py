@@ -154,6 +154,10 @@ def apply_param(run, path: str, value):
             cases = list(run.scenario.load_cases)
             cases[index] = replace(cases[index], **{field_name: value})
             return replace(run, scenario=replace(run.scenario, load_cases=cases))
+        if collection == "point_springs":
+            springs = list(run.scenario.point_springs)
+            springs[index] = replace(springs[index], **{field_name: value})
+            return replace(run, scenario=replace(run.scenario, point_springs=springs))
         raise KeyError(f"Unknown parameter collection {collection!r} in path {path!r}")
 
     part = _owner(path)
@@ -188,6 +192,8 @@ def read_param(run, path: str):
             return run.solver.schedules[index].get(field_name)
         if collection == "load_cases":
             return getattr(run.scenario.load_cases[index], field_name)
+        if collection == "point_springs":
+            return getattr(run.scenario.point_springs[index], field_name)
         raise KeyError(f"Unknown parameter collection {collection!r} in path {path!r}")
 
     return getattr(getattr(run, _owner(path)), path)

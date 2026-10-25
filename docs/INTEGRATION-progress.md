@@ -202,16 +202,62 @@ changed since the full-suite checkpoint of 2021 passes and one optional skip;
 only this isolated experiment and its tests were run for the evaluation.
 Implementation counts remain unchanged.
 
+### Completed: compliant mechanism and force inverter
+
+Added a separate Q4 mechanism physics/model and signed output-displacement
+response. `Scenario.point_springs` describes density-independent x/y ground
+springs. Only spring-capable models accept them; ordinary models and whole
+methods reject such scenarios instead of silently ignoring the springs.
+The original Q4 and H8 solver sources are unchanged. One augmented stiffness
+factorisation serves real loads and adjoints; compliance includes spring energy.
+Point probes remain opaque to the response, so it does not index backend DOFs.
+The stable API exports the new displacement feature and interface.
+
+The Force Inverter preset uses Toporia's own 40 × 40 domain, corner supports,
+input/output springs 0.01, force 0.001 and output in the -x direction. It is
+based on Sigmund's 1997 formulation, not a reproduction of its figures. Springs
+round-trip through JSON and support indexed CLI parameter paths. The existing
+integration GUI preserves them and draws springs plus the desired output arrow;
+the separate GUI worktree is untouched.
+
+The initial thirteen mechanism tests pass, including multi-case density gradients with
+springs, spring/material energy balance, zero-spring equivalence, linear force
+scaling, signed output and a passive-energy transfer bound. The optional
+independent pyMOTO FE assembly and automatic gradient agree. Native model and
+response conformance pass (largest relative errors 1.4e-6 and 3.1e-8). The first
+16 × 16 CLI example stopped at iteration 111 with objective -0.0258618, meaning
+output motion 0.0258618 in the desired direction, at volume 0.399998.
+Two additional spring-only support tests pass: no invented clamp, reaction
+balance, and rejection of residual rigid motion. The GUI round trip and preview
+tests pass. Documentation and registry assertions are updated; totals are 77
+selectable parts, eight physics engines and 17 presets. The documented CLI
+example was rerun successfully in `results/mechanism-validation/`.
+
+Focused native regressions completed with 1780 passes and one failure: the
+new preset used integer coordinates, which JSON reload normalised to floats,
+changing its fingerprint despite numerical equality. Corrected preset types
+and normalised numeric fields in the new PointSpring constructor. The 40-test
+repair run passes, including all preset round trips and the mechanism/GUI
+checks (`results/mechanism-serialization-repair.xml`). No assertion or
+fingerprint algorithm was weakened. The CLI was rerun with corrected metadata.
+
+The fresh full native suite passes: **2173 passed, one optional multigrid test
+skipped**, in 26 min 07 sec (`results/mechanism-native-full.log`,
+`results/mechanism-full.xml`), with all temporary files inside `results/`.
+Repository-wide Ruff and whitespace checks pass. The original Q4 and H8
+element sources and golden baselines remain unchanged.
+`results/mechanism-validation/validation.png` shows the verified problem and
+coarse design. No later method was started during this validation.
+
 ### Remaining sequence
 
-1. Compliant mechanism response, port springs and force-inverter preset; pyMOTO cross-check.
-2. Geometry projection.
-3. Reaction-diffusion level set.
-4. Hamilton-Jacobi level set and topological derivative.
-5. Phase field.
-6. Explicit length scale, machining accessibility and projection-based self-support.
-7. Multiresolution design and analysis meshes.
-8. Neural reparameterisation (TOuNN), subject to dependency support on this Python/Windows setup.
+1. Geometry projection.
+2. Reaction-diffusion level set.
+3. Hamilton-Jacobi level set and topological derivative.
+4. Phase field.
+5. Explicit length scale, machining accessibility and projection-based self-support.
+6. Multiresolution design and analysis meshes.
+7. Neural reparameterisation (TOuNN), subject to dependency support on this Python/Windows setup.
 
 Heat conduction, thermal/dynamic pyMOTO models, eigenfrequency, harmonic response,
 local stress with augmented Lagrangian, and nonlinear elasticity are already
