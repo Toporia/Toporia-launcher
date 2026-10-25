@@ -5,7 +5,7 @@ from [`models/`](../models/README.md) because the same physics can be discretise
 ways, and the choice of element is itself a thing worth comparing: it decides what the
 density field can resolve and where the classic numerical artefacts come from.
 
-**Status: 5 in Toporia · 5 with open code · 3 paper only**
+**Status: 6 in Toporia · 5 with open code · 3 paper only**
 
 | Label | Meaning |
 | :-- | :-- |
@@ -23,9 +23,11 @@ density field can resolve and where the classic numerical artefacts come from.
 | ✅ Q4 heat conduction | [`q4_heat.py`](q4_heat.py) | Bilinear quadrilateral, 1 temperature per node, same grid and element numbering as the Q4 plane-stress element. Steady conduction with uniform heat generation; supports are heat sinks. 2-D. |
 | ✅ H8 heat conduction | [`h8_heat.py`](h8_heat.py) | Trilinear brick, 1 temperature per node, 2 × 2 × 2 Gauss integration. The 3-D counterpart of `q4_heat`, for a scenario with a depth `Lz`. |
 
+| ✅ Q4 with vibration | [`q4_dynamic.py`](q4_dynamic.py) | The Q4 plane-stress engine plus a mass matrix (consistent or lumped, Pedersen's low-density fix, optional non-structural mass at the load nodes). Adds the features `modes` (eigenvalues of `K φ = λ M φ` by shift-invert ARPACK, with their sensitivities) and `harmonic` (`(K − ω²M) u = f`, dynamic compliance and its adjoint). 2-D. |
+
 Each module is a [`framework.parts.physics.Physics`](../../framework/parts/physics.py) engine:
 it solves a density to a state and declares which features it answers (`elastic_energy`,
-`stress`) and in which dimensions (`dims`). Adding an element formulation below means
+`stress`, and for vibration `modes` and `harmonic`) and in which dimensions (`dims`). Adding an element formulation below means
 implementing that interface, after which every response and filter in the library that
 works in its dimension applies to it unchanged.
 
@@ -95,6 +97,34 @@ more. **pyMOTO has no geometrically non-linear module, so there is no pyMOTO ver
 parameters (load steps, tolerance, iterations, linear/non-linear density band) appear
 with the model's settings. **On the command line** see the *Nonlinear Cantilever* preset
 in [`problems/`](../problems/README.md).
+
+## Vibration: eigenfrequencies and harmonic response
+
+`q4_dynamic.py` subclasses the static engine (which is untouched, so its results stay
+bit-identical) and adds a mass matrix. Element mass is `m(ρ) · M_e` with `m(ρ) = ρ` above a
+threshold ρc and `ρc (ρ/ρc)^r` below it (ρc = 0.1, r = 6 by default). Without that, void
+elements have stiffness `ρ³` but mass `ρ`, so the lowest "modes" are spurious oscillations of
+the void (Pedersen 2000; Du & Olhoff 2007). Set `low_density_below` to 0 to switch the fix
+off and get the plain linear mass. The mass density, a consistent or lumped mass matrix and a
+non-structural `attached_mass` (shared by the load nodes, so a payload is just a point load
+that also weighs something) are parameters of the model.
+
+- **Free vibration**: `K φ = λ M φ`, `λ = ω²`, modes normalised to `φᵀ M φ = 1`, sensitivity
+  `dλ/dρ_e = φ_eᵀ (dE/dρ_e K_e − λ dm/dρ_e M_e) φ_e`. Valid for a simple eigenvalue; the
+  [`eigenfrequency`](../responses/eigenfrequency.py) response aggregates several eigenvalues
+  to handle repeated ones.
+- **Forced vibration**: `(K − ω² M) u = f`, dynamic compliance `fᵀu`, self-adjoint sensitivity
+  `−u_eᵀ (dE/dρ_e K_e − ω² dm/dρ_e M_e) u_e`.
+
+**How it is checked.** The first bending frequency of a slender cantilever agrees with
+Euler–Bernoulli beam theory to 1.4 % at 4 elements per depth; the lowest three eigenvalues
+agree with pyMOTO's own `AssembleMass` and `EigenSolve` ([`pymoto_dynamic.py`](../models/pymoto_dynamic.py))
+to 1e-13 relative on the same density; the sensitivities match finite differences; the mass
+fix is shown to remove the void modes. All in `tests/plugins/test_dynamics.py`.
+
+Papers: Díaz & Kikuchi, *IJNME* 35 (1992) 1487–1502 ([doi](https://doi.org/10.1002/nme.1620350707));
+Pedersen, *SMO* 20 (2000) 2–11 ([doi](https://doi.org/10.1007/s001580050130));
+Du & Olhoff, *SMO* 34 (2007) 91–110 ([doi](https://doi.org/10.1007/s00158-007-0101-y)).
 
 Two consequences worth knowing before adding anything here:
 

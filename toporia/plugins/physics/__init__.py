@@ -9,6 +9,7 @@ functions and as a framework.parts.physics.Physics engine that responses run on.
     h8_heat.py           3-D steady heat conduction, trilinear bricks
     _conduction.py       what the two heat engines share
     q4_nonlinear.py      2-D large-displacement elasticity, Q4, Newton with load steps
+    q4_dynamic.py        the same with a mass matrix: eigenfrequencies, harmonic response
 """
 
 from .q4_plane_stress import (

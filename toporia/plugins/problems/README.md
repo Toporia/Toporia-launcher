@@ -34,6 +34,9 @@ Toporia exists to make.
 
 All but the heat sink are compliance problems, which matches what the library can currently
 solve (the cantilever 3D is the one 3-D case). Run any of them with `toporia run "<menu name>"`;
+| ✅ Vibrating beam | [`vibrating_beam.py`](vibrating_beam.py) | `Vibrating Beam` |
+
+All are compliance problems except the vibrating beam (the cantilever 3D is the one 3-D case). Run any of them with `toporia run "<menu name>"`;
 `toporia list` shows the names, `--out DIR` chooses the output folder and
 `--set PATH=VALUE` overrides a parameter, e.g. `toporia run "L-bracket" --set m=1`.
 
@@ -120,6 +123,21 @@ The MBB half-beam again, but every design is evaluated eroded / intermediate / d
 from 1 to 64. It shows the robust formulation of Wang, Lazarov & Sigmund (2011) end to end:
 `toporia run "MBB Beam (Robust)"`. What it is and how to build it by hand is in the
 [schedules README](../schedules/README.md#several-versions-of-one-design-robust-formulations).
+
+### Vibrating beam
+
+A beam 8 × 1 clamped at both ends with a non-structural mass (2, against a solid-beam mass of
+8) at its centre; half of the domain may be filled and the **fundamental frequency is
+maximised**, after Du & Olhoff (2007). It uses the model *2-D Q4 with vibration* and MMA
+(`q4_dynamic+mma`): eigenvalue sensitivities change sign, so OC cannot run it. The payload is
+declared as the point load, since the engine hangs its `attached_mass` on the load nodes. The
+lowest three eigenvalues are aggregated so a second mode that catches up is raised too, and
+the mass interpolation of Pedersen keeps void from producing spurious modes. On the 80 × 10
+mesh the fundamental angular frequency rises from 0.0306 to 0.0553 (+81 %) in 100 iterations,
+about 12 s. In the GUI pick *Vibrating Beam* in the problem list (the model and objective come
+with it); on the command line `toporia run "Vibrating Beam" --out DIR`. Papers:
+[Du & Olhoff 2007](https://doi.org/10.1007/s00158-007-0101-y),
+[Pedersen 2000](https://doi.org/10.1007/s001580050130).
 
 ## 📄 Canonical benchmarks not here yet
 

@@ -6,7 +6,7 @@ here — see [`framework.parts.model.Model`](../../framework/parts/model.py). Sw
 how Toporia reaches new physics, new dimensions and new mesh types without touching a
 single update rule.
 
-**Status: 7 in Toporia · 24 with open code · 3 paper only**
+**Status: 9 in Toporia · 24 with open code · 3 paper only**
 
 | Label | Meaning |
 | :-- | :-- |
@@ -37,6 +37,8 @@ preset sets it all up. On the command line: `toporia run "Heat Sink"` (a 50 × 5
 `q4_heat+oc`, 100 iterations in about two seconds), or `toporia run "Heat Sink" --set
 m=1` for a finer one. How a scenario maps onto heat conduction is in
 [`../physics/README.md`](../physics/README.md).
+| ✅ 2-D Q4 with vibration | [`q4_dynamic.py`](q4_dynamic.py) | `q4_dynamic` | The Q4 engine plus a mass matrix ([`physics/q4_dynamic.py`](../physics/q4_dynamic.py)). Everything `q4` offers, and in addition the objectives *fundamental frequency* (maximise; also a constraint, *at least*) and *dynamic compliance* of a harmonic load. Pair it with MMA. |
+| ✅ Vibration, pyMOTO | [`pymoto_dynamic.py`](pymoto_dynamic.py) | `pymoto_dynamic` | The same eigenfrequency problem on pyMOTO's `AssembleMass` and `EigenSolve`: an independent check of `q4_dynamic` (equal eigenvalues to 1e-13 on the same density). Objective: fundamental frequency. Optional dependency. |
 
 `q4` is built on [`assembled.py`](assembled.py), the generic model: name a physics engine
 and the filters and responses come for free — every response the engine provides features
@@ -48,6 +50,15 @@ because pyMOTO brings its own filter and its own gradients.
 declared set of `provides` features (`elastic_energy`, `stress`, …) — and every existing
 response and filter applies to it unchanged. That is the interface each engine below
 should be wrapped behind.
+
+**Vibration in the GUI and on the command line.** In the GUI choose the model *2-D Q4 with
+vibration (Toporia)* (or load the preset *Vibrating Beam*); the objective list then offers
+*Fundamental frequency (maximise)* and *Dynamic compliance (harmonic load)*, and the model
+parameters (mass density, the low-density fix, mass type, attached mass) appear with the
+others. On the command line `toporia run "Vibrating Beam"` runs the preset; for your own
+scenario set `method` to `q4_dynamic+mma` and the objective to `{"type": "eigenfrequency"}`,
+e.g. `toporia run "Vibrating Beam" --set method.attached_mass=4`. Eigenvalue
+sensitivities change sign, so use MMA, not OC. See [`physics/`](../physics/README.md#vibration-eigenfrequencies-and-harmonic-response).
 
 The ceiling today: **2-D, structured grids, linear elastic, direct solves.** Everything in
 the first table below is a way past it.

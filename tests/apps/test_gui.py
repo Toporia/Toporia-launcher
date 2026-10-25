@@ -534,6 +534,15 @@ def test_every_registered_part_and_preset_can_be_picked_in_the_gui(window):
     for name in problem_names():
         window._on_config_changed(name)
         texts += "\n" + _menu_texts(window)
+
+    # The objectives and constraints offered follow from the model, so a part that only some models
+    # compute (the vibration responses) shows up when a preset that uses such a model is loaded.
+    for preset in ("Vibrating Beam",):
+        window._on_config_changed(preset)
+        window.core.select_method("q4_dynamic+mmapy_mma")                   # one that can enforce a constraint
+        window.constraints.load_specs([{"type": "eigenfrequency_limit"}])   # a row builds its drop-down
+        texts += _menu_texts(window)
+        window.constraints.load_specs([])
     missing = [f"{package}:{cls.name}"
                for package in REGISTRIES
                for cls in getattr(importlib.import_module(f"toporia.plugins.{package}"),

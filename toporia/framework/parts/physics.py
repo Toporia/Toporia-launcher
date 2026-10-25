@@ -159,3 +159,53 @@ class Physics(ABC):
         residual R, so it supplies ∂R_e/∂ρ_e.
         """
         raise NotImplementedError(f"{type(self).__name__} does not provide {END_COMPLIANCE!r}")
+
+
+# ── MODES ─────────────────────────────────────────────────────────────────────
+#
+# Free vibration: the generalised eigenproblem  K φ = λ M φ,  λ = ω².  Modes are
+# mass-normalised (φᵀ M φ = 1).  Provided by plugins/physics/q4_dynamic.py.
+
+#: Feature: the lowest eigenvalues of the structure and their sensitivities.
+MODES = "modes"
+
+
+class ModalPhysics:
+    """The questions a physics engine answers when it provides MODES.
+
+    A mixin-style description: engines implement these two methods; the base class
+    Physics stays free of them so engines without vibration need nothing.
+    """
+
+    def eigenvalues(self, state, n):
+        """The n lowest eigenvalues λ = ω² of K φ = λ M φ, ascending, as a 1-D array."""
+        raise NotImplementedError(f"{type(self).__name__} does not provide {MODES!r}")
+
+    def eigenvalue_sensitivity(self, state, i):
+        """dλ_i/dρ per element (shape of the density) of the i-th lowest eigenvalue.
+
+        Valid for a simple (non-repeated) eigenvalue; call eigenvalues(state, n)
+        with n > i first.
+        """
+        raise NotImplementedError(f"{type(self).__name__} does not provide {MODES!r}")
+
+
+# ── HARMONIC ──────────────────────────────────────────────────────────────────
+#
+# Forced vibration at one driving frequency: (K − ω² M) u = f.  Provided by
+# plugins/physics/q4_dynamic.py.
+
+#: Feature: the dynamic compliance fᵀu at a driving frequency, and its adjoint sensitivity.
+HARMONIC = "harmonic"
+
+
+class HarmonicPhysics:
+    """The questions a physics engine answers when it provides HARMONIC."""
+
+    def dynamic_compliance(self, state, case, omega):
+        """fᵀu of one load case, with (K − ω² M) u = f.  Signed: it changes sign past a resonance."""
+        raise NotImplementedError(f"{type(self).__name__} does not provide {HARMONIC!r}")
+
+    def dynamic_compliance_sensitivity(self, state, case, omega):
+        """d(fᵀu)/dρ per element (shape of the density): −uᵀ (dK/dρ − ω² dM/dρ) u."""
+        raise NotImplementedError(f"{type(self).__name__} does not provide {HARMONIC!r}")

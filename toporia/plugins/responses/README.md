@@ -9,7 +9,7 @@ case — self-adjoint, one solve, no aggregation. Everything else needs its own 
 usually an aggregation function (p-norm or Kreisselmeier–Steinhauser) or an augmented
 Lagrangian to survive thousands of local constraints.
 
-**Status: 4 in Toporia · 4 with open code · 14 paper only**
+**Status: 9 in Toporia · 4 with open code · 14 paper only**
 
 | Label | Meaning |
 | :-- | :-- |
@@ -27,6 +27,37 @@ Lagrangian to survive thousands of local constraints.
 | ✅ Peak von Mises stress | [`stress.py`](stress.py) | `stress` | constraint | `q4`, `pymoto_elastic` |
 | ✅ Local von Mises stress (augmented Lagrangian) | [`local_stress.py`](local_stress.py) | `local_stress` | constraint | `q4`, `h8` |
 | ✅ Thermal compliance | [`thermal_compliance.py`](thermal_compliance.py) | `thermal_compliance` | objective | `q4_heat`, `h8_heat`, `pymoto_heat` |
+| ✅ Fundamental frequency (maximise) | [`eigenfrequency.py`](eigenfrequency.py) | `eigenfrequency` | objective | `q4_dynamic`, `pymoto_dynamic` |
+| ✅ Fundamental frequency (at least) | [`eigenfrequency.py`](eigenfrequency.py) | `eigenfrequency_limit` | constraint | `q4_dynamic` |
+| ✅ Dynamic compliance (harmonic load) | [`dynamic_compliance.py`](dynamic_compliance.py) | `dynamic_compliance` | objective | `q4_dynamic` |
+
+### Vibration
+
+**Fundamental frequency.** The goal is to maximise the lowest eigenvalue λ₁ = ω₁² of
+`K φ = λ M φ`, or to keep it above a limit (`1 − λ/limit ≤ 0`). Raising λ₁ pushes it up to
+the next eigenvalue, so λ₁ alone is not differentiable at the optimum. The response therefore
+uses a smooth minimum of the lowest `modes` eigenvalues (default 3), `(Σ λ_i^−p)^(−1/p)`
+(default `p = 16`), which is below λ₁ and tends to it as `p` grows; `modes = 1` is exactly λ₁.
+As an objective the value is `−λ_agg/λ_ref` with λ_ref the aggregate of the first design, so it
+has the size of one in any units. The run records the true `omega_1` and `omega_2`.
+Use MMA (`q4_dynamic+mma`): the sensitivities change sign and OC cannot follow them. The
+constraint form needs an updater that takes a second constraint (`q4_dynamic+mmapy_mma`,
+`q4_dynamic+pymoto_mma`).
+
+**Dynamic compliance.** For a load `f cos ωt`, `(K − ω² M) u = f` and the response is
+`Σ w_k |f_kᵀu_k|`, which is the static compliance at ω = 0. It is self-adjoint (no extra solve).
+Choose ω below the first eigenfrequency (compare it with the fundamental-frequency response):
+at a resonance the response is unbounded, and there is no damping.
+
+In the GUI: pick the model *2-D Q4 with vibration*, then the objective; or load the preset
+*Vibrating Beam*. On the command line: `toporia run "Vibrating Beam"`, or a scenario with
+`objective={"type": "dynamic_compliance", "omega": 0.01}` and `method="q4_dynamic+mma"`.
+
+Papers: Díaz & Kikuchi, *IJNME* 35 (1992) ([doi](https://doi.org/10.1002/nme.1620350707));
+Du & Olhoff, *SMO* 34 (2007) ([doi](https://doi.org/10.1007/s00158-007-0101-y)); Pedersen, *SMO* 20
+(2000) ([doi](https://doi.org/10.1007/s001580050130)); PolyDyna, Giraldo-Londoño & Paulino, *SMO* 64 (2021)
+([doi](https://doi.org/10.1007/s00158-021-02859-6)); Ma, Kikuchi & Hagiwara, *Comput. Mech.* 13 (1993)
+157–174 (cited from memory, no link).
 
 > **What can actually enforce a constraint.** The volume *budget*
 > (`scenario.volfrac`) is enforced by every method. A *second* constraint needs an updater
@@ -93,8 +124,7 @@ non-linear module, so there is no pyMOTO version.
 | Compliant mechanisms | 📄 | Sigmund, *Mech. Struct. Mach.* 1997; Sigmund, *SMO* 2001 | Maximise output displacement against a spring. Not self-adjoint, and prone to one-node hinges that only a length-scale filter suppresses. |
 | Linearised buckling | 📄 | Neves, Rodrigues & Guedes, *Comp. Struct.* 1995; Ferrari & Sigmund, *CMAME* 2019 | A generalised eigenproblem every iteration, spurious modes in low-density regions, non-differentiable repeated eigenvalues. Expensive — and the main reason compliance designs fail in reality. |
 | Non-linear stability | 📄 | Dalklint, Wallin & Tortorelli, *CMAME* 2023 | Finite strain plus critical-point tracking; the tangent stiffness depends on displacement. |
-| Eigenfrequency | 📄 | Díaz & Kikuchi, *IJNME* 1992; Pedersen, *SMO* 2000 | Localised modes in void regions need a mass-interpolation fix. |
-| Harmonic and transient response | 🔗 PolyDyna (with the paper) | Jensen & Sigmund 2011; Giraldo-Londoño & Paulino, *SMO* 2021 | Frequency-domain or time-domain adjoints; the transient case integrates backwards over the history. |
+| Transient response | 🔗 PolyDyna (with the paper) | Giraldo-Londoño & Paulino, *SMO* 2021 | Time-domain adjoints that integrate backwards over the history. The frequency-domain (harmonic) case is [`dynamic_compliance`](dynamic_compliance.py). |
 | Fatigue and damage | 📄 | Oest & Lund, *SMO* 2017 | Load-history dependent; needs cycle counting inside the loop. |
 | Fracture resistance | 📄 | Russ & Waisman, *CMAME* 2019; Da et al., *IJSS* 2021 | Phase-field fracture in the inner loop, path-dependent adjoint. |
 | Design-dependent and pressure loads | 📄 | Hammer & Olhoff, *SMO* 2000; Kumar, Frouws & Langelaar, *SMO* 2020 | The load moves with the boundary. The Darcy-flow formulation is the cleanest density-based treatment. |

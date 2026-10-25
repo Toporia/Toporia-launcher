@@ -12,6 +12,8 @@ constraint entry; scenario.constraints adds further limits on top of it.
     volume.py      material volume — objective, used with a further constraint
     stress.py      peak von Mises stress — constraint
     thermal_compliance.py  weighted thermal compliance of heat conduction — objective
+    eigenfrequency.py     lowest natural frequency — objective (maximise) and constraint (at least)
+    dynamic_compliance.py compliance of a harmonic load — objective
 """
 
 from toporia.framework.params import resolve_params

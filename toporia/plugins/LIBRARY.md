@@ -69,6 +69,8 @@ A test (`tests/apps/test_gui.py`) fails if a part ever stops being reachable fro
 | 2-D Q4 heat conduction (Toporia) | `q4_heat` | [q4_heat.py](models/q4_heat.py), [q4_heat.py](physics/q4_heat.py) | Paper | Bendsøe & Sigmund 2003, section 1.5; Gersborg-Hansen et al., *SMO* 2006 · [paper](https://doi.org/10.1007/s00158-005-0584-3) |
 | 3-D H8 heat conduction (Toporia) | `h8_heat` | [h8_heat.py](models/h8_heat.py), [h8_heat.py](physics/h8_heat.py) | Paper | the 3-D brick of the same heat problem · [paper](https://doi.org/10.1007/s00158-005-0584-3) |
 | Heat conduction, pyMOTO network | `pymoto_heat` | [pymoto_heat.py](models/pymoto_heat.py) | Wraps | [pyMOTO](https://github.com/aatmdelissen/pyMOTO)'s `AssemblePoisson` (MIT), `pip install pymoto`; the cross-check of `q4_heat` |
+| 2-D Q4 with vibration (Toporia) | `q4_dynamic` | [q4_dynamic.py](models/q4_dynamic.py), [q4_dynamic.py](physics/q4_dynamic.py) | Paper | Pedersen, *SMO* 2000; Du & Olhoff, *SMO* 2007 · papers [1](https://doi.org/10.1007/s001580050130) [2](https://doi.org/10.1007/s00158-007-0101-y) |
+| Vibration, pyMOTO network | `pymoto_dynamic` | [pymoto_dynamic.py](models/pymoto_dynamic.py) | Wraps | [pyMOTO](https://github.com/aatmdelissen/pyMOTO) `AssembleMass` and `EigenSolve`, `pip install pymoto` |
 
 ### Objectives and constraints ([folder](responses/README.md))
 
@@ -80,6 +82,9 @@ A test (`tests/apps/test_gui.py`) fails if a part ever stops being reachable fro
 | End compliance (non-linear) | `end_compliance` | [end_compliance.py](responses/end_compliance.py) | Paper | Buhl, Pedersen & Sigmund, *SMO* 2000 · [paper](https://doi.org/10.1007/s001580050089) |
 | Peak von Mises stress | `stress` | [stress.py](responses/stress.py) | Paper | Le, Norato, Bruns, Ha & Tortorelli, *SMO* 2010 · [paper](https://doi.org/10.1007/s00158-009-0440-y) |
 | Thermal compliance | `thermal_compliance` | [thermal_compliance.py](responses/thermal_compliance.py) | Paper | Bendsøe & Sigmund 2003, section 1.5; Gersborg-Hansen et al., *SMO* 2006 · [paper](https://doi.org/10.1007/s00158-005-0584-3) |
+| Fundamental frequency (maximise) | `eigenfrequency` | [eigenfrequency.py](responses/eigenfrequency.py) | Paper | Díaz & Kikuchi, *IJNME* 1992; Du & Olhoff, *SMO* 2007 · papers [1](https://doi.org/10.1002/nme.1620350707) [2](https://doi.org/10.1007/s00158-007-0101-y) |
+| Fundamental frequency (at least) | `eigenfrequency_limit` | [eigenfrequency.py](responses/eigenfrequency.py) | Paper | the same, as a constraint |
+| Dynamic compliance (harmonic load) | `dynamic_compliance` | [dynamic_compliance.py](responses/dynamic_compliance.py) | Paper | Ma, Kikuchi & Hagiwara, *Comput. Mech.* 1993 (no link); PolyDyna · [paper](https://doi.org/10.1007/s00158-021-02859-6) |
 
 ### Optimisers: how the design moves ([folder](updaters/README.md))
 
@@ -143,6 +148,7 @@ and the preset *MBB Beam (Robust)*.
 | :-- | :-- | :-- |
 | MBB Beam | [mbb_beam.py](problems/mbb_beam.py) | the 99-line code and top88 · papers [1](https://doi.org/10.1007/s001580050176) [2](https://doi.org/10.1007/s00158-010-0594-7) |
 | MBB Beam (Robust) | [mbb_beam_robust.py](problems/mbb_beam_robust.py) | Wang, Lazarov & Sigmund 2011 · [paper](https://doi.org/10.1007/s00158-010-0602-y) |
+| Vibrating Beam | [vibrating_beam.py](problems/vibrating_beam.py) | after Du & Olhoff 2007 · [paper](https://doi.org/10.1007/s00158-007-0101-y) |
 | Cantilever | [cantilever.py](problems/cantilever.py) | the 99-line code · [paper](https://doi.org/10.1007/s001580050176) |
 | Nonlinear Cantilever | [nonlinear_cantilever.py](problems/nonlinear_cantilever.py) | Buhl, Pedersen & Sigmund 2000; Wang et al. 2014 · papers [1](https://doi.org/10.1007/s001580050089) [2](https://doi.org/10.1016/j.cma.2014.03.021) |
 | Cantilever 3D | [cantilever_3d.py](problems/cantilever_3d.py) | top3d (Liu & Tovar 2014) · [paper](https://doi.org/10.1007/s00158-014-1107-x) |
@@ -179,6 +185,9 @@ Listed from least to most effort. "Code" means open code exists (port it, or che
 | :-- | :-- |
 | Eigenfrequency, then linearised buckling | Code: TopBuck250 (Ferrari, Sigmund & Guest 2021) · [paper](https://doi.org/10.1007/s00158-021-02854-x) |
 | Harmonic response | Code: PolyDyna · [paper](https://doi.org/10.1007/s00158-021-02859-6) |
+| Heat conduction and thermal compliance | Paper: Bendsøe & Sigmund 2003; Gersborg-Hansen et al. 2006 · papers [1](https://doi.org/10.1007/978-3-662-05086-6) [2](https://doi.org/10.1007/s00158-005-0584-3) |
+| Linearised buckling | Code: TopBuck250 (Ferrari, Sigmund & Guest 2021) · [paper](https://doi.org/10.1007/s00158-021-02854-x) |
+| Local stress constraints with an augmented-Lagrangian optimiser | Code: PolyStress (Giraldo-Londoño & Paulino 2021) · [paper](https://doi.org/10.1007/s00158-020-02760-8) |
 | Geometry projection (bars with round ends) | Code: GGP-Matlab, GPTO, pygpto (Norato et al.) · [paper](https://doi.org/10.1016/j.cma.2015.05.005) |
 | Reaction–diffusion level set | Code: 88-line code of Otomori et al. 2015 · [paper](https://doi.org/10.1007/s00158-014-1190-z) |
 | Hamilton–Jacobi level set; topological derivative | Code: Challis 2010; Amstutz & Andrä 2006 · papers [1](https://doi.org/10.1007/s00158-009-0430-0) [2](https://doi.org/10.1016/j.jcp.2005.12.015) |
