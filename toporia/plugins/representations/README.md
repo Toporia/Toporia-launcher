@@ -28,7 +28,7 @@ with every representation. Updaters whose rule moves each element's density on i
 with another representation is refused before the run, with the reason. The GUI's Pipeline
 box shows the same reason, and Compare Methods skips the pairing.
 
-**Status: 4 plugins in Toporia (MMC includes two thickness options) · 1 with open code · 1 paper only**
+**Status: 5 plugins in Toporia (MMC includes two thickness options) · 0 with open code · 1 paper only**
 
 | Label | Meaning |
 | :-- | :-- |
@@ -44,6 +44,7 @@ box shows the same reason, and Compare Methods skips the pairing.
 | ✅ Moving morphable components | [`mmc.py`](mmc.py) | `mmc` | 5 per bar (centre, half-length, half-thickness, angle); starts as crossing bars in an `n_x × n_y` grid. 2-D only; 3-D components are a candidate | Guo, Zhang & Zhong, *J. Appl. Mech.* 2014 |
 | ✅ Variable-thickness MMC | [`mmc.py`](mmc.py) with `thickness = variable` | `mmc` | the same bars with the half-thickness at both ends and the middle (7 per bar), joined by a parabola, as in MMC188. 2-D only | Zhang, Yuan, Zhang & Guo, *SMO* 2016 |
 | ✅ Moving morphable voids | [`mmv.py`](mmv.py) | `mmv` | 5 per superelliptical hole; solid outside their union. Restricted 2-D variant | Zhang et al., *CMAME* 2017 |
+| ✅ Geometry projection | [`geometry_projection.py`](geometry_projection.py) | `geometry_projection` | Fixed-radius capsule bars: endpoints and an activation variable (5 per bar in 2-D, 7 in 3-D) | Norato, Bell & Tortorelli, *CMAME* 2015; Smith & Norato, *SMO* 2020 |
 | ✅ B-spline field | [`bspline.py`](bspline.py) | `bspline` | the coefficients of a tensor-product B-spline (degree 2 or 3) on a coarse control grid; the density is the spline at the element centres. 2-D and 3-D | Qian, *CMAME* 2013 |
 
 **Using MMC.** Every variable is scaled to [0, 1] across its whole range, so the updater's
@@ -157,11 +158,63 @@ The reference is W. Zhang et al., *CMAME* 322 (2017) 590–614,
 the [authors' manuscript](https://arxiv.org/abs/1704.06060), section 2,
 describes MMV as the geometric dual of MMC.
 
+### Geometry projection
+
+This independent implementation represents each component as a line segment
+offset by a fixed stock radius: a bar with round ends in 2-D, or a cylinder
+with spherical caps in 3-D. The endpoints and activation `alpha` are normalised
+to [0, 1]. Two diagonals start in each 2-D layout cell, or four body diagonals
+in each 3-D cell. The initial set is fixed; `alpha=0` removes a component.
+
+For signed distance `s = bar_radius - distance_to_segment` (positive inside),
+the local density is the circular/spherical-cap fraction of a sample ball:
+with `t=clip(s/window,-1,1)`, `H=0.5+(asin(t)+t*sqrt(1-t*t))/pi` in 2-D,
+or `H=0.5+0.75*t-0.25*t^3` in 3-D. This is the local flat-interface approximation,
+not an exact ball/capsule intersection at curved ends. Its window radius is
+`projection_width` times the smallest element width. The stock radius must
+cover that window; refine an underresolved mesh or reduce the window width.
+
+Toporia uses `rho = 1-product(1-alpha*H)` to join overlapping components,
+which stays in [0, 1]. The existing material law penalises that combined density;
+volume uses the unpenalised field. These are deliberate modular differences
+from GPTO's per-component penalty and p-norm combination. No GPTO source code
+was copied: its authors state a CC-BY-NC 4.0 code licence. The geometry and
+exact chain rule were implemented independently from the formulation.
+
+Endpoint derivatives use the closest point on each segment; overlap derivatives
+use prefix/suffix products without division. Collapsed segments become balls;
+they have finite averaged endpoint subgradients, not a classical derivative in
+every direction. Tests check regular endpoint/activation gradients, independent
+cap integration, analytic capsule area/volume, collapse and overlap handling,
+and a run through the existing H8 model. The cap approximation converges toward
+the nominal geometry as its physical window and mesh are refined.
+
+Use MMA with a move limit near 0.02. The projection already provides geometric
+smoothing; additional filters are optional. This CLI example uses no extra filter:
+
+```
+toporia run "MBB Beam" --set method=q4+mma --set representation.type=geometry_projection \
+    --set method.move=0.02 --set 'filter_specs=[]' --set m=0.4 --set tol=0 \
+    --set max_iter=150 --set save_every=0 --out results/geometry-projection-validation
+```
+
+It reports compliance 212.942 and volume 0.499504 at the 150-iteration cap.
+This is a feasible example, not a convergence or global-optimality claim. Its
+regularisation differs from the default density-filtered OC benchmark.
+`toporia check representation:geometry_projection` passes, with largest gradient
+error 1.5e-6. Nominal 2-D outlines are exported for nonzero-size components;
+they do not encode fractional activation or subsequent filters and are not a
+manufactured-boundary guarantee. In 3-D, use the density-field post-processors.
+
+References: [Norato, Bell & Tortorelli (2015)](https://doi.org/10.1016/j.cma.2015.05.005),
+*CMAME* 293, 306–327; [Smith & Norato (2020)](https://doi.org/10.1007/s00158-020-02552-0),
+*SMO* 62, 1579–1594. Shared endpoints, stacked-joint thickness and non-capsule
+feature families such as [GGP](https://github.com/topggp/GGP-Matlab) remain possible extensions.
+
 ## Candidates
 
 | Representation | Code | Reference | What it adds |
 | :-- | :-- | :-- | :-- |
-| 🔗 Geometry projection / feature mapping | [GPTO](https://github.com/jnorato/GPTO), [GGP](https://github.com/topggp/GGP-Matlab) | Norato, Bell & Tortorelli, *IJNME* 2015; Wein, Dunning & Norato, *SMO* 2020 (review) | Bars with round ends, projected through a signed distance and a size variable that can switch each bar off. |
 | 📄 Neural-network reparameterisation | — | Hoyer, Sohl-Dickstein & Greydanus, arXiv 2019; Chandrasekhar & Suresh, *SMO* 2021 | Network weights as the variables, its output as the density field: an implicit regulariser. Needs an autodiff library, declared through `dependencies`. |
 
 ## Writing one
@@ -186,4 +239,5 @@ run with `q4+mma`. A worked example (a mirror-symmetric design) is in
 - X. Guo, W. Zhang, W. Zhong, "Doing topology optimization explicitly and geometrically — a new moving morphable components based framework", *Journal of Applied Mechanics* 81 (2014) 081009.
 - W. Zhang, J. Yuan, J. Zhang, X. Guo, "A new topology optimization approach based on Moving Morphable Components (MMC) and the ersatz material model", *SMO* 53 (2016).
 - X. Qian, "Topology optimization in B-spline space", *Comput. Methods Appl. Mech. Engrg.* 265 (2013) 15-35.
-- J. A. Norato, B. K. Bell, D. A. Tortorelli, "A geometry projection method for continuum-based topology optimization with discrete elements", *IJNME* (2015).
+- J. A. Norato, B. K. Bell, D. A. Tortorelli, "A geometry projection method for continuum-based topology optimization with discrete elements", *CMAME* 293 (2015) 306–327.
+- H. Smith, J. A. Norato, "A MATLAB code for topology optimization using the geometry projection method", *SMO* 62 (2020) 1579–1594.

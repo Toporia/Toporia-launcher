@@ -249,15 +249,53 @@ element sources and golden baselines remain unchanged.
 `results/mechanism-validation/validation.png` shows the verified problem and
 coarse design. No later method was started during this validation.
 
+### Completed: geometry projection
+
+Added `representations/geometry_projection.py`, an independently implemented
+2-D/3-D fixed-radius capsule family with floating endpoints and component
+activation. The local circular/spherical-cap projection uses signed distance;
+a bounded product joins components. Volume uses the unpenalised field and the
+configured material law penalises the combined density. These modular choices
+differ from GPTO's per-component penalty and p-norm. No original code is copied:
+the Smith/Norato 2020 paper states GPTO's code licence is CC-BY-NC 4.0. The
+2015 CMAME and 2020 SMO DOI records and the open-access formulation were verified.
+
+The cap is a local flat-interface approximation, not an exact ball/capsule
+intersection at curved ends. Bars have a fixed stock radius that must cover
+the sample window, and their fixed initial set cannot nucleate new bars.
+Collapsed segments have finite averaged endpoint subgradients, not classical
+derivatives in every direction. Shared endpoints, stacked thickness and general
+non-capsule feature families are not implemented. These limits are documented.
+
+All 19 new tests pass: independent disk/sphere cross-section integration,
+analytic capsule area/volume, all endpoint and activation derivatives in both
+dimensions, endpoint reversal, zero activation, collapse/overlap handling,
+invalid controls, an H8 integration run, and a feasible geometric MBB example.
+Representation conformance passes (largest gradient error 1.5e-6). The CLI
+example uses no extra density filter and reports compliance 212.942, volume
+0.499504 at its 150-iteration cap. This is not a convergence claim or a
+like-for-like comparison against default filtered OC.
+
+Documentation, registry assertions and counts are updated: 78 selectable
+plugins, eight physics engines and 17 presets. Ruff and whitespace checks pass.
+All 916 focused native regressions pass (`results/geometry-projection-focused.log`,
+`results/geometry-projection-focused.xml`), covering representations, GUI,
+plugin conformance, guide examples and goldens. The full native suite passes:
+**2194 passed, one optional multigrid test skipped**, in 26 min 34 sec
+(`results/geometry-projection-native-full.log`, `results/geometry-projection-full.xml`).
+Ruff and whitespace checks pass. The inspected
+`results/geometry-projection-validation/validation.png` distinguishes physical
+density from nominal outlines, which do not encode fractional activation.
+No later method was started during validation.
+
 ### Remaining sequence
 
-1. Geometry projection.
-2. Reaction-diffusion level set.
-3. Hamilton-Jacobi level set and topological derivative.
-4. Phase field.
-5. Explicit length scale, machining accessibility and projection-based self-support.
-6. Multiresolution design and analysis meshes.
-7. Neural reparameterisation (TOuNN), subject to dependency support on this Python/Windows setup.
+1. Reaction-diffusion level set.
+2. Hamilton-Jacobi level set and topological derivative.
+3. Phase field.
+4. Explicit length scale, machining accessibility and projection-based self-support.
+5. Multiresolution design and analysis meshes.
+6. Neural reparameterisation (TOuNN), subject to dependency support on this Python/Windows setup.
 
 Heat conduction, thermal/dynamic pyMOTO models, eigenfrequency, harmonic response,
 local stress with augmented Lagrangian, and nonlinear elasticity are already

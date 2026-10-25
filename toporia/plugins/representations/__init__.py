@@ -13,6 +13,8 @@ found by the REPRESENTATIONS registry.  A solver names one by type:
                          element centres (Qian 2013)
     mmv.py               moving superelliptical holes, the restricted 2-D dual
                          of MMC (MMV framework: Zhang et al. 2017)
+    geometry_projection.py  fixed-radius capsules with floating endpoints and
+                            component activation, in 2-D and 3-D (Norato et al. 2015)
 """
 
 from toporia.framework.parts.representation import Representation

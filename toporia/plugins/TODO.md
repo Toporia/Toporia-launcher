@@ -106,7 +106,7 @@ the matching MAKE item below.
 - [x] Eigenproblem feature group → eigenfrequency, then linearised buckling
 - [x] Harmonic response
 - [x] Local stress + augmented Lagrangian updater
-- [ ] Geometry projection representation
+- [x] Geometry projection representation (own 2-D/3-D capsule variant; no GPTO code copied)
 - [ ] Reaction–diffusion level set; Hamilton–Jacobi level set; topological derivative
 - [ ] Phase field
 - [ ] Explicit length-scale constraints; machining accessibility; Gaynor self-support

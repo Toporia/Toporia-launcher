@@ -24,7 +24,7 @@ A test (`tests/apps/test_gui.py`) fails if a part ever stops being reachable fro
 | **Wraps** | Calls an outside Python package. That package is installed separately. Parts whose package is missing are greyed out in the app, with the install command. |
 | **Own** | Toporia's own idea or standard practice. |
 
-## In the library today: 77 selectable parts and 17 benchmark problems
+## In the library today: 78 selectable parts and 17 benchmark problems
 
 The selectable parts include models and whole methods; their eight underlying
 physics engines are counted separately in the [catalogue totals](README.md).
@@ -36,6 +36,7 @@ physics engines are counted separately in the [catalogue totals](README.md).
 | Element densities | `element_density` | [element_density.py](representations/element_density.py) | Own | Bendsøe 1989; Sigmund's 99-line code · papers [1](https://doi.org/10.1007/BF01650949) [2](https://doi.org/10.1007/s001580050176) |
 | Moving morphable components (constant or variable thickness) | `mmc` | [mmc.py](representations/mmc.py) | Paper | Guo, Zhang & Zhong 2014; variable thickness as in MMC188 (Zhang et al., *SMO* 2016) · papers [1](https://doi.org/10.1115/1.4027609) [2](https://doi.org/10.1007/s00158-015-1372-3) |
 | Moving morphable voids (restricted 2D superellipses) | `mmv` | [mmv.py](representations/mmv.py) | Paper | Zhang et al., *CMAME* 2017; own geometric dual of MMC, without B-spline surfaces or FE pruning · [paper](https://doi.org/10.1016/j.cma.2017.05.002) |
+| Geometry projection (2D/3D capsule bars) | `geometry_projection` | [geometry_projection.py](representations/geometry_projection.py) | Paper | Own fixed-radius, bounded-union variant with component activation; no GPTO code copied · papers [1](https://doi.org/10.1016/j.cma.2015.05.005) [2](https://doi.org/10.1007/s00158-020-02552-0) |
 | B-spline field | `bspline` | [bspline.py](representations/bspline.py) | Paper | Qian, *CMAME* 2013 · [paper](https://doi.org/10.1016/j.cma.2013.06.001) |
 
 ### Filters: design to physical density, and fabrication rules ([folder](filters/README.md))
@@ -198,7 +199,6 @@ Listed from least to most effort. "Code" means open code exists (port it, or che
 
 | What | Source |
 | :-- | :-- |
-| Geometry projection (bars with round ends) | Code: GGP-Matlab, GPTO, pygpto (Norato et al.) · [paper](https://doi.org/10.1016/j.cma.2015.05.005) |
 | Reaction–diffusion level set | Code: 88-line code of Otomori et al. 2015 · [paper](https://doi.org/10.1007/s00158-014-1190-z) |
 | Hamilton–Jacobi level set; topological derivative | Code: Challis 2010; Amstutz & Andrä 2006 · papers [1](https://doi.org/10.1007/s00158-009-0430-0) [2](https://doi.org/10.1016/j.jcp.2005.12.015) |
 | Phase field | Paper: Bourdin & Chambolle 2003; Takezawa et al. 2010 · papers [1](https://doi.org/10.1051/cocv:2002070) [2](https://doi.org/10.1016/j.jcp.2009.12.017) |
