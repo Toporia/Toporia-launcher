@@ -44,13 +44,13 @@ any doubt about what this repository actually does today:
 | [Material laws](toporia/plugins/interpolations/README.md) — density to stiffness | SIMP, RAMP, ordered SIMP | 0 | 3 |
 | [Schedules](toporia/plugins/schedules/README.md) — continuation, and robust variants | equal steps, geometric, linear ramp, when the design settles | 0 | 1 |
 | [Post-processors](toporia/plugins/postprocessors/README.md) — threshold, checks, exports | threshold, connectivity, feature size, grey level over the run, SVG, DXF, STL, smoothed outlines | 0 | 1 |
-| [Models](toporia/plugins/models/README.md) — physics and gradients | 2-D Q4, 3-D H8, pyMOTO elasticity | 24 | 3 |
-| [Elements](toporia/plugins/physics/README.md) — discretisation | Q4 plane stress, H8 solid | 5 | 3 |
-| [Responses](toporia/plugins/responses/README.md) — objectives and constraints | compliance, volume, von Mises stress | 4 | 14 |
-| [Updaters](toporia/plugins/updaters/README.md) — optimisers | OC, MMA, GCMMA, SiMPL, BESO, SLSQP, trust-constr, NLopt (MMA, CCSAQ, SLSQP, AUGLAG), mmapy (MMA, GCMMA), null-space, TOBS, CONLIN, multi-constraint OC, Adam, PTO, hard-kill BESO | 5 | 1 |
-| [Problems](toporia/plugins/problems/README.md) — benchmarks | MBB, robust MBB, cantilever, 3-D cantilever, Michell cantilever, L-bracket, 3-point bending, bar, 3× drone arm | 6 | 1 |
+| [Models](toporia/plugins/models/README.md) — physics and gradients | 2-D Q4, 3-D H8, pyMOTO elasticity; heat (2-D, 3-D, pyMOTO); vibration (Q4, pyMOTO); large deformation | 24 | 3 |
+| [Elements](toporia/plugins/physics/README.md) — discretisation | Q4 plane stress, H8 solid, Q4 and H8 heat, Q4 with mass, Q4 large deformation | 5 | 3 |
+| [Responses](toporia/plugins/responses/README.md) — objectives and constraints | compliance, volume, von Mises stress (peak and local), thermal compliance, end compliance, eigenfrequency, dynamic compliance | 4 | 14 |
+| [Updaters](toporia/plugins/updaters/README.md) — optimisers | OC, MMA, GCMMA, SiMPL, BESO, SLSQP, trust-constr, NLopt (MMA, CCSAQ, SLSQP, AUGLAG), mmapy (MMA, GCMMA), null-space, TOBS, CONLIN, multi-constraint OC, Adam, PTO, hard-kill BESO, augmented Lagrangian | 4 | 1 |
+| [Problems](toporia/plugins/problems/README.md) — benchmarks | MBB, robust MBB, cantilever, 3-D cantilever, Michell cantilever, L-bracket, L-bracket (local stress), heat sink, vibrating beam, non-linear cantilever, 3-point bending, bar, 3× drone arm | 6 | 1 |
 
-**86 implemented · 58 with open code elsewhere · 40 from papers only.**
+**107 implemented · 57 with open code elsewhere · 40 from papers only.**
 
 Short version of where this sits in the field: Toporia solves linear elasticity on
 structured grids, in 2-D and in 3-D. It covers four of the field's parameterisation

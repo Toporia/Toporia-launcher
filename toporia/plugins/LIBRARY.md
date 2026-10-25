@@ -24,7 +24,7 @@ A test (`tests/apps/test_gui.py`) fails if a part ever stops being reachable fro
 | **Wraps** | Calls an outside Python package. That package is installed separately. Parts whose package is missing are greyed out in the app, with the install command. |
 | **Own** | Toporia's own idea or standard practice. |
 
-## In the library today: 57 parts and 11 benchmark problems
+## In the library today: 70 parts and 15 benchmark problems
 
 ### Design representations: what the design variables are ([folder](representations/README.md))
 
