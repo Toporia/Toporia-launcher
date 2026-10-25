@@ -24,7 +24,7 @@ A test (`tests/apps/test_gui.py`) fails if a part ever stops being reachable fro
 | **Wraps** | Calls an outside Python package. That package is installed separately. Parts whose package is missing are greyed out in the app, with the install command. |
 | **Own** | Toporia's own idea or standard practice. |
 
-## In the library today: 79 selectable parts and 17 benchmark problems
+## In the library today: 80 selectable parts and 17 benchmark problems
 
 The selectable parts include models and whole methods; their eight underlying
 physics engines are counted separately in the [catalogue totals](README.md).
@@ -125,6 +125,7 @@ physics engines are counted separately in the [catalogue totals](README.md).
 | :-- | :-- | :-- | :-- | :-- |
 | RBF level set | `levelset` | [levelset_rbf.py](methods/levelset_rbf.py) | Port | TOPRBF.m (Luo et al.); Wang & Wang, *CMAME* 2006 · papers [1](https://doi.org/10.1002/nme.1536) [2](https://doi.org/10.1007/s00158-018-1904-8) |
 | Reaction-diffusion level set | `levelset_reaction_diffusion` | [levelset_reaction_diffusion.py](methods/levelset_reaction_diffusion.py) | Paper | Otomori et al. 2015; own cell-centred variant, implicit diffusion and bisected volume multiplier · [paper](https://doi.org/10.1007/s00158-014-1190-z) |
+| Hamilton-Jacobi level set with circular-hole derivative | `levelset_hamilton_jacobi` | [levelset_hamilton_jacobi.py](methods/levelset_hamilton_jacobi.py) | Paper | Challis 2010; independent upwind HJ/TD, reinitialisation and normalised augmented-Lagrangian volume feedback · [paper](https://doi.org/10.1007/s00158-009-0430-0) |
 
 Every model can also be paired with every optimiser as a method called `<model>+<optimiser>`,
 for example `q4+nlopt_mma`. Those pairings are built on demand, so they are not listed here.
@@ -200,7 +201,6 @@ Listed from least to most effort. "Code" means open code exists (port it, or che
 
 | What | Source |
 | :-- | :-- |
-| Hamilton–Jacobi level set; topological derivative | Code: Challis 2010; Amstutz & Andrä 2006 · papers [1](https://doi.org/10.1007/s00158-009-0430-0) [2](https://doi.org/10.1016/j.jcp.2005.12.015) |
 | Phase field | Paper: Bourdin & Chambolle 2003; Takezawa et al. 2010 · papers [1](https://doi.org/10.1051/cocv:2002070) [2](https://doi.org/10.1016/j.jcp.2009.12.017) |
 | Explicit length-scale constraints, machining accessibility, projection-based self-support | Paper: Zhou et al. 2015; Langelaar 2019; Gaynor & Guest 2016 · papers [1](https://doi.org/10.1016/j.cma.2015.05.003) [2](https://doi.org/10.1016/j.cma.2019.03.037) [3](https://doi.org/10.1007/s00158-016-1551-x) |
 | Multi-resolution design and analysis meshes | Paper: Nguyen et al. 2010 · [paper](https://doi.org/10.1007/s00158-009-0443-8) |

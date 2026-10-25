@@ -108,7 +108,7 @@ the matching MAKE item below.
 - [x] Local stress + augmented Lagrangian updater
 - [x] Geometry projection representation (own 2-D/3-D capsule variant; no GPTO code copied)
 - [x] Reaction–diffusion level set (independent sparse cell-centred variant, Appendix C elastic tensor)
-- [ ] Hamilton–Jacobi level set; circular-hole topological derivative
+- [x] Hamilton–Jacobi level set with circular-hole topological derivative (Challis-style HJ/TD)
 - [ ] Phase field
 - [ ] Explicit length-scale constraints; machining accessibility; Gaynor self-support
 - [ ] Multi-resolution design and analysis meshes

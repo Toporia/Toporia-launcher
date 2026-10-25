@@ -329,13 +329,58 @@ All 1127 focused method, schema and GUI checks pass (`results/rd-focused.log`,
 checks pass. No baseline elements/goldens changed and no later method was
 started during validation.
 
+### Completed: Hamilton-Jacobi level set and circular-hole derivative
+
+Added `methods/levelset_hamilton_jacobi.py`, an independent 2-D HJ/TD
+implementation after Challis (2010), DOI 10.1007/s00158-009-0430-0. The public
+article was read; no original MATLAB code was copied. Positive-inside phi
+reverses the source convention. Godunov upwinding, CFL substeps, cross-shaped
+sensitivity smoothing, solid-only topological forcing, EDT reinitialisation
+and augmented-Lagrangian volume-fraction feedback follow its formulation.
+Initial mean-cell-energy normalisation makes evolution invariant to load and
+material units. Controller decay has a finite floor. Support/force cells are
+protected in addition to user-fixed regions and counted in the budget.
+Targets round down to binary cell counts; overspending cannot pass the joint
+volume/compliance stopping criterion. This is not a port or an Amstutz geodesic
+two-phase optimiser; generalised reinforcement algorithms remain candidates.
+
+The plane-stress circular-hole derivative is
+`(4 sigma:sigma - trace(sigma)^2)/E` per removed area. Its Q4 quadrature matrix
+is checked independently for uniaxial, biaxial and shear stress at four Poisson
+ratios, nonsquare elements and rigid motions. A separately loaded physical
+plate with a central circular void gives compliance change/removed area
+3.148 then 3.101 on refined meshes, approaching the infinite-plate value 3
+with finite-domain and stair-step errors. This is not a SIMP density-gradient
+finite difference. Unit-ball pi factors are retained in the forcing term.
+
+All 28 method tests pass, including signed-distance offsets, both upwind
+directions, source-only nucleation from flat solid, controller fraction
+scaling/floor, combined load/material scaling, immutable regions, unsupported
+scenarios and two actual same-mesh OC comparisons within the unchanged 10%
+quality allowance. Method conformance and both CLI examples pass. MBB 24x8
+settles feasibly at iteration 86, compliance 246.108358, volume 0.5; 60x20 at
+iteration 110, compliance 191.667832, volume 0.5. The inspected
+`results/hamilton-jacobi-validation/validation.png` shows the evaluated density,
+signed-distance field and volume history. Other settings/problems may oscillate
+or reach poor local minima; a cap is not convergence. Original MATLAB oracles
+remain optional and were not run.
+
+Documentation/registries now count 80 selectable plugins, eight physics
+engines and 17 presets (105 implementations); 253 compositions plus three
+whole methods give 256 names. Ruff and whitespace checks pass. All 1140 focused
+method, schema and GUI checks pass in 5 min 12 sec (`results/hj-focused.log`,
+`results/hj-focused.xml`). The full native suite passes: **2260 passed, one
+optional multigrid test skipped**, in 29 min 46 sec (`results/hj-native-full.log`,
+`results/hj-full.xml`). Ruff and whitespace checks pass. Original Q4/H8 sources
+and golden baselines remain unchanged. No later method was started during
+validation.
+
 ### Remaining sequence
 
-1. Hamilton-Jacobi level set and topological derivative.
-2. Phase field.
-3. Explicit length scale, machining accessibility and projection-based self-support.
-4. Multiresolution design and analysis meshes.
-5. Neural reparameterisation (TOuNN), subject to dependency support on this Python/Windows setup.
+1. Phase field.
+2. Explicit length scale, machining accessibility and projection-based self-support.
+3. Multiresolution design and analysis meshes.
+4. Neural reparameterisation (TOuNN), subject to dependency support on this Python/Windows setup.
 
 Heat conduction, thermal/dynamic pyMOTO models, eigenfrequency, harmonic response,
 local stress with augmented Lagrangian, and nonlinear elasticity are already

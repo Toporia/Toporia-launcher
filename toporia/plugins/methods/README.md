@@ -10,7 +10,7 @@ evolves its own representation with its own volume control — implements
 This is the layer that decides which shapes are reachable at all. Everything below is a
 different answer to "what *is* the design?".
 
-**Status: 2 whole methods and 253 named compositions in Toporia · 11 with open code · 2 paper only**
+**Status: 3 whole methods and 253 named compositions in Toporia · 10 with open code · 2 paper only**
 
 | Label | Meaning |
 | :-- | :-- |
@@ -26,12 +26,13 @@ the intersection of their capabilities. For example, `q4+oc` minimises complianc
 `q4_heat+oc` minimises thermal compliance, and `q4_buckling+pymoto_mma` can enforce
 a buckling limit. Pairings with no compatible objective are rejected before solving.
 
-**2 whole methods**, which do not split into parts:
+**3 whole methods**, which do not split into parts:
 
 | Method | File | Name | Reference |
 | :-- | :-- | :-- | :-- |
 | ✅ RBF level set | [`levelset_rbf.py`](levelset_rbf.py) | `levelset` | Wang & Wang, *CMAME* 2006 |
 | ✅ Reaction-diffusion level set | [`levelset_reaction_diffusion.py`](levelset_reaction_diffusion.py) | `levelset_reaction_diffusion` | Otomori et al., *SMO* 2015; independent finite-volume variant |
+| ✅ Hamilton-Jacobi level set with circular TD | [`levelset_hamilton_jacobi.py`](levelset_hamilton_jacobi.py) | `levelset_hamilton_jacobi` | Challis, *SMO* 2010; independent HJ/TD variant |
 
 Older names are still accepted and expand through `PRESETS` in
 [`__init__.py`](__init__.py): `density` → `q4+oc`, `density_mma` → `q4+mma`,
@@ -39,7 +40,8 @@ Older names are still accepted and expand through `PRESETS` in
 `q4+pymoto_gcmma`, `pymoto` → `pymoto_elastic+pymoto_mma`.
 
 Covered families include **density/SIMP**, **parameterised level set** (`levelset`),
-**reaction-diffusion level set** (`levelset_reaction_diffusion`), and
+**reaction-diffusion level set** (`levelset_reaction_diffusion`), **Hamilton-Jacobi
+level set with topological forcing** (`levelset_hamilton_jacobi`), and
 **discrete evolutionary** (`beso`).
 
 ### Reaction-diffusion level set
@@ -92,6 +94,70 @@ components for `diffusion_length` 0.5, 1 and 3 mm respectively, all at volume
 0.5 (linear compliances 193.793, 190.863 and 214.989). This illustrates the
 complexity control on one benchmark, not a universal monotonicity guarantee.
 
+### Hamilton-Jacobi level set and circular-hole topological derivative
+
+An independent implementation after [Challis (2010)](https://doi.org/10.1007/s00158-009-0430-0),
+with no original MATLAB code copied. This method stores a cell-centred signed-distance
+field in mm, positive inside solid (the reference uses the opposite sign). Its
+binary physical density is `phi > 0`; there is no SIMP penalty on mixed cells.
+The scenario's `Emin` supplies ersatz stiffness in void and is not overridden.
+
+The evolution is `phi_t = v |grad(phi)| + omega g`. Shape velocity comes from
+the compliance shape derivative; `g` is the circular-cavity derivative in cells
+that were solid at the start of the update. For plane stress and a traction-free
+circular hole, compliance sensitivity per removed area is
+`T = (4 sigma:sigma - trace(sigma)^2)/E`. Four-point Q4 quadrature integrates this
+tensor. The unit-ball factor pi multiplies both its compliance and volume terms
+in the forcing, as in Challis's Eq. 13–14. This is a circular-hole asymptotic
+sensitivity, not a finite SIMP density derivative. Affine-stress tests give
+3/4/8 for unit uniaxial/equibiaxial/shear stress. An independent FE plate with a
+small circular void approaches the uniaxial value 3 per removed area under
+mesh refinement (about 3.148 to 3.101, with finite-domain/staircase errors).
+
+Godunov upwinding selects the proper stencil for either sign of velocity.
+Ten substeps per `method.step_length` cell widths give an advective CFL sum
+at most 0.2, including nonsquare cells. The frozen forcing can nucleate a hole
+where the signed-distance gradient is zero. Setting `method.topological_weight=0`
+gives pure HJ advection. A cross-shaped `[0,1,0;1,2,1;0,1,0]/6` average smooths
+the sensitivities, as in the paper; this is a heuristic velocity extension.
+`method.reinitialise_every` controls EDT signed-distance resets (0 disables
+them). The half-minimum-cell interface offset is exact for axis-aligned square
+cells and approximate on nonsquare cells or curved boundaries. This is a
+discrete ersatz method, not cut-cell FE or exact subcell geometry.
+
+Volume uses augmented-Lagrangian feedback on the volume **fraction**, with
+initial multiplier -0.01 and penalty denominator 1000, decayed by 0.9 per step.
+Toporia normalises cell energy by its initial mean, equivalent to normalising
+the objective by initial compliance; force/material units therefore cancel in
+the evolution. The penalty denominator has a 1e-6 floor. Material cells touching
+supports or applied forces stay solid and count toward volume, in addition to
+the user's fixed regions. Force-bearing cells cannot overlap forced void.
+An insufficient budget is rejected. The target is rounded down to an integer
+number of cells and capped at available material, so its quantisation never
+increases the requested budget.
+
+The method's stopping criterion requires feasible volume within
+`method.volume_tolerance` below that target and compliance stable against five
+previous values within `method.objective_tolerance`. Default tolerances are
+0.005 and 0.01. The engine cannot stop early while volume lies outside that
+band. Parameters, discretisation and the volume controller can still produce
+oscillations or poor local minima on other problems; reaching the iteration cap
+does not establish feasibility or convergence. The result reports both.
+
+```console
+python -m toporia run "MBB Beam" --set method=levelset_hamilton_jacobi --set m=0.4 --set max_iter=200 --set tol=0 --set save_every=0 --out results/hamilton-jacobi-validation
+```
+
+This 24×8 run meets the joint criterion after 86 updates: compliance 246.108358,
+volume 0.5. The 60×20 run settles after 110 updates: compliance 191.667832,
+volume 0.5. Both pass an actual same-mesh filtered-OC comparison within the
+unchanged 10% quality allowance. All density values are binary; FE responses
+and exports describe the same design. Extra force/support protection differs
+from the density model's unrestricted design space. Springs, other objectives,
+additional response constraints and 3-D are unsupported. Generalised two-phase
+topological-gradient optimisers (e.g. Amstutz–Andrä's geodesic algorithm) remain
+distinct candidates; this implementation supplies Challis's HJ/cavity combination.
+
 ## Candidates — density and discrete
 
 | Family | Status | Reference | What it adds |
@@ -105,8 +171,7 @@ complexity control on one benchmark, not a universal monotonicity guarantee.
 
 | Family | Status | Reference | What it adds |
 | :-- | :-- | :-- | :-- |
-| Hamilton–Jacobi level set | 🔗 Challis 129-line MATLAB (with the paper), [OpenLSTO](https://github.com/M2DOLab/OpenLSTO), [GridapTopOpt.jl](https://github.com/zjwegert/GridapTopOpt.jl) | Wang, Wang & Guo, *CMAME* 2003; Allaire, Jouve & Toader, *JCP* 2004; Challis, *SMO* 2010 | The classical form: boundary advected by a shape-derivative velocity. Crisp interfaces, but cannot nucleate holes in 2-D unaided and needs re-initialisation. |
-| Topological derivative | 🔗 [FreeFEM code](https://link.springer.com/article/10.1007/s00158-023-03529-5) | Sokołowski & Żochowski, *SICON* 1999; Amstutz & Andrä, *JCP* 2006; Novotny et al., *SMO* 2023 | The exact first-order sensitivity to inserting an infinitesimal hole. Stands alone, or supplies nucleation to a level-set scheme. |
+| Generalised topological-gradient optimiser | 🔗 [FreeFEM code](https://link.springer.com/article/10.1007/s00158-023-03529-5) | Sokołowski & Żochowski, *SICON* 1999; Amstutz & Andrä, *JCP* 2006; Novotny et al., *SMO* 2023 | Standalone two-phase/reinforcement schemes. The circular-hole derivative is already implemented and physically checked in `levelset_hamilton_jacobi`. |
 | Phase field | 📄 | Bourdin & Chambolle, *ESAIM:COCV* 2003; Takezawa, Nishiwaki & Kitamura, *JCP* 2010 | Cahn–Hilliard / Allen–Cahn energy with a double-well potential: the perimeter penalty is intrinsic, so **no filter is needed at all**. Couples naturally to phase-field fracture. |
 
 ## Candidates — explicit geometry
