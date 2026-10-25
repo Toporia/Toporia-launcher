@@ -4,7 +4,7 @@ An updater turns a model's `Evaluation` (objective, volume, gradients) into the 
 design. It knows nothing about the physics that produced the numbers, so **every updater
 works with every model** — see [`framework/parts/composition.py`](../../framework/parts/composition.py).
 
-**Status: 21 in Toporia · 5 with open code · 1 paper only**
+**Status: 23 in Toporia · 4 with open code · 0 paper only**
 
 | Label | Meaning |
 | :-- | :-- |
@@ -17,6 +17,7 @@ works with every model** — see [`framework/parts/composition.py`](../../framew
 | Updater | File | Registry name | Constraints | Notes |
 | :-- | :-- | :-- | :-- | :-- |
 | ✅ Optimality criteria | [`oc.py`](oc.py) | `oc` | volume only | Bisection on one Lagrange multiplier. Needs objective and volume gradients of opposite sign, so compliance only. The top88 update. |
+| ✅ Floating projection | [`floating_projection.py`](floating_projection.py) | `floating_projection` | volume only | Damped OC ratio update, a mass-preserving floating threshold and internal β continuation. Compliance and thermal compliance; element densities only. |
 | ✅ Method of moving asymptotes | [`mma.py`](mma.py) | `mma` | volume only | Convex separable subproblem, solved through its dual by bisection. The field's workhorse. |
 | ✅ Mirror descent (SiMPL) | [`simpl.py`](simpl.py) | `simpl` | volume only | Steps in `logit(x)`, so bounds hold by construction with no clipping. Its multiplier may be zero, so a non-binding volume budget simply does not act. |
 | ✅ BESO, soft kill | [`beso.py`](beso.py) | `beso` | volume only | Binary designs by sensitivity ranking and an evolutionary volume schedule. Brings its own convergence test, because a binary design's max design change never settles. |
@@ -38,6 +39,47 @@ works with every model** — see [`framework/parts/composition.py`](../../framew
 | ✅ MMA (mmapy) | [`mmapy_optimizers.py`](mmapy_optimizers.py) | `mmapy_mma` | any number | Svanberg's reference MMA as ported by Arjen Deetman: the yardstick for `mma` and `pymoto_mma`. **GPL-3, optional, install it yourself** — see [below](#gpl-3-optimisers-mmapy-and-nullspace_optimizer). |
 | ✅ GCMMA (mmapy) | [`mmapy_optimizers.py`](mmapy_optimizers.py) | `mmapy_gcmma` | any number | Svanberg's globally convergent MMA with its inner iterations, same package. **GPL-3, optional.** |
 | ✅ Null-space optimiser | [`nullspace.py`](nullspace.py) | `nullspace` | any number | Feppon's null-space gradient flow: constraints are followed, not penalised. Runs its own loop in the background. **GPL-3, optional.** |
+
+### Floating projection — `floating_projection`
+
+Huang's floating-projection topology optimisation (FPTO) averages current and
+previous objective sensitivities, takes a linear OC ratio step, and projects
+the trial field with a tanh whose threshold preserves its mass. An outer
+multiplier search measures the model's actual volume after projection, moving
+limits and pinned-element bounds. No additional physics solves are needed.
+
+The old backlog's claim that FPTO needs no β continuation was incorrect. The
+[author's manuscript](https://arxiv.org/abs/2006.04306), equations 16–17, starts
+with small β and increases it when the mean design change settles. Here β
+starts at 1e-6, rises by one below `fp_stage_tol` (default 0.001), and is capped
+at `fp_beta_max` (default 8). Internal continuation holds off the engine's
+ordinary stopping rule until the final β has actually been used. The iteration
+cap still applies; inspect `run.json`'s optimiser report for unfinished continuation.
+
+This own modular variant uses the model's configured filter and its adjoint,
+instead of smoothing each trial again inside the updater. It uses the shared
+move limit (default 0.2); set 0.02 for the smaller moves used in the paper.
+It supports compliance or thermal compliance with one volume budget, and
+requires element-density variables. This is not a port of the paper's MATLAB
+code, its smooth-boundary reconstruction, or a reproduction of its figures.
+Filtering may leave grey physical boundary elements even when design variables
+are almost binary; a finite β cap does not guarantee exact 0/1 values.
+
+On the standard MBB conformance mesh (`m=0.4`), the default reaches compliance
+276.884 versus OC's 274.470 (+0.9%), volume 0.500, in 60 iterations. The design
+greyness `mean(4*x*(1-x))` is 0.00522. With move 0.02 it reaches essentially
+the same values in 128 iterations. These are Toporia comparisons, not paper replications.
+
+```
+toporia run "MBB Beam" --set method=q4+floating_projection --set method.move=0.02 \
+    --set m=0.4 --set max_iter=200
+toporia check updater:floating_projection
+```
+
+References: X. Huang, *Engineering Structures* 208 (2020) 110330,
+[DOI](https://doi.org/10.1016/j.engstruct.2020.110330); X. Huang,
+*Advances in Engineering Software* 151 (2021) 102942,
+[DOI](https://doi.org/10.1016/j.advengsoft.2020.102942).
 
 ### SciPy optimisers in `scipy_minimize.py`
 
@@ -350,7 +392,6 @@ any other updater, and its own verdict (success, message, its counts) is written
 
 | Updater | Status | Reference | Why it matters |
 | :-- | :-- | :-- | :-- |
-| Floating projection | 📄 | Huang, *CMAME* 2021 | Reaches binary designs from a continuous formulation without a projection filter's β continuation. |
 | Discrete variable sequential approximation | 🔗 DVTOPCRA | Liang & Cheng 2019 | Integer design variables via sequential approximate integer programming. |
 | Metaheuristics (GA, SA, ACO) | 🔗 [topASA](https://github.com/Hossein-Rostami/Topology-Optimization-with-adaptive-Simulated-Annealing) | see Sigmund, *SMO* 2011 | Included so the platform can **demonstrate why they lose**: orders of magnitude more function evaluations at far lower resolution. Not a serious candidate. |
 

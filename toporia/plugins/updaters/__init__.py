@@ -8,6 +8,8 @@ Every Updater subclass in this package with a non-empty `name` is found by the
 UPDATERS registry.  Modules starting with an underscore are not scanned.
 
     oc.py                 optimality criteria (top88)
+    floating_projection.py damped OC with a mass-preserving floating threshold
+                           and internal sharpness continuation (Huang 2020, 2021)
     mma.py                method of moving asymptotes, one volume constraint
     conlin.py             CONLIN, convex linearisation (MMA without moving asymptotes), any number of constraints
     oc_multi.py           optimality criteria with a multiplier per constraint

@@ -10,7 +10,7 @@ evolves its own representation with its own volume control — implements
 This is the layer that decides which shapes are reachable at all. Everything below is a
 different answer to "what *is* the design?".
 
-**Status: 1 whole method and 220 named compositions in Toporia · 12 with open code · 2 paper only**
+**Status: 1 whole method and 230 named compositions in Toporia · 12 with open code · 2 paper only**
 
 | Label | Meaning |
 | :-- | :-- |
@@ -20,8 +20,8 @@ different answer to "what *is* the design?".
 
 ## ✅ In Toporia
 
-**220 named pairings**, built from [10 models](../models/README.md) and
-[22 updaters](../updaters/README.md). The available objectives and constraints are
+**230 named pairings**, built from [10 models](../models/README.md) and
+[23 updaters](../updaters/README.md). The available objectives and constraints are
 the intersection of their capabilities. For example, `q4+oc` minimises compliance,
 `q4_heat+oc` minimises thermal compliance, and `q4_buckling+pymoto_mma` can enforce
 a buckling limit. Pairings with no compatible objective are rejected before solving.

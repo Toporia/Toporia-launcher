@@ -24,7 +24,7 @@ A test (`tests/apps/test_gui.py`) fails if a part ever stops being reachable fro
 | **Wraps** | Calls an outside Python package. That package is installed separately. Parts whose package is missing are greyed out in the app, with the install command. |
 | **Own** | Toporia's own idea or standard practice. |
 
-## In the library today: 74 selectable parts and 16 benchmark problems
+## In the library today: 75 selectable parts and 16 benchmark problems
 
 The selectable parts include models and whole methods; their seven underlying
 physics engines are counted separately in the [catalogue totals](README.md).
@@ -98,6 +98,7 @@ physics engines are counted separately in the [catalogue totals](README.md).
 | In the app | Name | File | Came in | From |
 | :-- | :-- | :-- | :-- | :-- |
 | Optimality criteria | `oc` | [oc.py](updaters/oc.py) | Port | the 99-line code and top88 · papers [1](https://doi.org/10.1007/s001580050176) [2](https://doi.org/10.1007/s00158-010-0594-7) |
+| Floating projection (FPTO) | `floating_projection` | [floating_projection.py](updaters/floating_projection.py) | Paper | Huang, *Engineering Structures* 2020 and *Adv. Eng. Softw.* 2021; modular updater with internal β continuation · papers [1](https://doi.org/10.1016/j.engstruct.2020.110330) [2](https://doi.org/10.1016/j.advengsoft.2020.102942) |
 | Optimality criteria, several constraints | `oc_multi` | [oc_multi.py](updaters/oc_multi.py) | Own | after Zhou & Rozvany 1991 · [paper](https://doi.org/10.1016/0045-7825%2891%2990046-9) |
 | Method of moving asymptotes | `mma` | [mma.py](updaters/mma.py) | Port | Svanberg 1987, one-constraint form of top88's MMA variant · papers [1](https://doi.org/10.1002/nme.1620240207) [2](https://doi.org/10.1007/s00158-010-0594-7) |
 | CONLIN (convex linearisation) | `conlin` | [conlin.py](updaters/conlin.py) | Paper | Fleury & Braibant 1986; Fleury 1989 · papers [1](https://doi.org/10.1002/nme.1620230307) [2](https://doi.org/10.1007/BF01743804) |
@@ -179,7 +180,6 @@ Listed from least to most effort. "Code" means open code exists (port it, or che
 
 | What | Kind | Source | Notes |
 | :-- | :-- | :-- | :-- |
-| Floating projection | optimiser | Paper: Huang, *Eng. Struct.* 2020 · [paper](https://doi.org/10.1016/j.engstruct.2020.110330) | binary designs without β continuation |
 | Simulated annealing | optimiser | Code: topASA | a "why it loses" baseline |
 | Compliant mechanism (output displacement) and the force-inverter benchmark | objective + problem | Paper: Sigmund 1997 · [paper](https://doi.org/10.1080/08905459708945415) | needs springs at input and output |
 | pyMOTO's mechanism module | model | Code: [pyMOTO](https://github.com/aatmdelissen/pyMOTO) | thermal and dynamic models are already implemented |

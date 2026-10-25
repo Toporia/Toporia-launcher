@@ -177,7 +177,7 @@ class ComposedMethod(OptimizationMethod):
             change_parameter(self._model, name, value)
 
     def continuing(self):
-        return self._model.continuing()
+        return self._model.continuing() or self._updater.continuing()
 
     def geometry(self):
         return self._model.geometry(self.x)

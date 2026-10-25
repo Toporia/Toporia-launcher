@@ -132,6 +132,11 @@ for example `("local_stress",)` for the augmented-Lagrangian updater; `None` all
 any type that is otherwise compatible. A response can restrict its updater through
 `only_with_updaters`, so a penalty is never offered as an ordinary constraint.
 
+An updater with internal continuation overrides `continuing()` while its target
+has not yet been used. Composed methods propagate this alongside model/filter
+continuation, so the engine and conformance loop cannot stop at a settled soft stage.
+The default is `False`; ordinary updaters need no override.
+
 ## An updater: a library that runs its own loop
 
 SciPy, NLopt, IPOPT and most published optimisers want callbacks and run until they are

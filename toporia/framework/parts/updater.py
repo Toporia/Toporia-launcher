@@ -63,6 +63,10 @@ class Updater(ABC):
         """Optional stricter stopping criterion; see OptimizationMethod.is_converged."""
         return False
 
+    def continuing(self):
+        """True while this updater's internal continuation is unfinished."""
+        return False
+
     def convergence_reason(self):
         """Why is_converged() said so, in words; None for the generic message."""
         return None

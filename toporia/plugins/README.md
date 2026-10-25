@@ -38,14 +38,14 @@ Nothing is ever labelled ✅ until it is registered, tested, and reachable from 
 | [`models/`](models/README.md) | What computes the physics and the gradients | 10 | 24 | 3 |
 | [`physics/`](physics/README.md) | Element formulations and discretisation | 7 | 5 | 3 |
 | [`responses/`](responses/README.md) | What is minimised or constrained | 10 | 4 | 13 |
-| [`updaters/`](updaters/README.md) | How the design moves each iteration | 22 | 4 | 1 |
+| [`updaters/`](updaters/README.md) | How the design moves each iteration | 23 | 4 | 0 |
 | [`problems/`](problems/README.md) | Benchmark problems and datasets | 16 | 6 | 1 |
-| **Total** | | **97** | **57** | **37** |
+| **Total** | | **98** | **57** | **36** |
 
-The implementation total is **74 registered selectable parts + 7 physics engines +
+The implementation total is **75 registered selectable parts + 7 physics engines +
 16 presets**. Counts follow registry classes: parameter options such as variable
 MMC thickness or volume-preserving Heaviside do not add another plugin. The 10
-models and 22 updaters form 220 named pairings; a pairing must support the chosen
+models and 23 updaters form 230 named pairings; a pairing must support the chosen
 scenario. These compositions are not counted again as separate implementations.
 
 ## The choices

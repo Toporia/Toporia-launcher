@@ -142,18 +142,52 @@ native suite passes: **1955 passed, one optional multigrid test skipped**, in
 `git diff --check` pass. No installed package or global setting was changed.
 Catalogue totals are 74 selectable plugins, seven physics engines and 16 presets.
 
+### Completed: floating projection
+
+Added `updaters/floating_projection.py`, an own modular implementation of
+Huang's damped OC ratio step and mass-preserving floating threshold. The
+configured model supplies smoothing and gradient chaining; trial designs are
+not smoothed again inside the updater. Volume is checked after projection,
+moving limits and pinned bounds. The paper's smooth-boundary reconstruction
+and reanalysis are not implemented.
+
+Corrected a scientific error in the backlog: FPTO does use internal beta
+continuation (arXiv:2006.04306, equations 16–17), unlike the old claim of no
+beta continuation. Verified both DOI records on the publisher: Engineering
+Structures 208 (2020) 110330 and Advances in Engineering Software 151 (2021)
+102942. No source code was copied. Added a default-false updater continuation
+hook, propagated through composed methods. The conformance iterate helper now
+honours continuation just as the actual engine does; numerical tolerances and
+the 10%-of-OC benchmark are unchanged. A regression test pins this behaviour.
+
+All 11 new tests pass, including 2-D/3-D projection mass preservation, pinned
+values, weighted volume, move limits, staged continuation and the benchmark.
+Conformance gives compliance 276.884 vs OC 274.470 (+0.9%), volume 0.500.
+With the shared default move 0.2 it finishes in 60 iterations, with design
+greyness mean(4*x*(1-x)) = 0.00522; physical boundaries remain filtered.
+The documented CLI example uses move 0.02 and stops at iteration 128 after
+actually using beta 8. Its optimiser report explicitly confirms completed
+continuation (`results/floating-validation`, `results/floating-cli.log`).
+
+All 1289 focused regression tests pass, including framework composition, GUI,
+plugin conformance, guide examples and goldens (`results/floating-focused.log`,
+`results/floating-focused.xml`). The full native suite passes: **2021 passed,
+one optional multigrid test skipped**, in 26 min 01 sec, with workspace-local
+temporary files (`results/floating-native-full.log`, `results/floating-full.xml`).
+Ruff and `git diff --check` pass. Catalogue totals are 75 selectable plugins,
+seven physics engines and 16 presets; 23 updaters form 230 named model pairings.
+
 ### Remaining sequence
 
-1. Floating projection.
-2. Simulated annealing: bounded evaluation budget; register only if conformance passes.
-3. Compliant mechanism response, port springs and force-inverter preset; pyMOTO cross-check.
-4. Geometry projection.
-5. Reaction-diffusion level set.
-6. Hamilton-Jacobi level set and topological derivative.
-7. Phase field.
-8. Explicit length scale, machining accessibility and projection-based self-support.
-9. Multiresolution design and analysis meshes.
-10. Neural reparameterisation (TOuNN), subject to dependency support on this Python/Windows setup.
+1. Simulated annealing: bounded evaluation budget; register only if conformance passes.
+2. Compliant mechanism response, port springs and force-inverter preset; pyMOTO cross-check.
+3. Geometry projection.
+4. Reaction-diffusion level set.
+5. Hamilton-Jacobi level set and topological derivative.
+6. Phase field.
+7. Explicit length scale, machining accessibility and projection-based self-support.
+8. Multiresolution design and analysis meshes.
+9. Neural reparameterisation (TOuNN), subject to dependency support on this Python/Windows setup.
 
 Heat conduction, thermal/dynamic pyMOTO models, eigenfrequency, harmonic response,
 local stress with augmented Lagrangian, and nonlinear elasticity are already

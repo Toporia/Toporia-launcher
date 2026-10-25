@@ -74,7 +74,7 @@ def iterate(method, iterations, tol=0.0):
     """Step as the engine does, with its stopping rule (design change below tol, or the method's own)."""
     for iteration in range(1, iterations + 1):
         method.step(iteration)
-        if method.get_change() < tol or method.is_converged():
+        if not method.continuing() and (method.get_change() < tol or method.is_converged()):
             break
 
 
