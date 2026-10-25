@@ -288,14 +288,54 @@ Ruff and whitespace checks pass. The inspected
 density from nominal outlines, which do not encode fractional activation.
 No later method was started during validation.
 
+### Completed: reaction-diffusion level set
+
+Added `methods/levelset_reaction_diffusion.py`, an independent sparse,
+cell-centred, 2-D compliance variant after Otomori et al. (2015), DOI
+10.1007/s00158-014-1190-z. No original MATLAB code is copied. The publisher's
+public Appendix C supplies the in-plane elastic tensor. It is the paper's
+reduction of a spherical-cavity tensor, not a circular-hole asymptotic
+derivative or ordinary SIMP gradient. The tensor is independently checked on
+affine strains, nonsquare cells, several Poisson ratios and rigid motions.
+
+Positive bounded phi describes solid; a cubic Heaviside gives material
+fractions and linear ersatz stiffness. All-domain reaction permits nucleation
+from full solid. Implicit no-flux finite-volume diffusion has a physical-mm
+length parameter. One sparse factorisation and its response to constant
+forcing permit bisection of the new volume without repeated FE solves. This
+volume controller replaces the original augmented-Lagrangian feedback. No
+reinitialisation, dense RBF or automatic mesh coarsening is used. Fixed regions
+are Dirichlet values and count toward volume; excessive mandatory solid is
+rejected and a budget above available material is treated as an upper bound.
+
+All 22 new tests pass, including independent Neumann eigenmode decay,
+mass preservation, bounds and volume endpoints, interior nucleation, fixed
+regions, all-fixed domains, load-case weighting, material-unit scaling,
+unsupported scenarios and a feasible MBB run. Method conformance passes.
+CLI MBB 24x8, 150 steps, gives linear compliance 230.917347 and volume 0.5;
+this is an iteration-cap result, not convergence or an OC comparison. The
+inspected `results/reaction-diffusion-validation/validation.png` shows density,
+phi and volume history. A separate 60x20, 150-step study with diffusion lengths
+0.5/1/3 mm yields 10/5/2 interior holes and compliances 193.793/190.863/214.989,
+all at volume 0.5. This is benchmark evidence, not a universal monotonicity law.
+
+Registry assertions and documentation now count 79 selectable plugins,
+eight physics engines and 17 presets (104 implementations); 253 compositions
+and two whole methods give 255 names. Ruff and whitespace checks pass.
+All 1127 focused method, schema and GUI checks pass (`results/rd-focused.log`,
+`results/rd-focused.xml`, 5 min 10 sec). The full native suite passes:
+**2224 passed, one optional multigrid test skipped**, in 26 min 47 sec
+(`results/rd-native-full.log`, `results/rd-full.xml`). Ruff and whitespace
+checks pass. No baseline elements/goldens changed and no later method was
+started during validation.
+
 ### Remaining sequence
 
-1. Reaction-diffusion level set.
-2. Hamilton-Jacobi level set and topological derivative.
-3. Phase field.
-4. Explicit length scale, machining accessibility and projection-based self-support.
-5. Multiresolution design and analysis meshes.
-6. Neural reparameterisation (TOuNN), subject to dependency support on this Python/Windows setup.
+1. Hamilton-Jacobi level set and topological derivative.
+2. Phase field.
+3. Explicit length scale, machining accessibility and projection-based self-support.
+4. Multiresolution design and analysis meshes.
+5. Neural reparameterisation (TOuNN), subject to dependency support on this Python/Windows setup.
 
 Heat conduction, thermal/dynamic pyMOTO models, eigenfrequency, harmonic response,
 local stress with augmented Lagrangian, and nonlinear elasticity are already

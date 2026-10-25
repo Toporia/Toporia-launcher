@@ -87,10 +87,10 @@ def test_field_param_defaults_match_the_dataclass(declared, cls):
 # ── Registries ────────────────────────────────────────────────────────────────
 
 def test_every_method_is_discovered_in_menu_order():
-    assert METHODS.names() == ["levelset"]       # whole methods; everything else is model+updater
+    assert METHODS.names() == ["levelset", "levelset_reaction_diffusion"]
     assert MODELS.names() == ["q4", "q4_buckling", "q4_dynamic", "q4_nonlinear", "q4_mechanism", "h8", "pymoto_elastic",
                               "pymoto_dynamic", "q4_heat", "h8_heat", "pymoto_heat"]
-    assert len(method_classes()) == len(MODELS.names()) * len(UPDATERS.names()) + 1
+    assert len(method_classes()) == len(MODELS.names()) * len(UPDATERS.names()) + 2
 
 
 def test_every_filter_is_discovered_in_menu_order():

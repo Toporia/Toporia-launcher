@@ -10,7 +10,7 @@ evolves its own representation with its own volume control — implements
 This is the layer that decides which shapes are reachable at all. Everything below is a
 different answer to "what *is* the design?".
 
-**Status: 1 whole method and 253 named compositions in Toporia · 12 with open code · 2 paper only**
+**Status: 2 whole methods and 253 named compositions in Toporia · 11 with open code · 2 paper only**
 
 | Label | Meaning |
 | :-- | :-- |
@@ -26,20 +26,71 @@ the intersection of their capabilities. For example, `q4+oc` minimises complianc
 `q4_heat+oc` minimises thermal compliance, and `q4_buckling+pymoto_mma` can enforce
 a buckling limit. Pairings with no compatible objective are rejected before solving.
 
-**1 whole method**, which does not split into parts:
+**2 whole methods**, which do not split into parts:
 
 | Method | File | Name | Reference |
 | :-- | :-- | :-- | :-- |
 | ✅ RBF level set | [`levelset_rbf.py`](levelset_rbf.py) | `levelset` | Wang & Wang, *CMAME* 2006 |
+| ✅ Reaction-diffusion level set | [`levelset_reaction_diffusion.py`](levelset_reaction_diffusion.py) | `levelset_reaction_diffusion` | Otomori et al., *SMO* 2015; independent finite-volume variant |
 
 Older names are still accepted and expand through `PRESETS` in
 [`__init__.py`](__init__.py): `density` → `q4+oc`, `density_mma` → `q4+mma`,
 `density_simpl` → `q4+simpl`, `beso` → `q4+beso`, `density_gcmma` →
 `q4+pymoto_gcmma`, `pymoto` → `pymoto_elastic+pymoto_mma`.
 
-Three of the field's parameterisation families are therefore covered: **density/SIMP**
-(both models), **parameterised level set** (`levelset`), and the **discrete evolutionary**
-family (`beso`). The families below are not.
+Covered families include **density/SIMP**, **parameterised level set** (`levelset`),
+**reaction-diffusion level set** (`levelset_reaction_diffusion`), and
+**discrete evolutionary** (`beso`).
+
+### Reaction-diffusion level set
+
+This is an independent 2-D compliance implementation after
+[Otomori et al. (2015)](https://doi.org/10.1007/s00158-014-1190-z), with no original
+MATLAB code copied. It keeps a cell-centred field `phi` in [-1, 1]; positive is
+solid. Its all-domain reaction can nucleate holes from a full-solid start and
+does not use signed-distance reinitialisation or a narrow Dirac band.
+
+The evolution is `phi_t = T / mean(abs(T)) - lambda + ell² Laplacian(phi)`.
+The integrated elastic benefit `T` uses Appendix C's tensor, multiplied by the
+local ersatz modulus, and sums weighted load cases. This is the paper's in-plane
+reduction of its spherical-cavity tensor, **not a circular-hole asymptotic
+derivative** and not the ordinary SIMP density gradient. The matrix is checked
+against independent engineering-strain contractions and rigid motions.
+
+Backward Euler and a no-flux finite-volume Laplacian give a sparse solve on the
+supplied mesh; no coarsening occurs. `method.diffusion_length` is `ell` in physical
+mm, whose square is the diffusion coefficient. It controls smoothing/complexity;
+it does not guarantee a minimum member size. `method.dt` is the pseudo-time step.
+`method.interface_width` is the dimensionless half-width of a cubic Heaviside;
+outside this band cells are exactly solid/void. Inside it, stiffness is linear
+in material fraction, with the scenario's `Emin` in void. Filter, interpolation
+and representation plugins do not participate in this whole method.
+
+Toporia bisects the scalar multiplier on the **new** volume rather than using
+the original augmented-Lagrangian feedback. One factorisation and its response
+to a constant load serve every multiplier trial; trials need no FE solves.
+`method.nrelax` ramps from the initial solid volume to the budget (default 30,
+0 for immediate enforcement). The engine cannot stop during that ramp. Fixed
+solid/void cells impose Dirichlet values and count toward the volume. An
+unreachable budget below the forced solid volume is rejected; a budget above
+available material leaves all available material solid. Responses, exports and
+the objective describe the same evaluated density. Change measures `max(abs(delta phi))`.
+
+```console
+python -m toporia run "MBB Beam" --set method=levelset_reaction_diffusion --set m=0.4 --set max_iter=150 --set tol=0 --set save_every=0 --out results/reaction-diffusion-validation
+```
+
+This 24×8 example reaches volume 0.5 and linear-ersatz compliance 230.917 at the
+150-iteration cap. It is not a convergence claim or a like-for-like comparison
+against penalised filtered OC. Mesh and smoothing choices affect the result;
+oscillatory small boundary changes can persist. Springs, other objectives,
+additional response constraints and 3-D are explicitly unsupported. No
+bit-for-bit MATLAB reproduction or original-code oracle run is claimed.
+
+A separate 60×20, 150-step diffusion study gives 10, 5 and 2 interior void
+components for `diffusion_length` 0.5, 1 and 3 mm respectively, all at volume
+0.5 (linear compliances 193.793, 190.863 and 214.989). This illustrates the
+complexity control on one benchmark, not a universal monotonicity guarantee.
 
 ## Candidates — density and discrete
 
@@ -55,7 +106,6 @@ family (`beso`). The families below are not.
 | Family | Status | Reference | What it adds |
 | :-- | :-- | :-- | :-- |
 | Hamilton–Jacobi level set | 🔗 Challis 129-line MATLAB (with the paper), [OpenLSTO](https://github.com/M2DOLab/OpenLSTO), [GridapTopOpt.jl](https://github.com/zjwegert/GridapTopOpt.jl) | Wang, Wang & Guo, *CMAME* 2003; Allaire, Jouve & Toader, *JCP* 2004; Challis, *SMO* 2010 | The classical form: boundary advected by a shape-derivative velocity. Crisp interfaces, but cannot nucleate holes in 2-D unaided and needs re-initialisation. |
-| Reaction–diffusion level set | 🔗 [MATLAB code](https://link.springer.com/article/10.1007/s00158-014-1190-z) | Yamada, Izui, Nishiwaki & Takezawa, *CMAME* 2010; Otomori et al., *SMO* 2015 | Level set evolved by a reaction–diffusion equation whose reaction term is the topological derivative. **Nucleates holes, needs no re-initialisation, one length-scale knob** — the most attractive level-set variant to add next to our RBF method. |
 | Topological derivative | 🔗 [FreeFEM code](https://link.springer.com/article/10.1007/s00158-023-03529-5) | Sokołowski & Żochowski, *SICON* 1999; Amstutz & Andrä, *JCP* 2006; Novotny et al., *SMO* 2023 | The exact first-order sensitivity to inserting an infinitesimal hole. Stands alone, or supplies nucleation to a level-set scheme. |
 | Phase field | 📄 | Bourdin & Chambolle, *ESAIM:COCV* 2003; Takezawa, Nishiwaki & Kitamura, *JCP* 2010 | Cahn–Hilliard / Allen–Cahn energy with a double-well potential: the perimeter penalty is intrinsic, so **no filter is needed at all**. Couples naturally to phase-field fracture. |
 

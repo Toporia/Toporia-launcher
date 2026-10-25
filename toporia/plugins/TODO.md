@@ -107,7 +107,8 @@ the matching MAKE item below.
 - [x] Harmonic response
 - [x] Local stress + augmented Lagrangian updater
 - [x] Geometry projection representation (own 2-D/3-D capsule variant; no GPTO code copied)
-- [ ] Reaction–diffusion level set; Hamilton–Jacobi level set; topological derivative
+- [x] Reaction–diffusion level set (independent sparse cell-centred variant, Appendix C elastic tensor)
+- [ ] Hamilton–Jacobi level set; circular-hole topological derivative
 - [ ] Phase field
 - [ ] Explicit length-scale constraints; machining accessibility; Gaynor self-support
 - [ ] Multi-resolution design and analysis meshes
