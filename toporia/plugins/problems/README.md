@@ -27,6 +27,7 @@ Toporia exists to make.
 | ✅ Drone arm, point loads | [`drone_arm_point_loads.py`](drone_arm_point_loads.py) | `Drone Arm (Point Loads)` |
 | ✅ Michell cantilever | [`michell_cantilever.py`](michell_cantilever.py) | `Michell Cantilever` |
 | ✅ L-bracket | [`l_bracket.py`](l_bracket.py) | `L-bracket` |
+| ✅ L-bracket (local stress) | [`l_bracket_stress.py`](l_bracket_stress.py) | `L-bracket (local stress)` |
 | ✅ MBB beam, robust | [`mbb_beam_robust.py`](mbb_beam_robust.py) | `MBB Beam (Robust)` |
 
 All are compliance problems, which matches what the library can currently solve (the
@@ -50,9 +51,15 @@ standard **stress-concentration benchmark**: the re-entrant corner at (40, 40) i
 singularity that a compliance objective happily leaves sharp, and the case exists to show
 a stress constraint rounding it off (Duysinx & Bendsøe 1998; Le et al. 2010, which use this
 geometry). The preset minimises compliance, which is what `q4+oc` can run:
-`toporia run "L-bracket"`. The stress-limited version needs an updater that accepts a
-second constraint (`q4+pymoto_mma`, see [`responses/`](../responses/README.md)) together
-with `constraints=[{"type": "stress", "limit": ...}]` in the scenario.
+`toporia run "L-bracket"`. The stress-limited version is the next preset.
+
+### L-bracket (local stress)
+
+The same geometry, solved the way the benchmark asks: minimise volume from a full design under a von Mises limit in
+*every* element, by the augmented Lagrangian method (`q4+augmented_lagrangian`, response `local_stress`;
+Giraldo-Londoño & Paulino 2021, [PolyStress](https://doi.org/10.1007/s00158-020-02760-8)). The limit (0.5) is below the
+stress of the compliance design, so the re-entrant corner has to be relieved. Coarse mesh, 300 iterations:
+`toporia run "L-bracket (local stress)"` ends at 24.5 % material and 1.03 × the limit.
 
 ### MBB beam, robust
 

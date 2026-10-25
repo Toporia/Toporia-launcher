@@ -24,6 +24,7 @@ Lagrangian to survive thousands of local constraints.
 | ✅ Compliance | [`compliance.py`](compliance.py) | `compliance` | objective | `q4`, `pymoto_elastic` |
 | ✅ Material volume | [`volume.py`](volume.py) | `volume` | objective | `q4`, `pymoto_elastic` |
 | ✅ Peak von Mises stress | [`stress.py`](stress.py) | `stress` | constraint | `q4`, `pymoto_elastic` |
+| ✅ Local von Mises stress (augmented Lagrangian) | [`local_stress.py`](local_stress.py) | `local_stress` | constraint | `q4`, `h8` |
 
 > **What can actually enforce a constraint.** The volume *budget*
 > (`scenario.volfrac`) is enforced by every method. A *second* constraint needs an updater
@@ -31,18 +32,44 @@ Lagrangian to survive thousands of local constraints.
 > [`oc`](../updaters/oc.py), [`mma`](../updaters/mma.py), [`simpl`](../updaters/simpl.py)
 > and [`beso`](../updaters/beso.py) all declare `max_constraints = 0`. So a stress-limited
 > run means pairing a model with a pyMOTO updater — `q4+pymoto_mma`. Giving Toporia's own
-> updaters that ability is what the augmented Lagrangian entry below is for.
+> updaters that ability is what the [local stress](#local-von-mises-stress--local_stress) response and the [`augmented_lagrangian`](../updaters/README.md#augmented-lagrangian-local-constraints--augmented_lagrangian) updater are for.
 
 A response declares the engine features it `requires` (see
 [`framework/parts/physics.py`](../../framework/parts/physics.py)); a model can offer it exactly when its engine
 provides them. Compliance needs `elastic_energy`, the stress response needs `stress` — so
 adding one feature to an engine adds every response built on it at once.
 
+## Local von Mises stress — `local_stress`
+
+**What it does.** One stress limit *per element*, not one aggregated number. Each element has a relaxed
+constraint `g = ρ^q σ_vm / limit − 1 − ε(1 − ρ) ≤ 0` (the `ρ^q` qp-relaxation, plus an optional ε slack, keeps
+void elements from being "over-stressed" — the singularity phenomenon) and its own multiplier λ. The response
+returns the augmented-Lagrangian penalty `P = 1/N Σ [λ h + μ/2 h²]`, `h = max(g, −λ/μ)`, with its exact gradient
+from **one adjoint solve per load case**; it owns λ and μ and exposes `update_multipliers(growth)`
+(`λ ← λ + μ h`, `μ ← min(growth·μ, μ_max)`), which the
+[`augmented_lagrangian`](../updaters/README.md#augmented-lagrangian-local-constraints--augmented_lagrangian)
+updater calls between subproblems. Its value is a penalty, not a "≤ 0 is satisfied" number: use it with that updater
+only. The run reports the exact `max_stress`, `stress_ratio` and `violated_elements`, and the constraint's `exact`
+value (largest `ρ^q σ_vm / limit − 1`), which the engine checks against the limit.
+
+**When to use it.** When a single p-norm hides local overstress, e.g. the re-entrant corner of the L-bracket.
+Minimise volume from a full design (volume fraction 1.0, move limit 0.05).
+
+**How to use it.** GUI: Objective *Material volume*, add the constraint *Local von Mises stress (augmented Lagrangian)*,
+updater *Augmented Lagrangian (local constraints)*; or load the preset *L-bracket (local stress)*. CLI:
+
+```
+toporia run "L-bracket (local stress)"
+toporia check response:local_stress
+```
+
+**Links.** [PolyStress, SMO 63 (2021) 2065–2097](https://doi.org/10.1007/s00158-020-02760-8);
+[Senhora et al., SMO 62 (2020) 1639–1668](https://doi.org/10.1007/s00158-020-02573-9).
+
 ## Candidates — structural
 
 | Response | Status | Reference | Why it is hard |
 | :-- | :-- | :-- | :-- |
-| Local stress constraints | 🔗 [PolyStress](https://link.springer.com/article/10.1007/s00158-020-02760-8) | Duysinx & Bendsøe, *IJNME* 1998; Le et al., *SMO* 2010; Giraldo-Londoño & Paulino, *SMO* 2021 | Three problems at once: the singularity phenomenon (needs ε- or qp-relaxation), local-to-global aggregation, and strong non-linearity. Augmented Lagrangian now beats global p-norm. |
 | Compliant mechanisms | 📄 | Sigmund, *Mech. Struct. Mach.* 1997; Sigmund, *SMO* 2001 | Maximise output displacement against a spring. Not self-adjoint, and prone to one-node hinges that only a length-scale filter suppresses. |
 | Linearised buckling | 📄 | Neves, Rodrigues & Guedes, *Comp. Struct.* 1995; Ferrari & Sigmund, *CMAME* 2019 | A generalised eigenproblem every iteration, spurious modes in low-density regions, non-differentiable repeated eigenvalues. Expensive — and the main reason compliance designs fail in reality. |
 | Non-linear stability | 📄 | Dalklint, Wallin & Tortorelli, *CMAME* 2023 | Finite strain plus critical-point tracking; the tangent stiffness depends on displacement. |

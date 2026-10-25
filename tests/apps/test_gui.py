@@ -526,6 +526,8 @@ def test_every_registered_part_and_preset_can_be_picked_in_the_gui(window):
     window.post._add_row()                          # the post-processor and schedule lists build
     window._on_config_changed("MBB Beam (Robust)")  # their drop-downs per row; a robust preset
     window.schedules._add_row()                     # has schedulable paths, so a row can be added
+    window._on_config_changed("L-bracket (local stress)")   # a method that takes constraints: the
+    window.constraints._add_row()                   # constraint rows then offer every constraint
     texts = _menu_texts(window)
     missing = [f"{package}:{cls.name}"
                for package in REGISTRIES

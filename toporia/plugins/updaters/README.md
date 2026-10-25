@@ -21,6 +21,7 @@ works with every model** — see [`framework/parts/composition.py`](../../framew
 | ✅ Mirror descent (SiMPL) | [`simpl.py`](simpl.py) | `simpl` | volume only | Steps in `logit(x)`, so bounds hold by construction with no clipping. Its multiplier may be zero, so a non-binding volume budget simply does not act. |
 | ✅ BESO, soft kill | [`beso.py`](beso.py) | `beso` | volume only | Binary designs by sensitivity ranking and an evolutionary volume schedule. Brings its own convergence test, because a binary design's max design change never settles. |
 | ✅ BESO, hard kill | [`beso_hard.py`](beso_hard.py) | `beso_hard` | volume only | Soft-kill BESO's code with removed elements set to exactly the void bound; they return only through filtered neighbour sensitivities. See [its section](#beso-hard-kill--beso_hard). |
+| ✅ Augmented Lagrangian (local constraints) | [`augmented_lagrangian.py`](augmented_lagrangian.py) | `augmented_lagrangian` | any number (local) | MMA steps on the objective plus the augmented-Lagrangian penalty of per-element constraints, multipliers updated every few iterations. For [`local_stress`](../responses/README.md#local-von-mises-stress--local_stress). |
 | ✅ Adam (augmented Lagrangian) | [`adam.py`](adam.py) | `adam` | volume only | Adam (Kingma & Ba 2015) on the design variables, the budget an augmented-Lagrangian term, bounds by clipping. The updater neural reparameterisations need. See [its section](#adam--adam). |
 | ✅ Proportional topology optimisation | [`pto.py`](pto.py) | `pto` | volume only | Budget handed out in proportion to element energy^q, no multiplier or linearisation. A baseline. See [its section](#proportional-topology-optimisation--pto). |
 | ✅ TOBS (integer LP) | [`tobs.py`](tobs.py) | `tobs` | volume only | Binary designs by sequential integer linear programming: linearise, then flip elements optimally with HiGHS (`scipy.optimize.milp`). Own convergence test, like BESO. |
@@ -264,6 +265,33 @@ GUI: **Adam (augmented Lagrangian)** in the Updater picker; parameters learning 
 **Links.** [Adam, arXiv:1412.6980](https://arxiv.org/abs/1412.6980); [TOuNN](https://link.springer.com/article/10.1007/s00158-020-02748-4)
 (Chandrasekhar & Suresh, *SMO* 63 (2021) 1135–1149); Nocedal & Wright, *Numerical Optimization* §17.4.
 
+## Augmented Lagrangian (local constraints) — `augmented_lagrangian`
+
+**What it does.** The outer loop of PolyStress. A [`local_stress`](../responses/README.md#local-von-mises-stress--local_stress)
+constraint is thousands of element limits folded into one penalty `P` with a multiplier per element. This updater
+minimises `J = f/f₀ + P` with the moving-asymptote steps of [`mma`](mma.py) (move limits, volume budget handled by MMA), and every
+*iterations per multiplier update* calls the response's `update_multipliers`: `λ ← λ + μ h`, `μ ← min(α μ, μ_max)`.
+It refuses constraints that have no multipliers (use `oc_multi` or `pymoto_mma` for those). Nothing in the framework
+changed: the updater reaches the responses through the model's constraint list and the response owns its multipliers.
+
+**When to use it.** Per-element stress limits. For compliance with the volume budget only it behaves like `mma`
+(`toporia check updater:augmented_lagrangian` confirms: compliance −0.1 % of OC on the MBB benchmark).
+
+**How to use it.** GUI: updater *Augmented Lagrangian (local constraints)*, parameters as MMA plus iterations per
+multiplier update (default 5) and penalty growth α (1.5); the starting and maximum μ are on the constraint. Or load the preset
+*L-bracket (local stress)*. CLI:
+
+```
+toporia run "L-bracket (local stress)"
+toporia check updater:augmented_lagrangian
+```
+
+On the coarse L-bracket (m = 0.5, 300 iterations, limit 0.5) the compliance design (40 % volume) has a peak
+stress 1.35 × the limit; the AL design uses 24.5 % material and ends at 1.03 × the limit with a relieved re-entrant corner.
+
+**Links.** [PolyStress, SMO 63 (2021) 2065–2097](https://doi.org/10.1007/s00158-020-02760-8);
+[Senhora et al., SMO 62 (2020) 1639–1668](https://doi.org/10.1007/s00158-020-02573-9).
+
 ## Proportional topology optimisation — `pto`
 
 **What it does.** Each iteration the volume budget is allocated to the elements in proportion to their energy raised to *q*;
@@ -315,7 +343,6 @@ any other updater, and its own verdict (success, message, its counts) is written
 
 | Updater | Status | Reference | Why it matters |
 | :-- | :-- | :-- | :-- |
-| Augmented Lagrangian | 🔗 [PolyStress](https://link.springer.com/article/10.1007/s00158-020-02760-8) | Giraldo-Londoño & Paulino, *PRSA* 2020; *SMO* 2021 | **The missing piece for local constraints.** Turns thousands of local stress limits into a sequence of bound-constrained subproblems; proven to hundreds of millions of constraints. Would let Toporia's own updaters enforce [`responses/stress.py`](../responses/README.md). Subproblem-solver comparison: Silva et al., *IJNME* 2025. |
 | SLP with trust region | 🔗 `scipy.optimize` | standard | Linearise and solve with move limits. The usual choice for level-set and feature-mapping problems: few variables, many constraints. (SQP is in Toporia as `scipy_slsqp`.) |
 | Interior point (IPOPT) | 🔗 IPOPT | Wächter & Biegler, *Math. Prog.* 2006 | General NLP for small-variable, many-constraint formulations. Used by GPTO and GGP. |
 

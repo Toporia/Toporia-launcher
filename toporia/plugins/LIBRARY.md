@@ -72,6 +72,7 @@ A test (`tests/apps/test_gui.py`) fails if a part ever stops being reachable fro
 | :-- | :-- | :-- | :-- | :-- |
 | Compliance | `compliance` | [compliance.py](responses/compliance.py) | Own | the classic objective (Bendsøe & Sigmund 2003) · [paper](https://doi.org/10.1007/978-3-662-05086-6) |
 | Material volume | `volume` | [volume.py](responses/volume.py) | Own | as in Le et al. 2010 and pyMOTO's stress example · [paper](https://doi.org/10.1007/s00158-009-0440-y) |
+| Local von Mises stress (augmented Lagrangian) | `local_stress` | [local_stress.py](responses/local_stress.py) | Paper | Giraldo-Londoño & Paulino, *SMO* 2021 (PolyStress); Senhora et al., *SMO* 2020 · papers [1](https://doi.org/10.1007/s00158-020-02760-8) [2](https://doi.org/10.1007/s00158-020-02573-9) |
 | Peak von Mises stress | `stress` | [stress.py](responses/stress.py) | Paper | Le, Norato, Bruns, Ha & Tortorelli, *SMO* 2010 · [paper](https://doi.org/10.1007/s00158-009-0440-y) |
 
 ### Optimisers: how the design moves ([folder](updaters/README.md))
@@ -86,6 +87,7 @@ A test (`tests/apps/test_gui.py`) fails if a part ever stops being reachable fro
 | BESO (soft kill) | `beso` | [beso.py](updaters/beso.py) | Paper | Huang & Xie 2007, 2010 · papers [1](https://doi.org/10.1016/j.finel.2007.06.006) [2](https://doi.org/10.1002/9780470689486) |
 | BESO (hard kill) | `beso_hard` | [beso_hard.py](updaters/beso_hard.py) | Paper | Huang & Xie 2010 · papers [1](https://doi.org/10.1002/9780470689486) [2](https://doi.org/10.1007/s001580050170) |
 | TOBS (integer LP) | `tobs` | [tobs.py](updaters/tobs.py) | Paper | Sivapuram & Picelli 2018; the 101-line code of Picelli et al. 2021; solved with HiGHS (SciPy) · papers [1](https://doi.org/10.1016/j.finel.2017.10.006) [2](https://doi.org/10.1007/s00158-020-02719-9) |
+| Augmented Lagrangian (local constraints) | `augmented_lagrangian` | [augmented_lagrangian.py](updaters/augmented_lagrangian.py) | Paper | PolyStress outer loop (Giraldo-Londoño & Paulino 2021) with MMA inner steps · papers [1](https://doi.org/10.1007/s00158-020-02760-8) [2](https://doi.org/10.1007/s00158-010-0594-7) |
 | Adam (augmented Lagrangian) | `adam` | [adam.py](updaters/adam.py) | Paper | Kingma & Ba 2015; the volume penalty of TOuNN (Chandrasekhar & Suresh 2021) · papers [1](https://arxiv.org/abs/1412.6980) [2](https://doi.org/10.1007/s00158-020-02748-4) |
 | Proportional topology optimisation | `pto` | [pto.py](updaters/pto.py) | Paper | Biyikli & To, *PLoS ONE* 2015 · [paper](https://doi.org/10.1371/journal.pone.0145041) |
 | MMA (pyMOTO), GCMMA (pyMOTO) | `pymoto_mma`, `pymoto_gcmma` | [pymoto_optimizers.py](updaters/pymoto_optimizers.py) | Wraps | [pyMOTO](https://github.com/aatmdelissen/pyMOTO) (MIT) · papers [1](https://doi.org/10.1002/nme.1620240207) [2](https://doi.org/10.1137/S1052623499362822) |
@@ -138,6 +140,7 @@ and the preset *MBB Beam (Robust)*.
 | Cantilever | [cantilever.py](problems/cantilever.py) | the 99-line code · [paper](https://doi.org/10.1007/s001580050176) |
 | Cantilever 3D | [cantilever_3d.py](problems/cantilever_3d.py) | top3d (Liu & Tovar 2014) · [paper](https://doi.org/10.1007/s00158-014-1107-x) |
 | Michell Cantilever | [michell_cantilever.py](problems/michell_cantilever.py) | Michell 1904 · [paper](https://doi.org/10.1080/14786440409463229) |
+| L-bracket (local stress) | [l_bracket_stress.py](problems/l_bracket_stress.py) | Giraldo-Londoño & Paulino 2021 (PolyStress); geometry of the L-bracket, limit chosen here · [paper](https://doi.org/10.1007/s00158-020-02760-8) |
 | L-bracket | [l_bracket.py](problems/l_bracket.py) | Duysinx & Bendsøe 1998; Le et al. 2010 (dimensions still to be checked against the papers) · papers [1](https://doi.org/10.1002/%28SICI%291097-0207%2819981230%2943:8%3C1453::AID-NME480%3E3.0.CO%3B2-2) [2](https://doi.org/10.1007/s00158-009-0440-y) |
 | Three-Point Bending | [three_point_bending.py](problems/three_point_bending.py) | the materials test |
 | Standard Bar | [standard_bar.py](problems/standard_bar.py) | Toporia's own |
@@ -169,7 +172,6 @@ Listed from least to most effort. "Code" means open code exists (port it, or che
 | Heat conduction and thermal compliance | Paper: Bendsøe & Sigmund 2003; Gersborg-Hansen et al. 2006 · papers [1](https://doi.org/10.1007/978-3-662-05086-6) [2](https://doi.org/10.1007/s00158-005-0584-3) |
 | Eigenfrequency, then linearised buckling | Code: TopBuck250 (Ferrari, Sigmund & Guest 2021) · [paper](https://doi.org/10.1007/s00158-021-02854-x) |
 | Harmonic response | Code: PolyDyna · [paper](https://doi.org/10.1007/s00158-021-02859-6) |
-| Local stress constraints with an augmented-Lagrangian optimiser | Code: PolyStress (Giraldo-Londoño & Paulino 2021) · [paper](https://doi.org/10.1007/s00158-020-02760-8) |
 | Geometry projection (bars with round ends) | Code: GGP-Matlab, GPTO, pygpto (Norato et al.) · [paper](https://doi.org/10.1016/j.cma.2015.05.005) |
 | Reaction–diffusion level set | Code: 88-line code of Otomori et al. 2015 · [paper](https://doi.org/10.1007/s00158-014-1190-z) |
 | Hamilton–Jacobi level set; topological derivative | Code: Challis 2010; Amstutz & Andrä 2006 · papers [1](https://doi.org/10.1007/s00158-009-0430-0) [2](https://doi.org/10.1016/j.jcp.2005.12.015) |
