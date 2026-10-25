@@ -10,6 +10,7 @@ constraint entry; scenario.constraints adds further limits on top of it.
     compliance.py  weighted compliance — objective
     volume.py      material volume — objective, used with a further constraint
     stress.py      peak von Mises stress — constraint
+    buckling.py    lowest linearised buckling load factors — objective or constraint
 """
 
 from toporia.framework.params import resolve_params

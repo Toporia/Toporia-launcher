@@ -28,6 +28,8 @@ from abc import ABC, abstractmethod
 ELASTIC_ENERGY = "elastic_energy"
 #: Feature: element stresses, adjoint solves and the mutual energies they need.
 STRESS = "stress"
+#: Feature: linearised buckling load factors and their sensitivities.
+BUCKLING = "buckling"
 
 
 class Physics(ABC):
@@ -114,3 +116,28 @@ class Physics(ABC):
         through the displacements.
         """
         raise NotImplementedError(f"{type(self).__name__} does not provide {STRESS!r}")
+
+    # ── BUCKLING ──────────────────────────────────────────────────────────────
+    #
+    # Linearised buckling: the stress of the linear solution of a load case
+    # makes a geometric stiffness K_σ, and the load factors λ at which the
+    # structure buckles solve the generalised eigenproblem (K + λ K_σ) φ = 0.
+    # λ multiplies the load case, so λ = 3 means the structure buckles at three
+    # times the applied load.  Only positive factors matter (compression).
+
+    def buckling_factors(self, state, case, n):
+        """The lowest (at most) n positive buckling load factors of one load case, ascending.
+
+        Fewer than n come back when the design has fewer buckling modes under
+        compression (none at all when it is in pure tension).
+        """
+        raise NotImplementedError(f"{type(self).__name__} does not provide {BUCKLING!r}")
+
+    def buckling_sensitivity(self, state, case, i):
+        """dλ_i/dρ per element of the i-th factor that buckling_factors(state, case, n >= i + 1) returned.
+
+        Shaped like the density.  It includes the part through the
+        displacements (the geometric stiffness depends on the prebuckling
+        solution), which costs one adjoint solve per mode.
+        """
+        raise NotImplementedError(f"{type(self).__name__} does not provide {BUCKLING!r}")

@@ -64,6 +64,7 @@ A test (`tests/apps/test_gui.py`) fails if a part ever stops being reachable fro
 | :-- | :-- | :-- | :-- | :-- |
 | 2-D Q4 plane stress (Toporia) | `q4` | [q4.py](models/q4.py), [q4_plane_stress.py](physics/q4_plane_stress.py) | Port | the physics half of top88 · [paper](https://doi.org/10.1007/s00158-010-0594-7) |
 | 3-D H8 bricks (Toporia) | `h8` | [h8.py](models/h8.py), [h8_solid.py](physics/h8_solid.py) | Port | top3d (Liu & Tovar, *SMO* 2014) · [paper](https://doi.org/10.1007/s00158-014-1107-x) |
+| 2-D Q4 with buckling (Toporia) | `q4_buckling` | [q4_buckling.py](models/q4_buckling.py), [q4_buckling.py](physics/q4_buckling.py) | Paper | Ferrari, Sigmund & Guest, *SMO* 2021 · [paper](https://doi.org/10.1007/s00158-021-02854-x) |
 | Linear elasticity, pyMOTO network | `pymoto_elastic` | [pymoto_elastic.py](models/pymoto_elastic.py) | Wraps | [pyMOTO](https://github.com/aatmdelissen/pyMOTO) (MIT), `pip install pymoto` |
 
 ### Objectives and constraints ([folder](responses/README.md))
@@ -73,6 +74,7 @@ A test (`tests/apps/test_gui.py`) fails if a part ever stops being reachable fro
 | Compliance | `compliance` | [compliance.py](responses/compliance.py) | Own | the classic objective (Bendsøe & Sigmund 2003) · [paper](https://doi.org/10.1007/978-3-662-05086-6) |
 | Material volume | `volume` | [volume.py](responses/volume.py) | Own | as in Le et al. 2010 and pyMOTO's stress example · [paper](https://doi.org/10.1007/s00158-009-0440-y) |
 | Peak von Mises stress | `stress` | [stress.py](responses/stress.py) | Paper | Le, Norato, Bruns, Ha & Tortorelli, *SMO* 2010 · [paper](https://doi.org/10.1007/s00158-009-0440-y) |
+| Buckling load factor | `buckling_load` | [buckling.py](responses/buckling.py) | Paper | Ferrari, Sigmund & Guest, *SMO* 2021 · [paper](https://doi.org/10.1007/s00158-021-02854-x) |
 
 ### Optimisers: how the design moves ([folder](updaters/README.md))
 
@@ -139,6 +141,7 @@ and the preset *MBB Beam (Robust)*.
 | Cantilever 3D | [cantilever_3d.py](problems/cantilever_3d.py) | top3d (Liu & Tovar 2014) · [paper](https://doi.org/10.1007/s00158-014-1107-x) |
 | Michell Cantilever | [michell_cantilever.py](problems/michell_cantilever.py) | Michell 1904 · [paper](https://doi.org/10.1080/14786440409463229) |
 | L-bracket | [l_bracket.py](problems/l_bracket.py) | Duysinx & Bendsøe 1998; Le et al. 2010 (dimensions still to be checked against the papers) · papers [1](https://doi.org/10.1002/%28SICI%291097-0207%2819981230%2943:8%3C1453::AID-NME480%3E3.0.CO%3B2-2) [2](https://doi.org/10.1007/s00158-009-0440-y) |
+| Column Buckling | [column_buckling.py](problems/column_buckling.py) | Ferrari, Sigmund & Guest 2021 (Toporia's own geometry) · [paper](https://doi.org/10.1007/s00158-021-02854-x) |
 | Three-Point Bending | [three_point_bending.py](problems/three_point_bending.py) | the materials test |
 | Standard Bar | [standard_bar.py](problems/standard_bar.py) | Toporia's own |
 | Drone Arm, Drone Arm (Camera View), Drone Arm (Point Loads) | [drone_arm.py](problems/drone_arm.py), [drone_arm_camera_view.py](problems/drone_arm_camera_view.py), [drone_arm_point_loads.py](problems/drone_arm_point_loads.py) | Toporia's own application case |
@@ -167,7 +170,7 @@ Listed from least to most effort. "Code" means open code exists (port it, or che
 | What | Source |
 | :-- | :-- |
 | Heat conduction and thermal compliance | Paper: Bendsøe & Sigmund 2003; Gersborg-Hansen et al. 2006 · papers [1](https://doi.org/10.1007/978-3-662-05086-6) [2](https://doi.org/10.1007/s00158-005-0584-3) |
-| Eigenfrequency, then linearised buckling | Code: TopBuck250 (Ferrari, Sigmund & Guest 2021) · [paper](https://doi.org/10.1007/s00158-021-02854-x) |
+| Eigenfrequency | Paper: Díaz & Kikuchi, *IJNME* 1992; Pedersen, *SMO* 2000 |
 | Harmonic response | Code: PolyDyna · [paper](https://doi.org/10.1007/s00158-021-02859-6) |
 | Local stress constraints with an augmented-Lagrangian optimiser | Code: PolyStress (Giraldo-Londoño & Paulino 2021) · [paper](https://doi.org/10.1007/s00158-020-02760-8) |
 | Geometry projection (bars with round ends) | Code: GGP-Matlab, GPTO, pygpto (Norato et al.) · [paper](https://doi.org/10.1016/j.cma.2015.05.005) |

@@ -9,7 +9,7 @@ case — self-adjoint, one solve, no aggregation. Everything else needs its own 
 usually an aggregation function (p-norm or Kreisselmeier–Steinhauser) or an augmented
 Lagrangian to survive thousands of local constraints.
 
-**Status: 3 in Toporia · 4 with open code · 14 paper only**
+**Status: 4 in Toporia · 4 with open code · 13 paper only**
 
 | Label | Meaning |
 | :-- | :-- |
@@ -23,7 +23,8 @@ Lagrangian to survive thousands of local constraints.
 | :-- | :-- | :-- | :-- | :-- |
 | ✅ Compliance | [`compliance.py`](compliance.py) | `compliance` | objective | `q4`, `pymoto_elastic` |
 | ✅ Material volume | [`volume.py`](volume.py) | `volume` | objective | `q4`, `pymoto_elastic` |
-| ✅ Peak von Mises stress | [`stress.py`](stress.py) | `stress` | constraint | `q4`, `pymoto_elastic` |
+| ✅ Peak von Mises stress | [`stress.py`](stress.py) | `stress` | constraint | `q4`, `q4_buckling`, `pymoto_elastic` |
+| ✅ Buckling load factor | [`buckling.py`](buckling.py) | `buckling_load` | objective, constraint | `q4_buckling` |
 
 > **What can actually enforce a constraint.** The volume *budget*
 > (`scenario.volfrac`) is enforced by every method. A *second* constraint needs an updater
@@ -38,13 +39,38 @@ A response declares the engine features it `requires` (see
 provides them. Compliance needs `elastic_energy`, the stress response needs `stress` — so
 adding one feature to an engine adds every response built on it at once.
 
+### Buckling load factor
+
+`buckling_load` ([`buckling.py`](buckling.py)) is the lowest linearised buckling load factor
+λ: the multiple of the applied load at which the design buckles. It follows Ferrari,
+Sigmund & Guest, *SMO* 63 (2021) 3045-3066,
+[doi:10.1007/s00158-021-02854-x](https://doi.org/10.1007/s00158-021-02854-x); the physics is
+in [`physics/q4_buckling.py`](../physics/q4_buckling.py). Repeated or crossing modes make a
+single eigenvalue non-differentiable, so the response aggregates the lowest `modes` factors
+of every load case with a p-norm of their reciprocals, `P = (Σ (1/λ_j)^p)^(1/p)`, and the
+value is `min_load · P - 1`.
+
+- **As a constraint** (`min_load` = the load factor you require): value `<= 0` means every
+  aggregated mode buckles above `min_load` times the load. It needs an updater that takes a
+  second constraint: `pymoto_mma`, `mmapy_mma`, `nlopt_mma`, `conlin`, `oc_multi` do (the
+  last two are built in but converge poorly with an active buckling constraint; the MMA
+  family satisfies it).
+- **As an objective** (minimise it = maximise the load factor): `min_load` only scales the
+  value, so set it near the load factor you expect; the volume budget is the constraint.
+- **In the app**: choose the model *2-D Q4 with buckling*; *Buckling load factor* is then offered
+  as an objective and as a constraint. **CLI**: `toporia run "Column Buckling"` (compliance with a
+  buckling constraint); to maximise the load factor instead, make it the objective and drop the constraint.
+- The load must be compressive: a structure in tension has no buckling mode, and the
+  constraint is reported as slack. Mind that the solver's y axis runs against the picture's
+  (rows are numbered the other way), so an axial load along y turns into tension; the
+  presets load along x.
+
 ## Candidates — structural
 
 | Response | Status | Reference | Why it is hard |
 | :-- | :-- | :-- | :-- |
 | Local stress constraints | 🔗 [PolyStress](https://link.springer.com/article/10.1007/s00158-020-02760-8) | Duysinx & Bendsøe, *IJNME* 1998; Le et al., *SMO* 2010; Giraldo-Londoño & Paulino, *SMO* 2021 | Three problems at once: the singularity phenomenon (needs ε- or qp-relaxation), local-to-global aggregation, and strong non-linearity. Augmented Lagrangian now beats global p-norm. |
 | Compliant mechanisms | 📄 | Sigmund, *Mech. Struct. Mach.* 1997; Sigmund, *SMO* 2001 | Maximise output displacement against a spring. Not self-adjoint, and prone to one-node hinges that only a length-scale filter suppresses. |
-| Linearised buckling | 📄 | Neves, Rodrigues & Guedes, *Comp. Struct.* 1995; Ferrari & Sigmund, *CMAME* 2019 | A generalised eigenproblem every iteration, spurious modes in low-density regions, non-differentiable repeated eigenvalues. Expensive — and the main reason compliance designs fail in reality. |
 | Non-linear stability | 📄 | Dalklint, Wallin & Tortorelli, *CMAME* 2023 | Finite strain plus critical-point tracking; the tangent stiffness depends on displacement. |
 | Eigenfrequency | 📄 | Díaz & Kikuchi, *IJNME* 1992; Pedersen, *SMO* 2000 | Localised modes in void regions need a mass-interpolation fix. |
 | Harmonic and transient response | 🔗 PolyDyna (with the paper) | Jensen & Sigmund 2011; Giraldo-Londoño & Paulino, *SMO* 2021 | Frequency-domain or time-domain adjoints; the transient case integrates backwards over the history. |

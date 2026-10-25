@@ -5,7 +5,7 @@ from [`models/`](../models/README.md) because the same physics can be discretise
 ways, and the choice of element is itself a thing worth comparing: it decides what the
 density field can resolve and where the classic numerical artefacts come from.
 
-**Status: 2 in Toporia · 5 with open code · 3 paper only**
+**Status: 3 in Toporia · 5 with open code · 3 paper only**
 
 | Label | Meaning |
 | :-- | :-- |
@@ -18,6 +18,7 @@ density field can resolve and where the classic numerical artefacts come from.
 | Element | File | Scope |
 | :-- | :-- | :-- |
 | ✅ Q4 plane stress | [`q4_plane_stress.py`](q4_plane_stress.py) | Bilinear quadrilateral, 2 DOF per node, structured grid, column-major numbering, analytic element stiffness. The top88 element. 2-D. |
+| ✅ Q4 with buckling | [`q4_buckling.py`](q4_buckling.py) | The Q4 element plus the geometric (stress) stiffness and the generalised eigenproblem for linearised buckling; provides `buckling`. 2-D. |
 | ✅ H8 solid | [`h8_solid.py`](h8_solid.py) | Trilinear brick, 3 DOF per node, 2 × 2 × 2 Gauss integration, the element of Liu & Tovar's top3d. 3-D: a scenario with a depth `Lz`. Direct sparse solver, or conjugate gradients with algebraic multigrid (optional `pyamg`) for large meshes. |
 
 Each module is a [`framework.parts.physics.Physics`](../../framework/parts/physics.py) engine:
@@ -33,6 +34,31 @@ the drone arm (holes and solid rings included). A test asserts it in
 `tests/plugins/test_3d.py`. The finite-difference gradient checks of `toporia check
 model:h8` and `toporia check response:stress` cover its compliance and 3-D stress
 sensitivities.
+
+### Q4 with buckling
+
+[`q4_buckling.py`](q4_buckling.py) is `Q4PlaneStress` with one more question answered, the
+`buckling` feature: the lowest positive **load factors** λ of every load case, from
+`(K + λ K_σ) φ = 0`, where `K_σ` is the geometric stiffness of the element stresses of the
+linear solution (λ = 3 means the structure buckles at three times the applied load). It
+follows Ferrari, Sigmund & Guest, "Topology optimization with linearized buckling criteria
+in 250 lines of Matlab", *SMO* 63 (2021) 3045-3066,
+[doi:10.1007/s00158-021-02854-x](https://doi.org/10.1007/s00158-021-02854-x), written from
+the paper's description. Its choices, so you can judge them:
+
+- `K_σ` of an element uses the solid-material stress at the element centre and is scaled by
+  `density^p_sigma` (parameter `p_sigma`, default 4): above the stiffness exponent, so it
+  vanishes faster than `K` in void and the artificial buckling modes of the void do not appear.
+- Eigenvalues come from SciPy `eigsh` on the pencil `(-K_σ, K)`, largest `μ = 1/λ` first; `K`
+  is factorised once and reused in every Lanczos step (shift-invert about zero). Systems under
+  600 free degrees of freedom are solved densely.
+- The sensitivity of a load factor has the explicit part, the part through `K`, and the part
+  through the displacements (`K_σ` depends on `u`), which costs one back-substitution per mode
+  with the factorisation of `K` already made.
+- **Check.** A cantilever column (4 x 40, 2 elements per unit) gives 0.008231 against Euler's pi^2 E I / (4 L^2) = 0.008225: 0.08 % off. The sensitivity (adjoint term included) matches central finite
+  differences to 1e-4 in `tests/plugins/test_buckling.py`.
+- pyMOTO has no buckling module, so this model exists only as Toporia's own.
+- Under a load in tension there is no buckling; the response then reports a slack constraint.
 
 Two consequences worth knowing before adding anything here:
 

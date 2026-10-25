@@ -527,6 +527,9 @@ def test_every_registered_part_and_preset_can_be_picked_in_the_gui(window):
     window._on_config_changed("MBB Beam (Robust)")  # their drop-downs per row; a robust preset
     window.schedules._add_row()                     # has schedulable paths, so a row can be added
     texts = _menu_texts(window)
+    # Objectives and constraints are offered per model: the buckling model's preset shows its own.
+    window._on_config_changed("Column Buckling")
+    texts += _menu_texts(window)
     missing = [f"{package}:{cls.name}"
                for package in REGISTRIES
                for cls in getattr(importlib.import_module(f"toporia.plugins.{package}"),

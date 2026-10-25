@@ -5,7 +5,7 @@ material, volume target — plus the solver settings recommended for it. Two run
 a scenario and differ only in their solver are a benchmark, and that comparison is what
 Toporia exists to make.
 
-**Status: 11 in Toporia · 6 open datasets or suites · 1 paper only**
+**Status: 12 in Toporia · 6 open datasets or suites · 1 paper only**
 
 | Label | Meaning |
 | :-- | :-- |
@@ -28,6 +28,7 @@ Toporia exists to make.
 | ✅ Michell cantilever | [`michell_cantilever.py`](michell_cantilever.py) | `Michell Cantilever` |
 | ✅ L-bracket | [`l_bracket.py`](l_bracket.py) | `L-bracket` |
 | ✅ MBB beam, robust | [`mbb_beam_robust.py`](mbb_beam_robust.py) | `MBB Beam (Robust)` |
+| ✅ Column buckling | [`column_buckling.py`](column_buckling.py) | `Column Buckling` |
 
 All are compliance problems, which matches what the library can currently solve (the
 cantilever 3D is the one 3-D case). Run any of them with `toporia run "<menu name>"`;
@@ -53,6 +54,22 @@ geometry). The preset minimises compliance, which is what `q4+oc` can run:
 `toporia run "L-bracket"`. The stress-limited version needs an updater that accepts a
 second constraint (`q4+pymoto_mma`, see [`responses/`](../responses/README.md)) together
 with `constraints=[{"type": "stress", "limit": ...}]` in the scenario.
+
+### Column buckling
+
+A 60 x 20 mm block clamped along its left edge and compressed axially at the middle of its
+right end, volume fraction 0.3. It minimises compliance while the lowest buckling load factor
+stays above 0.1 (the uniform block at this volume buckles at 0.037), after Ferrari, Sigmund &
+Guest, *SMO* 63 (2021) 3045-3066,
+[doi:10.1007/s00158-021-02854-x](https://doi.org/10.1007/s00158-021-02854-x); the geometry is
+Toporia's own, the paper's was not at hand. It uses the model *2-D Q4 with buckling*, a
+density filter with Heaviside projection (beta 1 to 8) and MMA from pyMOTO, which takes the
+second constraint:
+`toporia run "Column Buckling"`. In 150 iterations (about 30 s) compliance goes from 188 to 21.0
+and the load factor ends at 0.109, above the limit. Change the objective to the buckling load
+(and remove the constraint, in the app) to maximise the load factor at the given
+volume instead. In the app, pick the preset, then the objective and constraint panels
+show the buckling load factor.
 
 ### MBB beam, robust
 
@@ -89,7 +106,7 @@ structure, the opposite of a mechanism, so it is left out. What is missing:
   the usual OC update needs a negative-sensitivity guard (MMA is the safe pairing).
 
 Further standard cases, each tied to a response Toporia does not have yet: half-wheel and
-bridge (compliance, alternative load paths), column (buckling), heat sink (thermal),
+bridge (compliance, alternative load paths), heat sink (thermal),
 double pipe and bend (fluid pressure drop), and the photonic mode converter and
 beam-splitter from the ceviche challenges.
 
