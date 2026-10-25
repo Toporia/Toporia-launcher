@@ -11,6 +11,7 @@ constraint entry; scenario.constraints adds further limits on top of it.
     end_compliance.py  compliance at the final load of a non-linear solve — objective
     volume.py      material volume — objective, used with a further constraint
     stress.py      peak von Mises stress — constraint
+    buckling.py    reciprocal load-factor aggregate — objective or constraint
     thermal_compliance.py  weighted thermal compliance of heat conduction — objective
     eigenfrequency.py     lowest natural frequency — objective (maximise) and constraint (at least)
     dynamic_compliance.py compliance of a harmonic load — objective

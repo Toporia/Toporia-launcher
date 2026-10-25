@@ -10,7 +10,7 @@ evolves its own representation with its own volume control — implements
 This is the layer that decides which shapes are reachable at all. Everything below is a
 different answer to "what *is* the design?".
 
-**Status: 15 selectable in Toporia · 12 with open code · 2 paper only**
+**Status: 1 whole method and 220 named compositions in Toporia · 12 with open code · 2 paper only**
 
 | Label | Meaning |
 | :-- | :-- |
@@ -20,12 +20,11 @@ different answer to "what *is* the design?".
 
 ## ✅ In Toporia
 
-**14 pairings**, every model with every updater — `2 models × 7 updaters`:
-
-| | [`oc`](../updaters/oc.py) | [`mma`](../updaters/mma.py) | [`simpl`](../updaters/simpl.py) | [`beso`](../updaters/beso.py) | `pymoto_mma` | `pymoto_gcmma` | [`scipy_slsqp`](../updaters/scipy_slsqp.py) |
-| :-- | :-: | :-: | :-: | :-: | :-: | :-: | :-: |
-| [`q4`](../models/q4.py) | ✅ | ✅ | ✅ | ✅ | ✅ | ✅ | ✅ |
-| [`pymoto_elastic`](../models/pymoto_elastic.py) | ✅ | ✅ | ✅ | ✅ | ✅ | ✅ | ✅ |
+**220 named pairings**, built from [10 models](../models/README.md) and
+[22 updaters](../updaters/README.md). The available objectives and constraints are
+the intersection of their capabilities. For example, `q4+oc` minimises compliance,
+`q4_heat+oc` minimises thermal compliance, and `q4_buckling+pymoto_mma` can enforce
+a buckling limit. Pairings with no compatible objective are rejected before solving.
 
 **1 whole method**, which does not split into parts:
 

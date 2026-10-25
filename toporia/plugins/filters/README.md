@@ -12,7 +12,7 @@ This layer is not optional decoration — it is what makes the problem well pose
 the AM overhang, routing and symmetry filters are written for plane problems and are refused
 on a 3-D one, with the filters that can.
 
-**Status: 12 in Toporia · 1 with open code · 9 paper only**
+**Status: 11 plugins in Toporia (Heaviside includes a volume-preserving option) · 1 with open code · 9 paper only**
 
 | Label | Meaning |
 | :-- | :-- |

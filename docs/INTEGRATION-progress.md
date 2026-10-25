@@ -12,7 +12,7 @@ The PDF predates the latest physics integrations. Already implemented items
 are validated and repaired rather than implemented again. Large framework
 projects, datasets, and other backlog items are outside this round.
 
-## Current checkpoint: existing physics stabilised
+## Completed checkpoint: existing physics stabilised (`2dc42a1`)
 
 The previous handoff reports 98 failures and 1686 passes. Completed:
 
@@ -25,8 +25,7 @@ The previous handoff reports 98 failures and 1686 passes. Completed:
 - Use each model's load scale in response conformance checks as well as model checks.
 - Update stale registry assertions while retaining numerical and golden checks.
 
-No new method has been added yet. Next is buckling. Test logs and temporary outputs
-live under ignored `results/`.
+This commit adds no new method. Test logs and temporary outputs live under ignored `results/`.
 
 ### Validation
 
@@ -42,8 +41,8 @@ live under ignored `results/`.
 - Repository-wide Ruff and `git diff --check` passed.
 
 Coverage across the broad run and targeted reruns: **1786 passing tests and one
-optional multigrid test skipped**. This is not a claim of a fresh, single-command
-full-suite pass after the final fixes. The next full run must use the settings below.
+optional multigrid test skipped**. These were staged checks; the fresh full run
+after buckling, below, now confirms the final fixes together.
 
 ### Running tests in this Windows sandbox
 
@@ -63,19 +62,48 @@ or partial logs are not evidence of a full-suite pass.
 
 ## Sequential queue after stabilisation
 
-1. Recover and validate the existing untested linearised buckling implementation.
-2. Anisotropic PDE filter.
-3. Moving morphable voids.
-4. Floating projection.
-5. Simulated annealing: bounded evaluation budget; register only if conformance passes.
-6. Compliant mechanism response, port springs and force-inverter preset; pyMOTO cross-check.
-7. Geometry projection.
-8. Reaction-diffusion level set.
-9. Hamilton-Jacobi level set and topological derivative.
-10. Phase field.
-11. Explicit length scale, machining accessibility and projection-based self-support.
-12. Multiresolution design and analysis meshes.
-13. Neural reparameterisation (TOuNN), subject to dependency support on this Python/Windows setup.
+### Completed: linearised buckling
+
+Recovered the five new files from `e081d88` into this checkout, without changing
+the old worktree or rebasing its branch. Added a BUCKLING interface section and
+public API exports; retained all existing physics sections. The sparse reciprocal
+pencil uses a deterministic random start and shares its K factorisation with the
+adjoints. Small-pencil request bounds are checked.
+
+The initial five tests and four additional edge checks pass. Model and response
+conformance pass; the response's largest gradient error is 8.3e-9. The CLI column
+run on an 18 × 6 mesh converged after 104 iterations with volume 0.29995, load factor
+1.02290 and a satisfied aggregate constraint. All 13 focused tests pass, including
+ten buckling tests, registry assertions and GUI reachability. The fresh full suite
+passes: **1918 passed, one optional multigrid test skipped**, in 43 min 18 sec.
+The full log is `results/buckling-full.log`. Repository-wide Ruff and
+`git diff --check` also pass. `results/buckling-validation/validation.png` plots
+the coarse validation design and its measured limits; result files are not committed.
+
+The formulation was checked against arXiv:2101.02973, especially equations 7, 10,
+and 16–18. DOI 10.1007/s00158-021-02854-x is confirmed by the authors' DTU record;
+Crossref itself was inaccessible from the available network tools. The code is a
+paper-based implementation, with Toporia's own column and p-norm aggregate, not a
+copy of the paper's MATLAB code or a reproduction of its optimisation figures.
+
+Catalogue counts are now registry-based: 72 selectable plugins, seven underlying
+physics engines, 16 presets. No implementations were removed; old totals counted
+composed pairings and parameter variants as additional implementations.
+
+### Remaining sequence
+
+1. Anisotropic PDE filter.
+2. Moving morphable voids.
+3. Floating projection.
+4. Simulated annealing: bounded evaluation budget; register only if conformance passes.
+5. Compliant mechanism response, port springs and force-inverter preset; pyMOTO cross-check.
+6. Geometry projection.
+7. Reaction-diffusion level set.
+8. Hamilton-Jacobi level set and topological derivative.
+9. Phase field.
+10. Explicit length scale, machining accessibility and projection-based self-support.
+11. Multiresolution design and analysis meshes.
+12. Neural reparameterisation (TOuNN), subject to dependency support on this Python/Windows setup.
 
 Heat conduction, thermal/dynamic pyMOTO models, eigenfrequency, harmonic response,
 local stress with augmented Lagrangian, and nonlinear elasticity are already

@@ -28,7 +28,7 @@ with every representation. Updaters whose rule moves each element's density on i
 with another representation is refused before the run, with the reason. The GUI's Pipeline
 box shows the same reason, and Compare Methods skips the pairing.
 
-**Status: 4 in Toporia · 1 with open code · 2 paper only**
+**Status: 3 plugins in Toporia (MMC includes two thickness options) · 1 with open code · 2 paper only**
 
 | Label | Meaning |
 | :-- | :-- |

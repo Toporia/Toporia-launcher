@@ -6,7 +6,7 @@ here — see [`framework.parts.model.Model`](../../framework/parts/model.py). Sw
 how Toporia reaches new physics, new dimensions and new mesh types without touching a
 single update rule.
 
-**Status: 9 in Toporia · 24 with open code · 3 paper only**
+**Status: 10 in Toporia · 24 with open code · 3 paper only**
 
 | Label | Meaning |
 | :-- | :-- |
@@ -19,12 +19,25 @@ single update rule.
 | Model | File | Registry name | Scope |
 | :-- | :-- | :-- | :-- |
 | ✅ 2-D Q4 plane stress | [`q4.py`](q4.py) | `q4` | Toporia's own engine: 2-D plane stress, structured grid, SIMP, direct sparse solve. Provides compliance, volume and stress; accepts the filter pipeline. |
+| ✅ 2-D Q4 with buckling | [`q4_buckling.py`](q4_buckling.py) | `q4_buckling` | Adds the `buckling_load` objective/constraint, retaining compliance, volume, stress, filters and material laws. |
+| ✅ 2-D Q4 with vibration | [`q4_dynamic.py`](q4_dynamic.py) | `q4_dynamic` | Static elasticity, natural frequencies and harmonic response. |
+| ✅ Vibration, pyMOTO | [`pymoto_dynamic.py`](pymoto_dynamic.py) | `pymoto_dynamic` | Independent pyMOTO eigenproblem and sensitivities; optional dependency. |
 | ✅ 2-D Q4, large deformation | [`q4_nonlinear.py`](q4_nonlinear.py) | `q4_nonlinear` | Geometrically non-linear elasticity (large displacements, small strains) on Q4: total Lagrangian, Green–Lagrange strain, St Venant–Kirchhoff material, Newton–Raphson with load steps. Provides end compliance and volume; accepts the filter pipeline. See below. |
 | ✅ 3-D H8 bricks | [`h8.py`](h8.py) | `h8` | Toporia's own 3-D engine (a scenario with a depth): H8 bricks, any material law, direct or multigrid solver. Provides compliance, volume and 3-D stress; accepts the filter pipeline. Switching the GUI's Design section to 3-D selects it. |
 | ✅ Linear elasticity, pyMOTO | [`pymoto_elastic.py`](pymoto_elastic.py) | `pymoto_elastic` | A pyMOTO module network, which brings its own filters and backpropagates its own gradients. Optional dependency (`pip install pymoto`). |
 | ✅ 2-D Q4 heat conduction | [`q4_heat.py`](q4_heat.py) | `q4_heat` | Steady heat conduction on Toporia's Q4 grid: uniform heat generation, supports as heat sinks, conductivity from the material law. Provides thermal compliance and volume; accepts the filter pipeline. |
 | ✅ 3-D H8 heat conduction | [`h8_heat.py`](h8_heat.py) | `h8_heat` | The same on eight-node bricks (a scenario with a depth). |
 | ✅ Heat conduction, pyMOTO | [`pymoto_heat.py`](pymoto_heat.py) | `pymoto_heat` | pyMOTO's `AssemblePoisson` network: the cross-check of `q4_heat`, giving the same thermal compliance to 1e-9. Optional dependency (`pip install pymoto`). |
+
+### Buckling (`q4_buckling`)
+
+The model exposes the linearised buckling formulation of
+[Ferrari, Sigmund & Guest (2021)](https://doi.org/10.1007/s00158-021-02854-x).
+In the GUI, pick *2-D Q4 with buckling (Toporia)* or the *Column Buckling* preset.
+Its buckling objective works with MMA; a buckling constraint requires a multi-constraint
+updater such as `pymoto_mma`, `mmapy_mma` or `nlopt_mma`. The preset uses `pymoto_mma`:
+`toporia run "Column Buckling" --set m=0.3 --set max_iter=120`.
+The static Q4 engine is unchanged. See the [physics details](../physics/README.md).
 
 ### Heat conduction (the heat-sink problem)
 

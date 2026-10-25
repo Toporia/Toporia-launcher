@@ -5,7 +5,7 @@ material, volume target — plus the solver settings recommended for it. Two run
 a scenario and differ only in their solver are a benchmark, and that comparison is what
 Toporia exists to make.
 
-**Status: 12 in Toporia · 6 open datasets or suites · 1 paper only**
+**Status: 16 in Toporia · 6 open datasets or suites · 1 paper only**
 
 | Label | Meaning |
 | :-- | :-- |
@@ -31,12 +31,12 @@ Toporia exists to make.
 | ✅ L-bracket (local stress) | [`l_bracket_stress.py`](l_bracket_stress.py) | `L-bracket (local stress)` |
 | ✅ MBB beam, robust | [`mbb_beam_robust.py`](mbb_beam_robust.py) | `MBB Beam (Robust)` |
 | ✅ Heat sink | [`heat_sink.py`](heat_sink.py) | `Heat Sink` |
-
-All but the heat sink are compliance problems, which matches what the library can currently
-solve (the cantilever 3D is the one 3-D case). Run any of them with `toporia run "<menu name>"`;
 | ✅ Vibrating beam | [`vibrating_beam.py`](vibrating_beam.py) | `Vibrating Beam` |
+| ✅ Column buckling | [`column_buckling.py`](column_buckling.py) | `Column Buckling` |
 
-All are compliance problems except the vibrating beam (the cantilever 3D is the one 3-D case). Run any of them with `toporia run "<menu name>"`;
+The preset selects a response its physics can compute: structural compliance,
+thermal compliance, eigenfrequency, or nonlinear end compliance. Column Buckling
+adds a buckling limit to its compliance objective. Run a preset with `toporia run "<menu name>"`;
 `toporia list` shows the names, `--out DIR` chooses the output folder and
 `--set PATH=VALUE` overrides a parameter, e.g. `toporia run "L-bracket" --set m=1`.
 
@@ -138,6 +138,22 @@ about 12 s. In the GUI pick *Vibrating Beam* in the problem list (the model and 
 with it); on the command line `toporia run "Vibrating Beam" --out DIR`. Papers:
 [Du & Olhoff 2007](https://doi.org/10.1007/s00158-007-0101-y),
 [Pedersen 2000](https://doi.org/10.1007/s001580050130).
+
+### Column buckling
+
+A 60 × 20 column, clamped on the left and compressed at the right midpoint by
+a force of 0.1, with `E0=1`, a 30% material budget, and required load factor 1.
+The geometry is Toporia's own, using the linearised formulation of
+[Ferrari, Sigmund & Guest (2021)](https://doi.org/10.1007/s00158-021-02854-x).
+The preset minimises compliance with `q4_buckling+pymoto_mma`, density filtering
+and Heaviside continuation from β=1 to 8. It needs the optional `pymoto` package.
+
+In the GUI load *Column Buckling*. CLI example, verified on an 18 × 6 mesh:
+`toporia run "Column Buckling" --set m=0.3 --set max_iter=120 --set save_every=0`.
+It stopped after 104 iterations at volume 0.29995 and lowest load factor 1.02290;
+the conservative aggregate constraint was satisfied too. The paper's MATLAB
+geometry/results are not reproduced here, and pyMOTO supplies the optimiser,
+not an independent buckling solver.
 
 ## 📄 Canonical benchmarks not here yet
 

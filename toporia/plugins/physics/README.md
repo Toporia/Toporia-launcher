@@ -5,7 +5,7 @@ from [`models/`](../models/README.md) because the same physics can be discretise
 ways, and the choice of element is itself a thing worth comparing: it decides what the
 density field can resolve and where the classic numerical artefacts come from.
 
-**Status: 6 in Toporia · 5 with open code · 3 paper only**
+**Status: 7 in Toporia · 5 with open code · 3 paper only**
 
 | Label | Meaning |
 | :-- | :-- |
@@ -18,11 +18,11 @@ density field can resolve and where the classic numerical artefacts come from.
 | Element | File | Scope |
 | :-- | :-- | :-- |
 | ✅ Q4 plane stress | [`q4_plane_stress.py`](q4_plane_stress.py) | Bilinear quadrilateral, 2 DOF per node, structured grid, column-major numbering, analytic element stiffness. The top88 element. 2-D. |
+| ✅ Q4 linearised buckling | [`q4_buckling.py`](q4_buckling.py) | Static Q4 plus geometric stiffness, positive buckling factors and the adjoint sensitivity through the prebuckling displacement. 2-D. |
 | ✅ Q4 large deformation | [`q4_nonlinear.py`](q4_nonlinear.py) | The same Q4 element with geometric non-linearity: total Lagrangian, Green–Lagrange strain, St Venant–Kirchhoff material, 2 × 2 Gauss, internal force and tangent stiffness per element, Newton–Raphson with load steps (halved automatically where Newton struggles). Provides `end_compliance`. 2-D. |
 | ✅ H8 solid | [`h8_solid.py`](h8_solid.py) | Trilinear brick, 3 DOF per node, 2 × 2 × 2 Gauss integration, the element of Liu & Tovar's top3d. 3-D: a scenario with a depth `Lz`. Direct sparse solver, or conjugate gradients with algebraic multigrid (optional `pyamg`) for large meshes. |
 | ✅ Q4 heat conduction | [`q4_heat.py`](q4_heat.py) | Bilinear quadrilateral, 1 temperature per node, same grid and element numbering as the Q4 plane-stress element. Steady conduction with uniform heat generation; supports are heat sinks. 2-D. |
 | ✅ H8 heat conduction | [`h8_heat.py`](h8_heat.py) | Trilinear brick, 1 temperature per node, 2 × 2 × 2 Gauss integration. The 3-D counterpart of `q4_heat`, for a scenario with a depth `Lz`. |
-
 | ✅ Q4 with vibration | [`q4_dynamic.py`](q4_dynamic.py) | The Q4 plane-stress engine plus a mass matrix (consistent or lumped, Pedersen's low-density fix, optional non-structural mass at the load nodes). Adds the features `modes` (eigenvalues of `K φ = λ M φ` by shift-invert ARPACK, with their sensitivities) and `harmonic` (`(K − ω²M) u = f`, dynamic compliance and its adjoint). 2-D. |
 
 Each module is a [`framework.parts.physics.Physics`](../../framework/parts/physics.py) engine:
@@ -135,6 +135,22 @@ Two consequences worth knowing before adding anything here:
   reason the filters in [`filters/`](../filters/README.md) exist at all. A higher-order or
   mixed element changes that story, so "which element" is a legitimate comparison axis and
   not an implementation detail.
+
+### Linearised buckling
+
+`q4_buckling` subclasses the unchanged static engine. It forms the initial-stress
+stiffness from centroid stresses and 2 × 2 Gauss integration, then solves
+`(-K_σ) φ = μ K φ`, with `λ = 1/μ` the positive load multiplier. The density
+exponent `p_sigma` (default 4) suppresses geometric stiffness in void. The
+sensitivity includes both explicit stiffness terms and an adjoint through `K u = f`.
+The implementation follows the formulation of [Ferrari, Sigmund & Guest (2021)](https://doi.org/10.1007/s00158-021-02854-x);
+the response uses a p-norm rather than the paper's KS aggregation.
+
+Select *2-D Q4 with buckling (Toporia)* in the GUI, or load *Column Buckling*.
+CLI example: `toporia run "Column Buckling" --set m=0.3 --set max_iter=120`.
+Tests check Euler's cantilever-column load, finite differences including the
+adjoint, tension, physical-unit scaling, and agreement of dense and sparse solves.
+pyMOTO has no buckling module, so there is no pyMOTO physics cross-check.
 
 ## 🔗 Discretisations with open implementations
 

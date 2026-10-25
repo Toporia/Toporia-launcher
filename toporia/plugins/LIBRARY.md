@@ -24,7 +24,10 @@ A test (`tests/apps/test_gui.py`) fails if a part ever stops being reachable fro
 | **Wraps** | Calls an outside Python package. That package is installed separately. Parts whose package is missing are greyed out in the app, with the install command. |
 | **Own** | Toporia's own idea or standard practice. |
 
-## In the library today: 70 parts and 15 benchmark problems
+## In the library today: 72 selectable parts and 16 benchmark problems
+
+The selectable parts include models and whole methods; their seven underlying
+physics engines are counted separately in the [catalogue totals](README.md).
 
 ### Design representations: what the design variables are ([folder](representations/README.md))
 
@@ -63,6 +66,7 @@ A test (`tests/apps/test_gui.py`) fails if a part ever stops being reachable fro
 | In the app | Name | File | Came in | From |
 | :-- | :-- | :-- | :-- | :-- |
 | 2-D Q4 plane stress (Toporia) | `q4` | [q4.py](models/q4.py), [q4_plane_stress.py](physics/q4_plane_stress.py) | Port | the physics half of top88 · [paper](https://doi.org/10.1007/s00158-010-0594-7) |
+| 2-D Q4 with buckling (Toporia) | `q4_buckling` | [q4_buckling.py](models/q4_buckling.py), [q4_buckling.py](physics/q4_buckling.py) | Paper | Ferrari, Sigmund & Guest 2021; Toporia's p-norm aggregate and column geometry · [paper](https://doi.org/10.1007/s00158-021-02854-x) |
 | 2-D Q4, large deformation (Toporia) | `q4_nonlinear` | [q4_nonlinear.py](models/q4_nonlinear.py), [q4_nonlinear.py](physics/q4_nonlinear.py) | Paper | Buhl, Pedersen & Sigmund, *SMO* 2000; energy interpolation after Wang, Lazarov, Sigmund & Jensen, *CMAME* 2014; open reference: Han et al. 2021 · papers [1](https://doi.org/10.1007/s001580050089) [2](https://doi.org/10.1016/j.cma.2014.03.021) [3](https://doi.org/10.1007/s00158-020-02816-9) |
 | 3-D H8 bricks (Toporia) | `h8` | [h8.py](models/h8.py), [h8_solid.py](physics/h8_solid.py) | Port | top3d (Liu & Tovar, *SMO* 2014) · [paper](https://doi.org/10.1007/s00158-014-1107-x) |
 | Linear elasticity, pyMOTO network | `pymoto_elastic` | [pymoto_elastic.py](models/pymoto_elastic.py) | Wraps | [pyMOTO](https://github.com/aatmdelissen/pyMOTO) (MIT), `pip install pymoto` |
@@ -81,6 +85,7 @@ A test (`tests/apps/test_gui.py`) fails if a part ever stops being reachable fro
 | Local von Mises stress (augmented Lagrangian) | `local_stress` | [local_stress.py](responses/local_stress.py) | Paper | Giraldo-Londoño & Paulino, *SMO* 2021 (PolyStress); Senhora et al., *SMO* 2020 · papers [1](https://doi.org/10.1007/s00158-020-02760-8) [2](https://doi.org/10.1007/s00158-020-02573-9) |
 | End compliance (non-linear) | `end_compliance` | [end_compliance.py](responses/end_compliance.py) | Paper | Buhl, Pedersen & Sigmund, *SMO* 2000 · [paper](https://doi.org/10.1007/s001580050089) |
 | Peak von Mises stress | `stress` | [stress.py](responses/stress.py) | Paper | Le, Norato, Bruns, Ha & Tortorelli, *SMO* 2010 · [paper](https://doi.org/10.1007/s00158-009-0440-y) |
+| Buckling load factor | `buckling_load` | [buckling.py](responses/buckling.py) | Paper | Reciprocal-factor aggregate; objective or constraint on `q4_buckling` · [paper](https://doi.org/10.1007/s00158-021-02854-x) |
 | Thermal compliance | `thermal_compliance` | [thermal_compliance.py](responses/thermal_compliance.py) | Paper | Bendsøe & Sigmund 2003, section 1.5; Gersborg-Hansen et al., *SMO* 2006 · [paper](https://doi.org/10.1007/s00158-005-0584-3) |
 | Fundamental frequency (maximise) | `eigenfrequency` | [eigenfrequency.py](responses/eigenfrequency.py) | Paper | Díaz & Kikuchi, *IJNME* 1992; Du & Olhoff, *SMO* 2007 · papers [1](https://doi.org/10.1002/nme.1620350707) [2](https://doi.org/10.1007/s00158-007-0101-y) |
 | Fundamental frequency (at least) | `eigenfrequency_limit` | [eigenfrequency.py](responses/eigenfrequency.py) | Paper | the same, as a constraint |
@@ -149,6 +154,7 @@ and the preset *MBB Beam (Robust)*.
 | MBB Beam | [mbb_beam.py](problems/mbb_beam.py) | the 99-line code and top88 · papers [1](https://doi.org/10.1007/s001580050176) [2](https://doi.org/10.1007/s00158-010-0594-7) |
 | MBB Beam (Robust) | [mbb_beam_robust.py](problems/mbb_beam_robust.py) | Wang, Lazarov & Sigmund 2011 · [paper](https://doi.org/10.1007/s00158-010-0602-y) |
 | Vibrating Beam | [vibrating_beam.py](problems/vibrating_beam.py) | after Du & Olhoff 2007 · [paper](https://doi.org/10.1007/s00158-007-0101-y) |
+| Column Buckling | [column_buckling.py](problems/column_buckling.py) | Toporia column geometry, Ferrari, Sigmund & Guest's linearised formulation · [paper](https://doi.org/10.1007/s00158-021-02854-x) |
 | Cantilever | [cantilever.py](problems/cantilever.py) | the 99-line code · [paper](https://doi.org/10.1007/s001580050176) |
 | Nonlinear Cantilever | [nonlinear_cantilever.py](problems/nonlinear_cantilever.py) | Buhl, Pedersen & Sigmund 2000; Wang et al. 2014 · papers [1](https://doi.org/10.1007/s001580050089) [2](https://doi.org/10.1016/j.cma.2014.03.021) |
 | Cantilever 3D | [cantilever_3d.py](problems/cantilever_3d.py) | top3d (Liu & Tovar 2014) · [paper](https://doi.org/10.1007/s00158-014-1107-x) |
@@ -176,18 +182,13 @@ Listed from least to most effort. "Code" means open code exists (port it, or che
 | Floating projection | optimiser | Paper: Huang, *Eng. Struct.* 2020 · [paper](https://doi.org/10.1016/j.engstruct.2020.110330) | binary designs without β continuation |
 | Simulated annealing | optimiser | Code: topASA | a "why it loses" baseline |
 | Compliant mechanism (output displacement) and the force-inverter benchmark | objective + problem | Paper: Sigmund 1997 · [paper](https://doi.org/10.1080/08905459708945415) | needs springs at input and output |
-| pyMOTO's thermal, dynamic and mechanism modules | models | Code: [pyMOTO](https://github.com/aatmdelissen/pyMOTO) | already installed: the cheapest new physics |
+| pyMOTO's mechanism module | model | Code: [pyMOTO](https://github.com/aatmdelissen/pyMOTO) | thermal and dynamic models are already implemented |
 | Reference results from the original MATLAB codes (top88, top99neo, top3d, TOBS, MMC, the level-set codes) | tests | Code: run once in GNU Octave or MATLAB · papers [1](https://doi.org/10.1007/s00158-010-0594-7) [2](https://doi.org/10.1007/s00158-020-02629-w) [3](https://doi.org/10.1007/s00158-014-1107-x) [4](https://doi.org/10.1007/s00158-020-02719-9) [5](https://doi.org/10.1007/s00158-015-1372-3) [6](https://doi.org/10.1007/s00158-018-1904-8) [7](https://doi.org/10.1007/s00158-014-1190-z) | proves the Python versions give the same answers |
 
 ### Medium: new physics or a whole method
 
 | What | Source |
 | :-- | :-- |
-| Eigenfrequency, then linearised buckling | Code: TopBuck250 (Ferrari, Sigmund & Guest 2021) · [paper](https://doi.org/10.1007/s00158-021-02854-x) |
-| Harmonic response | Code: PolyDyna · [paper](https://doi.org/10.1007/s00158-021-02859-6) |
-| Heat conduction and thermal compliance | Paper: Bendsøe & Sigmund 2003; Gersborg-Hansen et al. 2006 · papers [1](https://doi.org/10.1007/978-3-662-05086-6) [2](https://doi.org/10.1007/s00158-005-0584-3) |
-| Linearised buckling | Code: TopBuck250 (Ferrari, Sigmund & Guest 2021) · [paper](https://doi.org/10.1007/s00158-021-02854-x) |
-| Local stress constraints with an augmented-Lagrangian optimiser | Code: PolyStress (Giraldo-Londoño & Paulino 2021) · [paper](https://doi.org/10.1007/s00158-020-02760-8) |
 | Geometry projection (bars with round ends) | Code: GGP-Matlab, GPTO, pygpto (Norato et al.) · [paper](https://doi.org/10.1016/j.cma.2015.05.005) |
 | Reaction–diffusion level set | Code: 88-line code of Otomori et al. 2015 · [paper](https://doi.org/10.1007/s00158-014-1190-z) |
 | Hamilton–Jacobi level set; topological derivative | Code: Challis 2010; Amstutz & Andrä 2006 · papers [1](https://doi.org/10.1007/s00158-009-0430-0) [2](https://doi.org/10.1016/j.jcp.2005.12.015) |

@@ -209,3 +209,24 @@ class HarmonicPhysics:
     def dynamic_compliance_sensitivity(self, state, case, omega):
         """d(fᵀu)/dρ per element (shape of the density): −uᵀ (dK/dρ − ω² dM/dρ) u."""
         raise NotImplementedError(f"{type(self).__name__} does not provide {HARMONIC!r}")
+
+
+# ── BUCKLING ──────────────────────────────────────────────────────────────────
+
+BUCKLING = "buckling"
+
+
+class BucklingPhysics:
+    """Linearised buckling: (K + λ K_σ) φ = 0 for each applied load case."""
+
+    def buckling_factors(self, state, case, n):
+        """At most n positive load factors, ascending; empty for no compressive modes."""
+        raise NotImplementedError(f"{type(self).__name__} does not provide {BUCKLING!r}")
+
+    def buckling_sensitivity(self, state, case, i):
+        """dλ_i/dρ, including the adjoint through the prebuckling displacements.
+
+        The field has the density's shape. An individual derivative is valid for
+        a simple eigenvalue; an aggregate must include a complete repeated cluster.
+        """
+        raise NotImplementedError(f"{type(self).__name__} does not provide {BUCKLING!r}")

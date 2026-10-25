@@ -44,18 +44,22 @@ any doubt about what this repository actually does today:
 | [Material laws](toporia/plugins/interpolations/README.md) — density to stiffness | SIMP, RAMP, ordered SIMP | 0 | 3 |
 | [Schedules](toporia/plugins/schedules/README.md) — continuation, and robust variants | equal steps, geometric, linear ramp, when the design settles | 0 | 1 |
 | [Post-processors](toporia/plugins/postprocessors/README.md) — threshold, checks, exports | threshold, connectivity, feature size, grey level over the run, SVG, DXF, STL, smoothed outlines | 0 | 1 |
-| [Models](toporia/plugins/models/README.md) — physics and gradients | 2-D Q4, 3-D H8, pyMOTO elasticity; heat (2-D, 3-D, pyMOTO); vibration (Q4, pyMOTO); large deformation | 24 | 3 |
-| [Elements](toporia/plugins/physics/README.md) — discretisation | Q4 plane stress, H8 solid, Q4 and H8 heat, Q4 with mass, Q4 large deformation | 5 | 3 |
-| [Responses](toporia/plugins/responses/README.md) — objectives and constraints | compliance, volume, von Mises stress (peak and local), thermal compliance, end compliance, eigenfrequency, dynamic compliance | 4 | 14 |
+| [Models](toporia/plugins/models/README.md) — physics and gradients | 2-D Q4, 3-D H8, pyMOTO elasticity; heat (2-D, 3-D, pyMOTO); vibration (Q4, pyMOTO); large deformation; linearised buckling | 24 | 3 |
+| [Elements](toporia/plugins/physics/README.md) — discretisation | Q4 plane stress, H8 solid, Q4 and H8 heat, Q4 with mass, Q4 large deformation, Q4 buckling | 5 | 3 |
+| [Responses](toporia/plugins/responses/README.md) — objectives and constraints | compliance, volume, von Mises stress (peak and local), thermal compliance, end compliance, eigenfrequency, dynamic compliance, buckling load factor | 4 | 13 |
 | [Updaters](toporia/plugins/updaters/README.md) — optimisers | OC, MMA, GCMMA, SiMPL, BESO, SLSQP, trust-constr, NLopt (MMA, CCSAQ, SLSQP, AUGLAG), mmapy (MMA, GCMMA), null-space, TOBS, CONLIN, multi-constraint OC, Adam, PTO, hard-kill BESO, augmented Lagrangian | 4 | 1 |
-| [Problems](toporia/plugins/problems/README.md) — benchmarks | MBB, robust MBB, cantilever, 3-D cantilever, Michell cantilever, L-bracket, L-bracket (local stress), heat sink, vibrating beam, non-linear cantilever, 3-point bending, bar, 3× drone arm | 6 | 1 |
+| [Problems](toporia/plugins/problems/README.md) — benchmarks | MBB, robust MBB, cantilever, 3-D cantilever, Michell cantilever, L-bracket, L-bracket (local stress), heat sink, vibrating beam, column buckling, non-linear cantilever, 3-point bending, bar, 3× drone arm | 6 | 1 |
 
-**107 implemented · 57 with open code elsewhere · 40 from papers only.**
+**95 implementations: 72 selectable plugins, 7 physics engines and 16 presets.
+57 catalogue entries have open code elsewhere; 39 are paper-only.**
+Plugin counts follow the registries; composed pairings and parameter options are
+not counted again as additional implementations.
 
-Short version of where this sits in the field: Toporia solves linear elasticity on
-structured grids, in 2-D and in 3-D. It covers four of the field's parameterisation
-families (density/SIMP, parameterised level set, discrete evolutionary, moving morphable
-components) with seven optimisers, plus continuation, robust design and post-processing.
+Toporia solves structural elasticity and steady heat conduction on structured
+2-D and 3-D grids, with additional 2-D vibration, harmonic response, large deformation
+and linearised buckling. It covers density/SIMP, parameterised level set,
+discrete evolutionary and moving morphable component designs, with 22 updaters,
+continuation, robust design and post-processing.
 The lists above are the honest map of everything it does not cover yet.
 
 ### The idea

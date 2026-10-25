@@ -29,22 +29,24 @@ Nothing is ever labelled ✅ until it is registered, tested, and reachable from 
 
 | Folder | Layer | ✅ In Toporia | 🔗 Open code | 📄 Paper only |
 | :-- | :-- | --: | --: | --: |
-| [`methods/`](methods/README.md) | How the design is described | 15 | 12 | 2 |
-| [`representations/`](representations/README.md) | What the design variables are | 4 | 1 | 2 |
-| [`filters/`](filters/README.md) | How it is smoothed, projected, made manufacturable | 12 | 1 | 9 |
+| [`methods/`](methods/README.md) | Whole methods; composed pairs are counted through their parts | 1 | 12 | 2 |
+| [`representations/`](representations/README.md) | What the design variables are | 3 | 1 | 2 |
+| [`filters/`](filters/README.md) | How it is smoothed, projected, made manufacturable | 11 | 1 | 9 |
 | [`interpolations/`](interpolations/README.md) | How density becomes stiffness (the material law) | 3 | 0 | 3 |
 | [`schedules/`](schedules/README.md) | How a parameter changes during the run (continuation) | 4 | 0 | 1 |
 | [`postprocessors/`](postprocessors/README.md) | What is made of the finished design: threshold, checks, exports | 8 | 0 | 1 |
-| [`models/`](models/README.md) | What computes the physics and the gradients | 9 | 24 | 3 |
-| [`physics/`](physics/README.md) | Element formulations and discretisation | 6 | 5 | 3 |
-| [`responses/`](responses/README.md) | What is minimised or constrained | 9 | 4 | 14 |
+| [`models/`](models/README.md) | What computes the physics and the gradients | 10 | 24 | 3 |
+| [`physics/`](physics/README.md) | Element formulations and discretisation | 7 | 5 | 3 |
+| [`responses/`](responses/README.md) | What is minimised or constrained | 10 | 4 | 13 |
 | [`updaters/`](updaters/README.md) | How the design moves each iteration | 22 | 4 | 1 |
-| [`problems/`](problems/README.md) | Benchmark problems and datasets | 15 | 6 | 1 |
-| **Total** | | **107** | **57** | **40** |
+| [`problems/`](problems/README.md) | Benchmark problems and datasets | 16 | 6 | 1 |
+| **Total** | | **95** | **57** | **39** |
 
-The 15 selectable methods are the 14 `model+updater` pairings plus the one whole
-method; those pairings are built from the 2 models and 7 updaters counted in their own
-rows, so they are not 15 separate implementations.
+The implementation total is **72 registered selectable parts + 7 physics engines +
+16 presets**. Counts follow registry classes: parameter options such as variable
+MMC thickness or volume-preserving Heaviside do not add another plugin. The 10
+models and 22 updaters form 220 named pairings; a pairing must support the chosen
+scenario. These compositions are not counted again as separate implementations.
 
 ## The choices
 

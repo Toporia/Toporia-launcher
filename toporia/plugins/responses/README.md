@@ -9,7 +9,7 @@ case — self-adjoint, one solve, no aggregation. Everything else needs its own 
 usually an aggregation function (p-norm or Kreisselmeier–Steinhauser) or an augmented
 Lagrangian to survive thousands of local constraints.
 
-**Status: 9 in Toporia · 4 with open code · 14 paper only**
+**Status: 10 in Toporia · 4 with open code · 13 paper only**
 
 | Label | Meaning |
 | :-- | :-- |
@@ -25,11 +25,28 @@ Lagrangian to survive thousands of local constraints.
 | ✅ End compliance (non-linear) | [`end_compliance.py`](end_compliance.py) | `end_compliance` | objective | `q4_nonlinear` |
 | ✅ Material volume | [`volume.py`](volume.py) | `volume` | objective | `q4`, `pymoto_elastic` |
 | ✅ Peak von Mises stress | [`stress.py`](stress.py) | `stress` | constraint | `q4`, `pymoto_elastic` |
+| ✅ Buckling load factor | [`buckling.py`](buckling.py) | `buckling_load` | objective or constraint | `q4_buckling` |
 | ✅ Local von Mises stress (augmented Lagrangian) | [`local_stress.py`](local_stress.py) | `local_stress` | constraint | `q4`, `h8` |
 | ✅ Thermal compliance | [`thermal_compliance.py`](thermal_compliance.py) | `thermal_compliance` | objective | `q4_heat`, `h8_heat`, `pymoto_heat` |
 | ✅ Fundamental frequency (maximise) | [`eigenfrequency.py`](eigenfrequency.py) | `eigenfrequency` | objective | `q4_dynamic`, `pymoto_dynamic` |
 | ✅ Fundamental frequency (at least) | [`eigenfrequency.py`](eigenfrequency.py) | `eigenfrequency_limit` | constraint | `q4_dynamic` |
 | ✅ Dynamic compliance (harmonic load) | [`dynamic_compliance.py`](dynamic_compliance.py) | `dynamic_compliance` | objective | `q4_dynamic` |
+
+### Buckling load factor
+
+Following [Ferrari, Sigmund & Guest (2021)](https://doi.org/10.1007/s00158-021-02854-x),
+the response aggregates the reciprocals of the lowest positive buckling factors.
+Toporia uses `g = min_load * ||1/λ_i||_p - 1`, across all load cases. As a constraint,
+`g <= 0` conservatively enforces `λ_1 >= min_load`; as an objective, minimising it
+raises the lowest factors. The exact `buckling_load` is reported separately.
+The default is six modes and `p=8`. Include every member of a repeated eigenvalue
+cluster: cutting a cluster at the requested mode count loses differentiability.
+
+In the GUI choose the buckling model and *Buckling load factor*, or load *Column Buckling*.
+The CLI example `toporia run "Column Buckling" --set m=0.3 --set max_iter=120`
+uses compliance with a buckling constraint and pyMOTO's multi-constraint MMA updater.
+Tests compare the full response gradient with finite differences; the engine
+also checks Euler's column load. This is linearised buckling, without postbuckling continuation.
 
 ### Vibration
 
@@ -122,7 +139,6 @@ non-linear module, so there is no pyMOTO version.
 | Response | Status | Reference | Why it is hard |
 | :-- | :-- | :-- | :-- |
 | Compliant mechanisms | 📄 | Sigmund, *Mech. Struct. Mach.* 1997; Sigmund, *SMO* 2001 | Maximise output displacement against a spring. Not self-adjoint, and prone to one-node hinges that only a length-scale filter suppresses. |
-| Linearised buckling | 📄 | Neves, Rodrigues & Guedes, *Comp. Struct.* 1995; Ferrari & Sigmund, *CMAME* 2019 | A generalised eigenproblem every iteration, spurious modes in low-density regions, non-differentiable repeated eigenvalues. Expensive — and the main reason compliance designs fail in reality. |
 | Non-linear stability | 📄 | Dalklint, Wallin & Tortorelli, *CMAME* 2023 | Finite strain plus critical-point tracking; the tangent stiffness depends on displacement. |
 | Transient response | 🔗 PolyDyna (with the paper) | Giraldo-Londoño & Paulino, *SMO* 2021 | Time-domain adjoints that integrate backwards over the history. The frequency-domain (harmonic) case is [`dynamic_compliance`](dynamic_compliance.py). |
 | Fatigue and damage | 📄 | Oest & Lund, *SMO* 2017 | Load-history dependent; needs cycle counting inside the loop. |

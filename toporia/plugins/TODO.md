@@ -38,7 +38,7 @@ first, and if a package will not install, reports it rather than working around 
 | [x] | mmapy, Deetman's MMA/GCMMA Python port | updater + oracle for `mma.py` | the reference MMA | GPL-3 *(check; GPL means optional only)* |
 | [x] | Feppon's null-space optimizer | updater | constrained optimiser for level-set and shape problems | *(unverified)* |
 | [ ] | ParOpt | updater | interior point built for TO | LGPL *(unverified)* |
-| [ ] | pyMOTO, thermal / dynamics / mechanism modules | model | heat, eigenfrequency, compliant mechanism on our grids | MIT |
+| [~] | pyMOTO, thermal / dynamics / mechanism modules | model | heat and eigenfrequency implemented; mechanism remains | MIT |
 | [ ] | dl4to + the SELTO datasets | problems | 3-D benchmark problems with reference solutions | *(check)* |
 | [ ] | JAX (+ AuTO, Chandrasekhar et al.) | model / representation | automatic differentiation for new responses, neural fields | Apache-2 / *(check)* |
 | [ ] | PyTorch or JAX for TOuNN (Chandrasekhar & Suresh) | representation + Adam updater | neural reparameterisation | *(check)* |
@@ -102,16 +102,16 @@ the matching MAKE item below.
 
 ## Wave 4: MAKE, medium (new physics feature group or whole method)
 
-- [ ] Heat conduction physics + thermal compliance
-- [ ] Eigenproblem feature group → eigenfrequency, then linearised buckling
-- [ ] Harmonic response
-- [ ] Local stress + augmented Lagrangian updater
+- [x] Heat conduction physics + thermal compliance
+- [x] Eigenproblem feature group → eigenfrequency, then linearised buckling
+- [x] Harmonic response
+- [x] Local stress + augmented Lagrangian updater
 - [ ] Geometry projection representation
 - [ ] Reaction–diffusion level set; Hamilton–Jacobi level set; topological derivative
 - [ ] Phase field
 - [ ] Explicit length-scale constraints; machining accessibility; Gaynor self-support
 - [ ] Multi-resolution design and analysis meshes
-- [ ] Geometrically non-linear elasticity
+- [x] Geometrically non-linear elasticity
 
 ## Wave 5: framework changes, then what they unlock
 
