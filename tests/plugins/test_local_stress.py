@@ -103,3 +103,13 @@ def test_l_bracket_meets_the_limit_and_rounds_the_corner(capsys):
     assert responses["constraint_0_local_stress_exact"] == pytest.approx(ratio - 1.0)
     assert oc_stress / limit > 1.2                        # the compliance design violates the limit
     assert _corner_density(method.get_density()) < _corner_density(oc.get_density()) - 0.05   # corner relieved
+
+
+def test_local_stress_is_refused_with_an_updater_that_would_misread_its_penalty():
+    import pytest
+    from toporia.engine.loop import initialized_method
+    from toporia.framework.problem.run import apply_param
+    from toporia.plugins.problems import get_run
+    run = apply_param(apply_param(get_run("L-bracket (local stress)"), "method", "q4+nlopt_mma"), "method_params", {})
+    with pytest.raises(ValueError, match="only works with the updater 'augmented_lagrangian'"):
+        initialized_method(run)

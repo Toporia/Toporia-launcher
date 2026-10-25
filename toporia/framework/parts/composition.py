@@ -95,6 +95,7 @@ class ComposedMethod(OptimizationMethod):
         if not solver.variants:
             self._model.initialize(problem, solver, _subset(settings, self._model.params))
         self._count_solves(self._model)
+        _check_response_updaters(self._model, type(self).updater)
         self._updater.initialize(self._model, _subset(settings, self._updater.params))
 
         self.x = self._model.initial_design()
@@ -222,6 +223,23 @@ def compose(model_cls, updater_cls):
              "model": model_cls, "updater": updater_cls},
         )
     return _composed[key]
+
+
+def _check_response_updaters(model, updater_cls):
+    """Refuse a pairing in which a response only works with certain updaters.
+
+    A response that is not an ordinary "value <= 0 is satisfied" constraint (the
+    augmented-Lagrangian penalty of local stress, say) names the updaters that
+    understand it in `only_with_updaters`; any other updater would treat it as a
+    plain constraint and quietly solve the wrong problem.
+    """
+    for response in [getattr(model, "objective_response", None), *getattr(model, "constraints", ())]:
+        allowed = getattr(response, "only_with_updaters", ())
+        if allowed and updater_cls.name not in allowed:
+            raise ValueError(
+                f"{getattr(response, 'label', response.name)!r} only works with the updater "
+                f"{' or '.join(repr(a) for a in allowed)}, not {updater_cls.name!r}; "
+                f"choose e.g. method \"{model.name}+{allowed[0]}\"")
 
 
 def explain(model_cls, updater_cls):

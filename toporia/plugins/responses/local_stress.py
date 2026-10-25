@@ -44,6 +44,8 @@ from toporia.plugins.responses.stress import _EPSILON, VON_MISES_2D
 class LocalStress(Response):
     """A von Mises limit on every element, enforced by an augmented-Lagrangian penalty."""
     name = "local_stress"
+    #: A penalty, not a "<= 0 is satisfied" constraint: only the augmented Lagrangian reads it right.
+    only_with_updaters = ("augmented_lagrangian",)
     label = "Local von Mises stress (augmented Lagrangian)"
     reference = (
         'O. Giraldo-Londono, G. H. Paulino, "PolyStress: a Matlab implementation for local'
