@@ -47,7 +47,14 @@ from scipy.sparse import coo_matrix, diags
 from scipy.sparse.linalg import eigsh, spsolve
 
 from toporia.framework.params import Param
-from toporia.framework.parts.physics import ELASTIC_ENERGY, HARMONIC, MODES, STRESS, HarmonicPhysics, ModalPhysics
+from toporia.framework.parts.physics import (
+    ELASTIC_ENERGY,
+    HARMONIC,
+    MODES,
+    STRESS,
+    HarmonicPhysics,
+    ModalPhysics,
+)
 
 from .q4_plane_stress import Q4PlaneStress, Q4Solution, _solve
 
