@@ -393,7 +393,7 @@ any other updater, and its own verdict (success, message, its counts) is written
 | Updater | Status | Reference | Why it matters |
 | :-- | :-- | :-- | :-- |
 | Discrete variable sequential approximation | 🔗 DVTOPCRA | Liang & Cheng 2019 | Integer design variables via sequential approximate integer programming. |
-| Metaheuristics (GA, SA, ACO) | 🔗 [topASA](https://github.com/Hossein-Rostami/Topology-Optimization-with-adaptive-Simulated-Annealing) | see Sigmund, *SMO* 2011 | Included so the platform can **demonstrate why they lose**: orders of magnitude more function evaluations at far lower resolution. Not a serious candidate. |
+| Metaheuristics (GA, SA, ACO) | 🔗 [topASA](https://github.com/Hossein-Rostami/Topology-Optimization-with-adaptive-Simulated-Annealing) | see Sigmund, *SMO* 2011 | Own standard-SA baseline [evaluated separately](../../../experiments/README.md): all seeds miss the existing gate even at 2000 solves. Not registered; not a test of adaptive topASA, whose repository states no licence. GA and ACO remain candidates. |
 
 ## GPL-3 optimisers: mmapy and nullspace_optimizer
 

@@ -177,17 +177,41 @@ temporary files (`results/floating-native-full.log`, `results/floating-full.xml`
 Ruff and `git diff --check` pass. Catalogue totals are 75 selectable plugins,
 seven physics engines and 16 presets; 23 updaters form 230 named model pairings.
 
+### Completed evaluation: simulated annealing (not registered)
+
+Added `experiments/simulated_annealing.py` as an isolated, reproducible standard
+Metropolis baseline, not a selectable plugin. The referenced topASA repository
+has no stated licence; no source code was copied and these measurements do not
+evaluate adaptive topASA. The own implementation uses random pair transfers,
+geometric cooling and scalar physical-volume repair, with no physics gradients.
+Budgets include the initial solve; the best feasible state is retained.
+
+On the unchanged 24 × 8 MBB conformance mesh, OC reaches compliance 274.46963
+in 57 solves including final evaluation. SA at 200 solves gives 794.173,
+809.155 and 816.480 for seeds 0/1/2 (+189–197%). At 2000 solves the values
+are 380.895, 391.319 and 393.244 (+39–43%). All are within the volume budget;
+none reaches the existing 10%-of-OC gate. Accordingly, no updater is registered
+and no benchmark or numerical tolerance is weakened. Detailed method, caveats,
+command and table are in `experiments/README.md`; raw outputs are under
+`results/annealing-evaluation/` and `results/annealing-evaluation.log`.
+
+Eight new experiment tests pass (budget, no gradients, deterministic seed,
+best history, bounds and pins, invalid controls, absence from registry).
+Repository-wide Ruff and whitespace checks pass. No registered/runtime plugin
+changed since the full-suite checkpoint of 2021 passes and one optional skip;
+only this isolated experiment and its tests were run for the evaluation.
+Implementation counts remain unchanged.
+
 ### Remaining sequence
 
-1. Simulated annealing: bounded evaluation budget; register only if conformance passes.
-2. Compliant mechanism response, port springs and force-inverter preset; pyMOTO cross-check.
-3. Geometry projection.
-4. Reaction-diffusion level set.
-5. Hamilton-Jacobi level set and topological derivative.
-6. Phase field.
-7. Explicit length scale, machining accessibility and projection-based self-support.
-8. Multiresolution design and analysis meshes.
-9. Neural reparameterisation (TOuNN), subject to dependency support on this Python/Windows setup.
+1. Compliant mechanism response, port springs and force-inverter preset; pyMOTO cross-check.
+2. Geometry projection.
+3. Reaction-diffusion level set.
+4. Hamilton-Jacobi level set and topological derivative.
+5. Phase field.
+6. Explicit length scale, machining accessibility and projection-based self-support.
+7. Multiresolution design and analysis meshes.
+8. Neural reparameterisation (TOuNN), subject to dependency support on this Python/Windows setup.
 
 Heat conduction, thermal/dynamic pyMOTO models, eigenfrequency, harmonic response,
 local stress with augmented Lagrangian, and nonlinear elasticity are already

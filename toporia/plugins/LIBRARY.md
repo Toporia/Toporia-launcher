@@ -171,6 +171,15 @@ and the preset *MBB Beam (Robust)*.
 
 ---
 
+## Evaluated but not registered
+
+The bounded [simulated-annealing experiment](../../experiments/README.md) misses
+the unchanged 10%-of-OC performance gate on all three seeds at 200 and 2000
+solves. It remains reproducible outside plugin discovery; no failing part was
+registered and no threshold was relaxed. This is an own standard-SA baseline,
+not a port or evaluation of adaptive topASA. Catalogue implementation counts
+exclude unregistered experiments.
+
 ## To add next
 
 Listed from least to most effort. "Code" means open code exists (port it, or check against it).
@@ -180,7 +189,6 @@ Listed from least to most effort. "Code" means open code exists (port it, or che
 
 | What | Kind | Source | Notes |
 | :-- | :-- | :-- | :-- |
-| Simulated annealing | optimiser | Code: topASA | a "why it loses" baseline |
 | Compliant mechanism (output displacement) and the force-inverter benchmark | objective + problem | Paper: Sigmund 1997 · [paper](https://doi.org/10.1080/08905459708945415) | needs springs at input and output |
 | pyMOTO's mechanism module | model | Code: [pyMOTO](https://github.com/aatmdelissen/pyMOTO) | thermal and dynamic models are already implemented |
 | Reference results from the original MATLAB codes (top88, top99neo, top3d, TOBS, MMC, the level-set codes) | tests | Code: run once in GNU Octave or MATLAB · papers [1](https://doi.org/10.1007/s00158-010-0594-7) [2](https://doi.org/10.1007/s00158-020-02629-w) [3](https://doi.org/10.1007/s00158-014-1107-x) [4](https://doi.org/10.1007/s00158-020-02719-9) [5](https://doi.org/10.1007/s00158-015-1372-3) [6](https://doi.org/10.1007/s00158-018-1904-8) [7](https://doi.org/10.1007/s00158-014-1190-z) | proves the Python versions give the same answers |
