@@ -22,6 +22,7 @@ Lagrangian to survive thousands of local constraints.
 | Response | File | Registry name | Role | Computable by |
 | :-- | :-- | :-- | :-- | :-- |
 | ✅ Compliance | [`compliance.py`](compliance.py) | `compliance` | objective | `q4`, `pymoto_elastic` |
+| ✅ End compliance (non-linear) | [`end_compliance.py`](end_compliance.py) | `end_compliance` | objective | `q4_nonlinear` |
 | ✅ Material volume | [`volume.py`](volume.py) | `volume` | objective | `q4`, `pymoto_elastic` |
 | ✅ Peak von Mises stress | [`stress.py`](stress.py) | `stress` | constraint | `q4`, `pymoto_elastic` |
 | ✅ Local von Mises stress (augmented Lagrangian) | [`local_stress.py`](local_stress.py) | `local_stress` | constraint | `q4`, `h8` |
@@ -75,6 +76,15 @@ toporia check response:local_stress
 
 **Links.** [PolyStress, SMO 63 (2021) 2065–2097](https://doi.org/10.1007/s00158-020-02760-8);
 [Senhora et al., SMO 62 (2020) 1639–1668](https://doi.org/10.1007/s00158-020-02573-9).
+
+**End compliance** is compliance for a geometrically non-linear structure: C = Σ w·fᵀu at the
+final load, with the displacements from the large-displacement solve of
+[`q4_nonlinear`](../models/q4_nonlinear.py) (feature `end_compliance`). It is no longer
+self-adjoint, so the engine computes the sensitivity by an adjoint solve with the tangent
+stiffness, K_T(u) λ = f, dC/dρₑ = −λₑᵀ ∂Rₑ/∂ρₑ — exact, and checked against finite
+differences to about 1e-9. Pick it as the objective when the model is
+`2-D Q4, large deformation`; the GUI offers it only there. pyMOTO has no geometrically
+non-linear module, so there is no pyMOTO version.
 
 ## Candidates — structural
 

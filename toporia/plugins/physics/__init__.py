@@ -8,6 +8,7 @@ functions and as a framework.parts.physics.Physics engine that responses run on.
     q4_heat.py           2-D steady heat conduction, bilinear Q4 elements
     h8_heat.py           3-D steady heat conduction, trilinear bricks
     _conduction.py       what the two heat engines share
+    q4_nonlinear.py      2-D large-displacement elasticity, Q4, Newton with load steps
 """
 
 from .q4_plane_stress import (

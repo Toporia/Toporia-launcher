@@ -19,6 +19,7 @@ Toporia exists to make.
 | :-- | :-- | :-- |
 | ✅ MBB beam | [`mbb_beam.py`](mbb_beam.py) | `MBB Beam` |
 | ✅ Cantilever | [`cantilever.py`](cantilever.py) | `Cantilever` |
+| ✅ Nonlinear cantilever | [`nonlinear_cantilever.py`](nonlinear_cantilever.py) | `Nonlinear Cantilever` |
 | ✅ Cantilever 3D | [`cantilever_3d.py`](cantilever_3d.py) | `Cantilever 3D` |
 | ✅ Three-point bending | [`three_point_bending.py`](three_point_bending.py) | `Three-Point Bending` |
 | ✅ Standard bar | [`standard_bar.py`](standard_bar.py) | `Standard Bar` |
@@ -65,6 +66,33 @@ compliance falls from 9.02 to 1.36. The scenario's supports are the heat sinks a
 case's `Fmag` (here 0) is heat entering at point loads; the generation is the physics
 parameter `heat_source`. The sensitivities are cross-checked against pyMOTO
 (`pymoto_heat`).
+
+### Nonlinear cantilever
+
+The cantilever again (60 × 30, 40 % material, clamped left edge, a point load at mid-height of
+the free end, on a solid pad), with a load big enough that the beam bends visibly, designed
+with **geometrically non-linear elasticity**: large displacements, Newton–Raphson with load
+steps, minimising the compliance at the final load (*end compliance*). It follows the stiffness
+design problem of Buhl, Pedersen & Sigmund, *Struct. Multidisc. Optim.* 19 (2000) 93-104
+([doi](https://doi.org/10.1007/s001580050089)); the void is handled by an energy interpolation
+after Wang, Lazarov, Sigmund & Jensen, *CMAME* 276 (2014) 453-472
+([doi](https://doi.org/10.1016/j.cma.2014.03.021)). The open reference code is the 137-line code
+of Han et al., *SMO* 63 (2021) ([doi](https://doi.org/10.1007/s00158-020-02816-9)). pyMOTO has
+no geometrically non-linear module, so there is no pyMOTO version. How the engine works:
+[`physics/`](../physics/README.md).
+
+- **GUI:** pick the problem *Nonlinear Cantilever*; the physics (model) picker already shows
+  *2-D Q4, large deformation (Toporia)* and the objective *End compliance (non-linear)*. The
+  load steps and Newton settings are the model's parameters. Switching the model back to
+  *2-D Q4 plane stress* and the objective to *Compliance* gives the linear design of the same
+  problem to compare with.
+- **Command line:** `toporia run "Nonlinear Cantilever"`; add `--set max_iter=20` for a quick
+  look, `--set method.steps=10` for more load steps, or `--set method=q4+mma --set
+  objective.type=compliance` for the linear design of the same problem to compare with.
+
+A load much larger than the preset's makes the first grey designs snap or buckle, which load
+control cannot follow; the run then stops with an error naming the load fraction reached.
+Lower the load or the move limit.
 
 ### L-bracket
 

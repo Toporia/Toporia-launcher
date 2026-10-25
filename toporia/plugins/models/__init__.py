@@ -18,6 +18,7 @@ MODELS registry.  Modules starting with an underscore are not scanned.
 
     assembled.py          the generic model: filters + physics engine + responses
     q4.py                 Toporia's 2-D Q4 solver: compliance, volume, stress
+    q4_nonlinear.py       the same with large displacements (Newton–Raphson): end compliance, volume
     pymoto_elastic.py     linear elasticity on a pyMOTO network: compliance, volume,
                           stress constraints (optional dependency)
     h8.py                 Toporia's 3-D H8 solver

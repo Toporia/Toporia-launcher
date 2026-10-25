@@ -31,6 +31,11 @@ STRESS = "stress"
 #: Feature: steady heat conduction: the thermal compliance and the element energies behind it.
 THERMAL_ENERGY = "thermal_energy"
 
+# ── NONLINEAR (feature name; its methods are in the section at the end of Physics) ──
+#: Feature: the end compliance fᵀu of a non-linear solve and its adjoint sensitivity
+#: (geometric non-linearity: R(u, ρ) = f_int(u, ρ) − f = 0 at the final load).
+END_COMPLIANCE = "end_compliance"
+
 
 class Physics(ABC):
     """A physics engine: solves the state for a density, answers questions about it.
@@ -134,3 +139,23 @@ class Physics(ABC):
         Multiplied by stiffness_slope this is minus the thermal-compliance sensitivity.
         """
         raise NotImplementedError(f"{type(self).__name__} does not provide {THERMAL_ENERGY!r}")
+
+    # ── NONLINEAR ─────────────────────────────────────────────────────────────
+    #
+    # END_COMPLIANCE.  The equilibrium is non-linear in the displacements, so the
+    # compliance is no longer minus a sum of element energies and the sensitivity
+    # needs an adjoint solve with the tangent stiffness K_T(u), which is symmetric:
+    #
+    #     C = fᵀu,   K_T λ = f,   dC/dρ_e = −λ_eᵀ ∂R_e/∂ρ_e
+
+    def end_compliance(self, state, case):
+        """fᵀu of one load case, at the final load of a non-linear solve."""
+        raise NotImplementedError(f"{type(self).__name__} does not provide {END_COMPLIANCE!r}")
+
+    def end_compliance_sensitivity(self, state, case):
+        """dC/dρ per element of the end compliance of one load case, shaped like the density.
+
+        Exact, by the adjoint equation K_T(u) λ = f; the engine owns the equilibrium
+        residual R, so it supplies ∂R_e/∂ρ_e.
+        """
+        raise NotImplementedError(f"{type(self).__name__} does not provide {END_COMPLIANCE!r}")

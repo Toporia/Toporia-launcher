@@ -63,6 +63,7 @@ A test (`tests/apps/test_gui.py`) fails if a part ever stops being reachable fro
 | In the app | Name | File | Came in | From |
 | :-- | :-- | :-- | :-- | :-- |
 | 2-D Q4 plane stress (Toporia) | `q4` | [q4.py](models/q4.py), [q4_plane_stress.py](physics/q4_plane_stress.py) | Port | the physics half of top88 · [paper](https://doi.org/10.1007/s00158-010-0594-7) |
+| 2-D Q4, large deformation (Toporia) | `q4_nonlinear` | [q4_nonlinear.py](models/q4_nonlinear.py), [q4_nonlinear.py](physics/q4_nonlinear.py) | Paper | Buhl, Pedersen & Sigmund, *SMO* 2000; energy interpolation after Wang, Lazarov, Sigmund & Jensen, *CMAME* 2014; open reference: Han et al. 2021 · papers [1](https://doi.org/10.1007/s001580050089) [2](https://doi.org/10.1016/j.cma.2014.03.021) [3](https://doi.org/10.1007/s00158-020-02816-9) |
 | 3-D H8 bricks (Toporia) | `h8` | [h8.py](models/h8.py), [h8_solid.py](physics/h8_solid.py) | Port | top3d (Liu & Tovar, *SMO* 2014) · [paper](https://doi.org/10.1007/s00158-014-1107-x) |
 | Linear elasticity, pyMOTO network | `pymoto_elastic` | [pymoto_elastic.py](models/pymoto_elastic.py) | Wraps | [pyMOTO](https://github.com/aatmdelissen/pyMOTO) (MIT), `pip install pymoto` |
 | 2-D Q4 heat conduction (Toporia) | `q4_heat` | [q4_heat.py](models/q4_heat.py), [q4_heat.py](physics/q4_heat.py) | Paper | Bendsøe & Sigmund 2003, section 1.5; Gersborg-Hansen et al., *SMO* 2006 · [paper](https://doi.org/10.1007/s00158-005-0584-3) |
@@ -76,6 +77,7 @@ A test (`tests/apps/test_gui.py`) fails if a part ever stops being reachable fro
 | Compliance | `compliance` | [compliance.py](responses/compliance.py) | Own | the classic objective (Bendsøe & Sigmund 2003) · [paper](https://doi.org/10.1007/978-3-662-05086-6) |
 | Material volume | `volume` | [volume.py](responses/volume.py) | Own | as in Le et al. 2010 and pyMOTO's stress example · [paper](https://doi.org/10.1007/s00158-009-0440-y) |
 | Local von Mises stress (augmented Lagrangian) | `local_stress` | [local_stress.py](responses/local_stress.py) | Paper | Giraldo-Londoño & Paulino, *SMO* 2021 (PolyStress); Senhora et al., *SMO* 2020 · papers [1](https://doi.org/10.1007/s00158-020-02760-8) [2](https://doi.org/10.1007/s00158-020-02573-9) |
+| End compliance (non-linear) | `end_compliance` | [end_compliance.py](responses/end_compliance.py) | Paper | Buhl, Pedersen & Sigmund, *SMO* 2000 · [paper](https://doi.org/10.1007/s001580050089) |
 | Peak von Mises stress | `stress` | [stress.py](responses/stress.py) | Paper | Le, Norato, Bruns, Ha & Tortorelli, *SMO* 2010 · [paper](https://doi.org/10.1007/s00158-009-0440-y) |
 | Thermal compliance | `thermal_compliance` | [thermal_compliance.py](responses/thermal_compliance.py) | Paper | Bendsøe & Sigmund 2003, section 1.5; Gersborg-Hansen et al., *SMO* 2006 · [paper](https://doi.org/10.1007/s00158-005-0584-3) |
 
@@ -142,6 +144,7 @@ and the preset *MBB Beam (Robust)*.
 | MBB Beam | [mbb_beam.py](problems/mbb_beam.py) | the 99-line code and top88 · papers [1](https://doi.org/10.1007/s001580050176) [2](https://doi.org/10.1007/s00158-010-0594-7) |
 | MBB Beam (Robust) | [mbb_beam_robust.py](problems/mbb_beam_robust.py) | Wang, Lazarov & Sigmund 2011 · [paper](https://doi.org/10.1007/s00158-010-0602-y) |
 | Cantilever | [cantilever.py](problems/cantilever.py) | the 99-line code · [paper](https://doi.org/10.1007/s001580050176) |
+| Nonlinear Cantilever | [nonlinear_cantilever.py](problems/nonlinear_cantilever.py) | Buhl, Pedersen & Sigmund 2000; Wang et al. 2014 · papers [1](https://doi.org/10.1007/s001580050089) [2](https://doi.org/10.1016/j.cma.2014.03.021) |
 | Cantilever 3D | [cantilever_3d.py](problems/cantilever_3d.py) | top3d (Liu & Tovar 2014) · [paper](https://doi.org/10.1007/s00158-014-1107-x) |
 | Michell Cantilever | [michell_cantilever.py](problems/michell_cantilever.py) | Michell 1904 · [paper](https://doi.org/10.1080/14786440409463229) |
 | L-bracket (local stress) | [l_bracket_stress.py](problems/l_bracket_stress.py) | Giraldo-Londoño & Paulino 2021 (PolyStress); geometry of the L-bracket, limit chosen here · [paper](https://doi.org/10.1007/s00158-020-02760-8) |
@@ -182,7 +185,6 @@ Listed from least to most effort. "Code" means open code exists (port it, or che
 | Phase field | Paper: Bourdin & Chambolle 2003; Takezawa et al. 2010 · papers [1](https://doi.org/10.1051/cocv:2002070) [2](https://doi.org/10.1016/j.jcp.2009.12.017) |
 | Explicit length-scale constraints, machining accessibility, projection-based self-support | Paper: Zhou et al. 2015; Langelaar 2019; Gaynor & Guest 2016 · papers [1](https://doi.org/10.1016/j.cma.2015.05.003) [2](https://doi.org/10.1016/j.cma.2019.03.037) [3](https://doi.org/10.1007/s00158-016-1551-x) |
 | Multi-resolution design and analysis meshes | Paper: Nguyen et al. 2010 · [paper](https://doi.org/10.1007/s00158-009-0443-8) |
-| Geometrically non-linear elasticity | Code: 137-line BESO (Han et al. 2021) · [paper](https://doi.org/10.1007/s00158-020-02816-9) |
 | Neural reparameterisation (TOuNN) | Code: TOuNN (needs PyTorch or JAX, which may not install on Python 3.14) · [paper](https://doi.org/10.1007/s00158-020-02748-4) |
 | SINH and Hashin–Shtrikman material laws | Paper: Bruns 2005; Bendsøe & Sigmund 1999 (the material law has to see the volume and Poisson's ratio) · papers [1](https://doi.org/10.1007/s00158-005-0537-x) [2](https://doi.org/10.1007/s004190050248) |
 

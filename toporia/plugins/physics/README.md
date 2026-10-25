@@ -5,7 +5,7 @@ from [`models/`](../models/README.md) because the same physics can be discretise
 ways, and the choice of element is itself a thing worth comparing: it decides what the
 density field can resolve and where the classic numerical artefacts come from.
 
-**Status: 4 in Toporia · 5 with open code · 3 paper only**
+**Status: 5 in Toporia · 5 with open code · 3 paper only**
 
 | Label | Meaning |
 | :-- | :-- |
@@ -18,6 +18,7 @@ density field can resolve and where the classic numerical artefacts come from.
 | Element | File | Scope |
 | :-- | :-- | :-- |
 | ✅ Q4 plane stress | [`q4_plane_stress.py`](q4_plane_stress.py) | Bilinear quadrilateral, 2 DOF per node, structured grid, column-major numbering, analytic element stiffness. The top88 element. 2-D. |
+| ✅ Q4 large deformation | [`q4_nonlinear.py`](q4_nonlinear.py) | The same Q4 element with geometric non-linearity: total Lagrangian, Green–Lagrange strain, St Venant–Kirchhoff material, 2 × 2 Gauss, internal force and tangent stiffness per element, Newton–Raphson with load steps (halved automatically where Newton struggles). Provides `end_compliance`. 2-D. |
 | ✅ H8 solid | [`h8_solid.py`](h8_solid.py) | Trilinear brick, 3 DOF per node, 2 × 2 × 2 Gauss integration, the element of Liu & Tovar's top3d. 3-D: a scenario with a depth `Lz`. Direct sparse solver, or conjugate gradients with algebraic multigrid (optional `pyamg`) for large meshes. |
 | ✅ Q4 heat conduction | [`q4_heat.py`](q4_heat.py) | Bilinear quadrilateral, 1 temperature per node, same grid and element numbering as the Q4 plane-stress element. Steady conduction with uniform heat generation; supports are heat sinks. 2-D. |
 | ✅ H8 heat conduction | [`h8_heat.py`](h8_heat.py) | Trilinear brick, 1 temperature per node, 2 × 2 × 2 Gauss integration. The 3-D counterpart of `q4_heat`, for a scenario with a depth `Lz`. |
@@ -56,6 +57,44 @@ The heat input does not depend on the density, so the thermal compliance qᵀT i
 and its sensitivity −dk/dρ · T_eᵀK_eT_e needs no extra solve. The strip test in
 `tests/plugins/test_heat.py` reproduces the analytic maximum temperature Q L²/8k to 1e-10,
 in 2-D and in 3-D.
+
+### Large deformation (`q4_nonlinear`)
+
+**What.** Large displacements and rotations with small strains. The equilibrium is written
+on the deformed shape: F = I + ∇u, Green–Lagrange strain E = ½(FᵀF − I), second
+Piola–Kirchhoff stress S = D·E (St Venant–Kirchhoff: the linear plane-stress law on the
+Green strain). The element internal force and tangent stiffness (material part plus the
+initial-stress part) are formed per element with 2 × 2 Gauss points; the tangent is checked
+against differences of the force. A load is applied in `steps` increments, each solved by
+Newton–Raphson with a backtracking line search; an increment Newton cannot follow is halved,
+and if it still fails the solve stops with an error that says at which load fraction. A
+design that snaps or buckles under the load (a limit point) cannot be followed in load
+control — lower the load or the move limit.
+
+**Low-density elements.** Void distorts under its neighbours' displacements and stalls
+Newton. The remedy is an *energy interpolation*, after Wang, Lazarov, Sigmund & Jensen,
+"Interpolation scheme for fictitious domain techniques and topology optimization of finite
+strain elastic problems", *CMAME* 276 (2014) 453-472
+([doi](https://doi.org/10.1016/j.cma.2014.03.021)): the element energy is
+E(ρ)·[(1 − s(ρ))·ψ<sub>nonlinear</sub> + s(ρ)·ψ<sub>linear</sub>], where s is a smoothstep that is 1 below
+`linear_below` and 0 above `linear_above` (defaults 0.1 and 0.2). Void is then a constant
+linear spring and cannot invert, while material is fully non-linear. This is Toporia's
+formulation of that principle, not the paper's exact switching function. The simpler remedy
+of Buhl, Pedersen & Sigmund, *SMO* 19 (2000) 93-104
+([doi](https://doi.org/10.1007/s001580050089)) — relaxing the convergence test in void
+elements — is not used. The open reference is the 137-line code of Han et al., *SMO* 63
+(2021) ([doi](https://doi.org/10.1007/s00158-020-02816-9)).
+
+**Sensitivity.** For the end compliance C = fᵀu the engine solves the adjoint system
+K<sub>T</sub>(u) λ = f once per load case and returns dC/dρₑ = −λₑᵀ ∂Rₑ/∂ρₑ, exactly
+(including the derivative of the energy blend). It is not minus an element energy any
+more. **pyMOTO has no geometrically non-linear module, so there is no pyMOTO version.**
+
+**In the GUI.** The physics picker is the model picker: choose *2-D Q4, large deformation
+(Toporia)*; it offers *End compliance (non-linear)* as the objective, and the Newton
+parameters (load steps, tolerance, iterations, linear/non-linear density band) appear
+with the model's settings. **On the command line** see the *Nonlinear Cantilever* preset
+in [`problems/`](../problems/README.md).
 
 Two consequences worth knowing before adding anything here:
 

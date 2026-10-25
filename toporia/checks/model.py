@@ -30,8 +30,13 @@ def _model_run(cls, problem=WITH_HOLES):
     if capabilities.constraints and capabilities.max_constraints != 0:
         response = RESPONSES.get(capabilities.constraints[0])
         constraints = [{"type": response.name, **getattr(response, "gradient_check_settings", {})}]
-    return in_dims(small_run(problem, m=0.3, volfrac=0.4, objective={"type": objective}, constraints=constraints),
-                   capabilities.dims)
+    run = small_run(problem, m=0.3, volfrac=0.4, objective={"type": objective}, constraints=constraints)
+    # A non-linear engine cannot be checked under the benchmark's loads, which are far too large for
+    # the soft random design; it declares `check_load_scale` (on itself or its physics) to scale them down.
+    scale = getattr(cls, "check_load_scale", None) or getattr(getattr(cls, "physics", None), "check_load_scale", 1.0)
+    if scale != 1.0:
+        run = run.updated(**{f"load_cases[{i}].Fmag": case.Fmag * scale for i, case in enumerate(run.scenario.load_cases)})
+    return in_dims(run, capabilities.dims)
 
 
 def check_model(cls):

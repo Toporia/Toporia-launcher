@@ -6,7 +6,7 @@ here — see [`framework.parts.model.Model`](../../framework/parts/model.py). Sw
 how Toporia reaches new physics, new dimensions and new mesh types without touching a
 single update rule.
 
-**Status: 6 in Toporia · 24 with open code · 3 paper only**
+**Status: 7 in Toporia · 24 with open code · 3 paper only**
 
 | Label | Meaning |
 | :-- | :-- |
@@ -19,6 +19,7 @@ single update rule.
 | Model | File | Registry name | Scope |
 | :-- | :-- | :-- | :-- |
 | ✅ 2-D Q4 plane stress | [`q4.py`](q4.py) | `q4` | Toporia's own engine: 2-D plane stress, structured grid, SIMP, direct sparse solve. Provides compliance, volume and stress; accepts the filter pipeline. |
+| ✅ 2-D Q4, large deformation | [`q4_nonlinear.py`](q4_nonlinear.py) | `q4_nonlinear` | Geometrically non-linear elasticity (large displacements, small strains) on Q4: total Lagrangian, Green–Lagrange strain, St Venant–Kirchhoff material, Newton–Raphson with load steps. Provides end compliance and volume; accepts the filter pipeline. See below. |
 | ✅ 3-D H8 bricks | [`h8.py`](h8.py) | `h8` | Toporia's own 3-D engine (a scenario with a depth): H8 bricks, any material law, direct or multigrid solver. Provides compliance, volume and 3-D stress; accepts the filter pipeline. Switching the GUI's Design section to 3-D selects it. |
 | ✅ Linear elasticity, pyMOTO | [`pymoto_elastic.py`](pymoto_elastic.py) | `pymoto_elastic` | A pyMOTO module network, which brings its own filters and backpropagates its own gradients. Optional dependency (`pip install pymoto`). |
 | ✅ 2-D Q4 heat conduction | [`q4_heat.py`](q4_heat.py) | `q4_heat` | Steady heat conduction on Toporia's Q4 grid: uniform heat generation, supports as heat sinks, conductivity from the material law. Provides thermal compliance and volume; accepts the filter pipeline. |
