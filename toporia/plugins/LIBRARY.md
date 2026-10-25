@@ -24,7 +24,7 @@ A test (`tests/apps/test_gui.py`) fails if a part ever stops being reachable fro
 | **Wraps** | Calls an outside Python package. That package is installed separately. Parts whose package is missing are greyed out in the app, with the install command. |
 | **Own** | Toporia's own idea or standard practice. |
 
-## In the library today: 80 selectable parts and 17 benchmark problems
+## In the library today: 81 selectable parts and 17 benchmark problems
 
 The selectable parts include models and whole methods; their eight underlying
 physics engines are counted separately in the [catalogue totals](README.md).
@@ -85,6 +85,7 @@ physics engines are counted separately in the [catalogue totals](README.md).
 | In the app | Name | File | Came in | From |
 | :-- | :-- | :-- | :-- | :-- |
 | Compliance | `compliance` | [compliance.py](responses/compliance.py) | Own | the classic objective (Bendsøe & Sigmund 2003) · [paper](https://doi.org/10.1007/978-3-662-05086-6) |
+| Phase-field regularised compliance | `phase_field` | [phase_field.py](responses/phase_field.py) | Paper | Own 2-D/3-D fixed-load diffuse-interface energy, with existing gradient optimisers; no separate PDE solver · papers [1](https://doi.org/10.1051/cocv:2002070) [2](https://doi.org/10.1016/j.jcp.2009.12.017) |
 | Output displacement (maximise) | `output_displacement` | [output_displacement.py](responses/output_displacement.py) | Paper | Signed point output, one shared spring-augmented adjoint · [paper](https://doi.org/10.1080/08905459708945415) |
 | Material volume | `volume` | [volume.py](responses/volume.py) | Own | as in Le et al. 2010 and pyMOTO's stress example · [paper](https://doi.org/10.1007/s00158-009-0440-y) |
 | Local von Mises stress (augmented Lagrangian) | `local_stress` | [local_stress.py](responses/local_stress.py) | Paper | Giraldo-Londoño & Paulino, *SMO* 2021 (PolyStress); Senhora et al., *SMO* 2020 · papers [1](https://doi.org/10.1007/s00158-020-02760-8) [2](https://doi.org/10.1007/s00158-020-02573-9) |
@@ -201,7 +202,6 @@ Listed from least to most effort. "Code" means open code exists (port it, or che
 
 | What | Source |
 | :-- | :-- |
-| Phase field | Paper: Bourdin & Chambolle 2003; Takezawa et al. 2010 · papers [1](https://doi.org/10.1051/cocv:2002070) [2](https://doi.org/10.1016/j.jcp.2009.12.017) |
 | Explicit length-scale constraints, machining accessibility, projection-based self-support | Paper: Zhou et al. 2015; Langelaar 2019; Gaynor & Guest 2016 · papers [1](https://doi.org/10.1016/j.cma.2015.05.003) [2](https://doi.org/10.1016/j.cma.2019.03.037) [3](https://doi.org/10.1007/s00158-016-1551-x) |
 | Multi-resolution design and analysis meshes | Paper: Nguyen et al. 2010 · [paper](https://doi.org/10.1007/s00158-009-0443-8) |
 | Neural reparameterisation (TOuNN) | Code: TOuNN (needs PyTorch or JAX, which may not install on Python 3.14) · [paper](https://doi.org/10.1007/s00158-020-02748-4) |

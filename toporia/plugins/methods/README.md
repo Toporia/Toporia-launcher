@@ -10,7 +10,7 @@ evolves its own representation with its own volume control — implements
 This is the layer that decides which shapes are reachable at all. Everything below is a
 different answer to "what *is* the design?".
 
-**Status: 3 whole methods and 253 named compositions in Toporia · 10 with open code · 2 paper only**
+**Status: 3 whole methods and 253 named compositions in Toporia · 10 with open code · 1 paper only**
 
 | Label | Meaning |
 | :-- | :-- |
@@ -172,7 +172,11 @@ distinct candidates; this implementation supplies Challis's HJ/cavity combinatio
 | Family | Status | Reference | What it adds |
 | :-- | :-- | :-- | :-- |
 | Generalised topological-gradient optimiser | 🔗 [FreeFEM code](https://link.springer.com/article/10.1007/s00158-023-03529-5) | Sokołowski & Żochowski, *SICON* 1999; Amstutz & Andrä, *JCP* 2006; Novotny et al., *SMO* 2023 | Standalone two-phase/reinforcement schemes. The circular-hole derivative is already implemented and physically checked in `levelset_hamilton_jacobi`. |
-| Phase field | 📄 | Bourdin & Chambolle, *ESAIM:COCV* 2003; Takezawa, Nishiwaki & Kitamura, *JCP* 2010 | Cahn–Hilliard / Allen–Cahn energy with a double-well potential: the perimeter penalty is intrinsic, so **no filter is needed at all**. Couples naturally to phase-field fracture. |
+
+Phase field is available through the [`phase_field` objective](../responses/README.md#phase-field-regularised-compliance),
+which adds a diffuse-interface energy to compliance and uses the existing general
+gradient optimisers. It does not require a new whole-method class. Dedicated
+Allen-Cahn/Cahn-Hilliard time integrators and phase-field fracture are not provided.
 
 ## Candidates — explicit geometry
 

@@ -375,12 +375,61 @@ optional multigrid test skipped**, in 29 min 46 sec (`results/hj-native-full.log
 and golden baselines remain unchanged. No later method was started during
 validation.
 
+### Completed: phase-field regularised compliance
+
+Added the `phase_field` objective response in `responses/phase_field.py`.
+This is the permitted regularising-response route, composed with the existing
+physics, material, representation and general gradient optimisers. The
+functional is `C/C_full + gamma*mean(epsilon/2*|grad rho|^2 + rho^2*(1-rho)^2/epsilon)`.
+Epsilon and gamma are physical mm. A conservative finite-volume Laplacian uses
+real spacings and zero outer flux; the mean is the normalised physical integral
+in 2-D/3-D. The penalty counts internal interfaces, not outside perimeter, and
+does not promise a minimum feature size. An extra full-available-material FE
+solve fixes the normalising compliance independently of the trial design.
+
+The author manuscript of Takezawa et al. (2010), DOI 10.1016/j.jcp.2009.12.017,
+was read. Its Section 2.3 distinguishes the density-based perimeter functional
+of Bourdin & Chambolle (2003), DOI 10.1051/cocv:2002070, from its own shape-only
+tilted-well Allen-Cahn method. This implementation follows the former energy
+principle for two phases and fixed loads, with Toporia's existing optimisers.
+It does not implement three-phase pressure loads, a dedicated Allen-Cahn/
+Cahn-Hilliard integrator, fracture or phase-field frequency/mechanism objectives.
+No original code is copied. The actual objective and its components are reported;
+the model also records physical compliance, avoiding confusion between the two.
+
+All 17 new tests pass. Independent face sums and complete discrete gradients
+are checked in 2-D/3-D; planar interfaces have surface energy sqrt(2)/6 per unit
+interface measure independently of width; chemical-potential residuals converge
+quadratically. Coupled FE gradients pass on all five compatible native engines
+(Q4, buckling, dynamic/static energy, mechanism, H8), maximum conformance error
+8.6e-8. Tests also cover zero weight, fixed reference, proportional unit/case
+scaling, metadata/parameter paths, a feasible MBB optimisation, 3-D composition
+and invalid inputs. Compliance-only updaters do not offer this mixed-sign-gradient
+objective. Thermal/nonlinear engines do not advertise its elastic feature.
+
+The CLI example disables the density filter and resolves roughly three cells
+across a planar interface (24x8, epsilon 2.5 mm, gamma 5 mm). At its 200-step cap:
+J=2.082650298, normalised compliance 1.780957328, phase energy 0.301692970,
+physical compliance 217.239466, volume 0.5. This is not a convergence or filtered-OC
+comparison. `results/phase-field-validation/validation.png` was inspected and
+shows the evaluated diffuse density, energy components and volume history.
+Binary thresholding changes the design and its measured volume/compliance.
+
+Registry assertions/documentation now count 81 selectable plugins, eight physics
+engines and 17 presets (106 implementations). There are still 253 compositions
+and three whole methods (256 names). Ruff and whitespace checks pass. All 1134
+focused method, metadata and GUI checks pass in 5 min 15 sec
+(`results/phase-focused.log`, `results/phase-focused.xml`). The full native suite
+passes: **2280 passed, one optional multigrid test skipped**, in 25 min 41 sec
+(`results/phase-native-full.log`, `results/phase-full.xml`). Ruff and whitespace
+checks pass. Original Q4/H8 sources and golden baselines remain unchanged.
+No later task was started during validation.
+
 ### Remaining sequence
 
-1. Phase field.
-2. Explicit length scale, machining accessibility and projection-based self-support.
-3. Multiresolution design and analysis meshes.
-4. Neural reparameterisation (TOuNN), subject to dependency support on this Python/Windows setup.
+1. Explicit length scale, machining accessibility and projection-based self-support.
+2. Multiresolution design and analysis meshes.
+3. Neural reparameterisation (TOuNN), subject to dependency support on this Python/Windows setup.
 
 Heat conduction, thermal/dynamic pyMOTO models, eigenfrequency, harmonic response,
 local stress with augmented Lagrangian, and nonlinear elasticity are already

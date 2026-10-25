@@ -109,7 +109,7 @@ the matching MAKE item below.
 - [x] Geometry projection representation (own 2-D/3-D capsule variant; no GPTO code copied)
 - [x] Reaction–diffusion level set (independent sparse cell-centred variant, Appendix C elastic tensor)
 - [x] Hamilton–Jacobi level set with circular-hole topological derivative (Challis-style HJ/TD)
-- [ ] Phase field
+- [x] Phase-field regularised compliance response (2-D/3-D diffuse-interface energy, general gradient optimisers)
 - [ ] Explicit length-scale constraints; machining accessibility; Gaynor self-support
 - [ ] Multi-resolution design and analysis meshes
 - [x] Geometrically non-linear elasticity

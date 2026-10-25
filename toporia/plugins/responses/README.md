@@ -9,7 +9,7 @@ case — self-adjoint, one solve, no aggregation. Everything else needs its own 
 usually an aggregation function (p-norm or Kreisselmeier–Steinhauser) or an augmented
 Lagrangian to survive thousands of local constraints.
 
-**Status: 11 in Toporia · 4 with open code · 12 paper only**
+**Status: 12 in Toporia · 4 with open code · 12 paper only**
 
 | Label | Meaning |
 | :-- | :-- |
@@ -22,6 +22,7 @@ Lagrangian to survive thousands of local constraints.
 | Response | File | Registry name | Role | Computable by |
 | :-- | :-- | :-- | :-- | :-- |
 | ✅ Compliance | [`compliance.py`](compliance.py) | `compliance` | objective | `q4`, `pymoto_elastic` |
+| ✅ Phase-field regularised compliance | [`phase_field.py`](phase_field.py) | `phase_field` | objective | `q4`, `h8`, `q4_buckling`, `q4_dynamic`, `q4_mechanism` (static elastic compliance) |
 | ✅ End compliance (non-linear) | [`end_compliance.py`](end_compliance.py) | `end_compliance` | objective | `q4_nonlinear` |
 | ✅ Output displacement (maximise) | [`output_displacement.py`](output_displacement.py) | `output_displacement` | objective | `q4_mechanism` |
 | ✅ Material volume | [`volume.py`](volume.py) | `volume` | objective | `q4`, `pymoto_elastic` |
@@ -32,6 +33,65 @@ Lagrangian to survive thousands of local constraints.
 | ✅ Fundamental frequency (maximise) | [`eigenfrequency.py`](eigenfrequency.py) | `eigenfrequency` | objective | `q4_dynamic`, `pymoto_dynamic` |
 | ✅ Fundamental frequency (at least) | [`eigenfrequency.py`](eigenfrequency.py) | `eigenfrequency_limit` | constraint | `q4_dynamic` |
 | ✅ Dynamic compliance (harmonic load) | [`dynamic_compliance.py`](dynamic_compliance.py) | `dynamic_compliance` | objective | `q4_dynamic` |
+
+### Phase-field regularised compliance
+
+Select **Phase-field regularised compliance** with a general gradient optimiser,
+for example `q4+mma`. This independent two-phase, fixed-load functional follows
+the diffuse-interface energy principle of
+[Bourdin & Chambolle (2003)](https://doi.org/10.1051/cocv:2002070), also described
+in Section 2.3 of [Takezawa et al. (2010)](https://doi.org/10.1016/j.jcp.2009.12.017).
+No original code is copied. It is not the former's three-phase pressure-load
+model or the latter's shape-only tilted-well Allen-Cahn scheme. Dedicated
+Allen-Cahn/Cahn-Hilliard integrators, fracture and phase-field vibration or
+mechanism objectives are not implemented by this response.
+
+The minimised quantity is
+
+`J = C/C_full + gamma * mean(epsilon/2 * |grad rho|² + rho²*(1-rho)²/epsilon)`.
+
+The physical density `rho` is the phase variable. The selected material law
+(SIMP by default), representation and optimiser still apply. No additional
+density filter is needed; the example disables it. `C_full` is a fixed reference
+compliance from all available material (enforced void remains void), computed
+in one extra FE solve during setup. It uses the same physics, material endpoints,
+springs and weighted load cases. It is not recomputed for each trial design.
+This normalisation avoids changing the stiffness/perimeter balance merely by
+scaling forces or stiffness units. Zero reference compliance is rejected.
+
+`objective.interface_width` is epsilon in mm; a resolved planar 10%-90% transition
+spans about `3.11*epsilon`. `objective.perimeter_weight` is gamma in mm. The mean
+is the domain-normalised physical integral in 2-D or 3-D, making J dimensionless.
+Zero gamma recovers normalised compliance. The cell-centred finite-volume
+Laplacian uses real cell spacings and zero outer flux, so the penalty counts
+**internal** interfaces, not the body's outside perimeter. Resolving the interface
+over several cells matters; epsilon does not guarantee a minimum feature size.
+
+With `L = -Laplacian`, the exact discrete energy gradient is
+`gamma/N * (epsilon*L*rho + 2*rho*(1-rho)*(1-2*rho)/epsilon)`, added to the
+normalised compliance adjoint. This gradient has both signs; OC's update law
+does not apply, and OC/other compliance-only rules do not offer this objective.
+MMA and other compatible general gradient optimisers enforce the model's volume
+budget and their supported additional constraints. Filters and geometric
+representations use their usual chain rule. Nonlinear and thermal engines do
+not advertise this elastic response. On vibration/buckling models, its base
+quantity is **static elastic compliance**, not a frequency or buckling factor.
+
+The reported objective is J. `normalised_compliance` and `phase_energy` sum to J;
+the model also reports physical `compliance`. Those values and the volume apply
+to the diffuse density. A binary thresholded export describes a different design.
+
+```console
+python -m toporia run "MBB Beam" --set method=q4+mma --set objective.type=phase_field --set objective.interface_width=2.5 --set m=0.4 --set "filter_specs=[]" --set method.move=0.1 --set method.mma_tol=0 --set max_iter=200 --set tol=0 --set save_every=0 --out results/phase-field-validation
+```
+
+This 24×8, roughly three-cell-interface example reaches J=2.082650,
+physical compliance 217.239466 and volume 0.5 at its 200-iteration cap; it is
+not a convergence or like-for-like filtered-OC comparison. For validation,
+resolved planar profiles give surface energy `sqrt(2)/6` per unit interface
+measure, independently of epsilon, and their chemical-potential residual
+converges quadratically. The full coupled gradient passes finite differences
+on all five compatible native physics engines, including 3-D.
 
 ### Output displacement
 

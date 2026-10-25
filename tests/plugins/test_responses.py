@@ -29,10 +29,10 @@ STRESS = {"type": "stress", "limit": 10.0}
 # ── Declarations ──────────────────────────────────────────────────────────────
 
 def test_responses_are_discovered_with_their_roles():
-    assert RESPONSES.names() == ["compliance", "thermal_compliance", "dynamic_compliance", "end_compliance",
+    assert RESPONSES.names() == ["compliance", "phase_field", "thermal_compliance", "dynamic_compliance", "end_compliance",
                                  "output_displacement", "volume", "stress", "local_stress", "buckling_load", "eigenfrequency", "eigenfrequency_limit"]
     assert [c.name for c in responses_for(OBJECTIVE_ROLE)] == [
-        "compliance", "thermal_compliance", "dynamic_compliance", "end_compliance", "output_displacement", "volume", "buckling_load", "eigenfrequency"]
+        "compliance", "phase_field", "thermal_compliance", "dynamic_compliance", "end_compliance", "output_displacement", "volume", "buckling_load", "eigenfrequency"]
     assert [c.name for c in responses_for(CONSTRAINT_ROLE)] == ["stress", "local_stress", "buckling_load", "eigenfrequency_limit"]
 
 
@@ -75,7 +75,7 @@ def test_capabilities_say_what_each_method_can_do():
     # The Q4 model computes stress through the physics interface, so an updater
     # that takes constraints can now enforce it on Toporia's own solver.
     gcmma = method_class("q4+pymoto_gcmma").capabilities
-    assert set(gcmma.objectives) == {"compliance", "volume"} and gcmma.constraints == ("stress",)
+    assert set(gcmma.objectives) == {"compliance", "phase_field", "volume"} and gcmma.constraints == ("stress",)
 
 
 @pytest.mark.parametrize("method", ["q4+oc", "q4+mma", "q4+simpl", "levelset"])
