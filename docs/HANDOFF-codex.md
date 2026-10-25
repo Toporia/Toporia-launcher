@@ -140,7 +140,37 @@ Files in that commit:
 - The L-bracket dimensions and load point were written from memory. Check them against Le et al.
   2010.
 
-## 8. When you finish a part
+## 8. FIRST: the full suite on `integration/physics` is red (98 failed, 1686 passed)
+
+The four new physics were merged and each passed its own tests, but the full suite (run
+2026-10-25 on `d9250b8`) has failures. **This branch is not pushed with these commits; fix the
+failures first.** The causes, grouped:
+
+1. **~66 failures: generic tests pair every model with the default MBB scenario.** The default
+   objective is compliance, which the heat and non-linear engines cannot compute:
+   `ValueError: 'Compliance' cannot be computed on '2-D Q4 heat conduction (Toporia)'` (also
+   `3-D H8 heat conduction` and `2-D Q4 large deformation`), raised in `plugins/models/assembled.py:122`.
+   Fix the tests rather than the models: parametrised tests over all methods (look in
+   `tests/framework/test_composition.py`, `tests/checks/`, `tests/engine/`) should only use
+   models whose `capabilities.objectives` contain the scenario's objective, or should give each
+   physics a matching scenario (its own preset).
+2. **22 failures: `KeyError: 'modes'` at `plugins/models/pymoto_dynamic.py:150`.** The pyMOTO
+   vibration model fails when evaluated by the same generic tests, probably when asked for a
+   response it did not build. Make it build or refuse cleanly.
+3. **Hard-coded registry lists in tests**, which need the new names added:
+   - `tests/framework/test_schema.py:91` (model list);
+   - `tests/plugins/test_responses.py:32` and `:76`;
+   - `tests/plugins/test_physics.py:150`;
+   - `tests/plugins/test_conlin_oc_multi.py:99`, which expects `('stress',)` but `oc_multi` now
+     also offers `local_stress`. Decide whether it should: `local_stress` only works with the
+     augmented Lagrangian, so `oc_multi` should probably *not* list it.
+4. **`tests/framework/test_composition.py:102`: a physical density of 1.04 > 1** from one of the
+   new models. Find which, and why the density leaves [0, 1].
+
+Rerun `python -m pytest` until only these are fixed and nothing else broke, then push
+`integration/physics`.
+
+## 9. When you finish a part
 
 Run its tests, `tests/apps/test_gui.py`, `tests/checks` and `tests/golden`, then the full suite
 once. Commit on `integration/physics` (or a branch off it). Tell the owner what was done and
