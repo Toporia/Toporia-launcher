@@ -28,6 +28,8 @@ from abc import ABC, abstractmethod
 ELASTIC_ENERGY = "elastic_energy"
 #: Feature: element stresses, adjoint solves and the mutual energies they need.
 STRESS = "stress"
+#: Feature: steady heat conduction: the thermal compliance and the element energies behind it.
+THERMAL_ENERGY = "thermal_energy"
 
 
 class Physics(ABC):
@@ -114,3 +116,21 @@ class Physics(ABC):
         through the displacements.
         """
         raise NotImplementedError(f"{type(self).__name__} does not provide {STRESS!r}")
+
+    # ── THERMAL_ENERGY ────────────────────────────────────────────────────────
+    #
+    # Steady heat conduction: a scalar temperature per node, a conductivity
+    # that follows the density (stiffness_slope above is then
+    # d(conductivity)/d(density)), supports as fixed temperature and loads as
+    # heat input.
+
+    def thermal_compliance(self, state, case):
+        """qᵀT of one load case: the heat input weighted by the temperature it produces."""
+        raise NotImplementedError(f"{type(self).__name__} does not provide {THERMAL_ENERGY!r}")
+
+    def thermal_energy(self, state, case):
+        """T_eᵀ K_e T_e per element for one load case, with K_e at unit conductivity.
+
+        Multiplied by stiffness_slope this is minus the thermal-compliance sensitivity.
+        """
+        raise NotImplementedError(f"{type(self).__name__} does not provide {THERMAL_ENERGY!r}")

@@ -5,7 +5,7 @@ material, volume target — plus the solver settings recommended for it. Two run
 a scenario and differ only in their solver are a benchmark, and that comparison is what
 Toporia exists to make.
 
-**Status: 11 in Toporia · 6 open datasets or suites · 1 paper only**
+**Status: 12 in Toporia · 6 open datasets or suites · 1 paper only**
 
 | Label | Meaning |
 | :-- | :-- |
@@ -29,9 +29,10 @@ Toporia exists to make.
 | ✅ L-bracket | [`l_bracket.py`](l_bracket.py) | `L-bracket` |
 | ✅ L-bracket (local stress) | [`l_bracket_stress.py`](l_bracket_stress.py) | `L-bracket (local stress)` |
 | ✅ MBB beam, robust | [`mbb_beam_robust.py`](mbb_beam_robust.py) | `MBB Beam (Robust)` |
+| ✅ Heat sink | [`heat_sink.py`](heat_sink.py) | `Heat Sink` |
 
-All are compliance problems, which matches what the library can currently solve (the
-cantilever 3D is the one 3-D case). Run any of them with `toporia run "<menu name>"`;
+All but the heat sink are compliance problems, which matches what the library can currently
+solve (the cantilever 3D is the one 3-D case). Run any of them with `toporia run "<menu name>"`;
 `toporia list` shows the names, `--out DIR` chooses the output folder and
 `--set PATH=VALUE` overrides a parameter, e.g. `toporia run "L-bracket" --set m=1`.
 
@@ -41,6 +42,29 @@ which makes it the check that a method converges to the right *shape*, not only 
 number. The analytical optimum is a truss of infinitely many members, so compare layouts
 rather than exact values. Run every method on it with **Compare Methods** in the GUI, or
 `toporia benchmark --methods q4+oc q4+mma levelset --problems "Michell Cantilever"`.
+
+### Heat sink
+
+A 100 × 100 mm plate that generates heat uniformly over its whole area and loses it only
+through a small sink (a half-disc of radius 6 mm held at T = 0) in the middle of the bottom
+edge. Distribute 40 % conductor (conductivity 1; the void conducts 1e-3) to minimise the
+thermal compliance, which is proportional to the mean temperature. The result is the
+tree-like network of conductors of the classic figure. Source: Bendsøe & Sigmund,
+*Topology Optimization* (2003), section 1.5; Gersborg-Hansen, Bendsøe & Sigmund, *SMO* 31
+(2006) 251-259, [doi](https://doi.org/10.1007/s00158-005-0584-3).
+
+In the GUI pick *Heat Sink* in the problem menu: the physics, the objective and the sink come
+with it. On the command line:
+
+```
+toporia run "Heat Sink"
+```
+
+runs `q4_heat+oc` for 100 iterations on a 50 × 50 mesh (about two seconds); the thermal
+compliance falls from 9.02 to 1.36. The scenario's supports are the heat sinks and the load
+case's `Fmag` (here 0) is heat entering at point loads; the generation is the physics
+parameter `heat_source`. The sensitivities are cross-checked against pyMOTO
+(`pymoto_heat`).
 
 ### L-bracket
 

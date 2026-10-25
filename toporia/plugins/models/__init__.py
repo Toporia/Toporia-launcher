@@ -20,6 +20,9 @@ MODELS registry.  Modules starting with an underscore are not scanned.
     q4.py                 Toporia's 2-D Q4 solver: compliance, volume, stress
     pymoto_elastic.py     linear elasticity on a pyMOTO network: compliance, volume,
                           stress constraints (optional dependency)
+    h8.py                 Toporia's 3-D H8 solver
+    q4_heat.py, h8_heat.py   steady heat conduction (2-D, 3-D): thermal compliance, volume
+    pymoto_heat.py        heat conduction on a pyMOTO network (optional dependency)
 """
 
 from toporia.framework.parts.model import Model

@@ -529,6 +529,11 @@ def test_every_registered_part_and_preset_can_be_picked_in_the_gui(window):
     window._on_config_changed("L-bracket (local stress)")   # a method that takes constraints: the
     window.constraints._add_row()                   # constraint rows then offer every constraint
     texts = _menu_texts(window)
+    # A drop-down offers what the selected method can do (a heat model offers thermal compliance,
+    # a structural one does not), so a part is reachable when some preset's menus show it.
+    for name in problem_names():
+        window._on_config_changed(name)
+        texts += "\n" + _menu_texts(window)
     missing = [f"{package}:{cls.name}"
                for package in REGISTRIES
                for cls in getattr(importlib.import_module(f"toporia.plugins.{package}"),
@@ -536,3 +541,20 @@ def test_every_registered_part_and_preset_can_be_picked_in_the_gui(window):
                if (cls.label or cls.name) not in texts and cls.name not in texts]
     missing += [f"problem:{name}" for name in problem_names() if name not in texts]
     assert not missing, f"not reachable from the GUI: {missing}"
+
+
+def test_the_heat_sink_preset_offers_thermal_compliance_and_runs_from_the_gui(window):
+    from toporia.apps.gui import runner
+    from toporia.engine.loop import initialized_method
+    window._on_config_changed("Heat Sink")
+    assert window.core.method_name() == "q4_heat+oc"
+    assert window.objective.offered_types() == ["thermal_compliance"]
+    run = runner.build_config(window.core, window.lc, window.filters, base_cfg=window._base_cfg)
+    assert run.scenario.objective["type"] == "thermal_compliance"
+    method = initialized_method(run.updated(max_iter=3, tol=0.0, save_every=0))
+    for iteration in (1, 2, 3):
+        method.step(iteration)
+    assert method.get_responses()["objective"] > 0
+    # Choosing the model alone offers it too, and the structural objectives disappear.
+    window.core.select_method("q4_heat+mma")
+    assert "thermal_compliance" in window.objective.offered_types() and "compliance" not in window.objective.offered_types()

@@ -6,7 +6,7 @@ here — see [`framework.parts.model.Model`](../../framework/parts/model.py). Sw
 how Toporia reaches new physics, new dimensions and new mesh types without touching a
 single update rule.
 
-**Status: 3 in Toporia · 24 with open code · 3 paper only**
+**Status: 6 in Toporia · 24 with open code · 3 paper only**
 
 | Label | Meaning |
 | :-- | :-- |
@@ -21,6 +21,21 @@ single update rule.
 | ✅ 2-D Q4 plane stress | [`q4.py`](q4.py) | `q4` | Toporia's own engine: 2-D plane stress, structured grid, SIMP, direct sparse solve. Provides compliance, volume and stress; accepts the filter pipeline. |
 | ✅ 3-D H8 bricks | [`h8.py`](h8.py) | `h8` | Toporia's own 3-D engine (a scenario with a depth): H8 bricks, any material law, direct or multigrid solver. Provides compliance, volume and 3-D stress; accepts the filter pipeline. Switching the GUI's Design section to 3-D selects it. |
 | ✅ Linear elasticity, pyMOTO | [`pymoto_elastic.py`](pymoto_elastic.py) | `pymoto_elastic` | A pyMOTO module network, which brings its own filters and backpropagates its own gradients. Optional dependency (`pip install pymoto`). |
+| ✅ 2-D Q4 heat conduction | [`q4_heat.py`](q4_heat.py) | `q4_heat` | Steady heat conduction on Toporia's Q4 grid: uniform heat generation, supports as heat sinks, conductivity from the material law. Provides thermal compliance and volume; accepts the filter pipeline. |
+| ✅ 3-D H8 heat conduction | [`h8_heat.py`](h8_heat.py) | `h8_heat` | The same on eight-node bricks (a scenario with a depth). |
+| ✅ Heat conduction, pyMOTO | [`pymoto_heat.py`](pymoto_heat.py) | `pymoto_heat` | pyMOTO's `AssemblePoisson` network: the cross-check of `q4_heat`, giving the same thermal compliance to 1e-9. Optional dependency (`pip install pymoto`). |
+
+### Heat conduction (the heat-sink problem)
+
+`q4_heat`, `h8_heat` and `pymoto_heat` minimise the **thermal compliance** of a plate that
+generates heat and is cooled through heat sinks: Bendsøe & Sigmund, *Topology Optimization*
+(2003), section 1.5; Gersborg-Hansen, Bendsøe & Sigmund, *SMO* 31 (2006) 251-259,
+[doi](https://doi.org/10.1007/s00158-005-0584-3). In the GUI choose the model under *Physics*; the objective list then offers
+*Thermal compliance* (objectives follow from what the physics provides), and the *Heat Sink*
+preset sets it all up. On the command line: `toporia run "Heat Sink"` (a 50 × 50 mesh,
+`q4_heat+oc`, 100 iterations in about two seconds), or `toporia run "Heat Sink" --set
+m=1` for a finer one. How a scenario maps onto heat conduction is in
+[`../physics/README.md`](../physics/README.md).
 
 `q4` is built on [`assembled.py`](assembled.py), the generic model: name a physics engine
 and the filters and responses come for free — every response the engine provides features

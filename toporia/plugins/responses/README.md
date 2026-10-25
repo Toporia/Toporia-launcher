@@ -9,7 +9,7 @@ case — self-adjoint, one solve, no aggregation. Everything else needs its own 
 usually an aggregation function (p-norm or Kreisselmeier–Steinhauser) or an augmented
 Lagrangian to survive thousands of local constraints.
 
-**Status: 3 in Toporia · 4 with open code · 14 paper only**
+**Status: 4 in Toporia · 4 with open code · 14 paper only**
 
 | Label | Meaning |
 | :-- | :-- |
@@ -25,6 +25,7 @@ Lagrangian to survive thousands of local constraints.
 | ✅ Material volume | [`volume.py`](volume.py) | `volume` | objective | `q4`, `pymoto_elastic` |
 | ✅ Peak von Mises stress | [`stress.py`](stress.py) | `stress` | constraint | `q4`, `pymoto_elastic` |
 | ✅ Local von Mises stress (augmented Lagrangian) | [`local_stress.py`](local_stress.py) | `local_stress` | constraint | `q4`, `h8` |
+| ✅ Thermal compliance | [`thermal_compliance.py`](thermal_compliance.py) | `thermal_compliance` | objective | `q4_heat`, `h8_heat`, `pymoto_heat` |
 
 > **What can actually enforce a constraint.** The volume *budget*
 > (`scenario.volfrac`) is enforced by every method. A *second* constraint needs an updater
@@ -33,6 +34,15 @@ Lagrangian to survive thousands of local constraints.
 > and [`beso`](../updaters/beso.py) all declare `max_constraints = 0`. So a stress-limited
 > run means pairing a model with a pyMOTO updater — `q4+pymoto_mma`. Giving Toporia's own
 > updaters that ability is what the [local stress](#local-von-mises-stress--local_stress) response and the [`augmented_lagrangian`](../updaters/README.md#augmented-lagrangian-local-constraints--augmented_lagrangian) updater are for.
+
+**Thermal compliance** is compliance's twin for heat conduction (Bendsøe & Sigmund 2003,
+section 1.5; Gersborg-Hansen et al., *SMO* 31 (2006) 251-259, [doi](https://doi.org/10.1007/s00158-005-0584-3)): C = qᵀT, the
+heat input times the temperature it produces, which for uniform generation is proportional to
+the mean temperature. It needs the `thermal_energy` feature, so it is offered with the heat
+models only, and it is self-adjoint with a sensitivity −dk/dρ · T_eᵀK_eT_e that is never
+positive: that is what lets optimality criteria (`q4_heat+oc`) minimise it. In the GUI pick a
+heat model and choose it as the objective; in a scenario it is
+`objective={"type": "thermal_compliance"}`.
 
 A response declares the engine features it `requires` (see
 [`framework/parts/physics.py`](../../framework/parts/physics.py)); a model can offer it exactly when its engine

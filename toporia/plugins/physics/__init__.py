@@ -4,6 +4,10 @@ Each module here implements one physics on one element type, as plain
 functions and as a framework.parts.physics.Physics engine that responses run on.
 
     q4_plane_stress.py   2-D linear elasticity, bilinear Q4 elements, SIMP
+    h8_solid.py          3-D linear elasticity, trilinear bricks
+    q4_heat.py           2-D steady heat conduction, bilinear Q4 elements
+    h8_heat.py           3-D steady heat conduction, trilinear bricks
+    _conduction.py       what the two heat engines share
 """
 
 from .q4_plane_stress import (

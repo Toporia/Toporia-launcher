@@ -5,7 +5,7 @@ from [`models/`](../models/README.md) because the same physics can be discretise
 ways, and the choice of element is itself a thing worth comparing: it decides what the
 density field can resolve and where the classic numerical artefacts come from.
 
-**Status: 2 in Toporia · 5 with open code · 3 paper only**
+**Status: 4 in Toporia · 5 with open code · 3 paper only**
 
 | Label | Meaning |
 | :-- | :-- |
@@ -19,6 +19,8 @@ density field can resolve and where the classic numerical artefacts come from.
 | :-- | :-- | :-- |
 | ✅ Q4 plane stress | [`q4_plane_stress.py`](q4_plane_stress.py) | Bilinear quadrilateral, 2 DOF per node, structured grid, column-major numbering, analytic element stiffness. The top88 element. 2-D. |
 | ✅ H8 solid | [`h8_solid.py`](h8_solid.py) | Trilinear brick, 3 DOF per node, 2 × 2 × 2 Gauss integration, the element of Liu & Tovar's top3d. 3-D: a scenario with a depth `Lz`. Direct sparse solver, or conjugate gradients with algebraic multigrid (optional `pyamg`) for large meshes. |
+| ✅ Q4 heat conduction | [`q4_heat.py`](q4_heat.py) | Bilinear quadrilateral, 1 temperature per node, same grid and element numbering as the Q4 plane-stress element. Steady conduction with uniform heat generation; supports are heat sinks. 2-D. |
+| ✅ H8 heat conduction | [`h8_heat.py`](h8_heat.py) | Trilinear brick, 1 temperature per node, 2 × 2 × 2 Gauss integration. The 3-D counterpart of `q4_heat`, for a scenario with a depth `Lz`. |
 
 Each module is a [`framework.parts.physics.Physics`](../../framework/parts/physics.py) engine:
 it solves a density to a state and declares which features it answers (`elastic_energy`,
@@ -33,6 +35,27 @@ the drone arm (holes and solid rings included). A test asserts it in
 `tests/plugins/test_3d.py`. The finite-difference gradient checks of `toporia check
 model:h8` and `toporia check response:stress` cover its compliance and 3-D stress
 sensitivities.
+
+### Heat conduction
+
+Steady heat conduction, −∇·(k∇T) = Q, discretised with one temperature per node
+(Bendsøe & Sigmund 2003, section 1.5; Gersborg-Hansen, Bendsøe & Sigmund, *SMO* 31 (2006)
+251-259, [doi](https://doi.org/10.1007/s00158-005-0584-3)). It is the first engine whose `provides` is not the structural
+pair: it answers the `thermal_energy` feature (`thermal_compliance`, `thermal_energy`), and
+the shared assembly and solve live in [`_conduction.py`](_conduction.py). A scenario means
+the same geometry with another meaning:
+
+| Scenario | Heat conduction |
+| :-- | :-- |
+| supports (edge or point constraints, any `dof`) | fixed temperature T = 0, heat sinks |
+| point loads and load holes | heat input; only the load case's `Fmag` is used, its direction means nothing |
+| `E0`, `Emin` | conductivity of solid and of void |
+| physics parameter `heat_source` | uniform generation over the whole domain (default 1e-4 per mm², so q·L² = 1 on a 100 mm plate) |
+
+The heat input does not depend on the density, so the thermal compliance qᵀT is self-adjoint
+and its sensitivity −dk/dρ · T_eᵀK_eT_e needs no extra solve. The strip test in
+`tests/plugins/test_heat.py` reproduces the analytic maximum temperature Q L²/8k to 1e-10,
+in 2-D and in 3-D.
 
 Two consequences worth knowing before adding anything here:
 

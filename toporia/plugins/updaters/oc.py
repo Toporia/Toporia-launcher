@@ -33,8 +33,9 @@ class OCUpdater(Updater):
     schedulable = ("move",)
 
     # OC needs objective and volume sensitivities of opposite sign, and finds a
-    # single multiplier: compliance under the volume budget and nothing more.
-    objectives = ("compliance",)
+    # single multiplier: compliance (or its heat-conduction twin, the thermal
+    # compliance) under the volume budget and nothing more.
+    objectives = ("compliance", "thermal_compliance")
     max_constraints = 0
     # The rule moves each element's density on its own (see needs_element_densities).
     needs_element_densities = True

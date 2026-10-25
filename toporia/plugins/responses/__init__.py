@@ -10,6 +10,7 @@ constraint entry; scenario.constraints adds further limits on top of it.
     compliance.py  weighted compliance — objective
     volume.py      material volume — objective, used with a further constraint
     stress.py      peak von Mises stress — constraint
+    thermal_compliance.py  weighted thermal compliance of heat conduction — objective
 """
 
 from toporia.framework.params import resolve_params

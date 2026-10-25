@@ -65,6 +65,9 @@ A test (`tests/apps/test_gui.py`) fails if a part ever stops being reachable fro
 | 2-D Q4 plane stress (Toporia) | `q4` | [q4.py](models/q4.py), [q4_plane_stress.py](physics/q4_plane_stress.py) | Port | the physics half of top88 · [paper](https://doi.org/10.1007/s00158-010-0594-7) |
 | 3-D H8 bricks (Toporia) | `h8` | [h8.py](models/h8.py), [h8_solid.py](physics/h8_solid.py) | Port | top3d (Liu & Tovar, *SMO* 2014) · [paper](https://doi.org/10.1007/s00158-014-1107-x) |
 | Linear elasticity, pyMOTO network | `pymoto_elastic` | [pymoto_elastic.py](models/pymoto_elastic.py) | Wraps | [pyMOTO](https://github.com/aatmdelissen/pyMOTO) (MIT), `pip install pymoto` |
+| 2-D Q4 heat conduction (Toporia) | `q4_heat` | [q4_heat.py](models/q4_heat.py), [q4_heat.py](physics/q4_heat.py) | Paper | Bendsøe & Sigmund 2003, section 1.5; Gersborg-Hansen et al., *SMO* 2006 · [paper](https://doi.org/10.1007/s00158-005-0584-3) |
+| 3-D H8 heat conduction (Toporia) | `h8_heat` | [h8_heat.py](models/h8_heat.py), [h8_heat.py](physics/h8_heat.py) | Paper | the 3-D brick of the same heat problem · [paper](https://doi.org/10.1007/s00158-005-0584-3) |
+| Heat conduction, pyMOTO network | `pymoto_heat` | [pymoto_heat.py](models/pymoto_heat.py) | Wraps | [pyMOTO](https://github.com/aatmdelissen/pyMOTO)'s `AssemblePoisson` (MIT), `pip install pymoto`; the cross-check of `q4_heat` |
 
 ### Objectives and constraints ([folder](responses/README.md))
 
@@ -74,6 +77,7 @@ A test (`tests/apps/test_gui.py`) fails if a part ever stops being reachable fro
 | Material volume | `volume` | [volume.py](responses/volume.py) | Own | as in Le et al. 2010 and pyMOTO's stress example · [paper](https://doi.org/10.1007/s00158-009-0440-y) |
 | Local von Mises stress (augmented Lagrangian) | `local_stress` | [local_stress.py](responses/local_stress.py) | Paper | Giraldo-Londoño & Paulino, *SMO* 2021 (PolyStress); Senhora et al., *SMO* 2020 · papers [1](https://doi.org/10.1007/s00158-020-02760-8) [2](https://doi.org/10.1007/s00158-020-02573-9) |
 | Peak von Mises stress | `stress` | [stress.py](responses/stress.py) | Paper | Le, Norato, Bruns, Ha & Tortorelli, *SMO* 2010 · [paper](https://doi.org/10.1007/s00158-009-0440-y) |
+| Thermal compliance | `thermal_compliance` | [thermal_compliance.py](responses/thermal_compliance.py) | Paper | Bendsøe & Sigmund 2003, section 1.5; Gersborg-Hansen et al., *SMO* 2006 · [paper](https://doi.org/10.1007/s00158-005-0584-3) |
 
 ### Optimisers: how the design moves ([folder](updaters/README.md))
 
@@ -143,6 +147,7 @@ and the preset *MBB Beam (Robust)*.
 | L-bracket (local stress) | [l_bracket_stress.py](problems/l_bracket_stress.py) | Giraldo-Londoño & Paulino 2021 (PolyStress); geometry of the L-bracket, limit chosen here · [paper](https://doi.org/10.1007/s00158-020-02760-8) |
 | L-bracket | [l_bracket.py](problems/l_bracket.py) | Duysinx & Bendsøe 1998; Le et al. 2010 (dimensions still to be checked against the papers) · papers [1](https://doi.org/10.1002/%28SICI%291097-0207%2819981230%2943:8%3C1453::AID-NME480%3E3.0.CO%3B2-2) [2](https://doi.org/10.1007/s00158-009-0440-y) |
 | Three-Point Bending | [three_point_bending.py](problems/three_point_bending.py) | the materials test |
+| Heat Sink | [heat_sink.py](problems/heat_sink.py) | Bendsøe & Sigmund 2003, section 1.5; Gersborg-Hansen et al. 2006 · [paper](https://doi.org/10.1007/s00158-005-0584-3) |
 | Standard Bar | [standard_bar.py](problems/standard_bar.py) | Toporia's own |
 | Drone Arm, Drone Arm (Camera View), Drone Arm (Point Loads) | [drone_arm.py](problems/drone_arm.py), [drone_arm_camera_view.py](problems/drone_arm_camera_view.py), [drone_arm_point_loads.py](problems/drone_arm_point_loads.py) | Toporia's own application case |
 
@@ -169,7 +174,6 @@ Listed from least to most effort. "Code" means open code exists (port it, or che
 
 | What | Source |
 | :-- | :-- |
-| Heat conduction and thermal compliance | Paper: Bendsøe & Sigmund 2003; Gersborg-Hansen et al. 2006 · papers [1](https://doi.org/10.1007/978-3-662-05086-6) [2](https://doi.org/10.1007/s00158-005-0584-3) |
 | Eigenfrequency, then linearised buckling | Code: TopBuck250 (Ferrari, Sigmund & Guest 2021) · [paper](https://doi.org/10.1007/s00158-021-02854-x) |
 | Harmonic response | Code: PolyDyna · [paper](https://doi.org/10.1007/s00158-021-02859-6) |
 | Geometry projection (bars with round ends) | Code: GGP-Matlab, GPTO, pygpto (Norato et al.) · [paper](https://doi.org/10.1016/j.cma.2015.05.005) |
