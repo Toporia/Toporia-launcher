@@ -12,7 +12,7 @@ This layer is not optional decoration — it is what makes the problem well pose
 the AM overhang, routing and symmetry filters are written for plane problems and are refused
 on a 3-D one, with the filters that can.
 
-**Status: 12 plugins in Toporia (Heaviside includes a volume-preserving option) · 1 with open code · 8 paper only**
+**Status: 12 plugins in Toporia (Heaviside includes a volume-preserving option) · 1 with open code · 7 paper only**
 
 | Label | Meaning |
 | :-- | :-- |
@@ -188,8 +188,11 @@ explicit casting parameterisation, not Xia et al.'s level-set formulation.
 | Filter / formulation | Status | Reference | Why it matters |
 | :-- | :-- | :-- | :-- |
 | Robust three-field formulation | 📄 | Sigmund, *Acta Mech. Sinica* 2009; Wang, Lazarov & Sigmund, *SMO* 43 (2011) 767–784 | **The most practically important formulation in density-based TO.** Optimise the worst of eroded / intermediate / dilated designs (η > 0.5, 0.5, < 0.5): minimum member size *and* minimum cavity size, results that converge under mesh refinement, and tolerance to over- and under-etching. Costs three FE solves per iteration. It is also what makes an AM-filtered result trustworthy, since one-element-wide members are not printable whatever the overhang filter says. Not strictly a filter — it wraps a Model. |
-| Explicit geometric length-scale constraints | 📄 | Guest, *SMO* 2009; Zhou, Lazarov, Wang & Sigmund, *CMAME* 2015 | Imposes minimum length scale as constraints on the filtered fields, avoiding the three-fold cost of the robust formulation. Needs a second constraint slot — see [`updaters/`](../updaters/README.md). |
 | Hyperparameter-free minimum length scale | 📄 | [arXiv:2507.16108](https://arxiv.org/abs/2507.16108) (2025) | Recent attempt to remove the tuning that the formulations above require. |
+
+Explicit geometric length-scale constraints are implemented as a
+[`minimum_length` response](../responses/README.md#explicit-geometric-minimum-feature-length),
+using a separate geometric cone filter rather than modifying the physical pipeline.
 
 ## Candidates — fabrication
 

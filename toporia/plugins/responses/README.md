@@ -9,7 +9,7 @@ case — self-adjoint, one solve, no aggregation. Everything else needs its own 
 usually an aggregation function (p-norm or Kreisselmeier–Steinhauser) or an augmented
 Lagrangian to survive thousands of local constraints.
 
-**Status: 12 in Toporia · 4 with open code · 12 paper only**
+**Status: 13 in Toporia · 4 with open code · 12 paper only**
 
 | Label | Meaning |
 | :-- | :-- |
@@ -29,10 +29,62 @@ Lagrangian to survive thousands of local constraints.
 | ✅ Peak von Mises stress | [`stress.py`](stress.py) | `stress` | constraint | `q4`, `pymoto_elastic` |
 | ✅ Buckling load factor | [`buckling.py`](buckling.py) | `buckling_load` | objective or constraint | `q4_buckling` |
 | ✅ Local von Mises stress (augmented Lagrangian) | [`local_stress.py`](local_stress.py) | `local_stress` | constraint | `q4`, `h8` |
+| ✅ Geometric minimum feature length | [`minimum_length.py`](minimum_length.py) | `minimum_length` | constraint | All eight native physics engines (geometry only), 2-D/3-D |
 | ✅ Thermal compliance | [`thermal_compliance.py`](thermal_compliance.py) | `thermal_compliance` | objective | `q4_heat`, `h8_heat`, `pymoto_heat` |
 | ✅ Fundamental frequency (maximise) | [`eigenfrequency.py`](eigenfrequency.py) | `eigenfrequency` | objective | `q4_dynamic`, `pymoto_dynamic` |
 | ✅ Fundamental frequency (at least) | [`eigenfrequency.py`](eigenfrequency.py) | `eigenfrequency_limit` | constraint | `q4_dynamic` |
 | ✅ Dynamic compliance (harmonic load) | [`dynamic_compliance.py`](dynamic_compliance.py) | `dynamic_compliance` | objective | `q4_dynamic` |
+
+### Explicit geometric minimum feature length
+
+Add **Minimum feature length (geometric)** as a constraint with a general
+multi-constraint optimiser. Add two instances with `phase=solid` and `phase=void`
+to control both members and cavities. `min_length` is in physical mm, with a
+constraint-only cone radius of half that length. It does not insert another
+filter into the stiffness or heat equation. The radius must span at least two
+cells in every direction; use several cells and check mesh refinement.
+
+This is an independent physical-field variant of
+[Zhou et al. (2015)](https://doi.org/10.1016/j.cma.2015.05.003) using the separate
+geometric filter of [Dunning (2018)](https://doi.org/10.1007/s00158-017-1883-1).
+No source code is copied. For physical density rho and cone-filtered b, the
+local solid measure is `rho*exp(-c*|G b|^2)*(1-b)^2`; the void measure is its
+phase complement. G uses minimum-cell-spacing units and `c=decay_scale*(R/h)^4`.
+The derivative includes both the filter transpose and the indicator's spatial
+gradient terms. The cone is truncated and renormalised at the domain boundary.
+
+Our modification is a conservative KS maximum of local measures divided by a
+fixed nodal tolerance. The constraint is `KS-1 <= 0`, so a small isolated
+violation cannot disappear in a domain-wide average. The KS excess over the
+largest local ratio is at most `1/sharpness`. The tolerance is `limit` times
+the maximum of Dunning's 1-D resolved wide-bar profile (including its endpoint
+maximum for low decay). `limit` is a **multiplier**, not a feature length or
+an absolute residual. We do not implement the paper's adaptive signed-distance
+medial-axis tolerance updates or Zhou's original three-field pipeline.
+
+This finite-tolerance geometric proxy needs calibration on the actual mesh,
+gray transition and shape. Centre sampling can accept a bar one cell thinner
+than the nominal length. Truncated outer neighborhoods do not control exterior
+thickness as though there were void padding. Fixed pads, loads and supports may
+make the requested dimensions infeasible. Thresholding the final density changes
+the field assessed by the constraint. Verify the actual final residuals and
+geometry, including boundaries, before manufacturing; this is not an exact size
+certificate. Excessive decay can hide discrete medial regions.
+
+Strict solid and void constraints can stall at a uniform gray initial field.
+Use the existing projection and tolerance continuation controls, then verify
+feasibility at the final tolerance. An optimiser's stopping status alone is
+insufficient evidence of constraint satisfaction.
+
+Run `python -m experiments.minimum_length` for a reproducible feasible-seed
+validation. The 24x16 cantilever uses a 4 mm target for both phases, no physical
+filter and linear ersatz material interpolation. Its explicit nearly binary
+straight-bar seed avoids the gray-start stall. Compliance decreases from
+115.115877 to 111.907874, volume remains 0.5, and freshly evaluated solid/void
+residuals are -2.22e-7/-3.23e-8 after 244 NLopt evaluations (246 total FE solves
+including the initial/final checks). This modest local improvement is not a
+penalised SIMP benchmark or evidence of reliable topology creation from a
+uniform start. The script saves the fields, report and comparison figure.
 
 ### Phase-field regularised compliance
 

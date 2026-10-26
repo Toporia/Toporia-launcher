@@ -96,5 +96,5 @@ def test_oc_multi_enforces_a_stress_limit_next_to_the_volume_budget(capsys):
 
 
 def test_oc_multi_is_offered_stress_but_oc_is_not():
-    assert method_class("q4+oc_multi").capabilities.constraints == ("stress",)
+    assert method_class("q4+oc_multi").capabilities.constraints == ("stress", "minimum_length")
     assert method_class("q4+oc").capabilities.constraints == ()

@@ -1,7 +1,26 @@
-# Unregistered experiments
+# Research experiments and validation recipes
 
 These are reproducible research evaluations, outside Toporia's plugin discovery
 and GUI. Failed performance gates are recorded rather than weakened.
+
+## Minimum-length response: feasible-seed validation
+
+Run `python -m experiments.minimum_length` to write initial/final density,
+`report.json` and `validation.png` to `results/minimum-length-validation/`.
+This exercises the registered geometric response with NLopt MMA on a 24x16
+cantilever, 4 mm solid and void proxy targets and volume 0.5. It explicitly
+seeds a nearly binary straight bar using the identity representation. It uses
+linear ersatz interpolation, not penalised SIMP. The GUI does not acquire a
+file warm-start feature through this script.
+
+Fresh final evaluations give compliance 111.907874 (initial 115.115877), volume
+0.4999999991 and solid/void residuals -2.22e-7/-3.23e-8. Feasibility is checked
+independently of the optimiser's stopping status. This modest local validation
+does not establish a robust optimiser from a uniform gray start: strict two-phase
+constraints stalled NLopt there, and a 700-step pyMOTO GCMMA continuation on the
+60x20 MBB, 6 mm target, retained a +0.953 solid violation. That run is **not**
+accepted as a feasible result. See the response documentation for discretisation,
+gray-field, exterior-boundary and tolerance limitations.
 
 ## Simulated annealing: evaluated, not registered
 

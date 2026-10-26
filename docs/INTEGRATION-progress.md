@@ -425,9 +425,64 @@ passes: **2280 passed, one optional multigrid test skipped**, in 25 min 41 sec
 checks pass. Original Q4/H8 sources and golden baselines remain unchanged.
 No later task was started during validation.
 
+### Completed: explicit geometric minimum-length constraints
+
+This addition follows the phase-field commit (`71abd18`). New response
+`responses/minimum_length.py` uses Dunning's (2018) separate physical-density
+cone filter and Zhou-type indicators, with a conservative nodal KS maximum
+and fixed scaled 1-D tolerance. This is an independent variant, not either
+paper's complete optimisation algorithm. Full physical-density gradients pass
+conformance on all eight native engines (largest relative error 1.7e-10;
+`results/length-conformance.log`). Independent 2-D/3-D filter, transpose,
+finite-difference, complement, unit-scaling, KS-bound and feature-width tests
+are in `tests/plugins/test_minimum_length.py`.
+
+The geometric cone is constraint-only, truncated/renormalised at the boundary;
+it does not alter the physics pipeline. Requested radius must span at least two
+cells in every direction. The mesh can accept a bar one cell below the nominal
+width; no exact manufacturing certificate is claimed. Tests and docs explicitly
+distinguish that proxy from a true geometric width. Low indicator decay uses
+the endpoint maximum of the paper's 1-D profile when its interior critical point
+leaves the relevant interval.
+
+Strict solid/void constraints at a uniform gray start stalled NLopt MMA, so those
+trials are NOT accepted examples. Density+Heaviside projection and existing
+tolerance/SIMP continuation with per-step pyMOTO MMA still left a solid residual
+around +0.2 at a nominal 6 mm target on the 60x20 MBB mesh. A 700-step slower
+GCMMA continuation finished with solid residual +0.953 and is also explicitly
+rejected as infeasible (`results/length-gcmma-trial.log`). No success gate was
+weakened to accept those runs.
+
+The reproducible recipe is `python -m experiments.minimum_length`: a 24x16
+cantilever, explicit resolved nearly binary straight-bar seed, 4 mm proxy target
+for both phases, linear ersatz and no physical filter. NLopt MMA decreases
+compliance from 115.115877 to 111.907874, volume 0.4999999991, fresh solid/void
+residuals -2.22e-7/-3.23e-8. There are 244 NLopt evaluations and 246 FE solves
+including independent initial/final checks. This modest local validation is not
+a penalised SIMP benchmark or robust uniform-start topology creation. The
+physical-density comparison figure was inspected. Fresh final evaluations are
+required (ComposedMethod's ordinary responses can precede its latest update).
+
+All 21 new geometric/optimisation tests pass in 6.94 sec; 55 focused response
+and physics tests passed earlier in 3 min 18 sec. The full native run completed
+in 28 min 13 sec: 2303 passed, one optional multigrid skip, one stale capability
+assertion failed (`results/length-native-full.log`, `results/length-full.xml`).
+The assertion expected multi-constraint OC to offer only stress; its generic
+constraint contract also offers the new response. Only that expected tuple was
+updated, with no solver/implementation changes. All six tests in its file pass
+on rerun in 12.62 sec (`results/length-oc-final.log`, `length-oc-final.xml`). Thus
+all 2304 current tests have passing coverage; the single monolithic log retains
+the original assertion failure rather than being presented as a clean run.
+Ruff and whitespace checks pass. GUI reachability, physics conformance and
+original golden checks all pass. Original Q4/H8 sources and goldens are unchanged.
+
+The catalogue now has 82 selectable plugins, eight physics engines and 17 presets
+(107 implementations), including 13 responses. There are 253 compositions and
+three whole methods (256 names). No later task was started during validation.
+
 ### Remaining sequence
 
-1. Explicit length scale, machining accessibility and projection-based self-support.
+1. Machining accessibility and projection-based self-support.
 2. Multiresolution design and analysis meshes.
 3. Neural reparameterisation (TOuNN), subject to dependency support on this Python/Windows setup.
 

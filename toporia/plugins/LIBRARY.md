@@ -24,7 +24,7 @@ A test (`tests/apps/test_gui.py`) fails if a part ever stops being reachable fro
 | **Wraps** | Calls an outside Python package. That package is installed separately. Parts whose package is missing are greyed out in the app, with the install command. |
 | **Own** | Toporia's own idea or standard practice. |
 
-## In the library today: 81 selectable parts and 17 benchmark problems
+## In the library today: 82 selectable parts and 17 benchmark problems
 
 The selectable parts include models and whole methods; their eight underlying
 physics engines are counted separately in the [catalogue totals](README.md).
@@ -88,6 +88,7 @@ physics engines are counted separately in the [catalogue totals](README.md).
 | Phase-field regularised compliance | `phase_field` | [phase_field.py](responses/phase_field.py) | Paper | Own 2-D/3-D fixed-load diffuse-interface energy, with existing gradient optimisers; no separate PDE solver · papers [1](https://doi.org/10.1051/cocv:2002070) [2](https://doi.org/10.1016/j.jcp.2009.12.017) |
 | Output displacement (maximise) | `output_displacement` | [output_displacement.py](responses/output_displacement.py) | Paper | Signed point output, one shared spring-augmented adjoint · [paper](https://doi.org/10.1080/08905459708945415) |
 | Material volume | `volume` | [volume.py](responses/volume.py) | Own | as in Le et al. 2010 and pyMOTO's stress example · [paper](https://doi.org/10.1007/s00158-009-0440-y) |
+| Geometric minimum feature length | `minimum_length` | [minimum_length.py](responses/minimum_length.py) | Paper | Own 2-D/3-D physical-field variant, separate cone filter, full indicator adjoint, conservative nodal KS and fixed tolerance · papers [1](https://doi.org/10.1016/j.cma.2015.05.003) [2](https://doi.org/10.1007/s00158-017-1883-1) |
 | Local von Mises stress (augmented Lagrangian) | `local_stress` | [local_stress.py](responses/local_stress.py) | Paper | Giraldo-Londoño & Paulino, *SMO* 2021 (PolyStress); Senhora et al., *SMO* 2020 · papers [1](https://doi.org/10.1007/s00158-020-02760-8) [2](https://doi.org/10.1007/s00158-020-02573-9) |
 | End compliance (non-linear) | `end_compliance` | [end_compliance.py](responses/end_compliance.py) | Paper | Buhl, Pedersen & Sigmund, *SMO* 2000 · [paper](https://doi.org/10.1007/s001580050089) |
 | Peak von Mises stress | `stress` | [stress.py](responses/stress.py) | Paper | Le, Norato, Bruns, Ha & Tortorelli, *SMO* 2010 · [paper](https://doi.org/10.1007/s00158-009-0440-y) |
@@ -202,7 +203,7 @@ Listed from least to most effort. "Code" means open code exists (port it, or che
 
 | What | Source |
 | :-- | :-- |
-| Explicit length-scale constraints, machining accessibility, projection-based self-support | Paper: Zhou et al. 2015; Langelaar 2019; Gaynor & Guest 2016 · papers [1](https://doi.org/10.1016/j.cma.2015.05.003) [2](https://doi.org/10.1016/j.cma.2019.03.037) [3](https://doi.org/10.1007/s00158-016-1551-x) |
+| Machining accessibility, projection-based self-support | Paper: Langelaar 2019; Gaynor & Guest 2016 · papers [1](https://doi.org/10.1016/j.cma.2019.03.037) [2](https://doi.org/10.1007/s00158-016-1551-x) |
 | Multi-resolution design and analysis meshes | Paper: Nguyen et al. 2010 · [paper](https://doi.org/10.1007/s00158-009-0443-8) |
 | Neural reparameterisation (TOuNN) | Code: TOuNN (needs PyTorch or JAX, which may not install on Python 3.14) · [paper](https://doi.org/10.1007/s00158-020-02748-4) |
 | SINH and Hashin–Shtrikman material laws | Paper: Bruns 2005; Bendsøe & Sigmund 1999 (the material law has to see the volume and Poisson's ratio) · papers [1](https://doi.org/10.1007/s00158-005-0537-x) [2](https://doi.org/10.1007/s004190050248) |

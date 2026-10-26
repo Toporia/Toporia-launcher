@@ -110,7 +110,10 @@ the matching MAKE item below.
 - [x] Reaction–diffusion level set (independent sparse cell-centred variant, Appendix C elastic tensor)
 - [x] Hamilton–Jacobi level set with circular-hole topological derivative (Challis-style HJ/TD)
 - [x] Phase-field regularised compliance response (2-D/3-D diffuse-interface energy, general gradient optimisers)
-- [ ] Explicit length-scale constraints; machining accessibility; Gaynor self-support
+- [x] Explicit length-scale constraints: independent Dunning/Zhou physical-field response,
+      full adjoint and conservative nodal KS; fixed tolerance and feasible-seed validation.
+      Uniform gray-start limitations documented; not a complete adaptive Dunning solver.
+- [ ] Machining accessibility; Gaynor self-support
 - [ ] Multi-resolution design and analysis meshes
 - [x] Geometrically non-linear elasticity
 
