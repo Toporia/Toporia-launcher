@@ -59,10 +59,26 @@ any parameter path can be swept, compared or perturbed — and sends each throug
 | [`modes/single.py`](modes/single.py) | Run One | One optimisation, with a summary of the meshed problem first and `history.png` at the end. |
 | [`modes/sweep.py`](modes/sweep.py) | Sweep · Sweep 2D | One parameter over an `n_rows × n_cols` grid, or two parameters (rows × columns); one run per cell; `sweep_grid.png` / `sweep2d_grid.png`. |
 | [`modes/compare.py`](modes/compare.py) | Compare Two · Compare Load Cases | Two runs differing in one parameter, or in their load cases; `comparison.png` shows material only in A, only in B, and in both. `compare_runs` takes any two prepared runs (used by `toporia compare`). |
-| [`modes/methods.py`](modes/methods.py) | Compare Methods · `toporia benchmark` | Several methods on the same scenario, mesh, filters and stopping rule (and, for a benchmark, on several problems): `methods_grid.png` with every final design, and `methods.csv` / `benchmark.csv` with each method's own objective, a **referee compliance** (every design measured the same way: Q4, SIMP p = 3, no filter), volume, grey level, iterations, physics solves, time, stop reason and whether every limit was met. A method that cannot solve the scenario is listed with the reason. |
+| [`modes/methods.py`](modes/methods.py) | Compare Methods · `toporia benchmark` | Several methods on the same scenario, mesh, filters and stopping rule (and, for a benchmark, on several problems): `methods_grid.png` with every final design, and `methods.csv` / `benchmark.csv` with each method's own objective, a **referee compliance** (native Q4/H8 or heat conduction, SIMP p = 3, no filter; mechanism springs retained), volume, grey level, iterations, physics solves, time, stop reason and whether every limit was met. A method that cannot solve the scenario is listed with the reason. |
 | [`modes/sensitivity.py`](modes/sensitivity.py) | Sensitivity · Sensitivity Sweep (1-D, 2-D) | Runs at `base` and `base + gap` and maps `(ρ_perturbed − ρ_base) / gap` per element over the base design (`sensitivity.png`, `.csv`); the sweeps do that for every cell, and can also vary the base value or the gap (`senssweep_grid.png`, `senssweep2d_grid.png`). |
 | [`modes/check.py`](modes/check.py) | Check Parts | No optimisation: the conformance test ([`checks/`](../checks/README.md)) on every part of the selected pipeline. |
 | [`modes/grids.py`](modes/grids.py) | *(shared)* | The mode's output folder, running a list of cells with progress lines, and laying images out in one grid. |
+
+## Method-study compatibility and metrics
+
+Compare Methods and Sweep Methods validate the current scenario and each candidate
+method's own solver configuration. The GUI disables incompatible entries with their
+reasons and keeps the preset's recommended method among the defaults. Unchecking
+everything stays unchecked; Run then asks for at least one compatible method.
+
+The grid and CSV expose signed output displacement for mechanisms, fundamental
+angular frequency (`omega_1`, rad/s) for vibration, and thermal compliance for heat.
+The `referee_compliance` column uses native Q4/H8 with SIMP p=3 and no filter:
+port springs are retained for mechanisms, and thermal objectives use scalar
+conduction with the configured heat source. Nonlinear designs also get this
+standardised linear-elastic reference; their own end-compliance objective is
+reported separately. Structural compliance is a diagnostic, not the optimisation
+goal for every preset. Feasibility and stopping reason remain explicit.
 
 ## One run, step by step
 

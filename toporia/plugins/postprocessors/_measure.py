@@ -9,10 +9,11 @@ from toporia.framework.problem.mesh import projection
 REFEREE_PENAL = 3.0
 
 
-def referee_compliance(problem, density):
+def referee_compliance(problem, density, *, heat_source=None):
     """Compliance of a design measured the same way whatever made it.
 
-    Toporia's Q4 solver (H8 in 3-D, port-spring Q4 for mechanisms),
+    Toporia's Q4 solver (H8 in 3-D, port-spring Q4 for mechanisms,
+    scalar conduction for thermal objectives),
     SIMP with p = REFEREE_PENAL, no filter,
     the scenario's load cases and weights; the density is clipped to the
     problem's bounds so holes stay holes.  For a black-and-white design the
@@ -21,6 +22,14 @@ def referee_compliance(problem, density):
     from toporia.plugins.interpolations.simp import SIMP
     from toporia.plugins.physics.h8_solid import H8Solid
     from toporia.plugins.physics.q4_plane_stress import Q4PlaneStress
+    thermal = problem.scenario.objective.get("type") == "thermal_compliance"
+    if thermal:
+        from toporia.plugins.physics.h8_heat import H8Heat
+        from toporia.plugins.physics.q4_heat import Q4Heat
+        engine = H8Heat() if getattr(problem, "dims", 2) == 3 else Q4Heat()
+        engine.initialize(problem, {} if heat_source is None else {"heat_source": heat_source}, SIMP(REFEREE_PENAL))
+        state = engine.solve(np.clip(density, problem.lower_bound, problem.upper_bound))
+        return float(sum(w*engine.thermal_compliance(state, i) for i, w in enumerate(state.weights)))
     if problem.scenario.point_springs:
         from toporia.plugins.physics.q4_mechanism import Q4Mechanism
         if getattr(problem, "dims", 2) != 2:

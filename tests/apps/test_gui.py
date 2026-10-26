@@ -645,3 +645,65 @@ def test_method_studies_require_at_least_one_compatible_selection(window, mode, 
     with pytest.raises(ValueError, match="Select at least one compatible method"):
         execute(get_run("Force Inverter"), group, None, lambda text: None)
     window._on_config_changed("MBB Beam")
+
+
+@pytest.mark.parametrize("preset", problem_names())
+def test_every_presets_default_method_comparison_runs_from_the_gui(window, tmp_path, preset):
+    """Exercise the GUI's real choices, not a hand-picked model/updater list.
+
+    Three iterations on a coarse mesh check wiring, metrics and output files;
+    physical convergence is covered by the individual method benchmarks.
+    """
+    import csv
+    from dataclasses import replace
+
+    import numpy as np
+
+    from toporia.apps.gui import runner
+    from toporia.engine.modes.methods import comparison_problems
+    from toporia.plugins.responses import RESPONSES
+
+    def expanded(scenario):
+        # GUI rows spell out defaults that a preset may omit; compare their
+        # resolved meanings while still checking loads, geometry and supports.
+        def response(spec):
+            cls = RESPONSES.get(spec["type"])
+            values = {key: value for key, value in spec.items() if key != "type"}
+            return {"type": cls.name, **resolve_params(cls.name, cls.params, values)}
+        return replace(scenario, objective=response(scenario.objective),
+                       constraints=[response(spec) for spec in scenario.constraints])
+
+    original = get_run(preset)
+    window._on_config_changed(preset)
+    run = runner.build_config(
+        window.core, window.lc, window.filters, base_cfg=window._base_cfg,
+        objective=window.objective, constraints=window.constraints, interpolation=window.material,
+        representation=window.design, schedules=window.schedules, variants=window.variants,
+        postprocess=window.post, design=window.design)
+    assert expanded(run.scenario) == expanded(original.scenario)
+    methods = window.cmg.selected()
+    assert methods, f"{preset} has no default compatible comparison"
+    assert window.msg.selected() == methods
+    assert all(not comparison_problems(method_class(name), run) for name in methods)
+    if not comparison_problems(method_class(run.solver.method), run):
+        assert run.solver.method in methods
+    short_side = min(run.scenario.Lx, run.scenario.Ly)
+    resolution = min(run.solver.m, max(0.1, 6/short_side))
+    if run.scenario.Lz > 0:
+        resolution = min(resolution, 0.2)
+    run = run.updated(m=resolution, max_iter=3, tol=0, save_every=0).with_output_dir(tmp_path)
+    lines = []
+    grid = runner.run_compare_methods(run, window.cmg, None, lines.append)
+    assert grid and grid.exists(), "\n".join(lines)
+    with (tmp_path / "compare_methods" / "methods.csv").open(newline="", encoding="utf-8") as stream:
+        rows = list(csv.DictReader(stream))
+    assert [row["method"] for row in rows] == methods
+    assert all(row["status"] == "ran" for row in rows), rows
+    assert all(np.isfinite(float(row["objective"])) for row in rows)
+    assert all(np.isfinite(float(row["referee_compliance"])) for row in rows)
+    assert all(0 <= float(row["volume"]) <= 1 for row in rows)
+    if run.scenario.objective["type"] == "thermal_compliance":
+        assert all(float(row["referee_compliance"]) > 0 for row in rows)
+        assert all(float(row["thermal_compliance"]) > 0 for row in rows)
+    elif run.scenario.objective["type"] == "eigenfrequency":
+        assert all(float(row["omega_1"]) > 0 for row in rows)

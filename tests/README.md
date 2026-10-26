@@ -12,3 +12,13 @@ The folders mirror the package, so the tests for a part sit where you would look
 | [`checks/`](checks/) | The conformance test: every registered plugin passes, broken ones are caught, and every example in `docs/writing-plugins.md` and `docs/quickstart.md` runs. |
 
 Run everything with `python -m pytest`; one folder with `python -m pytest tests/plugins`.
+
+The GUI suite parametrises Compare Methods over every registered preset. It loads
+the actual panels, checks that the scenario survives unchanged (including small
+loads and response defaults), and runs the automatically selected comparisons on
+coarse meshes for three iterations. It checks the grid, CSV, finite metrics and
+physics-specific thermal/frequency results. These are routing and execution checks,
+not convergence benchmarks; the plugin tests provide the physical validation.
+
+Test output belongs in pytest's temporary directories. `results/`, `__pycache__/`
+and test/lint caches contain generated files and can be removed after a run.

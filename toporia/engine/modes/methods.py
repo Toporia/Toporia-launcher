@@ -17,13 +17,10 @@
 # alike, and their numbers become further columns: with a threshold, the
 # compliance of every design cut to black and white at its own volume.
 #
-# The table reports each method's own objective, and also a referee: the
-# compliance of every final design measured the same way, on Toporia's Q4
-# solver with SIMP p = 3 and no filter.  Methods use different physics (the
-# pyMOTO model), penalties or interpolations (the level set is linear), so
-# their own objectives are not on one scale; the referee is.  The grey level
-# (Sigmund 2007: 4/n Σ ρ(1 − ρ), 0 for black and white, 1 for uniform grey)
-# says how crisp each design is.
+# The table keeps each method's objective and a common SIMP-p=3 compliance
+# measurement (Q4/H8, retaining springs; scalar conduction for heat). The grid
+# shows the relevant objective metric, including displacement and frequency.
+# Grey level is 4/n Σ ρ(1 − ρ): zero for binary material, one for uniform grey.
 #
 # Output, in <output>/compare_methods/ (or one folder per problem for a benchmark):
 #   <method>/        each method's own run: final_density.png, run.json, ...
@@ -144,6 +141,12 @@ def sweep_methods(methods, parameter, min_val, max_val, n_values, base_config, o
 def _design_metric(row):
     if "output_displacement" in row:
         return f"Output displacement = {row['output_displacement']:.4g}"
+    if "omega_1" in row:
+        return f"Fundamental frequency = {row['omega_1']:.4g} rad/s"
+    if "thermal_compliance" in row:
+        return f"Thermal compliance = {row['thermal_compliance']:.4g}"
+    if "objective_type" in row and row["objective_type"] not in ("compliance", "end_compliance"):
+        return f"Objective = {row['objective']:.4g}"
     return f"C = {row['referee_compliance']:.4g}"
 
 
@@ -192,6 +195,13 @@ def _run_method(name, base_config, folder, on_iteration):
     row.update(table_metrics(store.postprocess))     # e.g. threshold.compliance, the same for every method
     if "output_displacement" in final:
         row["output_displacement"] = final["output_displacement"]
+    objective_type = run.scenario.objective.get("type", "compliance")
+    if objective_type == "eigenfrequency" and "omega_1" in final:
+        row["omega_1"] = final["omega_1"]
+    elif objective_type == "thermal_compliance":
+        row["thermal_compliance"] = final["objective"]
+    elif objective_type not in ("compliance", "end_compliance", "output_displacement"):
+        row["objective_type"] = objective_type
     row.update(
         status="ran",
         objective=final.get("objective"),
@@ -209,7 +219,8 @@ def _run_method(name, base_config, folder, on_iteration):
 
 def referee_compliance(run, density):
     """Compliance of a final design measured the same way for every method (plugins/postprocessors/_measure.py)."""
-    return measure.referee_compliance(make_problem(run.scenario, run.solver.m), density)
+    return measure.referee_compliance(make_problem(run.scenario, run.solver.m), density,
+                                      heat_source=run.solver.method_params.get("heat_source"))
 
 
 grey_level = measure.grey_level

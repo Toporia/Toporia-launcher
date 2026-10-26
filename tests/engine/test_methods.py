@@ -93,6 +93,21 @@ def test_the_referee_retains_the_mechanisms_point_springs():
     assert referee_compliance(run, density) == pytest.approx(expected, rel=1e-12)
 
 
+def test_thermal_referee_measures_heat_with_the_selected_source_not_zero_mechanical_work():
+    from toporia.plugins.interpolations.simp import SIMP
+    from toporia.plugins.physics.q4_heat import Q4Heat
+
+    run = _small("Heat Sink", m=0.1, method_params={"heat_source": 0.0002})
+    problem = RectangularProblem(run.scenario, run.solver.m)
+    engine = Q4Heat()
+    engine.initialize(problem, {"heat_source": 0.0002}, SIMP(3))
+    density = np.clip(np.full(problem.shape, 0.4), problem.lower_bound, problem.upper_bound)
+    state = engine.solve(density)
+    expected = sum(w*engine.thermal_compliance(state, i) for i, w in enumerate(state.weights))
+    assert expected > 0
+    assert referee_compliance(run, density) == pytest.approx(expected, rel=1e-12)
+
+
 def test_comparison_preflight_uses_the_candidate_models_dimensions():
     from toporia.engine.modes.methods import comparison_problems
     from toporia.plugins.methods import method_class

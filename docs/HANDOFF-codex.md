@@ -1,5 +1,8 @@
 # Handoff: what is still to do (for Codex)
 
+> Historical handoff from 25 October 2026. Several items below are now complete.
+> Read [the current integration status](INTEGRATION-progress.md) before continuing.
+
 Written 2026-10-25. This file is for an agent that continues the work on Toporia. It lists what
 is done, what is half done (**buckling**), and what is still to add from the "small" and
 "medium" lists. It also gives the rules a new part must follow.

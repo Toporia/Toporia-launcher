@@ -440,6 +440,10 @@ class CompareMethodsParamsGroup(QGroupBox):
             updaters = ("mma", "conlin") if run.scenario.objective.get("type") == "output_displacement" else (
                 "oc", "mma", "simpl", "beso")
             preferred = [f"{model_name}+{u}" for u in updaters] if model else [current.name]
+            # Keep a preset's validated specialist (e.g. buckling MMA or local
+            # stress AL) when the classic compliance updaters cannot be used.
+            if current.name not in preferred:
+                preferred.append(current.name)
             selected = [name for name in preferred if name in eligible] or list(eligible[:1])
         for i in range(self.methods.count()):
             item = self.methods.item(i)

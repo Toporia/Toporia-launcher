@@ -1,6 +1,6 @@
-# Toporia-launcher
+# Toporia
 
-A platform for topology-optimisation research: a robust framework in which algorithms,
+A platform for topology-optimisation research: a framework in which algorithms,
 filters and other approaches from the literature can be implemented, compared fairly and
 brought to the world. Every choice in a method is a swappable part, so two runs that
 differ in one part are a fair comparison.
@@ -13,6 +13,24 @@ pip install -e ".[dev,3d]"
 
 Then `toporia` opens the desktop app, and `toporia run "MBB Beam"` runs from the command
 line.
+
+## Comparing methods
+
+Load a preset and choose **Compare Methods**. Compatible methods are selected for
+that preset's physics and objective; the preset's recommended method is retained.
+Other entries are disabled with an explanation on hover. You can change the
+checked methods without changing the problem, mesh or stopping rule.
+
+The study saves a design grid and `methods.csv` under `results/compare_methods/`.
+It reports the objective, volume, stopping reason and constraint feasibility.
+Mechanisms show signed output displacement, vibration shows fundamental frequency,
+and thermal studies show thermal compliance. A method that completes a run has
+not necessarily converged or met every constraint: check those columns.
+
+Every bundled preset has a GUI-to-comparison regression test on a small mesh.
+These short tests check setup and execution; method-specific tests check gradients
+and physical benchmarks. Generated runs and test caches are disposable and are
+not part of the source library.
 
 | You want to… | Read |
 | :-- | :-- |
@@ -38,20 +56,20 @@ any doubt about what this repository actually does today:
 
 | Layer | ✅ In Toporia | 🔗 Open code | 📄 Paper only |
 | :-- | :-- | --: | --: |
-| [Methods](toporia/plugins/methods/README.md) — how the design is described | SIMP density, RBF level set, BESO | 12 | 2 |
-| [Filters](toporia/plugins/filters/README.md) — regularisation and fabrication | density, sensitivity, Heaviside (fixed or volume-preserving), PDE (isotropic or anisotropic), morphology, AM overhang, symmetry, routing, extrusion, pattern, casting | 1 | 8 |
+| [Whole methods](toporia/plugins/methods/README.md) | RBF, reaction-diffusion and Hamilton-Jacobi/topological-derivative level sets | 10 | 1 |
+| [Filters](toporia/plugins/filters/README.md) — regularisation and fabrication | density, sensitivity, Heaviside (fixed or volume-preserving), PDE (isotropic or anisotropic), morphology, AM overhang, symmetry, routing, extrusion, pattern, casting | 1 | 7 |
 | [Design representations](toporia/plugins/representations/README.md) — what the variables are | element densities, moving morphable components (constant or variable thickness), moving morphable voids (2D), capsule geometry projection (2D/3D), B-spline fields | 0 | 1 |
 | [Material laws](toporia/plugins/interpolations/README.md) — density to stiffness | SIMP, RAMP, ordered SIMP | 0 | 3 |
 | [Schedules](toporia/plugins/schedules/README.md) — continuation, and robust variants | equal steps, geometric, linear ramp, when the design settles | 0 | 1 |
 | [Post-processors](toporia/plugins/postprocessors/README.md) — threshold, checks, exports | threshold, connectivity, feature size, grey level over the run, SVG, DXF, STL, smoothed outlines | 0 | 1 |
 | [Models](toporia/plugins/models/README.md) — physics and gradients | 2-D Q4, 3-D H8, pyMOTO elasticity; heat (2-D, 3-D, pyMOTO); vibration (Q4, pyMOTO); large deformation; linearised buckling; port springs and compliant mechanisms | 24 | 3 |
 | [Elements](toporia/plugins/physics/README.md) — discretisation | Q4 plane stress, H8 solid, Q4 and H8 heat, Q4 with mass, Q4 large deformation, Q4 buckling, Q4 with port springs | 5 | 3 |
-| [Responses](toporia/plugins/responses/README.md) — objectives and constraints | compliance, volume, von Mises stress (peak and local), thermal compliance, end compliance, eigenfrequency, dynamic compliance, buckling load factor, signed output displacement | 4 | 12 |
+| [Responses](toporia/plugins/responses/README.md) — objectives and constraints | compliance, phase-field energy, geometric minimum length, volume, von Mises stress (peak and local), thermal compliance, end compliance, eigenfrequency, dynamic compliance, buckling load factor, signed output displacement | 4 | 12 |
 | [Updaters](toporia/plugins/updaters/README.md) — optimisers | OC, MMA, GCMMA, SiMPL, BESO, SLSQP, trust-constr, NLopt (MMA, CCSAQ, SLSQP, AUGLAG), mmapy (MMA, GCMMA), null-space, TOBS, CONLIN, multi-constraint OC, Adam, PTO, hard-kill BESO, augmented Lagrangian, floating projection | 4 | 0 |
 | [Problems](toporia/plugins/problems/README.md) — benchmarks | MBB, robust MBB, cantilever, 3-D cantilever, Michell cantilever, L-bracket, L-bracket (local stress), heat sink, vibrating beam, column buckling, non-linear cantilever, force inverter, 3-point bending, bar, 3× drone arm | 6 | 0 |
 
-**103 implementations: 78 selectable plugins, 8 physics engines and 17 presets.
-56 catalogue entries have open code elsewhere; 34 are paper-only.**
+**107 implementations: 82 selectable plugins, 8 physics engines and 17 presets.
+54 catalogue entries have open code elsewhere; 32 are paper-only.**
 Plugin counts follow the registries; composed pairings and parameter options are
 not counted again as additional implementations.
 
@@ -70,9 +88,9 @@ solved, how density becomes stiffness, what is measured, how the design is updat
 parameters change during the run, and what is made of the result. Toporia separates them
 all, so a comparison can change one and only one of them.
 
-That is the gap worth filling: **no open-source package holds the problem, the mesh and the
-constraints fixed while swapping the parameterisation, the filter and the updater.** Start
-at [`toporia/plugins/README.md`](toporia/plugins/README.md).
+Toporia keeps the problem, mesh and constraints fixed while comparing compatible
+parameterisations, filters and updaters. Start at
+[`toporia/plugins/README.md`](toporia/plugins/README.md).
 
 ### How the code fits together
 
