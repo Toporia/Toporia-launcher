@@ -22,7 +22,7 @@ from PySide6.QtWidgets import QApplication
 from .window import MainWindow
 
 
-def launch():
+def launch(project_path=None):
     """Start the desktop app and block until its window is closed."""
     app = QApplication(sys.argv)  # one QApplication per process — mandatory
     app.setStyle("Fusion")        # cross-platform look that works on all OS
@@ -33,6 +33,8 @@ def launch():
 
     win = MainWindow()
     win.show()
+    if project_path is not None:
+        win.open_project(project_path)
     sys.exit(app.exec())
 
 

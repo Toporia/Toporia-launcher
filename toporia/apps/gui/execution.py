@@ -131,6 +131,7 @@ class ExecutionActions:
     def _show_result(self, result, resolution):
         """Own only finished single-run results; studies display their result image."""
         from . import runner
+        runner.last_run_folder = None
         if result["kind"] == "density":
             density = np.load(result["path"], allow_pickle=False)
             runner.last_run_folder = Path(result["folder"])
@@ -139,7 +140,7 @@ class ExecutionActions:
                     canvas.show_3d(density, 1 / resolution, self._log)
                 else:
                     canvas.reset()
-                    canvas.refresh(density, [0], 0)
+                    canvas.refresh(density, result.get("objectives", [0]), result.get("iteration", 0))
         elif result["kind"] == "image":
             for canvas in (self.canvas, self.post_canvas):
                 canvas.show_grid(result["path"], self.mode.currentText())
@@ -165,6 +166,9 @@ class ExecutionActions:
         self._running = False
         self._set_execution_controls(True)
         self._show_run_label()
+        if status == "Finished":
+            self.run_progress.setMaximum(100)
+            self.run_progress.setValue(100)
         self.run_status.setText(status + " · " + str(self._run_folder))
         self._refresh_export_buttons()
         self._refresh_run_history()
@@ -197,6 +201,9 @@ class ExecutionActions:
         path = Path(item.data(Qt.UserRole))
         try:
             record = json.loads(path.read_text(encoding="utf-8"))
+            from . import runner
+            runner.last_run_folder = None
+            self._refresh_export_buttons()
             self.run_status.setText(record.get("status", "unknown") + " · " + str(path.parent))
             log = path.parent / "console.txt"
             if log.exists():

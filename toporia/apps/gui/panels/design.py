@@ -19,7 +19,7 @@ from .common import CollapsibleSection, add_tooltip_row, double_box
 from .specs import RepresentationGroup
 
 #: The resolution entered as elements per mm, or as one element's size.
-PER_MM, SIZE = "per_mm", "size"
+PER_MM, SIZE, TARGET = "per_mm", "size", "target"
 
 
 class DesignSection(QWidget):
@@ -57,6 +57,7 @@ class DesignSection(QWidget):
         self.mode = QComboBox()
         self.mode.addItem("Elements per mm", userData=PER_MM)
         self.mode.addItem("Element size (mm)", userData=SIZE)
+        self.mode.addItem("Target elements (approx.)", userData=TARGET)
         add_tooltip_row(form, "Resolution as", self.mode,
                         "Enter the mesh resolution as elements per mm, or as the edge length of one element.",
                         "Toporia's own: the mesh follows from the case's size in millimetres.")
@@ -128,7 +129,14 @@ class DesignSection(QWidget):
 
     def _show_resolution(self):
         self.resolution.blockSignals(True)
-        if self.mode.currentData() == SIZE:
+        target = self.mode.currentData() == TARGET
+        self.resolution.setDecimals(0 if target else 3)
+        self.resolution.setRange(1 if target else .001, 2_000_000 if target else 1000)
+        if target:
+            self.resolution.setSuffix(" elements")
+            volume = self._Lx * self._Ly * (self.depth.value() if self.is_3d() else 1)
+            self.resolution.setValue(max(1, round(volume * self._per_mm ** (3 if self.is_3d() else 2))))
+        elif self.mode.currentData() == SIZE:
             self.resolution.setSuffix(" mm")
             self.resolution.setValue(1.0 / self._per_mm)
         else:
@@ -153,7 +161,11 @@ class DesignSection(QWidget):
     def _on_value(self, *_):
         value = self.resolution.value()
         if value > 0:
-            self._per_mm = 1.0 / value if self.mode.currentData() == SIZE else value
+            if self.mode.currentData() == TARGET:
+                volume = self._Lx * self._Ly * (self.depth.value() if self.is_3d() else 1)
+                self._per_mm = (value / volume) ** (1 / (3 if self.is_3d() else 2))
+            else:
+                self._per_mm = 1.0 / value if self.mode.currentData() == SIZE else value
         self._show_counts()
         self.changed.emit()
 

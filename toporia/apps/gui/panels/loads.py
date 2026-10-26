@@ -40,6 +40,7 @@ class LoadCaseRow(QWidget):
             w.setFixedWidth(72)
 
         self._fe_label = None
+        self._force_labels = {}
         for lbl, w, tip in [
             ("Fmag", self.fmag, "Force magnitude"),
             ("Angle°", self.fa, "0=+x  90=+y  270=-y"),
@@ -53,6 +54,8 @@ class LoadCaseRow(QWidget):
             row.addWidget(w)
             if w is self.fe:
                 self._fe_label = l
+            if w is not self.weight:
+                self._force_labels[w] = l
         self.set_3d(False)
 
         # The ✕ button calls on_remove(self) — passing *this row* as the argument
@@ -157,6 +160,9 @@ class LoadCasesGroup(QWidget):
         for row in self._rows:
             for widget in (row.fmag, row.fa, row.fe):
                 widget.setEnabled(not regional)
+                visible = not regional and (widget is not row.fe or self._three)
+                widget.setVisible(visible)
+                row._force_labels[widget].setVisible(visible)
                 if regional:
                     widget.setToolTip("Edit force components on each load object in the viewport inspector.")
 

@@ -6,9 +6,9 @@
 # "from gui import ...".  Here we just re-export the launch function
 # so the top-level gui.py only needs one import line.
 
-def launch():
+def launch(project_path=None):
     """Load Qt only when launching; headless workers may use project documents."""
     from .app import launch as start
-    return start()
+    return start(project_path)
 
 __all__ = ["launch"]      # explicit list of public names

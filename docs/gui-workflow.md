@@ -1,0 +1,91 @@
+# Project GUI
+
+Launch `python main.py` from this checkout. Home offers a sourced benchmark
+library, a blank physical definition, and project/problem import.
+Use `python main.py --project path/to/project.top` to open a project directly.
+
+## Files
+
+- `.top`: readable JSON with the scenario, solver, output options, notes, study
+  selections and diagram arrangement. It contains no computed result arrays.
+- `.pro`: independently reusable physical problem and editor objects.
+- A project's `results/` contains one new folder per run. `input.top` is the
+  exact submitted configuration; `session.json` records its status. Finished
+  single runs also contain `run.json` with numerical provenance and `design.npy`.
+- Save/load never executes Python from configuration files. Unknown format
+  versions and unknown top-level fields are rejected.
+
+The File menu has new/open/save/save-as/import/export and benchmark-copy actions.
+Unsaved changes prompt before replacing a project. View > Project notes opens
+the associated notes pane. `examples/gui-cantilever/project.top` is an editable
+2D example with explicit supports and a downward tip load.
+
+## Problem
+
+Reference problems are immutable; use **Copy to custom** to make an editable
+definition. Changing a solver does not change the original benchmark's physical
+problem. A blank custom definition has no automatic supports or loads.
+
+Dimension, representation and resolution are separate controls. Resolution can
+be entered as elements/mm, element size or an approximate target element count;
+the actual rounded mesh counts are displayed. Domain size and physical material
+are in the inspector. SIMP/RAMP interpolation is in Method.
+
+Select Point and click once; Line and Rectangle use two clicks; Circle places
+an initial circle whose diameter can be entered exactly. Coordinates are mm from
+the bottom-left domain origin. Select in the canvas or object list, edit the
+inspector, then **Apply object changes**. Drag to translate, or enter position,
+rotation and scale numerically. Circle position is its centre; rectangle position
+is its lower-left corner; line size is the signed endpoint offset. Polygon copies
+retain their vertices. Select or Pan changes the navigation mode; wheel zooms;
+Fit shows the domain and all objects. Undo/Redo applies to physical edits; Delete
+removes a selected object and can be undone.
+
+Objects have roles: support, load, forced solid, excluded material, or design
+domain. Multiple domain objects form a union. Solid and void must not overlap.
+Supports select displacement axes. Each load object owns a **total force vector**
+and a load-case number; the vector is divided evenly across its selected mesh
+nodes, so mesh refinement does not multiply the load. Load Cases controls the
+number and weights of cases. Magnitude/angle fields are only used by legacy
+presets. Every custom case must have a load.
+
+Preflight reports insufficient supports (a rigid-body rank test), invalid regions,
+zero-cell meshes, missing loads and material conflicts. Regions that sample no
+nodes/elements require a finer mesh or larger region. These checks do not prove
+stability for every disconnected topology or future physics model.
+
+## Method
+
+The main canvas displays the supported optimisation pipeline. Select a block to
+show its actual generated parameter controls on the left. Dragging boxes changes
+the diagram arrangement, not computation. Wheel zooms, dragging empty space pans,
+and Fit/Reset layout restore a readable view.
+
+Filters execute in their listed order. Use ↑/↓ in Filters to reorder them;
+schedules, variants and study paths continue to refer to the same filter. General
+graph rewiring is intentionally reserved for a later implementation.
+
+## Runner and Post & Export
+
+Run first saves the project, validates inputs, and launches an independent
+headless process from the immutable snapshot. Inputs are frozen until completion;
+the interface, plots and console remain responsive. Stop requests interruption
+after the current numerical iteration; it cannot interrupt a native sparse solve
+mid-operation. Stopped/failed runs are distinguished from finished designs.
+
+Select a saved session in Runner to inspect it. A session left running by power
+loss is shown as unfinished. Starting another run always creates a fresh folder.
+The application can reopen its saved inputs; it does not yet resume optimizer
+internal state from the middle of an iteration.
+
+Post & Export applies the selected post-processors to a completed single result,
+without reoptimising. Result ownership resets on project changes. Regional
+definitions cannot use the legacy Compare Load Cases editor yet: its shared
+magnitude/angle controls do not describe independent regional vectors. Other
+existing compatible studies remain available.
+
+## Development handoff
+
+`docs/gui-plan.md` is the linear implementation checklist and validation log.
+Each completed milestone has its own commit on GUI. No integration or launcher
+checkout is modified, and numerical golden baselines are not regenerated.

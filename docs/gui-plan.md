@@ -45,7 +45,7 @@ not complete. Resume from the first unchecked step after reading git status.
   explicit supports, full/void regions, compatibility and preflight checks.
 - [x] 6. Runner/results: prevent setup edits during execution, safe stop/error
   handling, project-specific output, fresh run directories and result provenance.
-- [ ] 7. Verify complete 2D open/edit/save/reopen/run/export workflow visually and
+- [x] 7. Verify complete 2D open/edit/save/reopen/run/export workflow visually and
   with meaningful integration tests; document usage and remaining limitations.
 - [ ] 8. General spatial regions and STL geometry adapter; independent 3D load/
   support/solid/void/domain assignments and conservative mesh validation.
@@ -117,5 +117,16 @@ shared-vector controls would have no physical effect.
 Validation: 202 application checks passed; 11 worker/lifecycle tests passed,
 including real headless subprocesses and two actual QProcess runs. Ruff passed.
 
-Next: milestone 7, visual verification of the complete 2D flow, documentation,
-remaining input/viewport polish, and regression checks before 3D work.
+Milestone 7 complete: visually inspected Home, benchmark Problem, Method and a
+completed custom 2D run in the native app. Fixed PySide text-item ownership,
+physical Fit bounds and force arrows; added approximate target element count,
+keyboard undo/redo/delete, direct --project launch and benchmark-copy affordance.
+The example examples/gui-cantilever/project.top is editable configuration only.
+User instructions are in docs/gui-workflow.md. Final 2D checks: 177 GUI/editor
+checks plus 12 worker/lifecycle/mesh checks passed, including repeated asynchronous
+runs and post-run SVG export. Ruff passed. Results live under ignored results/.
+
+Next: milestone 8, true spatial region masks and portable STL assignments. A local
+.venv (system site packages enabled) has been created for optional visualization
+libraries; no global Python environment was changed. Use UV cache under results/
+in this sandbox. Implement the solver adapter before the 3D viewport.

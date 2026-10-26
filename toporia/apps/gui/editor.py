@@ -5,8 +5,8 @@
 from copy import deepcopy
 from dataclasses import replace
 
-from PySide6.QtCore import QPointF, Qt, Signal
-from PySide6.QtGui import QBrush, QColor, QPainter, QPainterPath, QPen, QPolygonF
+from PySide6.QtCore import QPointF, QRectF, Qt, Signal
+from PySide6.QtGui import QAction, QBrush, QColor, QKeySequence, QPainter, QPainterPath, QPen, QPolygonF
 from PySide6.QtWidgets import (
     QCheckBox,
     QComboBox,
@@ -121,6 +121,7 @@ class ProblemEditor(QWidget):
     """Shared scene/list/inspector and undoable operations on one physical problem."""
 
     changed = Signal(object, object)  # Scenario, explicit object list
+    copy_requested = Signal()
 
     def __init__(self, parent=None):
         super().__init__(parent)
@@ -139,6 +140,9 @@ class ProblemEditor(QWidget):
             toolbar.addWidget(button)
             self.tool_buttons.append(button)
         toolbar.addStretch()
+        self.copy_button = QPushButton("Copy to custom")
+        self.copy_button.clicked.connect(self.copy_requested.emit)
+        toolbar.addWidget(self.copy_button)
         for text, callback in (("Undo", self.undo), ("Redo", self.redo), ("Fit", self.fit)):
             button = QPushButton(text)
             button.clicked.connect(callback)
@@ -231,6 +235,13 @@ class ProblemEditor(QWidget):
         self.view.scene().selectionChanged.connect(self._scene_selection)
         self.object_list.currentItemChanged.connect(self._list_selection)
         self.role.currentIndexChanged.connect(self._role_fields)
+        for shortcut, callback in ((QKeySequence.Undo, self.undo), (QKeySequence.Redo, self.redo),
+                                   (QKeySequence.Delete, self.delete_selected), ("Escape", lambda: self.set_tool("select"))):
+            action = QAction(self)
+            action.setShortcut(shortcut)
+            action.setShortcutContext(Qt.WidgetWithChildrenShortcut)
+            action.triggered.connect(callback)
+            self.addAction(action)
 
     def load(self, scenario, objects, readonly=False):
         """Display an explicit scene or the actual geometry of a legacy benchmark."""
@@ -257,11 +268,35 @@ class ProblemEditor(QWidget):
             boundary.setBrush(QColor("#243341"))
             boundary.setZValue(-1)
             scene.addItem(boundary)
+            origin = scene.addSimpleText("0,0 · XY [mm]")
+            origin.setBrush(QColor("#91a8ba"))
+            origin.setFlag(QGraphicsItem.ItemIgnoresTransformations)
+            origin.setPos(0, 0)
             for key, field in self.domain_fields.items():
                 field.setValue(getattr(self.scenario, key))
         for obj in self.objects:
             item = GeometryItem(obj, self.move_object, self.readonly)
             scene.addItem(item)
+            if obj["role"] == "load":
+                import numpy as np
+                vector = np.asarray(obj["force"][:2], float)
+                norm = np.linalg.norm(vector)
+                if norm:
+                    delta = vector / norm * max(self.scenario.Lx, self.scenario.Ly) * .065
+                    start = QPointF(obj["position"][0], -obj["position"][1])
+                    end = start + QPointF(delta[0], -delta[1])
+                    arrow = QPainterPath(start)
+                    arrow.lineTo(end)
+                    # Arrowhead size follows domain scale, independent of force magnitude.
+                    d = end - start
+                    length = (d.x() ** 2 + d.y() ** 2) ** .5
+                    unit = d / length
+                    normal = QPointF(-unit.y(), unit.x())
+                    arrow.lineTo(end - unit * length * .25 + normal * length * .13)
+                    arrow.moveTo(end)
+                    arrow.lineTo(end - unit * length * .25 - normal * length * .13)
+                    shown = scene.addPath(arrow, QPen(QColor(COLOURS["load"]), 0))
+                    shown.setAcceptedMouseButtons(Qt.NoButton)
             self._items[obj["id"]] = item
             row = QListWidgetItem(f"{obj['name']} · {obj['role']}")
             row.setData(Qt.UserRole, obj["id"])
@@ -273,6 +308,7 @@ class ProblemEditor(QWidget):
         for button in self.tool_buttons[2:]:
             button.setEnabled(not self.readonly)
         self.domain_form.setEnabled(not self.readonly)
+        self.copy_button.setVisible(self.readonly)
         self.undo_button.setEnabled(bool(self._undo) and not self.readonly)
         self.redo_button.setEnabled(bool(self._redo) and not self.readonly)
         self.hint.setText("Reference problem · use File → Copy benchmark to custom problem to edit." if self.readonly
@@ -447,7 +483,12 @@ class ProblemEditor(QWidget):
 
     def fit(self):
         """Show the whole domain and all geometry without distorting its aspect ratio."""
-        bounds = self.view.scene().itemsBoundingRect()
+        if self.scenario is None:
+            return
+        # Screen-sized annotations must not enlarge the physical fitting bounds.
+        bounds = QRectF(0, -self.scenario.Ly, self.scenario.Lx, self.scenario.Ly)
+        for item in self._items.values():
+            bounds = bounds.united(item.sceneBoundingRect())
         margin = max(bounds.width(), bounds.height(), 1) * .08
         bounds = bounds.adjusted(-margin, -margin, margin, margin)
         self.view.setSceneRect(bounds)

@@ -39,7 +39,8 @@ def execute(project, on_iteration):
         store, density = run_one(cfg, **callback)
         path = Path(cfg.output.dir) / "design.npy"
         np.save(path, density)
-        return {"kind": "density", "path": str(path), "folder": str(store.output_dir)}
+        return {"kind": "density", "path": str(path), "folder": str(store.output_dir),
+                "objectives": store.objectives, "iteration": len(store.objectives)}
     if mode == "Check Parts":
         if not check_parts(cfg):
             raise ValueError("One or more selected parts failed their conformance checks")

@@ -283,6 +283,7 @@ class MainWindow(ProjectActions, ExecutionActions, QMainWindow):
         layout.addWidget(self._step_title)
 
         mode_box = QWidget()
+        mode_box.setMaximumHeight(48)
         mode_row = QHBoxLayout(mode_box)
         mode_row.setContentsMargins(0, 0, 0, 0)
         mode_row.addWidget(QLabel("Mode:"))
@@ -398,6 +399,7 @@ class MainWindow(ProjectActions, ExecutionActions, QMainWindow):
         self.problem_preview = LiveCanvas()
         self.problem_editor = ProblemEditor()
         self.problem_editor.changed.connect(self._on_scene_changed)
+        self.problem_editor.copy_requested.connect(self.copy_to_custom)
         self.workspace_views.addWidget(self.problem_editor)
         self.method_view = MethodWorkspace()
         self.method_view.selected.connect(self._inspect_method_node)

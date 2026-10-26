@@ -85,6 +85,7 @@ def test_workspace_navigation_and_method_selection_share_actual_controls(window)
         assert window.root_pages.currentWidget() is window.workspace
         assert window.workspace_views.currentIndex() == index
     window.go_to_step(1)
+    assert all(len(block.childItems()) == 2 for block in window.method_view.blocks.values())
     node = next(block.node for block in window.method_view.blocks.values() if block.node.kind == "objective")
     original = window.objective.parentWidget()
     window._inspect_method_node(node)
@@ -142,3 +143,16 @@ def test_real_qt_worker_completes_without_blocking_setup_or_overwriting_runs(win
         assert (folders[-1] / "run.json").exists()
     assert folders[0] != folders[1]
     assert window.run_history.count() == 2
+    window.post.load_specs([{"type": "threshold"}, {"type": "export_svg"}])
+    window._on_export()
+    assert list((folders[-1] / "post").glob("*.svg"))
+
+
+def test_target_element_count_shows_actual_mesh_without_changing_geometry(window):
+    window._activate_project(Project("Mesh experiment", get_run("MBB Beam")))
+    scenario = window._base_cfg.scenario
+    window.design.mode.setCurrentIndex(window.design.mode.findData("target"))
+    window.design.resolution.setValue(4800)
+    assert window.design.elements_per_mm() == pytest.approx(2)
+    assert "4,800" in window.design.counts.text()
+    assert window._base_cfg.scenario == scenario

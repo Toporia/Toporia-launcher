@@ -40,6 +40,9 @@ class _Block(QGraphicsRectItem):
         label.setPos(10, 25)
         for child in (title, label):
             child.setAcceptedMouseButtons(Qt.NoButton)
+        # PySide needs Python references here; otherwise the wrappers delete
+        # these child items even though the rectangle is their graphics parent.
+        self.text_items = (title, label)
         self.setToolTip("Select to edit parameters. Drag to arrange. Connections remain fixed.")
 
     def itemChange(self, change, value):

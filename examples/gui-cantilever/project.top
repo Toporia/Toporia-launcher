@@ -1,0 +1,190 @@
+{
+  "kind": "project",
+  "format": 1,
+  "name": "Custom 2D cantilever",
+  "scenario": {
+    "Lx": 30,
+    "Ly": 10,
+    "Lz": 0.0,
+    "holes": [],
+    "enforced_areas": [],
+    "edge_constraints": [],
+    "point_constraints": [],
+    "point_loads": [],
+    "load_cases": [
+      {
+        "Fmag": 1.0,
+        "Fa": 0.0,
+        "weight": 1.0,
+        "Fe": 0.0
+      }
+    ],
+    "volfrac": 0.5,
+    "objective": {
+      "type": "compliance"
+    },
+    "constraints": [],
+    "E0": 1.0,
+    "Emin": 1e-09,
+    "nu": 0.3,
+    "regions": [
+      {
+        "id": "ff8eac7e6b064613a48ec2e7aab96b9b",
+        "name": "Clamped left edge",
+        "shape": "line",
+        "position": [
+          0,
+          0,
+          0
+        ],
+        "size": [
+          0,
+          10,
+          0
+        ],
+        "rotation": [
+          0.0,
+          0.0,
+          0.0
+        ],
+        "role": "support",
+        "axes": [
+          "x",
+          "y"
+        ],
+        "force": [
+          0.0,
+          -1.0,
+          0.0
+        ],
+        "case": 0
+      },
+      {
+        "id": "24e6ad107a2e4342b808ebe650a5ce4c",
+        "name": "Downward tip force",
+        "shape": "point",
+        "position": [
+          30,
+          5,
+          0
+        ],
+        "size": [
+          1.0,
+          1.0,
+          1.0
+        ],
+        "rotation": [
+          0.0,
+          0.0,
+          0.0
+        ],
+        "role": "load",
+        "axes": [
+          "x",
+          "y"
+        ],
+        "force": [
+          0,
+          -1,
+          0
+        ],
+        "case": 0
+      }
+    ]
+  },
+  "solver": {
+    "method": "q4+oc",
+    "method_params": {},
+    "interpolation": {
+      "type": "simp"
+    },
+    "representation": {
+      "type": "element_density"
+    },
+    "filter_specs": [
+      {
+        "type": "density",
+        "rmin": 1.5
+      }
+    ],
+    "schedules": [],
+    "variants": {},
+    "m": 1,
+    "max_iter": 60,
+    "tol": 0.01
+  },
+  "output": {
+    "save_every": 10,
+    "postprocess": []
+  },
+  "benchmark": null,
+  "objects": [
+    {
+      "id": "ff8eac7e6b064613a48ec2e7aab96b9b",
+      "name": "Clamped left edge",
+      "shape": "line",
+      "position": [
+        0,
+        0,
+        0
+      ],
+      "size": [
+        0,
+        10,
+        0
+      ],
+      "rotation": [
+        0.0,
+        0.0,
+        0.0
+      ],
+      "role": "support",
+      "axes": [
+        "x",
+        "y"
+      ],
+      "force": [
+        0.0,
+        -1.0,
+        0.0
+      ],
+      "case": 0
+    },
+    {
+      "id": "24e6ad107a2e4342b808ebe650a5ce4c",
+      "name": "Downward tip force",
+      "shape": "point",
+      "position": [
+        30,
+        5,
+        0
+      ],
+      "size": [
+        1.0,
+        1.0,
+        1.0
+      ],
+      "rotation": [
+        0.0,
+        0.0,
+        0.0
+      ],
+      "role": "load",
+      "axes": [
+        "x",
+        "y"
+      ],
+      "force": [
+        0,
+        -1,
+        0
+      ],
+      "case": 0
+    }
+  ],
+  "notes": "Editable 2D example. Left edge fixes X and Y. The tip carries a total downward force of 1 N in load case 1. Save as your own project before experimenting.",
+  "study": {
+    "mode": "Run One"
+  },
+  "view": {}
+}
