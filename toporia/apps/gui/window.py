@@ -43,6 +43,7 @@ from PySide6.QtWidgets import (
 from .canvas import LiveCanvas
 from .help import text_topic, with_help
 from .home import HomePage
+from .method_view import MethodWorkspace
 from .panels import (
     CompareLoadCasesParamsGroup,
     CompareMethodsParamsGroup,
@@ -71,9 +72,9 @@ from .project_ui import ProjectActions
 STEPS = (
     ("Problem", "What is designed: the design space, the material budget, the loads and supports, "
                 "what is optimised and what must hold."),
-    ("Solver", "How it is optimised: the physics, the updater, the material law, the filters "
+    ("Method", "How it is optimised: the physics, the updater, the material law, the filters "
                "and anything that changes during the run."),
-    ("Study", "What kind of run: one design, a sweep, a comparison, a sensitivity study, "
+    ("Runner", "What kind of run: one design, a sweep, a comparison, a sensitivity study, "
               "or a check of every part."),
     ("Post & Export", "What happens to the finished design: clean-up, measurements and files."),
 )
@@ -147,9 +148,8 @@ class MainWindow(ProjectActions, QMainWindow):
         body = QSplitter(Qt.Horizontal)
         body.addWidget(self._build_sidebar())
         body.addWidget(self._build_view())
-        body.addWidget(self._build_overview())
         body.setStretchFactor(1, 1)
-        body.setSizes([390, 720, 330])
+        body.setSizes([350, 1090])
         self.workspace = body
         self.root_pages = QStackedWidget()
         self.home = HomePage()
@@ -286,9 +286,13 @@ class MainWindow(ProjectActions, QMainWindow):
         mode_row.addWidget(with_help(self.mode, self._mode_topic), 1)
 
         self._pages = QStackedWidget()
+        self.method_inspector = QWidget()
+        QVBoxLayout(self.method_inspector).setContentsMargins(0, 0, 0, 0)
+        self.method_inspector.hide()
+        self._inspected_widget = None
         pages = (
             (self.design, self.core.volume_box, self.lc, self.objective, self.constraints),
-            (self.core, self.material, self.filters, self.schedules, self.variants),
+            (self.method_inspector, self.core, self.material, self.filters, self.schedules, self.variants),
             (mode_box, self.sg, self.sg2, self.cg, self.clcg, self.cmg, self.msg, self.sens, self.ssg, self.ssg2),
             (self.post, self._build_export_box(), self.core.output_section),
         )
@@ -383,6 +387,13 @@ class MainWindow(ProjectActions, QMainWindow):
 
     def _build_view(self):
         """The live canvas, with the console under it."""
+        self.workspace_views = QStackedWidget()
+        self.problem_preview = LiveCanvas()
+        self.workspace_views.addWidget(self.problem_preview)
+        self.method_view = MethodWorkspace()
+        self.method_view.selected.connect(self._inspect_method_node)
+        self.method_view.arranged.connect(self._remember_diagram)
+        self.workspace_views.addWidget(self.method_view)
         view = QSplitter(Qt.Vertical)
         self.canvas = LiveCanvas()
         view.addWidget(self.canvas)
@@ -397,7 +408,73 @@ class MainWindow(ProjectActions, QMainWindow):
         view.addWidget(log_box)
         view.setStretchFactor(0, 1)
         view.setSizes([620, 180])
-        return view
+        self.workspace_views.addWidget(view)
+        self.post_canvas = LiveCanvas()
+        self.workspace_views.addWidget(self.post_canvas)
+        self.pipeline.setParent(self)
+        self.pipeline.hide()
+        return self.workspace_views
+
+    def _remember_diagram(self, positions):
+        """Persist presentation coordinates independently of the computation graph."""
+        if hasattr(self, "project"):
+            self.project.view["method_positions"] = positions
+
+    def _inspect_method_node(self, node):
+        """Reveal the existing generated controls for a selected diagram block."""
+        widgets = {"design": self.design.representation, "filter": self.filters,
+                   "material": self.material, "physics": self.core, "updater": self.core,
+                   "method": self.core, "objective": self.objective,
+                   "constraint": self.constraints, "budget": self.core.volume_box,
+                   "postprocessor": self.post}
+        widget = widgets.get(node.kind)
+        self._restore_inspector()
+        if widget is not None:
+            from .panels.common import CollapsibleSection
+            if not self._pages.widget(1).isAncestorOf(widget):
+                parent = widget.parentWidget()
+                original = parent.layout()
+                self._inspected_widget = (widget, original, original.indexOf(widget))
+                original.removeWidget(widget)
+                self.method_inspector.layout().addWidget(widget)
+                self.method_inspector.show()
+                widget.show()
+            for section in widget.findChildren(CollapsibleSection):
+                section.set_expanded(True)
+            page = self._pages.widget(1)
+            page.ensureWidgetVisible(widget)
+            widget.setFocus()
+
+    def _restore_inspector(self):
+        """Return borrowed settings to their workspace when leaving the Method step."""
+        if self._inspected_widget is not None:
+            widget, layout, index = self._inspected_widget
+            self.method_inspector.layout().removeWidget(widget)
+            layout.insertWidget(index, widget)
+            widget.show()
+            self._inspected_widget = None
+        self.method_inspector.hide()
+
+    def _on_filter_reordered(self, mapping):
+        """Schedules, variants and study paths continue to follow the same filter."""
+        import re
+
+        def remap(value):
+            if isinstance(value, str):
+                return re.sub(r"filters\[(\d+)\]", lambda m: f"filters[{mapping.get(int(m[1]), int(m[1]))}]", value)
+            if isinstance(value, dict):
+                return {key: remap(item) for key, item in value.items()}
+            if isinstance(value, list):
+                return [remap(item) for item in value]
+            return value
+
+        study = remap(self._capture_study())
+        schedules = remap(self.schedules.get_specs())
+        variants = remap(self.variants.get_spec())
+        self._refresh_parameter_paths()
+        self.schedules.load_specs(schedules)
+        self.variants.load_spec(variants)
+        self._restore_study(study)
 
     def _build_overview(self):
         """The pipeline, always in view, so every step's choices are visible together."""
@@ -424,6 +501,7 @@ class MainWindow(ProjectActions, QMainWindow):
             group.changed.connect(self._refresh_parameter_paths)
         self.core.method_changed.connect(self._on_method_changed)
         self.design.dims_changed.connect(self._on_dims_changed)
+        self.filters.reordered.connect(self._on_filter_reordered)
         self.variants.changed.connect(self._refresh_pipeline)
         self.post.changed.connect(self._refresh_pipeline)
         self.variants.robust_requested.connect(self._use_robust_projection)
@@ -454,7 +532,9 @@ class MainWindow(ProjectActions, QMainWindow):
         except (ValueError, KeyError) as error:
             self._log(f"[Preview] {error}")
             return
-        self.canvas.show_problem(cfg.scenario, cfg.solver.m, self.config_combo.currentText())
+        title = self.project.name if hasattr(self, "project") else self.config_combo.currentText()
+        self.problem_preview.show_problem(cfg.scenario, cfg.solver.m, title)
+        self.canvas.show_problem(cfg.scenario, cfg.solver.m, title)
 
     # ── Steps ─────────────────────────────────────────────────────────────────
 
@@ -466,7 +546,14 @@ class MainWindow(ProjectActions, QMainWindow):
         """Show step `index`'s settings; out-of-range indices are ignored."""
         if not 0 <= index < len(STEPS):
             return
+        if hasattr(self, "root_pages"):
+            self.root_pages.setCurrentIndex(1)
+        if index != 1:
+            self._restore_inspector()
         self._pages.setCurrentIndex(index)
+        self.workspace_views.setCurrentIndex(index)
+        if index == 1:
+            QTimer.singleShot(0, self.method_view.fit)
         self._step_buttons.button(index).setChecked(True)
         name, about = STEPS[index]
         self._step_title.setText(f"<b>{index + 1}. {name}</b><br><span style='color:gray'>{about}</span>")
@@ -621,6 +708,7 @@ class MainWindow(ProjectActions, QMainWindow):
             )
             self.pipeline.show_pipeline(pipeline_stages(cfg), pipeline_notes(cfg.solver.method, cfg),
                                         graph=pipeline_graph(cfg))
+            self.method_view.show_pipeline(pipeline_graph(cfg), pipeline_notes(cfg.solver.method, cfg))
         except (ValueError, KeyError) as error:
             self.pipeline.show_pipeline([], [f"Cannot describe this selection: {error}"])
 

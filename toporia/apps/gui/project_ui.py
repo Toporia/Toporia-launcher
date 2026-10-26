@@ -160,6 +160,8 @@ class ProjectActions:
         from . import runner
         runner.last_run_folder = None
         self.project = project
+        self.method_view.positions = project.view.get("method_positions", {})
+        self.method_view._signature = None
         self._populate_run(project.run)
         if hasattr(self, "notes"):
             self.notes.setPlainText(project.notes)

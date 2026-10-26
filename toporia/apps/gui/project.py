@@ -7,6 +7,7 @@
 import json
 import os
 import tempfile
+from copy import deepcopy
 from dataclasses import dataclass, field
 from pathlib import Path
 
@@ -60,8 +61,8 @@ class ProblemDocument:
 
     def payload(self):
         """Return the portable definition without solver settings or results."""
-        return {"kind": "problem", "format": FORMAT, "scenario": to_dict(self.scenario),
-                "objects": self.objects}
+        return deepcopy({"kind": "problem", "format": FORMAT, "scenario": to_dict(self.scenario),
+                         "objects": self.objects})
 
     def save(self, path):
         """Export a standalone, human-readable problem document."""
@@ -108,12 +109,12 @@ class Project:
 
     def payload(self):
         """Serialize configuration and UI state, excluding paths and computed results."""
-        return {"kind": "project", "format": FORMAT, "name": self.name,
+        return deepcopy({"kind": "project", "format": FORMAT, "name": self.name,
                 "scenario": to_dict(self.run.scenario), "solver": to_dict(self.run.solver),
                 "output": {"save_every": self.run.output.save_every,
                            "postprocess": self.run.output.postprocess},
                 "benchmark": self.benchmark, "objects": self.objects, "notes": self.notes,
-                "study": self.study, "view": self.view}
+                "study": self.study, "view": self.view})
 
     def save(self, path=None):
         """Save atomically and remember the location only after a successful write."""

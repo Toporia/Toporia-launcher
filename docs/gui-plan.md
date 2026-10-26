@@ -37,7 +37,7 @@ not complete. Resume from the first unchecked step after reading git status.
   notes, UI state and run output; serialization tests.
 - [x] 2. Home/library and file actions; benchmark cards/previews, descriptions,
   immutable originals, editable copies, notes and unsaved-change handling.
-- [ ] 3. Distinct step workspaces; interactive Method diagram and filter ordering;
+- [x] 3. Distinct step workspaces; interactive Method diagram and filter ordering;
   preserve generated plugin controls and existing analysis modes.
 - [ ] 4. Interactive 2D geometry editor: selection/list/inspector, numeric and
   graphical creation, transforms, domain/material settings, undo/redo and navigation.
@@ -78,5 +78,14 @@ Study settings (including comparison methods/load cases) round-trip with notes.
 Result ownership resets on project changes. Validation: 176 existing GUI/project
 checks and 4 new lifecycle tests passed; GUI ruff checks passed.
 
-Next: milestone 3, separate workspaces and interactive Method diagram. Current
-window keeps the old central canvas until this milestone. Do not change solvers.
+Milestone 3 complete: Problem/Method/Runner/Post each has a main workspace.
+Method uses a zoom/pan/select/drag scene; node selection borrows the real parameter
+controls into its inspector and returns them when leaving. The graph's topology
+is fixed. Filter rows have up/down controls; schedules/variants/study paths follow
+reordered filters. Diagram positions are project presentation state, not solver
+inputs. Validation: 180 regression checks plus 6 project/workspace tests passed.
+Ruff passed. No optimisation engine changes.
+
+Next: milestone 4, the 2D scene editor. The current Problem preview is still a
+Matplotlib preview. Build shared geometric objects and inspector first, then
+compile them to explicit solver inputs in milestone 5.

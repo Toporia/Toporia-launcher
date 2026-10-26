@@ -75,3 +75,40 @@ def test_problem_export_import_keeps_geometry_independent_of_solver(window, tmp_
     assert window.import_problem(path)
     assert window.current_config().scenario == scenario
     assert window.project.benchmark is None
+
+
+def test_workspace_navigation_and_method_selection_share_actual_controls(window):
+    window._activate_project(Project("Experiment", get_run("MBB Beam")))
+    window.show_home()
+    for index in range(4):
+        window.go_to_step(index)
+        assert window.root_pages.currentWidget() is window.workspace
+        assert window.workspace_views.currentIndex() == index
+    window.go_to_step(1)
+    node = next(block.node for block in window.method_view.blocks.values() if block.node.kind == "objective")
+    original = window.objective.parentWidget()
+    window._inspect_method_node(node)
+    assert window.current_step() == 1
+    assert window.objective.parentWidget() is window.method_inspector
+    window.go_to_step(0)
+    assert window.objective.parentWidget() is original
+
+
+def test_filter_reordering_keeps_parameter_references_and_changes_solver_order(window):
+    window._activate_project(Project("Experiment", get_run("MBB Beam")))
+    window.core.select_method("q4+mma")
+    window.filters.load_specs([{"type": "density", "rmin": 2.0}, {"type": "heaviside", "beta": 4.0}])
+    window._use_robust_projection()
+    window.schedules.load_specs([{"type": "steps", "path": "filters[1].beta", "start": 1., "end": 4., "step": 1., "every": 5}])
+    window.filters.move_row(1, -1)
+    cfg = window.current_config()
+    assert [spec["type"] for spec in cfg.solver.filter_specs] == ["heaviside", "density"]
+    assert cfg.solver.filter_specs[0]["beta"] == 4.0
+    assert cfg.solver.filter_specs[1]["rmin"] == 2.0
+    assert cfg.solver.schedules[0]["path"] == "filters[0].beta"
+    assert cfg.solver.variants["path"] == "filters[0].eta"
+    before = window._capture_project().payload()
+    block = next(iter(window.method_view.blocks.values()))
+    block.setPos(42, 64)
+    assert window.current_config() == cfg
+    assert window._capture_project().payload() != before
