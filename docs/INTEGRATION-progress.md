@@ -495,3 +495,30 @@ handoff. Ask the owner before installing or changing runtimes to obtain them.
 Source papers, licences, gradients, physical benchmarks, GUI reachability, CLI
 examples and documentation must be checked for every addition. Never regenerate
 golden baselines to accommodate a change.
+
+## GUI correction: Force Inverter input force (26 October 2026)
+
+The user reported uniform gray designs and very early stopping with most
+updaters. A headless GUI reproduction showed the preset's 0.001 N input force
+becoming 0.0 N when read back from the load-case panel. There were two rounding
+problems: the force field declared one decimal place, and the shared spinbox
+factory assigned initial values before setting precision (Qt initially uses
+two decimal places). With no force, displacement and its sensitivities vanish.
+
+The force editor now retains six decimals and the factory sets precision before
+bounds and values. The GUI mechanism regression now checks the complete load
+case and requires actual positive reversed output after optimisation, instead
+of accepting any finite output (including zero). Five small-force round-trip
+cases are also covered. All GUI and mechanism tests pass: **785 passed** in
+6 min 6 sec (`results/inverter-fix-regression.log`, matching XML). Ruff and
+whitespace checks pass for the changed code.
+
+The corrected GUI produces output 0.0258619 mm with MMA and 0.0136140 mm with
+CONLIN at m=0.4, using their GUI settings. The unchanged full-resolution direct
+MMA preset gives 0.0351544 mm at volume 0.3999999. These are useful working
+configurations, not guarantees for every optimiser: eleven updaters do not
+advertise output-displacement objectives, and tested SciPy/NLopt alternatives
+can settle near disconnected zero-output designs even with the correct load.
+Reload the preset after restarting the integration GUI to restore its force.
+Only the integration checkout is changed; GUI and launcher checkouts remain
+untouched. The pre-existing unrelated edit elsewhere in this file is preserved.

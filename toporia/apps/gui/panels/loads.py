@@ -31,13 +31,16 @@ class LoadCaseRow(QWidget):
         self._lbl.setFixedWidth(36)  # bold HTML label
         row.addWidget(self._lbl)
 
-        self.fmag = double_box(fmag, 0, 1e6, dec=1)  # force magnitude spinbox
+        # Mechanism presets use millinewton loads; rounding those to zero
+        # removes both the driving force and the optimisation sensitivities.
+        self.fmag = double_box(fmag, 0, 1e6, dec=6, step=0.001)
         self.fa = double_box(fa, -360, 360, dec=1, step=15.0)  # angle in degrees
         self.weight = double_box(weight, 0, 1, dec=1, step=0.1)  # compliance weight (should sum to 1)
         self.fe = double_box(fe, -90, 90, dec=1, step=15.0)  # 3-D only: out of the xy plane
 
         for w in (self.fmag, self.fa, self.weight, self.fe):
             w.setFixedWidth(72)
+        self.fmag.setFixedWidth(100)
 
         self._fe_label = None
         for lbl, w, tip in [

@@ -32,9 +32,11 @@ SENS_SWEEP_EXTRA = [
 def double_box(v, lo, hi, dec=3, step=0.1):
     """Create a floating-point spinbox with the given initial value, range, and step."""
     s = QDoubleSpinBox()
+    # Qt rounds values and bounds immediately using the current precision.
+    # Set it before either, rather than losing small defaults at Qt's two decimals.
+    s.setDecimals(dec)
     s.setRange(lo, hi)
     s.setValue(v)
-    s.setDecimals(dec)
     s.setSingleStep(step)
     return s
 

@@ -570,9 +570,8 @@ def test_the_heat_sink_preset_offers_thermal_compliance_and_runs_from_the_gui(wi
 
 
 def test_the_force_inverter_preserves_springs_and_its_signed_output_in_the_gui(window):
-    import numpy as np
-
     from toporia.apps.gui import runner
+    from toporia.checks.common import iterate
     from toporia.engine.loop import initialized_method
     window._on_config_changed("Force Inverter")
     assert window.core.method_name() == "q4_mechanism+mma"
@@ -581,7 +580,20 @@ def test_the_force_inverter_preserves_springs_and_its_signed_output_in_the_gui(w
                               objective=window.objective)
     assert run.scenario.point_springs == get_run("Force Inverter").scenario.point_springs
     assert run.scenario.objective == get_run("Force Inverter").scenario.objective
-    method = initialized_method(run.updated(m=0.2, max_iter=2, tol=0.0, save_every=0))
-    method.step(1)
-    method.step(2)
-    assert np.isfinite(method.get_responses()["output_displacement"])
+    assert run.scenario.load_cases == get_run("Force Inverter").scenario.load_cases
+    method = initialized_method(run.updated(m=0.4, save_every=0))
+    try:
+        iterate(method, 200, tol=0.001)
+        final = method._model.evaluate(method.x, gradients=False)
+        assert final.reported["output_displacement"] > 0.001
+        assert method.get_density().mean() <= 0.4001
+    finally:
+        method.close()
+
+
+@pytest.mark.parametrize("magnitude", [0.000001, 0.001, 0.012345, 1.0, 1234.56789])
+def test_load_case_rows_preserve_small_force_magnitudes(app, magnitude):
+    from toporia.apps.gui.panels.loads import LoadCaseRow
+
+    row = LoadCaseRow(1, fmag=magnitude)
+    assert row.get().Fmag == pytest.approx(magnitude, rel=1e-12)
