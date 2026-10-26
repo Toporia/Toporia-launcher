@@ -112,3 +112,33 @@ def test_filter_reordering_keeps_parameter_references_and_changes_solver_order(w
     block.setPos(42, 64)
     assert window.current_config() == cfg
     assert window._capture_project().payload() != before
+
+
+def test_real_qt_worker_completes_without_blocking_setup_or_overwriting_runs(window, tmp_path, monkeypatch):
+    import time
+
+    from toporia.apps.gui import runner
+    monkeypatch.setattr(QMessageBox, "question", lambda *_: QMessageBox.Discard)
+    run = get_run("MBB Beam").updated(m=.3, max_iter=2, save_every=0)
+    window._activate_project(Project("Async experiment", run))
+    assert window.save_project(tmp_path / "project.top")
+    folders = []
+    for _ in range(2):
+        window._on_run()
+        assert window._running
+        assert not window._pages.isEnabled()
+        assert window.current_step() == 2
+        folders.append(window._run_folder)
+        deadline = time.monotonic() + 40
+        while window._running and time.monotonic() < deadline:
+            QApplication.processEvents()
+            time.sleep(.01)
+        assert not window._running
+        assert window.run_status.text().startswith("Finished"), window.log.toPlainText()
+        assert window._pages.isEnabled()
+        assert window.export_btn.isEnabled()
+        assert runner.last_run_folder == folders[-1]
+        assert (folders[-1] / "input.top").exists()
+        assert (folders[-1] / "run.json").exists()
+    assert folders[0] != folders[1]
+    assert window.run_history.count() == 2

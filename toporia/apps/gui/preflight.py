@@ -9,7 +9,7 @@ from toporia.framework.registry import missing_dependencies
 from toporia.plugins.methods import method_class
 
 
-def problems(run, check_mesh=False):
+def problems(run, check_mesh=False, mesh_limit=200_000):
     """Return errors without changing the project or silently supplying defaults."""
     try:
         method = method_class(run.solver.method)
@@ -23,7 +23,7 @@ def problems(run, check_mesh=False):
             validate_scenario(run.scenario, run.solver.m)
             count = math.prod(max(1, round(size * run.solver.m)) for size in
                               (run.scenario.Lx, run.scenario.Ly, *([run.scenario.Lz] if run.scenario.Lz else [])))
-            if check_mesh and count <= 200_000:
+            if check_mesh and (mesh_limit is None or count <= mesh_limit):
                 make_problem(run.scenario, run.solver.m)
             elif check_mesh:
                 issues.append("Mesh exceeds 200,000 elements; full spatial validation runs when you press Run.")

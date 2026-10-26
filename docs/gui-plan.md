@@ -43,7 +43,7 @@ not complete. Resume from the first unchecked step after reading git status.
   graphical creation, transforms, domain/material settings, undo/redo and navigation.
 - [x] 5. Compile custom 2D objects to solver inputs; independent regional loads,
   explicit supports, full/void regions, compatibility and preflight checks.
-- [ ] 6. Runner/results: prevent setup edits during execution, safe stop/error
+- [x] 6. Runner/results: prevent setup edits during execution, safe stop/error
   handling, project-specific output, fresh run directories and result provenance.
 - [ ] 7. Verify complete 2D open/edit/save/reopen/run/export workflow visually and
   with meaningful integration tests; document usage and remaining limitations.
@@ -105,6 +105,17 @@ object structure is checked before it reaches graphics widgets.
 Validation: 378 framework/application tests passed; 29 regional/golden checks
 passed after active-material validation; ruff passed. Golden files unchanged.
 
-Next: milestone 6. Make execution use current_config(), save input snapshots in
-fresh per-project run directories, disable edits during runs, and own/export only
-completed results from this project. Existing runner is still synchronous Qt.
+Milestone 6 complete: Qt launches a headless worker process using immutable
+input.top snapshots in unique per-project run folders. Setup edits are frozen,
+plots/logs remain responsive, Stop is cooperative at an iteration boundary.
+Each session records finished/stopped/error/interrupted state. Results/history
+are owned by the active project; new runs do not overwrite old runs, and only
+finished single results enable post-processing. All legacy study modes dispatch
+from saved plain values. Regional load vectors are edited per object; legacy
+Compare Load Cases is explicitly blocked for regional definitions because its
+shared-vector controls would have no physical effect.
+Validation: 202 application checks passed; 11 worker/lifecycle tests passed,
+including real headless subprocesses and two actual QProcess runs. Ruff passed.
+
+Next: milestone 7, visual verification of the complete 2D flow, documentation,
+remaining input/viewport polish, and regression checks before 3D work.

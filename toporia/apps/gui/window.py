@@ -23,13 +23,14 @@ from PySide6.QtCore import Qt, QTimer
 from PySide6.QtGui import QFont, QTextCursor
 from PySide6.QtWidgets import (
     QAbstractSpinBox,
-    QApplication,
     QButtonGroup,
     QComboBox,
     QFrame,
     QHBoxLayout,
     QLabel,
+    QListWidget,
     QMainWindow,
+    QProgressBar,
     QPushButton,
     QScrollArea,
     QSplitter,
@@ -42,6 +43,7 @@ from PySide6.QtWidgets import (
 
 from .canvas import LiveCanvas
 from .editor import ProblemEditor
+from .execution import ExecutionActions
 from .help import text_topic, with_help
 from .home import HomePage
 from .method_view import MethodWorkspace
@@ -120,7 +122,7 @@ class _StopRequested(Exception):
     Using a dedicated type lets us catch it separately from real errors."""
 
 
-class MainWindow(ProjectActions, QMainWindow):
+class MainWindow(ProjectActions, ExecutionActions, QMainWindow):
     """The application window: steps and Run along the top, the current step's settings
     on the left, the live canvas and the log in the middle, the pipeline on the right."""
 
@@ -286,6 +288,10 @@ class MainWindow(ProjectActions, QMainWindow):
         mode_row.addWidget(QLabel("Mode:"))
         mode_row.addWidget(with_help(self.mode, self._mode_topic), 1)
 
+        self.run_history = QListWidget()
+        self.run_history.setMaximumHeight(220)
+        self.run_history.setToolTip("Saved runs for this project; select one to review its output.")
+        self.run_history.itemClicked.connect(self._open_history_result)
         self._pages = QStackedWidget()
         self.method_inspector = QWidget()
         QVBoxLayout(self.method_inspector).setContentsMargins(0, 0, 0, 0)
@@ -294,7 +300,7 @@ class MainWindow(ProjectActions, QMainWindow):
         pages = (
             (self.design, self.core.volume_box, self.lc, self.objective, self.constraints),
             (self.method_inspector, self.core, self.material, self.filters, self.schedules, self.variants),
-            (mode_box, self.sg, self.sg2, self.cg, self.clcg, self.cmg, self.msg, self.sens, self.ssg, self.ssg2),
+            (mode_box, self.run_history, self.sg, self.sg2, self.cg, self.clcg, self.cmg, self.msg, self.sens, self.ssg, self.ssg2),
             (self.post, self._build_export_box(), self.core.output_section),
         )
         for widgets in pages:
@@ -397,7 +403,15 @@ class MainWindow(ProjectActions, QMainWindow):
         self.method_view.selected.connect(self._inspect_method_node)
         self.method_view.arranged.connect(self._remember_diagram)
         self.workspace_views.addWidget(self.method_view)
+        runner_page = QWidget()
+        runner_layout = QVBoxLayout(runner_page)
+        self.run_status = QLabel("Ready to run")
+        self.run_status.setWordWrap(True)
+        self.run_progress = QProgressBar()
+        runner_layout.addWidget(self.run_status)
+        runner_layout.addWidget(self.run_progress)
         view = QSplitter(Qt.Vertical)
+        runner_layout.addWidget(view, 1)
         self.canvas = LiveCanvas()
         view.addWidget(self.canvas)
         log_box = QWidget()
@@ -411,7 +425,7 @@ class MainWindow(ProjectActions, QMainWindow):
         view.addWidget(log_box)
         view.setStretchFactor(0, 1)
         view.setSizes([620, 180])
-        self.workspace_views.addWidget(view)
+        self.workspace_views.addWidget(runner_page)
         self.post_canvas = LiveCanvas()
         self.workspace_views.addWidget(self.post_canvas)
         self.pipeline.setParent(self)
@@ -520,6 +534,7 @@ class MainWindow(ProjectActions, QMainWindow):
         self.variants.robust_requested.connect(self._use_robust_projection)
         # Any edit of the problem redraws its preview; rows added later are wired as they come.
         self.lc.cases_changed.connect(self._watch_problem_inputs)
+        self.lc.cases_changed.connect(lambda *_: self.lc.set_regional(self.project.objects is not None) if hasattr(self, "project") else None)
         self._watch_problem_inputs()
 
     def _watch_problem_inputs(self, *_):
@@ -565,6 +580,8 @@ class MainWindow(ProjectActions, QMainWindow):
 
     def go_to_step(self, index):
         """Show step `index`'s settings; out-of-range indices are ignored."""
+        if self._running and index != 2:
+            return
         if not 0 <= index < len(STEPS):
             return
         if hasattr(self, "root_pages"):
@@ -692,6 +709,8 @@ class MainWindow(ProjectActions, QMainWindow):
             schedules=self.schedules.get_specs(),
             **setup,
         )
+        if hasattr(self, "project") and self.project.objects is not None:
+            items = [(label, path) for label, path in items if not path.startswith("load_cases[") or path.endswith(".weight")]
         for group in self._sweep_groups:
             group.refresh(items)
         self.variants.set_paths(items)
@@ -739,129 +758,14 @@ class MainWindow(ProjectActions, QMainWindow):
         self.log.moveCursor(QTextCursor.End)
         self.log.insertPlainText(text + "\n")
         self.log.moveCursor(QTextCursor.End)
-        QApplication.processEvents()  # force Qt to repaint the log immediately
 
     def _on_stop(self):
-        """Called when the user clicks Stop — sets the flag that on_iter checks."""
-        self._stop = True
-        self._log("Stop requested…")
+        """Request a stop without blocking the Qt event loop."""
+        self.stop_execution()
 
     def _on_run(self):
-        """Called when Run is clicked.  Orchestrates the full run sequence."""
-        mode = self.mode.currentText()
-        self.log.clear()
-        self._log(f"=== {mode} ===")
-        self._stop = False
-        self._running = True
-
-        # Re-label the button as Stop and rewire it to _on_stop.
-        # The original connection is disconnected first to avoid double-firing.
-        self.run_btn.setText("⏹  Stop")
-        self.run_btn.clicked.disconnect()
-        self.run_btn.clicked.connect(self._on_stop)
-        QApplication.processEvents()
-
-        from . import runner  # imports SciPy-backed optimisation code only when needed
-
-        cfg = runner.build_config(
-            self.core,
-            self.lc,
-            self.filters,
-            base_cfg=self._base_cfg,
-            objective=self.objective,
-            constraints=self.constraints,
-            interpolation=self.material,
-            representation=self.design,
-            schedules=self.schedules,
-            variants=self.variants,
-            postprocess=self.post,
-            design=self.design,
-        )
-
-        # on_iter is the per-iteration callback passed into the optimisation scripts.
-        # It runs inside the optimisation loop after every solver step.
-        last_it = [0]  # list instead of plain int so the nested function can modify it
-
-        def on_iter(d, obj, it):
-            """Called after every iteration: honour Stop, redraw the canvas, keep the window responsive."""
-            if self._stop:
-                raise _StopRequested()  # breaks out of the optimisation loop cleanly
-            if it <= last_it[0]:
-                self.canvas.reset()  # new sweep cell started — clear the canvas
-            last_it[0] = it
-            self.canvas.refresh(d, obj, it)
-            QApplication.processEvents()  # keep the UI responsive between iterations
-
-        try:
-            self.canvas.reset()
-            if mode == "Run One":
-                density = runner.run_one(cfg, on_iter, self._log)
-                if density.ndim == 3:
-                    self.canvas.show_3d(density, 1.0 / cfg.solver.m, self._log)
-            elif mode == "Check Parts":
-                # The conformance test (toporia.checks) on every part of the
-                # pipeline above: interfaces, gradients, and the benchmark.
-                runner.run_check(cfg, self._log)
-            elif mode == "Sweep":
-                grid = runner.run_sweep(cfg, self.sg, on_iter, self._log)
-                self.canvas.show_grid(grid, f"Sweep: {self.sg.key()}")
-            elif mode == "Sweep 2D":
-                grid = runner.run_sweep_2d(cfg, self.sg2, on_iter, self._log)
-                self.canvas.show_grid(grid, f"Sweep 2D: {self.sg2.row_key()} vs {self.sg2.col_key()}")
-            elif mode == "Compare Two":
-                img = runner.run_compare_two(cfg, self.cg, on_iter, self._log)
-                self.canvas.show_grid(
-                    img,
-                    f"Compare: {self.cg.key()}  A={self.cg.value_a.value():.3g}"
-                    f"  vs  B={self.cg.value_b.value():.3g}",
-                )
-            elif mode == "Compare Methods":
-                grid = runner.run_compare_methods(cfg, self.cmg, on_iter, self._log)
-                if grid is not None:
-                    self.canvas.show_grid(
-                        grid,
-                        f"Compare Methods: {cfg.scenario.Lx:g} x {cfg.scenario.Ly:g} mm, "
-                        f"{len(self.cmg.selected())} methods",
-                    )
-            elif mode == "Sweep Methods":
-                grid = runner.run_sweep_methods(cfg, self.msg, on_iter, self._log)
-                if grid is not None:
-                    self.canvas.show_grid(grid, f"Sweep Methods: {len(self.msg.selected())} methods x {self.msg.key()}")
-            elif mode == "Compare Load Cases":
-                img = runner.run_compare_load_cases(cfg, self.clcg, on_iter, self._log)
-                self.canvas.show_grid(img, "Compare Load Cases  —  A vs B")
-            elif mode == "Sensitivity":
-                img = runner.run_sensitivity(cfg, self.sens, on_iter, self._log)
-                self.canvas.show_grid(
-                    img,
-                    f"Sensitivity: {self.sens.key()}"
-                    f"  base={self.sens.base_value.value():.3g}"
-                    f"  Δ={self.sens.gap.value():.3g}",
-                )
-            elif mode == "Sensitivity Sweep":
-                grid = runner.run_sensitivity_sweep(cfg, self.ssg, on_iter, self._log)
-                self.canvas.show_grid(
-                    grid,
-                    f"Sensitivity Sweep: {self.ssg.sweep_key()}  sens={self.ssg.sens_key()}",
-                )
-            else:
-                grid = runner.run_sensitivity_sweep_2d(cfg, self.ssg2, on_iter, self._log)
-                self.canvas.show_grid(
-                    grid,
-                    f"Sensitivity Sweep 2D:"
-                    f"  {self.ssg2.row_sweep_key()} vs {self.ssg2.col_sweep_key()}"
-                    f"  sens={self.ssg2.sens_key()}",
-                )
-        except _StopRequested:
-            self._log("— Stopped —")  # user-requested stop: no error shown
-        except Exception:
-            self._log("\n[ERROR]\n" + traceback.format_exc())  # unexpected error: full traceback
-        finally:
-            self._running = False
-            self._refresh_export_buttons()
-            # This block ALWAYS runs — even after an exception.
-            # Restore the button to its Run state regardless of how the run ended.
-            self.run_btn.clicked.disconnect()
-            self.run_btn.clicked.connect(self._on_run)
-            self._show_run_label()
-        self._log("— Done —")
+        """Start an immutable project snapshot, or stop the current worker."""
+        if self._running:
+            self.stop_execution()
+        else:
+            self.start_execution()

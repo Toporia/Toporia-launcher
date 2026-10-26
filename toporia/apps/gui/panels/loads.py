@@ -152,6 +152,14 @@ class LoadCasesGroup(QWidget):
         """Compatibility with the old QGroupBox-based LoadCasesGroup."""
         self.section_label.set_title(title)
 
+    def set_regional(self, regional):
+        """Regional objects own force vectors; these rows edit case weights only."""
+        for row in self._rows:
+            for widget in (row.fmag, row.fa, row.fe):
+                widget.setEnabled(not regional)
+                if regional:
+                    widget.setToolTip("Edit force components on each load object in the viewport inspector.")
+
     def load_from_config(self, cfg):
         """Replace all rows with the load cases from a Run."""
         for row in list(self._rows):

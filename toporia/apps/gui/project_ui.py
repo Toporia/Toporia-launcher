@@ -158,6 +158,7 @@ class ProjectActions:
         self.variants.load_spec(cfg.solver.variants)
         self.post.load_specs(cfg.output.postprocess)
         self.lc.load_from_config(cfg)
+        self.lc.set_regional(self.project.objects is not None)
         self._on_method_changed(self.core.method_name())
 
     def _activate_project(self, project):
@@ -177,6 +178,9 @@ class ProjectActions:
         self._restore_study(project.study)
         self._apply_problem_lock()
         self._refresh_export_buttons()
+        self.canvas.reset()
+        self.post_canvas.reset()
+        self._refresh_run_history()
         self._saved_state = self._capture_project().payload()
         self.root_pages.setCurrentIndex(1)
         self.go_to_step(0)
