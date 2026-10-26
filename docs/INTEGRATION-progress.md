@@ -32,12 +32,13 @@ a current-round update containing additions, validation and limitations.
 | `9c901b3` | GUI preserves small loads; Force Inverter's 0.001 N input no longer becomes zero. |
 | `81c9c37` | Compatible method-study selections, spring-aware measurement and mechanism metrics. |
 | `4decae8` | Cartesian PDE machining, full adjoints and physical-volume starts/convergence. |
+| `314b2b6` | Cell-centred Gaynor-Guest self-support, full reverse sweep and small-move controls. |
 
 Heat conduction, thermal/dynamic pyMOTO models, eigenfrequency, harmonic response,
 local-stress augmented Lagrangian and nonlinear elasticity are already present.
-The catalogue has 84 selectable plugins, eight physics engines and 17 presets:
-109 implementations. Eleven models and 23 updaters form 253 compositions;
-three whole methods bring the method-name total to 256.
+The catalogue has 85 selectable plugins, nine physics engines and 17 presets:
+111 implementations. Twelve models and 23 updaters form 276 compositions;
+three whole methods bring the method-name total to 279.
 
 ## Important limits
 
@@ -105,12 +106,27 @@ budgets; they remain unconverged and retain gray material. Binary thresholding
 exceeds budgets and can leave one-layer support discrepancies. These results are
 explicitly recorded in `experiments/README.md`, not presented as printable designs.
 
+Multiresolution now supports a fine Cartesian density grid with a nested coarse
+Q4 displacement grid. Loads transfer by virtual work and fine supports are imposed
+as interpolation constraints. Factor 1 retains the original Q4 path bit for bit;
+larger factors require divisible mesh counts. This aligned 2-D variant uses exact
+fine-cell quadrature, not the original MTOP centroid rule or an adaptive/three-mesh
+implementation. Complete compliance gradients pass independent finite differences.
+Independent subcell quadrature, off-grid supports and disconnected-cut tests cover
+the approximation's important behaviour. Compare Methods still uses fine Q4 as
+its referee. Coarse compliance can substantially overstate disconnected designs.
+
+The broad multiresolution/composition/schema/golden group passed 987 tests;
+102 selected GUI tests passed. Bounded 100-step MBB/cantilever benchmarks roughly
+halve solve time in single-run measurements, with fine-compliance underestimates
+of 2.21% / 1.87%. They are not converged; one OC volume is 0.500019 against 0.5.
+Results and limits are recorded in `experiments/README.md` and the linked PDF.
+
 ## Remaining sequence
 
-1. Multiresolution design and analysis meshes.
-2. Neural reparameterisation (TOuNN), subject to this Python/Windows environment.
-3. SINH and Hashin–Shtrikman material laws.
-4. Original MATLAB/Octave reference runs if a suitable runtime is available;
+1. Neural reparameterisation (TOuNN), subject to this Python/Windows environment.
+2. SINH and Hashin–Shtrikman material laws.
+3. Original MATLAB/Octave reference runs if a suitable runtime is available;
    ask before installing or changing runtimes.
 
 Work stays sequential: finish verification, documentation and one commit per

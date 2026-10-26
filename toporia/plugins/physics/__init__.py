@@ -4,6 +4,7 @@ Each module here implements one physics on one element type, as plain
 functions and as a framework.parts.physics.Physics engine that responses run on.
 
     q4_plane_stress.py   2-D linear elasticity, bilinear Q4 elements, SIMP
+    q4_multiresolution.py nested coarse Q4 displacement space over fine densities
     q4_buckling.py       the same with geometric stiffness and linearised buckling
     h8_solid.py          3-D linear elasticity, trilinear bricks
     q4_heat.py           2-D steady heat conduction, bilinear Q4 elements

@@ -12,7 +12,7 @@ This layer is not optional decoration — it is what makes the problem well pose
 the AM overhang, Gaynor–Guest self-support, routing and symmetry filters are written for plane problems and are refused
 on a 3-D one, with the filters that can.
 
-**Status: 14 plugins in Toporia (Heaviside includes a volume-preserving option) · 1 with open code · 5 paper only**
+**Status: 14 plugins in Toporia (Heaviside includes a volume-preserving option) · 1 with open code · 4 paper only**
 
 | Label | Meaning |
 | :-- | :-- |
@@ -263,11 +263,13 @@ CLI recipe for Toporia's MMA with the same continuation (one shell line):
 toporia run "Cantilever" --set method=q4+mma --set m=1 --set max_iter=1000 --set tol=0.00001 --set method.move=0.01 --set method.asyinit=0.02 --set method.asyincr=1.05 --set method.asydecr=0.65 --set 'interpolation={"type":"ramp","q":10}' --set 'filter_specs=[{"type":"self_support","beta_local":10}]' --set 'schedules=[{"path":"interpolation.q","type":"steps","start":10,"end":30,"step":10,"every":200},{"path":"filters[0].beta_local","type":"steps","start":10,"end":25,"step":15,"every":50},{"path":"method.move","type":"steps","start":0.01,"end":0.0005,"step":0.0095,"every":400}]'
 ```
 
-## Candidates — regularisation
+## Multiresolution
 
-| Filter | Status | Reference | Why it matters |
-| :-- | :-- | :-- | :-- |
-| Multi-resolution design and analysis meshes | 📄 | Nguyen, Paulino, Song & Le, *SMO* 2010; Groen et al., *IJNME* 2017 | Fine density field over a coarse FE mesh. Large speed-ups, with a known risk of artificial fine-scale artefacts. |
+Fine-density/coarse-analysis meshes are implemented as the
+[`q4_multiresolution` model](../models/README.md#multiresolution-q4_multiresolution),
+because they change the displacement space rather than filter the density.
+The filters still operate on the fine density grid. Coarse analysis can
+overestimate stiffness, so its final design needs a separate fine-Q4 solve.
 
 ## Candidates — length scale
 

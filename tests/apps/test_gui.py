@@ -125,6 +125,23 @@ def test_sharp_support_projection_keeps_small_moves_and_its_settings_in_the_gui(
     assert method._updater.move == pytest.approx(0.0005)
 
 
+def test_multiresolution_keeps_the_fine_design_mesh_and_coarse_analysis_setting(window):
+    from toporia.apps.gui import runner
+    from toporia.engine.loop import initialized_method
+
+    window._on_config_changed("Cantilever")
+    window.core.select_method("q4_multiresolution+oc")
+    window.core._model_forms["q4_multiresolution"].set_values({"coarsening": 2})
+    window.filters.load_specs([{"type": "density", "rmin": 3}])
+    run = runner.build_config(window.core, window.lc, window.filters, base_cfg=window._base_cfg)
+    assert run.solver.method_params["coarsening"] == 2
+    method = initialized_method(run.updated(m=0.4, save_every=0))
+    assert method.get_density().shape == (12, 24)
+    assert method._model.engine.analysis_shape == (6, 12)
+    method.step(1)
+    assert method.get_density().shape == (12, 24)
+
+
 def test_older_method_names_select_the_parts_they_stand_for(window):
     window.core.select_method("density_mma")
     assert window.core.method_name() == "q4+mma"

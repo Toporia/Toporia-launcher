@@ -66,6 +66,36 @@ respectively; they are not budget-matched performance comparisons. No binary
 result is labelled feasible or printable. The [filter documentation](../toporia/plugins/filters/README.md#gaynorguest-self-support-projection)
 describes the cell discretisation, boundary truncation and grid-dependent threshold.
 
+<a id="multiresolution-analysis"></a>
+
+## Multiresolution: coarse analysis, fine density
+
+Run `python -m experiments.multiresolution --iterations 100 --mesh 1 --radius 3`.
+This compares reference factor 1 and coarsening factor 2 on the same fine design
+grid, density filter, material and OC settings. It prints measurements without
+writing run outputs. Every final field receives a fresh, independent fine-Q4 solve.
+
+| Preset / factor | Free system DOFs | Analysis compliance | Fine-Q4 compliance | Physical volume / limit | Optimisation seconds |
+| :-- | --: | --: | --: | --: | --: |
+| MBB / 1 | 2540 | 249.35203 | 249.35203 | 0.499996 / 0.5 | 2.125 |
+| MBB / 2 | 670 | 244.09112 | 249.59705 | 0.500019 / 0.5 | 1.099 |
+| Cantilever / 1 | 3720 | 110.01908 | 110.01908 | 0.399984 / 0.4 | 3.884 |
+| Cantilever / 2 | 960 | 108.08059 | 110.14153 | 0.399985 / 0.4 | 1.675 |
+
+These are bounded 100-step runs, not convergence claims. Timings are illustrative
+single runs with one BLAS thread. Factor 2 underestimates fine compliance by
+2.21% / 1.87%; the MBB volume has a small OC bisection overshoot. A deliberately
+disconnected fine-density test also demonstrates that coarse interpolation can
+bridge a void cut. Density filtering does not certify removal of these artefacts.
+Compare Methods always retains its independent fine-Q4 referee.
+
+The model uses exact fine-cell quadrature of coarse bilinear displacement fields,
+projected loads and constrained interpolation of fine supports. This is an aligned
+2-D variant of the [MTOP paradigm](https://doi.org/10.1007/s00158-009-0443-8),
+not its original centroid-rule implementation, adaptive/high-order analysis or
+independent three-mesh system. See the [model documentation](../toporia/plugins/models/README.md#multiresolution-q4)
+and [QR-pattern study](https://doi.org/10.1007/s00158-018-2048-6).
+
 ## Minimum-length response: feasible-seed validation
 
 Run `python -m experiments.minimum_length` to write initial/final density,

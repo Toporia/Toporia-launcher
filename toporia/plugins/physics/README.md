@@ -5,7 +5,7 @@ from [`models/`](../models/README.md) because the same physics can be discretise
 ways, and the choice of element is itself a thing worth comparing: it decides what the
 density field can resolve and where the classic numerical artefacts come from.
 
-**Status: 8 in Toporia · 5 with open code · 3 paper only**
+**Status: 9 in Toporia · 5 with open code · 3 paper only**
 
 | Label | Meaning |
 | :-- | :-- |
@@ -18,6 +18,7 @@ density field can resolve and where the classic numerical artefacts come from.
 | Element | File | Scope |
 | :-- | :-- | :-- |
 | ✅ Q4 plane stress | [`q4_plane_stress.py`](q4_plane_stress.py) | Bilinear quadrilateral, 2 DOF per node, structured grid, column-major numbering, analytic element stiffness. The top88 element. 2-D. |
+| ✅ Nested multiresolution Q4 | [`q4_multiresolution.py`](q4_multiresolution.py) | Fine-cell material integrated exactly into a coarse displacement space. Full fine-density energy gradient, virtual-work-preserving loads and fine-grid support constraints. 2-D elastic energy only. |
 | ✅ Q4 port springs and probes | [`q4_mechanism.py`](q4_mechanism.py) | Separate subclass with density-independent springs, signed point probes and one shared state/adjoint LU. External work includes spring energy. Adds the `point_displacement` feature; 2-D small-displacement elasticity. |
 | ✅ Q4 linearised buckling | [`q4_buckling.py`](q4_buckling.py) | Static Q4 plus geometric stiffness, positive buckling factors and the adjoint sensitivity through the prebuckling displacement. 2-D. |
 | ✅ Q4 large deformation | [`q4_nonlinear.py`](q4_nonlinear.py) | The same Q4 element with geometric non-linearity: total Lagrangian, Green–Lagrange strain, St Venant–Kirchhoff material, 2 × 2 Gauss, internal force and tangent stiffness per element, Newton–Raphson with load steps (halved automatically where Newton struggles). Provides `end_compliance`. 2-D. |
@@ -39,6 +40,30 @@ the drone arm (holes and solid rings included). A test asserts it in
 `tests/plugins/test_3d.py`. The finite-difference gradient checks of `toporia check
 model:h8` and `toporia check response:stress` cover its compliance and 3-D stress
 sensitivities.
+
+### Multiresolution analysis
+
+For an integer subdivision factor, let `P` interpolate coarse Q4 nodal
+displacements to the nested fine grid. Every coarse bilinear function is
+represented exactly on each fine cell. The implementation assembles
+`K_c = P.T @ K_f(rho) @ P`; this is 2×2 Gauss integration of the coarse
+strain field over each constant-density fine cell. Only the coarse system is
+solved. Fine strain energies give `dC/drho_i = -E'(rho_i) * u_i.T @ KE_i @ u_i`.
+The material law, fine density, filters and volume response remain independent.
+
+Fine loads transfer as `P.T @ f`, preserving virtual work. Fine Dirichlet
+conditions become `C @ u_c = 0`. Unit constraints are eliminated; rank-revealing
+QR removes redundant remaining conditions before a sparse saddle-system solve.
+This retains fine-grid point/ring supports instead of moving them. The original
+Q4 source is unchanged, and factor 1 delegates directly to it.
+
+This is an independently derived aligned 2-D MTOP variant, not the full
+three-mesh/adaptive/higher-order formulations. The
+[model documentation](../models/README.md#multiresolution-q4_multiresolution)
+describes supported cases and why independent fine reevaluation is essential.
+Tests include independent Gauss integration of nonuniform subcell material,
+coarse-Q4 equivalence for uniform material, bilinear interpolation, virtual work,
+projected point/ring supports, full gradients and a disconnected-strip artefact.
 
 ### Heat conduction
 

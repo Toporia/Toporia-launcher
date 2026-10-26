@@ -6,7 +6,7 @@ here — see [`framework.parts.model.Model`](../../framework/parts/model.py). Sw
 how Toporia reaches new physics, new dimensions and new mesh types without touching a
 single update rule.
 
-**Status: 11 in Toporia · 24 with open code · 3 paper only**
+**Status: 12 in Toporia · 24 with open code · 3 paper only**
 
 | Label | Meaning |
 | :-- | :-- |
@@ -19,6 +19,7 @@ single update rule.
 | Model | File | Registry name | Scope |
 | :-- | :-- | :-- | :-- |
 | ✅ 2-D Q4 plane stress | [`q4.py`](q4.py) | `q4` | Toporia's own engine: 2-D plane stress, structured grid, SIMP, direct sparse solve. Provides compliance, volume and stress; accepts the filter pipeline. |
+| ✅ 2-D Q4 multiresolution | [`q4_multiresolution.py`](q4_multiresolution.py) | `q4_multiresolution` | Nested coarse displacement space, fine density/filter grid, exact subcell integration and projected fine-grid loads/supports. Elastic energy and volume; no stress, springs or 3-D. |
 | ✅ 2-D Q4 with buckling | [`q4_buckling.py`](q4_buckling.py) | `q4_buckling` | Adds the `buckling_load` objective/constraint, retaining compliance, volume, stress, filters and material laws. |
 | ✅ 2-D Q4 compliant mechanism | [`q4_mechanism.py`](q4_mechanism.py) | `q4_mechanism` | Linear Q4 with density-independent point springs, opaque point-displacement probes and signed output sensitivities. Shared sparse LU for all real and virtual loads. |
 | ✅ 2-D Q4 with vibration | [`q4_dynamic.py`](q4_dynamic.py) | `q4_dynamic` | Static elasticity, natural frequencies and harmonic response. |
@@ -29,6 +30,42 @@ single update rule.
 | ✅ 2-D Q4 heat conduction | [`q4_heat.py`](q4_heat.py) | `q4_heat` | Steady heat conduction on Toporia's Q4 grid: uniform heat generation, supports as heat sinks, conductivity from the material law. Provides thermal compliance and volume; accepts the filter pipeline. |
 | ✅ 3-D H8 heat conduction | [`h8_heat.py`](h8_heat.py) | `h8_heat` | The same on eight-node bricks (a scenario with a depth). |
 | ✅ Heat conduction, pyMOTO | [`pymoto_heat.py`](pymoto_heat.py) | `pymoto_heat` | pyMOTO's `AssemblePoisson` network: the cross-check of `q4_heat`, giving the same thermal compliance to 1e-9. Optional dependency (`pip install pymoto`). |
+
+<a id="multiresolution-q4"></a>
+
+### Multiresolution (`q4_multiresolution`)
+
+Pick **2-D Q4 multiresolution (nested grids)** in the GUI. The mesh resolution
+still controls the fine density field. **Analysis coarsening factor** 2 places
+one analysis element over 2×2 fine cells; both fine cell counts must divide by
+the factor. Factor 1 is the unchanged Q4 reference solve. Unsupported meshes
+are refused explicitly rather than rounded or cropped. Fine-grid filters and
+design representations keep their usual interfaces.
+
+The [physics implementation](../physics/q4_multiresolution.py) is an independent
+aligned 2-D variant of [Nguyen et al. (2010)](https://doi.org/10.1007/s00158-009-0443-8).
+It integrates each fine density cell with 2×2 Gauss points using a nested
+Galerkin projection, rather than the paper's density-cell centroid rule.
+Loads retain their fine-grid virtual work. Fine support conditions, including
+off-coarse-grid points and rings, are enforced by independent linear constraints;
+they are not snapped to different coarse nodes. Excessive coarsening can
+constrain the whole displacement space, which setup rejects.
+
+**Limits:** 2-D uniform nested grids, elastic energy/compliance and geometric
+responses only. No stress, port springs, dynamics, 3-D, adaptive refinement or
+higher-order enrichment. A fine density image does not establish fine physical
+accuracy. Disconnected subcell features can appear artificially stiff
+([QR-patterns](https://doi.org/10.1007/s00158-018-2048-6)). Filtering helps but
+does not certify accuracy or connectivity. Always reevaluate the final density
+with ordinary fine Q4. Compare Methods keeps that independent fine referee.
+
+```sh
+toporia run "MBB Beam" --set method=q4_multiresolution+oc --set method.coarsening=2 --set m=1 --set max_iter=100 --set tol=0 --set 'filter_specs=[{"type":"density","rmin":3}]'
+```
+
+`python -m experiments.multiresolution` prints matched factor-1/factor-2 runs
+and fresh fine-Q4 evaluations without saving outputs. The [benchmark results](../../../experiments/README.md#multiresolution-analysis)
+report both the performance benefit and the coarse-analysis error.
 
 ### Compliant mechanisms (`q4_mechanism`)
 

@@ -24,9 +24,9 @@ A test (`tests/apps/test_gui.py`) fails if a part ever stops being reachable fro
 | **Wraps** | Calls an outside Python package. That package is installed separately. Parts whose package is missing are greyed out in the app, with the install command. |
 | **Own** | Toporia's own idea or standard practice. |
 
-## In the library today: 84 selectable parts and 17 benchmark problems
+## In the library today: 85 selectable parts and 17 benchmark problems
 
-The selectable parts include models and whole methods; their eight underlying
+The selectable parts include models and whole methods; their nine underlying
 physics engines are counted separately in the [catalogue totals](README.md).
 
 ### Design representations: what the design variables are ([folder](representations/README.md))
@@ -71,6 +71,7 @@ physics engines are counted separately in the [catalogue totals](README.md).
 | In the app | Name | File | Came in | From |
 | :-- | :-- | :-- | :-- | :-- |
 | 2-D Q4 plane stress (Toporia) | `q4` | [q4.py](models/q4.py), [q4_plane_stress.py](physics/q4_plane_stress.py) | Port | the physics half of top88 · [paper](https://doi.org/10.1007/s00158-010-0594-7) |
+| 2-D Q4 multiresolution (nested grids) | `q4_multiresolution` | [model](models/q4_multiresolution.py), [physics](physics/q4_multiresolution.py) | Paper | Independent aligned 2-D Galerkin variant with exact fine-cell integration and projected supports; fine verification required · papers [1](https://doi.org/10.1007/s00158-009-0443-8) [2](https://doi.org/10.1007/s00158-018-2048-6) |
 | 2-D Q4 compliant mechanism (Toporia) | `q4_mechanism` | [q4_mechanism.py](models/q4_mechanism.py), [q4_mechanism.py](physics/q4_mechanism.py) | Paper | Own port-spring Q4 engine; optional independent pyMOTO assembly/backpropagation check · [paper](https://doi.org/10.1080/08905459708945415) |
 | 2-D Q4 with buckling (Toporia) | `q4_buckling` | [q4_buckling.py](models/q4_buckling.py), [q4_buckling.py](physics/q4_buckling.py) | Paper | Ferrari, Sigmund & Guest 2021; Toporia's p-norm aggregate and column geometry · [paper](https://doi.org/10.1007/s00158-021-02854-x) |
 | 2-D Q4, large deformation (Toporia) | `q4_nonlinear` | [q4_nonlinear.py](models/q4_nonlinear.py), [q4_nonlinear.py](physics/q4_nonlinear.py) | Paper | Buhl, Pedersen & Sigmund, *SMO* 2000; energy interpolation after Wang, Lazarov, Sigmund & Jensen, *CMAME* 2014; open reference: Han et al. 2021 · papers [1](https://doi.org/10.1007/s001580050089) [2](https://doi.org/10.1016/j.cma.2014.03.021) [3](https://doi.org/10.1007/s00158-020-02816-9) |
@@ -205,7 +206,6 @@ Listed from least to most effort. "Code" means open code exists (port it, or che
 
 | What | Source |
 | :-- | :-- |
-| Multi-resolution design and analysis meshes | Paper: Nguyen et al. 2010 · [paper](https://doi.org/10.1007/s00158-009-0443-8) |
 | Neural reparameterisation (TOuNN) | Code: TOuNN (needs PyTorch or JAX, which may not install on Python 3.14) · [paper](https://doi.org/10.1007/s00158-020-02748-4) |
 | SINH and Hashin–Shtrikman material laws | Paper: Bruns 2005; Bendsøe & Sigmund 1999 (the material law has to see the volume and Poisson's ratio) · papers [1](https://doi.org/10.1007/s00158-005-0537-x) [2](https://doi.org/10.1007/s004190050248) |
 

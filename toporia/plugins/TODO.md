@@ -117,7 +117,9 @@ the matching MAKE item below.
       ideal tools, no forced-void regions or finite cutter/holder geometry.
 - [x] Gaynor–Guest support projection: independent 2-D cell-centred wedge/local
       projection with full adjoint; discrete threshold and projection limits documented.
-- [ ] Multi-resolution design and analysis meshes
+- [x] Aligned 2-D multiresolution Q4 model: nested displacement space, exact
+      fine-cell integration, projected loads/supports and fine-Q4 verification.
+      No 3-D, adaptive/higher-order enrichment or artificial-stiffness certificate.
 - [x] Geometrically non-linear elasticity
 
 ## Wave 5: framework changes, then what they unlock

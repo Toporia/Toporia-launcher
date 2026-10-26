@@ -79,6 +79,29 @@ def test_the_referee_measures_a_design_like_the_q4_model_without_a_filter():
     assert referee_compliance(run, design) == pytest.approx(model.evaluate(design, gradients=False).objective)
 
 
+def test_multiresolution_comparison_uses_a_fine_q4_referee_and_keeps_candidate_parameters(tmp_path):
+    from toporia.plugins.physics.q4_plane_stress import Q4PlaneStress
+
+    run = _small(method="q4_multiresolution+oc", m=0.4, max_iter=3, tol=0,
+                 method_params={"coarsening": 2},
+                 filter_specs=[{"type": "density", "rmin": 3}]).with_output_dir(tmp_path)
+    designs = []
+
+    def capture(density, history, iteration):
+        if iteration == 3:
+            designs.append(density.copy())
+
+    grid, rows = compare_methods(["q4+oc", "q4_multiresolution+oc"], run, on_iteration=capture)
+    assert grid.exists() and all(row["status"] == "ran" for row in rows)
+    assert len(designs) == 2
+    fine = Q4PlaneStress()
+    fine.initialize(RectangularProblem(run.scenario, run.solver.m), {})
+    for row, design in zip(rows, designs, strict=True):
+        state = fine.solve(design)
+        expected = sum(w * c for w, c in zip(state.weights, state.compliances, strict=True))
+        assert row["referee_compliance"] == pytest.approx(expected, rel=1e-12)
+
+
 def test_the_referee_retains_the_mechanisms_point_springs():
     from toporia.plugins.interpolations.simp import SIMP
     from toporia.plugins.physics.q4_mechanism import Q4Mechanism
