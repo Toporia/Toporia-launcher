@@ -93,6 +93,10 @@ class VariantModel(Model):
     def physical(self, x):
         return self.models[self.nominal].physical(x)
 
+    @property
+    def monitor_physical_change(self):
+        return self.models[self.nominal].monitor_physical_change
+
     def volume_of(self, x):
         return self.models[self.nominal].volume_of(x)
 

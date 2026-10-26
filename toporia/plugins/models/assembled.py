@@ -107,6 +107,8 @@ class AssembledModel(Model):
         self.lb, self.ub = self.representation.bounds()
         self.volume_limit = scenario.volfrac * n_total
         self.pipeline = DensityFilterPipeline(problem, solver)
+        self.monitor_physical_change = bool(self.pipeline.chain and any(
+            f.calibrate_initial_volume for f in self.pipeline.chain.filters))
 
         self.objective = self._response(scenario.objective, OBJECTIVE_ROLE)
         self.constraints = [self._response(spec, CONSTRAINT_ROLE) for spec in scenario.constraints]
@@ -129,7 +131,27 @@ class AssembledModel(Model):
         return response
 
     def initial_design(self):
-        return self.representation.initial()
+        design = self.representation.initial()
+        chain = self.pipeline.chain
+        if (not self.representation.element_wise or chain is None
+                or not any(f.calibrate_initial_volume for f in chain.filters)):
+            return design
+        # A cumulative shadow of a uniform gray source is almost all solid.
+        # Start on the physical volume budget instead, without changing the
+        # source scale or weakening the manufacturing equations. Fixed solids
+        # (and their unavoidable shadows) must fit even at the lowest design.
+        if self.physical(self.lb).sum() > self.volume_limit + 1e-8:
+            raise ValueError("Manufacturing-filter shadows of fixed solids exceed the volume budget")
+        if self.physical(design).sum() <= self.volume_limit:
+            return design
+        low, high = 0.0, 1.0
+        for _ in range(50):
+            mid = 0.5 * (low + high)
+            if self.physical(self.lb + mid * (design - self.lb)).sum() > self.volume_limit:
+                high = mid
+            else:
+                low = mid
+        return self.lb + low * (design - self.lb)
 
     def bounds(self):
         return self.lb, self.ub

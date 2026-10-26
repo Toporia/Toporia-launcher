@@ -35,6 +35,9 @@ def build_filter_chain(filter_specs, problem, solver):
         spec = dict(spec)
         cls = FILTERS.get(spec.pop("type", "density"))
         filters.append(cls(**resolve_params(f"filter {cls.name!r}", cls.params, spec)))
+    for filt in filters[:-1]:
+        if filt.must_be_last:
+            raise ValueError(f"{filt.label} must be the last filter: later filters can invalidate its geometry")
     chain = FilterChain(filters)
     chain.setup(problem, solver)
     return chain

@@ -3,6 +3,26 @@
 These are reproducible research evaluations, outside Toporia's plugin discovery
 and GUI. Failed performance gates are recorded rather than weakened.
 
+## Machining accessibility
+
+`python -m experiments.machining --iterations 80` prints JSON only. It uses
+24×8 Q4 and 24×8×4 H8 grids, a top-side tool, a radius-1.5 density filter and
+small-move MMA. The source start is calibrated to the physical volume budget.
+Each final objective is reevaluated after the final update.
+
+| Preset | Initial compliance | Final compliance | Physical volume | Inaccessible thresholded void cells |
+| :-- | --: | --: | --: | --: |
+| MBB Beam | 217476025.72 | 686.42380 | 0.499864 / 0.5 | 0 |
+| Cantilever 3D | 648.33247 | 76.06831 | 0.299961 / 0.3 | 0 |
+
+The MBB start is particularly weak because its upper load point lies near the
+tool's entry face. These are bounded integration benchmarks, not converged
+paper reproductions: final maximum changes are 0.04979 and 0.01 respectively.
+Gray fractions between 0.1 and 0.9 are 18.75% and 3.91%. The independent ray
+check uses a 0.5 density threshold and the selected Cartesian tool side; it
+does not certify a finite cutter or holder. The PDE has known diffusion and
+projection artefacts. See the [filter scope](../toporia/plugins/filters/README.md#machining-accessibility).
+
 ## Minimum-length response: feasible-seed validation
 
 Run `python -m experiments.minimum_length` to write initial/final density,

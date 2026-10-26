@@ -46,6 +46,11 @@ class Filter(ABC):
     dims = (2,)
     #: Parameters a schedule may change during a run (framework/parts/schedule.py).
     schedulable = ()
+    #: Cumulative manufacturing maps can saturate a conventional gray start.
+    #: Element-density models then bisect its amplitude to the physical budget.
+    calibrate_initial_volume = False
+    #: Manufacturing maps whose geometric meaning a later filter could break.
+    must_be_last = False
 
     def setup(self, problem, solver):
         """Prepare for a run (neighbour weights, masks, ...).  Called once."""

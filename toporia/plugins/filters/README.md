@@ -8,11 +8,11 @@ fabrication rule and get consistent sensitivities through all three.
 Without a filter, a density method produces checkerboards and a mesh-dependent result.
 This layer is not optional decoration — it is what makes the problem well posed.
 
-**In 3-D** (a scenario with a depth): the density, PDE, sensitivity, Heaviside, morphology, extrusion, pattern and casting filters work;
+**In 3-D** (a scenario with a depth): the density, PDE, sensitivity, Heaviside, morphology, extrusion, pattern, casting and machining filters work;
 the AM overhang, routing and symmetry filters are written for plane problems and are refused
 on a 3-D one, with the filters that can.
 
-**Status: 12 plugins in Toporia (Heaviside includes a volume-preserving option) · 1 with open code · 7 paper only**
+**Status: 13 plugins in Toporia (Heaviside includes a volume-preserving option) · 1 with open code · 6 paper only**
 
 | Label | Meaning |
 | :-- | :-- |
@@ -37,6 +37,7 @@ on a 3-D one, with the filters that can.
 | ✅ Extrusion (constant cross-section) | [`extrusion.py`](extrusion.py) | `extrusion` | Ishii & Aomura, *JSME Int. J.* 47 (2004) |
 | ✅ Pattern repetition | [`pattern.py`](pattern.py) | `pattern` | Bendsøe & Sigmund, *Topology Optimization*, Springer 2003; Almeida, Paulino & Silva, *SMO* 39 (2009) |
 | ✅ Casting (no undercuts) | [`casting.py`](casting.py) | `casting` | Gersborg & Andreasen, *SMO* 44 (2011) 875–881; Xia et al., *CMAME* 2010 |
+| ✅ PDE machining (axis directions) | [`machining.py`](machining.py) | `machining` | Independent Cartesian variant of Høghøj & Träff, *CMAME* 391 (2022) 114488. |
 
 The projection already takes an arbitrary threshold η, which is the prerequisite for the
 robust formulation below.
@@ -177,6 +178,48 @@ explicit casting parameterisation, not Xia et al.'s level-set formulation.
 - Solver config: `"filter_specs": [{"type": "density"}, {"type": "casting", "direction": "+y"}]`
 - CLI: `toporia run "MBB Beam" --set method=q4+oc --set 'filter_specs=[{"type": "density"}, {"type": "casting", "direction": "+y"}]'`
 
+### Machining accessibility
+
+[`machining.py`](machining.py) solves one scalar advection–diffusion shadow per
+enabled tool side, intersects the shadows with a negative-power mean and projects
+the result. Sparse LU factors serve forward and transpose solves. Robin conditions
+apply at the box faces; passive solids have Dirichlet faces and cast shadows.
+This independently implements the [Høghøj–Träff formulation](https://arxiv.org/abs/2102.12999),
+not Langelaar's rotated-grid method with finite tool shapes.
+
+- GUI: add **PDE machining (axis directions)** after a density or PDE filter,
+  as the last filter. Enable the approach sides; **+y** means a tool coming
+  from above, travelling towards −y. z sides require a 3-D problem.
+- Currently requires **Element densities** and a rectangular box without forced
+  void regions. Passive solids are included; setup rejects their shadows if
+  those already exceed the physical volume budget.
+- The initial source is bisected to the physical budget. Stopping checks both
+  raw variable and physical-density changes, so a small source change does
+  not hide a large structural change. Other filters keep their original starts
+  and stopping rules.
+- Use MMA with `move=0.01`, `asyinit=0.03`, `asyincr=1.05`, `asydecr=0.65`
+  and `tol=0.00001` as a starting recipe. Sharp projection can destabilise large
+  OC/MMA moves. The GUI does not silently replace the chosen optimiser settings.
+- Defaults: dimensionless Peclet 10000, beta 8, power −4. The threshold is
+  0.4 rather than the paper's 0.5 to reduce boundary artefacts. The saturated
+  projection branch is explicitly bounded at one, with its derivative included.
+- Scope: Cartesian approach directions and ideal zero-width tools. No cutter
+  diameter, holder collision, oblique directions or minimum feature-size guarantee.
+  Finite diffusion, gray densities and projection can still leave inaccessible
+  voids. Inspect the thresholded geometry; this filter is not a machining certificate.
+
+CLI recipe (use `h8+mma` and `Cantilever 3D` for the brick example):
+
+```sh
+toporia run "MBB Beam" --set method=q4+mma --set method.move=0.01 --set method.asyinit=0.03 --set method.asyincr=1.05 --set method.asydecr=0.65 --set tol=0.00001 --set 'filter_specs=[{"type":"density","rmin":1.5},{"type":"machining"}]'
+```
+
+`python -m experiments.machining --iterations 80` prints fresh final measurements
+without writing output files. See [the benchmark results](../../../experiments/README.md#machining-accessibility).
+Tests cover 2-D/3-D binary ray fixtures, an enclosed cavity and open channel,
+the cumulative-source limit, passive shadows, length-unit invariance, complete
+adjoints and physical-volume optimisation.
+
 ## Candidates — regularisation
 
 | Filter | Status | Reference | Why it matters |
@@ -204,7 +247,6 @@ actually differentiate.
 | :-- | :-- | :-- | :-- |
 | Projection-based self-support | 📄 | Gaynor & Guest, *SMO* 2016 | An alternative overhang treatment to Langelaar's layer-wise filter; worth having both to compare. |
 | Enclosed void / powder removal | 📄 | Li et al., *SMO* 2016; Liu et al. 2015 | A virtual temperature field that only heats up inside disconnected voids, penalised to zero. Cheap and elegant. |
-| Machining accessibility | 📄 | Langelaar, *CAD* 2019; Lee, Nomura & Dede 2020 | Every solid point reachable by a tool from an allowed set of directions. A generalisation of the AM filter's directional sweep. |
 | Residual stress / distortion aware | 📄 | Allaire & Jakabčin 2018; Miki & Yamada, *FEAD* 2021 | An inherent-strain model of the build inside the loop, so the *printed* shape is optimised rather than the designed one. |
 | Fibre orientation for composites | 🔗 FRC-TOuNN | Chandrasekhar, Sridhara & Suresh, *CAD* 2022 | Continuous fibre angle alongside density; the angle field itself needs regularising for printable tow paths. |
 

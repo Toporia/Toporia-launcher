@@ -57,7 +57,7 @@ any doubt about what this repository actually does today:
 | Layer | ✅ In Toporia | 🔗 Open code | 📄 Paper only |
 | :-- | :-- | --: | --: |
 | [Whole methods](toporia/plugins/methods/README.md) | RBF, reaction-diffusion and Hamilton-Jacobi/topological-derivative level sets | 10 | 1 |
-| [Filters](toporia/plugins/filters/README.md) — regularisation and fabrication | density, sensitivity, Heaviside (fixed or volume-preserving), PDE (isotropic or anisotropic), morphology, AM overhang, symmetry, routing, extrusion, pattern, casting | 1 | 7 |
+| [Filters](toporia/plugins/filters/README.md) — regularisation and fabrication | density, sensitivity, Heaviside (fixed or volume-preserving), PDE (isotropic or anisotropic), morphology, AM overhang, symmetry, routing, extrusion, pattern, casting, Cartesian PDE machining | 1 | 6 |
 | [Design representations](toporia/plugins/representations/README.md) — what the variables are | element densities, moving morphable components (constant or variable thickness), moving morphable voids (2D), capsule geometry projection (2D/3D), B-spline fields | 0 | 1 |
 | [Material laws](toporia/plugins/interpolations/README.md) — density to stiffness | SIMP, RAMP, ordered SIMP | 0 | 3 |
 | [Schedules](toporia/plugins/schedules/README.md) — continuation, and robust variants | equal steps, geometric, linear ramp, when the design settles | 0 | 1 |
@@ -68,8 +68,8 @@ any doubt about what this repository actually does today:
 | [Updaters](toporia/plugins/updaters/README.md) — optimisers | OC, MMA, GCMMA, SiMPL, BESO, SLSQP, trust-constr, NLopt (MMA, CCSAQ, SLSQP, AUGLAG), mmapy (MMA, GCMMA), null-space, TOBS, CONLIN, multi-constraint OC, Adam, PTO, hard-kill BESO, augmented Lagrangian, floating projection | 4 | 0 |
 | [Problems](toporia/plugins/problems/README.md) — benchmarks | MBB, robust MBB, cantilever, 3-D cantilever, Michell cantilever, L-bracket, L-bracket (local stress), heat sink, vibrating beam, column buckling, non-linear cantilever, force inverter, 3-point bending, bar, 3× drone arm | 6 | 0 |
 
-**107 implementations: 82 selectable plugins, 8 physics engines and 17 presets.
-54 catalogue entries have open code elsewhere; 32 are paper-only.**
+**108 implementations: 83 selectable plugins, 8 physics engines and 17 presets.
+54 catalogue entries have open code elsewhere; 31 are paper-only.**
 Plugin counts follow the registries; composed pairings and parameter options are
 not counted again as additional implementations.
 

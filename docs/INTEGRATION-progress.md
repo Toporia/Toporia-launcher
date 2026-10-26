@@ -8,8 +8,10 @@ This is a concise handoff. Historical implementation and validation summaries re
 
 The agreed round covers the small and medium tasks on page 7 of the original
 `Toporia-library.pdf`. Existing physics is validated rather than added twice.
-Large framework bridges, datasets, SINH and Hashin-Shtrikman laws are outside
-this round. `Toporia-library-with-links.pdf` is the updated linked snapshot.
+This round covers all remaining small/medium additions, including SINH and
+Hashin-Shtrikman laws. Large framework bridges and datasets remain outside it.
+`Toporia-library-with-links.pdf` preserves the linked catalogue and opens with
+a current-round update containing additions, validation and limitations.
 
 ## Completed integrations
 
@@ -32,8 +34,8 @@ this round. `Toporia-library-with-links.pdf` is the updated linked snapshot.
 
 Heat conduction, thermal/dynamic pyMOTO models, eigenfrequency, harmonic response,
 local-stress augmented Lagrangian and nonlinear elasticity are already present.
-The catalogue has 82 selectable plugins, eight physics engines and 17 presets:
-107 implementations. Eleven models and 23 updaters form 253 compositions;
+The catalogue has 83 selectable plugins, eight physics engines and 17 presets:
+108 implementations. Eleven models and 23 updaters form 253 compositions;
 three whole methods bring the method-name total to 256.
 
 ## Important limits
@@ -48,8 +50,9 @@ three whole methods bring the method-name total to 256.
 - Point springs require `q4_mechanism`. Updater and objective compatibility still
   applies. MMA and CONLIN produce force inversion; other optimisers may find
   disconnected zero-output stationary designs.
-- Original MATLAB/Octave oracle runs remain optional. Ask before installing or
-  changing runtimes. Original Q4/H8 sources and golden baselines are unchanged.
+- Original MATLAB/Octave oracle runs depend on an available runtime. Ask before
+  installing or changing runtimes. Original Q4/H8 sources and golden baselines
+  are unchanged.
 
 ## Current verification and cleanup
 
@@ -61,18 +64,38 @@ on the presets' own physics; 70 incompatible combinations were excluded.
 Thermal comparisons measure heat rather than zero mechanical work; vibration
 reports fundamental angular frequency. Preset-recommended methods remain selected.
 
-The final full suite passes: **2332 passed, one optional multigrid test skipped**
-in 25 min 9 sec. Ruff and whitespace checks pass; all local Markdown links resolve.
+The current full suite passes: **2363 passed, one optional multigrid test skipped**
+in 27 min 57 sec. Ruff and whitespace checks pass; all 486 local Markdown links resolve.
 Generated runs, downloaded papers, scratch scripts/images and caches are removed
 after validation. The implementation, regression tests, reusable research recipes
 and library PDFs remain. The one-off PDF builder is removed as requested.
 
+## Current round — 26 October 2026
+
+Machining accessibility is implemented as an independent Høghøj–Träff Cartesian
+advection–diffusion filter. The full derivation is readable at arXiv:2102.12999;
+the institutional copy of Langelaar (2019) remained inaccessible. This is not a
+claim to reproduce Langelaar's finite-tool formulation. It supports 2-D/3-D
+axis directions and passive-solid shadows, with complete transpose solves.
+Forced voids and non-element representations are refused. The chain must end
+with machining. Element-density starts meet the physical budget; convergence
+also observes physical-density movement to avoid premature small-source stops.
+
+Twenty-five focused tests and the full regression suite pass. The 80-iteration MMA recipes improve compliance
+and meet volume budgets, with zero inaccessible void cells in an independent
+thresholded ray check. They are coarse bounded runs, not convergence claims or
+finite-tool certificates; see `experiments/machining.py`. The linked PDF includes
+the new method and the earlier mechanism/comparison fixes; all 281 existing
+links and three outline entries are preserved, with three new links added.
+
 ## Remaining sequence
 
-1. Machining accessibility: obtain a readable full text of Langelaar (2019),
-   DOI `10.1016/j.cma.2019.03.037`; the institutional download failed.
-2. Projection-based self-support (Gaynor and Guest).
-3. Multiresolution design and analysis meshes.
-4. Neural reparameterisation (TOuNN), subject to this Python/Windows environment.
+1. Projection-based self-support (Gaynor and Guest).
+2. Multiresolution design and analysis meshes.
+3. Neural reparameterisation (TOuNN), subject to this Python/Windows environment.
+4. SINH and Hashin–Shtrikman material laws.
+5. Original MATLAB/Octave reference runs if a suitable runtime is available;
+   ask before installing or changing runtimes.
 
-No later research integration was started during the GUI and comparison fixes.
+Work stays sequential: finish verification, documentation and one commit per
+addition before starting the next. No generated runs or scratch papers are retained.

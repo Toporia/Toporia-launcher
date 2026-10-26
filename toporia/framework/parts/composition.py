@@ -140,7 +140,10 @@ class ComposedMethod(OptimizationMethod):
 
         self.change = float(np.max(np.abs(x_new - self.x)))
         self.x = x_new
+        previous_density = self.density
         self.density = self._model.physical(x_new)
+        if self._model.monitor_physical_change:
+            self.change = max(self.change, float(np.max(np.abs(self.density - previous_density))))
         self.objective = evaluation.objective
         self._evaluation = evaluation
 

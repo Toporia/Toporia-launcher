@@ -113,7 +113,9 @@ the matching MAKE item below.
 - [x] Explicit length-scale constraints: independent Dunning/Zhou physical-field response,
       full adjoint and conservative nodal KS; fixed tolerance and feasible-seed validation.
       Uniform gray-start limitations documented; not a complete adaptive Dunning solver.
-- [ ] Machining accessibility; Gaynor self-support
+- [x] Machining accessibility: independent Høghøj–Träff Cartesian PDE variant;
+      ideal tools, no forced-void regions or finite cutter/holder geometry.
+- [ ] Gaynor self-support
 - [ ] Multi-resolution design and analysis meshes
 - [x] Geometrically non-linear elasticity
 

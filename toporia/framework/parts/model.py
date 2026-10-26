@@ -71,6 +71,10 @@ class Model(ABC):
     capabilities = Capabilities()
     #: Total material the design may use, comparable with Evaluation.volume.
     volume_limit = 0.0
+    #: Include physical-density motion when raw variables have a much smaller
+    #: scale (e.g. cumulative manufacturing sources). Ordinary models keep the
+    #: original design-variable stopping test.
+    monitor_physical_change = False
 
     @abstractmethod
     def initialize(self, problem, solver, settings):
