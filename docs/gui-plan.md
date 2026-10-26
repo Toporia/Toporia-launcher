@@ -33,7 +33,7 @@ not complete. Resume from the first unchecked step after reading git status.
 ## Linear milestones
 
 - [x] 0. Inspect repository, record requirements and checkpoints (this commit).
-- [ ] 1. Versioned project document and atomic save/load; separate problem files,
+- [x] 1. Versioned project document and atomic save/load; separate problem files,
   notes, UI state and run output; serialization tests.
 - [ ] 2. Home/library and file actions; benchmark cards/previews, descriptions,
   immutable originals, editable copies, notes and unsaved-change handling.
@@ -65,5 +65,10 @@ Scenario + Solver + Output. Scenario/Solver already have strict JSON helpers.
 The numerical engine has pinned baselines. Preserve default serialized scenario
 shape for legacy runs when adding custom geometry support.
 
-Next: implement milestone 1 and test round trips, malformed files, output
-separation and atomic saves before committing.
+Milestone 1 complete: project.py supports strict versioned .top and .pro JSON,
+legacy scenario imports, portable output settings, notes/study/view state and
+atomic writes. Validation: 18 project tests passed; ruff passed.
+Pytest needs --basetemp=results/<unique-test-name> in this sandbox because its
+system temporary-directory numbering fails. This is an environment issue.
+
+Next: milestone 2, Home/library and file controls. Keep generated plugin forms.
