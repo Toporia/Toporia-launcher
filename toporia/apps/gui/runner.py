@@ -160,9 +160,12 @@ def run_compare_load_cases(config, clcg, on_iter, log_fn):
 
 def run_compare_methods(config, cmg, on_iter, log_fn):
     """cmg = CompareMethodsParamsGroup.  Returns the path of the designs' grid, or None."""
+    methods = cmg.selected()
+    if not methods:
+        raise ValueError("Select at least one compatible method in Compare Methods.")
     old = _redir(log_fn)
     try:
-        grid, _ = _compare_methods(cmg.selected(), config, on_iteration=on_iter)
+        grid, _ = _compare_methods(methods, config, on_iteration=on_iter)
     finally:
         sys.stdout = old
     return grid
@@ -172,7 +175,10 @@ def run_sweep_methods(config, msg, on_iter, log_fn):
     """msg = MethodsSweepParamsGroup.  Returns the path of the methods x setting grid, or None."""
     old = _redir(log_fn)
     try:
-        grid, _ = _sweep_methods(msg.selected(), msg.key(), msg.min_val.value(), msg.max_val.value(),
+        methods = msg.selected()
+        if not methods:
+            raise ValueError("Select at least one compatible method in Sweep Methods.")
+        grid, _ = _sweep_methods(methods, msg.key(), msg.min_val.value(), msg.max_val.value(),
                                  msg.n_values.value(), config, on_iteration=on_iter)
     finally:
         sys.stdout = old

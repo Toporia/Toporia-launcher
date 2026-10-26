@@ -79,6 +79,29 @@ def test_the_referee_measures_a_design_like_the_q4_model_without_a_filter():
     assert referee_compliance(run, design) == pytest.approx(model.evaluate(design, gradients=False).objective)
 
 
+def test_the_referee_retains_the_mechanisms_point_springs():
+    from toporia.plugins.interpolations.simp import SIMP
+    from toporia.plugins.physics.q4_mechanism import Q4Mechanism
+
+    run = _small("Force Inverter", m=0.2)
+    problem = RectangularProblem(run.scenario, run.solver.m)
+    engine = Q4Mechanism()
+    engine.initialize(problem, {}, SIMP(3))
+    density = np.full(problem.shape, 0.4)
+    state = engine.solve(density)
+    expected = sum(w*engine.compliance(state, i) for i, w in enumerate(state.weights))
+    assert referee_compliance(run, density) == pytest.approx(expected, rel=1e-12)
+
+
+def test_comparison_preflight_uses_the_candidate_models_dimensions():
+    from toporia.engine.modes.methods import comparison_problems
+    from toporia.plugins.methods import method_class
+
+    run = _small(Lz=5)
+    assert comparison_problems(method_class("h8+mma"), run) == []
+    assert any("2-D" in reason for reason in comparison_problems(method_class("q4+mma"), run))
+
+
 def test_the_grey_level_is_zero_for_black_and_white_and_one_for_uniform_grey():
     assert grey_level(np.array([[0.0, 1.0], [1.0, 0.0]])) == 0.0
     assert grey_level(np.full((3, 3), 0.5)) == pytest.approx(1.0)

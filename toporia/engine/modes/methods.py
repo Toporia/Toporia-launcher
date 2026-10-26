@@ -66,7 +66,7 @@ def compare_methods(methods, base_config, on_iteration=None, problem_name=""):
         rows.append(row)
         if row["status"] == "ran":
             images.append((folder / _folder_name(row["method"]) / "final_density.png",
-                           f"{row['label']}\nC = {row['referee_compliance']:.4g}"))
+                           f"{row['method']}\n{_design_metric(row)}"))
 
     _write_table(rows, folder / "methods.csv")
     print("\n" + format_table(rows))
@@ -126,7 +126,7 @@ def sweep_methods(methods, parameter, min_val, max_val, n_values, base_config, o
             title = f"{row['method']}   {parameter} = {value:.3g}"
             if row["status"] == "ran":
                 images.append((cell / _folder_name(row["method"]) / "final_density.png",
-                               f"{title}\nC = {row['referee_compliance']:.3g}"))
+                               f"{title}\n{_design_metric(row)}"))
             else:
                 images.append((None, f"{title}\nskipped: {row['stop_reason']}"))
 
@@ -141,20 +141,43 @@ def sweep_methods(methods, parameter, min_val, max_val, n_values, base_config, o
 
 # ── One method ────────────────────────────────────────────────────────────────
 
+def _design_metric(row):
+    if "output_displacement" in row:
+        return f"Output displacement = {row['output_displacement']:.4g}"
+    return f"C = {row['referee_compliance']:.4g}"
+
+
+def _comparison_run(method_cls, base_config):
+    """Apply this method's identity and only its declared parameters."""
+    own = {p.name for p in method_cls.params}
+    params = {key: value for key, value in base_config.solver.method_params.items() if key in own}
+    return base_config.updated(method=method_cls.name, method_params=params)
+
+
+def comparison_problems(method_cls, base_config, *, missing=None):
+    """Shared preflight for comparison selectors and the actual comparison run."""
+    from toporia.engine.pipeline import solver_problems
+    from toporia.framework.registry import install_hint, missing_dependencies
+
+    scenario_reasons = method_cls.capabilities.problems_with(base_config.scenario)
+    if scenario_reasons:
+        return scenario_reasons
+    if missing is None:
+        missing = missing_dependencies(method_cls)
+    if missing:
+        return [f"not installed: {install_hint(missing)}"]
+    run = _comparison_run(method_cls, base_config)
+    return solver_problems(method_cls, run)
+
+
 def _run_method(name, base_config, folder, on_iteration):
     """Run one method on the base problem, or say why it cannot; return its table row."""
-    from toporia.framework.registry import install_hint, missing_dependencies
     from toporia.plugins.methods import method_class
 
     method_cls = method_class(name)
     row = dict.fromkeys(COLUMNS)
     row.update(method=method_cls.name, label=method_cls.label)
-    missing = missing_dependencies(method_cls)
-    from toporia.engine.pipeline import solver_problems
-    reasons = (method_cls.capabilities.problems_with(base_config.scenario)
-               + solver_problems(method_cls, base_config))
-    if missing:
-        reasons = [f"not installed: {install_hint(missing)}"]
+    reasons = comparison_problems(method_cls, base_config)
     if reasons:
         row.update(status="skipped", stop_reason="; ".join(reasons))
         print(f"  skipped: {row['stop_reason']}")
@@ -162,14 +185,13 @@ def _run_method(name, base_config, folder, on_iteration):
 
     # Keep only the parameters this method declares, so one method's settings
     # (chosen in the GUI for another) never stop another method's run.
-    own = {p.name for p in method_cls.params}
-    params = {key: value for key, value in base_config.solver.method_params.items() if key in own}
-    run = (base_config.with_output_dir(folder / _folder_name(method_cls.name))
-           .updated(method=method_cls.name, method_params=params))
+    run = _comparison_run(method_cls, base_config).with_output_dir(folder / _folder_name(method_cls.name))
     start = time.perf_counter()
     store, density = run_single_with_store(run, on_iteration)
     final = {key: values[-1] for key, values in store.responses.items()}
     row.update(table_metrics(store.postprocess))     # e.g. threshold.compliance, the same for every method
+    if "output_displacement" in final:
+        row["output_displacement"] = final["output_displacement"]
     row.update(
         status="ran",
         objective=final.get("objective"),

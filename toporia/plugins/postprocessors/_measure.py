@@ -12,7 +12,8 @@ REFEREE_PENAL = 3.0
 def referee_compliance(problem, density):
     """Compliance of a design measured the same way whatever made it.
 
-    Toporia's Q4 solver (H8 in 3-D), SIMP with p = REFEREE_PENAL, no filter,
+    Toporia's Q4 solver (H8 in 3-D, port-spring Q4 for mechanisms),
+    SIMP with p = REFEREE_PENAL, no filter,
     the scenario's load cases and weights; the density is clipped to the
     problem's bounds so holes stay holes.  For a black-and-white design the
     penalty does not matter.
@@ -20,7 +21,13 @@ def referee_compliance(problem, density):
     from toporia.plugins.interpolations.simp import SIMP
     from toporia.plugins.physics.h8_solid import H8Solid
     from toporia.plugins.physics.q4_plane_stress import Q4PlaneStress
-    engine = H8Solid() if getattr(problem, "dims", 2) == 3 else Q4PlaneStress()
+    if problem.scenario.point_springs:
+        from toporia.plugins.physics.q4_mechanism import Q4Mechanism
+        if getattr(problem, "dims", 2) != 2:
+            raise ValueError("spring-aware referee measurement currently supports 2-D only")
+        engine = Q4Mechanism()
+    else:
+        engine = H8Solid() if getattr(problem, "dims", 2) == 3 else Q4PlaneStress()
     engine.initialize(problem, {"linear_solver": "auto", "amg_above": 60000, "amg_tol": 1e-8}
                       if getattr(problem, "dims", 2) == 3 else {}, SIMP(REFEREE_PENAL))
     state = engine.solve(np.clip(density, problem.lower_bound, problem.upper_bound))

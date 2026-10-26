@@ -516,9 +516,38 @@ whitespace checks pass for the changed code.
 The corrected GUI produces output 0.0258619 mm with MMA and 0.0136140 mm with
 CONLIN at m=0.4, using their GUI settings. The unchanged full-resolution direct
 MMA preset gives 0.0351544 mm at volume 0.3999999. These are useful working
-configurations, not guarantees for every optimiser: eleven updaters do not
+configurations, not guarantees for every optimiser: ten updaters do not
 advertise output-displacement objectives, and tested SciPy/NLopt alternatives
 can settle near disconnected zero-output designs even with the correct load.
 Reload the preset after restarting the integration GUI to restore its force.
 Only the integration checkout is changed; GUI and launcher checkouts remain
 untouched. The pre-existing unrelated edit elsewhere in this file is preserved.
+
+## GUI correction: mechanism method comparisons (26 October 2026)
+
+The user reported Compare Methods skipping every choice for point springs. The
+study's independent checkboxes retained their old q4-based selections after the
+Force Inverter preset was loaded. Compare Methods and Sweep Methods now share
+setup-aware eligibility with the comparison runner: unsupported spring, objective,
+dimension, representation, schedule and dependency combinations are disabled
+with reasons. Presets choose compatible defaults; Force Inverter selects
+q4_mechanism+mma and q4_mechanism+conlin. The first valid selection is highlighted
+and scrolled into view. Intentional empty selections are preserved and produce
+a clear selection error at Run. Repeated GUI checks reuse cached availability
+and one shared eligibility result rather than probing packages repeatedly.
+
+Comparison validation now evaluates the candidate method's configuration, so
+its own dimensions are checked. The shared compliance measurement retains point
+springs through Q4Mechanism instead of measuring the design without its springs.
+Mechanism studies include output_displacement in their table and show it on the
+grid, with short readable method identifiers. The actual Force Inverter study
+produces both designs: output 0.0258618 mm for MMA and 0.0237486 mm for CONLIN on
+the 16x16 mesh, both within the 0.4 budget. CONLIN reaches the 200-step cap;
+these results are not a claim of convergence for every optimiser.
+
+All 830 GUI, comparison, post-processing and mechanism regressions pass in
+5 min 7 sec (`results/mechanism-compare-final.log`, matching XML). Six focused
+tests pass, and all four selection/end-to-end tests pass again after the final
+highlight/scroll adjustment. The comparison grid was visually checked. Ruff
+and whitespace checks pass. Other checkouts and the owner's unrelated edit
+remain unchanged. No later research integration was started during this fix.

@@ -340,7 +340,8 @@ class CompareMethodsParamsGroup(QGroupBox):
     """Which methods to compare on the current problem (visible only in Compare Methods mode).
 
     Every selectable method is listed — every physics model with every updater,
-    and the whole methods — with the four classic ones ticked.  Each ticked
+    and the whole methods. Context checks disable incompatible entries and
+    choose defaults for the current model and objective. Each ticked
     method runs on the same scenario, mesh, filters and stopping rule; the
     results are one image of the designs and one table, also in the log.
     """
@@ -361,6 +362,7 @@ class CompareMethodsParamsGroup(QGroupBox):
         hint.setWordWrap(True)
         layout.addWidget(hint)
         self.methods = QListWidget()
+        self._missing_dependencies = {}
         for cls in method_classes():
             # The updater first: in a long list of pairings it is what tells them apart.
             model, updater = getattr(cls, "model", None), getattr(cls, "updater", None)
@@ -369,6 +371,7 @@ class CompareMethodsParamsGroup(QGroupBox):
             item.setData(Qt.UserRole, cls.name)
             item.setToolTip(f"{cls.label}   [{cls.name}]")
             missing = missing_dependencies(cls)
+            self._missing_dependencies[cls.name] = missing
             if missing:
                 item.setFlags(item.flags() & ~Qt.ItemIsEnabled)
                 item.setToolTip(f"{cls.label}: needs {', '.join(missing)}, which is not installed")
@@ -376,6 +379,10 @@ class CompareMethodsParamsGroup(QGroupBox):
             item.setCheckState(Qt.Checked if cls.name in self.DEFAULT and not missing else Qt.Unchecked)
             self.methods.addItem(item)
         self.methods.setMinimumHeight(180)
+        self._context = None
+        self._context_signature = None
+        self._context_problems = None
+        self._hint = hint
         layout.addWidget(self.methods)
         explain = QHBoxLayout()
         explain.addWidget(QLabel("About the highlighted method:"))
@@ -395,14 +402,68 @@ class CompareMethodsParamsGroup(QGroupBox):
         return [
             self.methods.item(i).data(Qt.UserRole)
             for i in range(self.methods.count())
-            if self.methods.item(i).checkState() == Qt.Checked
+            if self.methods.item(i).checkState() == Qt.Checked and self.methods.item(i).flags() & Qt.ItemIsEnabled
         ]
 
     def set_selected(self, names):
         """Tick exactly these methods."""
         for i in range(self.methods.count()):
             item = self.methods.item(i)
-            item.setCheckState(Qt.Checked if item.data(Qt.UserRole) in names else Qt.Unchecked)
+            item.setCheckState(Qt.Checked if item.data(Qt.UserRole) in names and item.flags() & Qt.ItemIsEnabled
+                               else Qt.Unchecked)
+
+    def set_context(self, run, reset=False, problems=None):
+        """Keep the full catalogue visible, with valid choices for this setup."""
+        signature = repr((run.scenario, run.solver, run.output.postprocess))
+        if signature == self._context_signature and not reset:
+            return self._context_problems
+        from toporia.engine.modes.methods import comparison_problems
+        from toporia.plugins.methods import method_class
+
+        current = method_class(run.solver.method)
+        model = getattr(current, "model", None)
+        model_name = model.name if model else None
+        reasons = problems
+        if reasons is None:
+            reasons = {}
+            for i in range(self.methods.count()):
+                name = self.methods.item(i).data(Qt.UserRole)
+                reasons[name] = comparison_problems(method_class(name), run, missing=self._missing_dependencies[name])
+        eligible = tuple(name for name, why in reasons.items() if not why)
+        context = model_name, eligible
+        self._context_signature = signature
+        self._context_problems = reasons
+        if context == self._context and not reset:
+            return reasons
+        selected = [name for name in self.selected() if name in eligible]
+        if reset or self._context is None or self._context[0] != model_name or not selected:
+            updaters = ("mma", "conlin") if run.scenario.objective.get("type") == "output_displacement" else (
+                "oc", "mma", "simpl", "beso")
+            preferred = [f"{model_name}+{u}" for u in updaters] if model else [current.name]
+            selected = [name for name in preferred if name in eligible] or list(eligible[:1])
+        for i in range(self.methods.count()):
+            item = self.methods.item(i)
+            name = item.data(Qt.UserRole)
+            cls = method_class(name)
+            if reasons[name]:
+                item.setFlags(item.flags() & ~Qt.ItemIsEnabled)
+                item.setToolTip(f"{cls.label}: {'; '.join(reasons[name])}")
+            else:
+                item.setFlags(item.flags() | Qt.ItemIsEnabled)
+                item.setToolTip(f"{cls.label}   [{name}]")
+        self.set_selected(selected)
+        if selected:
+            for i in range(self.methods.count()):
+                item = self.methods.item(i)
+                if item.data(Qt.UserRole) == selected[0]:
+                    self.methods.setCurrentItem(item)
+                    self.methods.scrollToItem(item)
+                    break
+        self._context = context
+        self._hint.setText(
+            f"{len(eligible)} compatible methods for this setup. Unavailable choices are disabled; "
+            "hover for the reason. Ticked methods use the same problem, mesh and stopping rule.")
+        return reasons
 
     def refresh(self, items):
         """The method list does not depend on the parameter paths."""

@@ -597,3 +597,51 @@ def test_load_case_rows_preserve_small_force_magnitudes(app, magnitude):
 
     row = LoadCaseRow(1, fmag=magnitude)
     assert row.get().Fmag == pytest.approx(magnitude, rel=1e-12)
+
+
+def test_force_inverter_comparison_selects_spring_models_and_runs_them(window, tmp_path):
+    import csv
+
+    from PySide6.QtCore import Qt
+
+    from toporia.apps.gui import runner
+
+    window._on_config_changed("Force Inverter")
+    expected = ["q4_mechanism+mma", "q4_mechanism+conlin"]
+    assert window.cmg.selected() == expected
+    assert window.msg.selected() == expected
+    assert window.cmg.methods.currentItem().data(Qt.UserRole) == expected[0]
+    items = {window.cmg.methods.item(i).data(Qt.UserRole): window.cmg.methods.item(i)
+             for i in range(window.cmg.methods.count())}
+    assert not items["q4+mma"].flags() & Qt.ItemIsEnabled
+    assert "point springs" in items["q4+mma"].toolTip()
+    assert not items["q4_mechanism+oc"].flags() & Qt.ItemIsEnabled
+    assert "cannot minimise" in items["q4_mechanism+oc"].toolTip()
+    cfg = runner.build_config(window.core, window.lc, window.filters, base_cfg=window._base_cfg,
+                              objective=window.objective, constraints=window.constraints)
+    cfg = cfg.updated(m=0.4, max_iter=200, save_every=0).with_output_dir(tmp_path)
+    lines = []
+    grid = runner.run_compare_methods(cfg, window.cmg, None, lines.append)
+    assert grid.exists()
+    with (tmp_path / "compare_methods" / "methods.csv").open(newline="", encoding="utf-8") as stream:
+        rows = list(csv.DictReader(stream))
+    assert [row["method"] for row in rows] == expected
+    assert all(row["status"] == "ran" and float(row["output_displacement"]) > 0.001 for row in rows)
+    window._on_config_changed("MBB Beam")
+    assert window.cmg.selected() == list(window.cmg.DEFAULT)
+    assert items["q4+mma"].flags() & Qt.ItemIsEnabled
+
+
+@pytest.mark.parametrize("mode,panel", [("compare", "cmg"), ("sweep", "msg")])
+def test_method_studies_require_at_least_one_compatible_selection(window, mode, panel):
+    from toporia.apps.gui import runner
+
+    window._on_config_changed("Force Inverter")
+    group = getattr(window, panel)
+    group.set_selected([])
+    group.set_context(get_run("Force Inverter"))
+    assert group.selected() == []
+    execute = runner.run_compare_methods if mode == "compare" else runner.run_sweep_methods
+    with pytest.raises(ValueError, match="Select at least one compatible method"):
+        execute(get_run("Force Inverter"), group, None, lambda text: None)
+    window._on_config_changed("MBB Beam")

@@ -502,6 +502,7 @@ class MainWindow(QMainWindow):
         self.post.load_specs(cfg.output.postprocess)
         self.lc.load_from_config(cfg)
         self._on_method_changed(self.core.method_name())
+        self.msg.set_context(cfg, reset=True, problems=self.cmg.set_context(cfg, reset=True))
 
     def _on_method_changed(self, name):
         """Adapt the panels to what the selected method can do."""
@@ -611,6 +612,7 @@ class MainWindow(QMainWindow):
             )
             self.pipeline.show_pipeline(pipeline_stages(cfg), pipeline_notes(cfg.solver.method, cfg),
                                         graph=pipeline_graph(cfg))
+            self.msg.set_context(cfg, problems=self.cmg.set_context(cfg))
         except (ValueError, KeyError) as error:
             self.pipeline.show_pipeline([], [f"Cannot describe this selection: {error}"])
 
