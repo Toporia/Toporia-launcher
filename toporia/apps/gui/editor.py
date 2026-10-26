@@ -51,7 +51,7 @@ class GeometryItem(QGraphicsPathItem):
         elif shape == "circle":
             path.addEllipse(-w / 2, -h / 2, w, h)
         elif shape == "polygon":
-            path.addPolygon(QPolygonF([QPointF(x, -y) for x, y in obj["vertices"]]))
+            path.addPolygon(QPolygonF([QPointF(x * w, -y * h) for x, y in obj["vertices"]]))
             path.closeSubpath()
         else:
             path.addRect(0, -h, w, h)

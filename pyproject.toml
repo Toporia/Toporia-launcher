@@ -27,6 +27,8 @@ pymoto = ["pymoto>=2.0"]
 # 3-D: pyamg is the multigrid solver for large 3-D meshes (the direct solver
 # handles small ones without it); scikit-image draws the 3-D view of a design.
 3d = ["pyamg>=5.0", "scikit-image>=0.22"]
+# Optional interactive spatial editor and geometry import. Headless 2D remains usable without these.
+gui3d = ["pyvista>=0.47", "pyvistaqt>=0.11", "ezdxf>=1.4"]
 
 [project.scripts]
 toporia = "toporia.apps.cli:main"

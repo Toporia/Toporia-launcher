@@ -35,6 +35,8 @@ def _coordinates(problem, nodes):
 def region_mask(obj, coordinates, tolerance, nodes=False):
     """Sample one transformed shape at physical node or element-centre coordinates."""
     dims = coordinates.shape[-1]
+    if dims == 3:
+        return spatial_mask(obj, coordinates, tolerance, nodes)
     position = np.asarray(obj["position"], dtype=float)[:dims]
     size = np.asarray(obj["size"], dtype=float)[:dims]
     local = coordinates - position
@@ -44,8 +46,6 @@ def region_mask(obj, coordinates, tolerance, nodes=False):
     local[..., 0], local[..., 1] = c * local[..., 0] + s * local[..., 1], -s * local[..., 0] + c * local[..., 1]
     shape = obj["shape"]
     eps = 1e-8
-    if dims != 2:
-        raise ValueError("Spatial region meshing is not available yet; use a 2D custom problem")
     if shape == "point":
         dist = np.linalg.norm(local, axis=-1)
         mask = np.zeros(dist.shape, dtype=bool)
@@ -75,7 +75,7 @@ def region_mask(obj, coordinates, tolerance, nodes=False):
             mask &= np.linalg.norm(local, axis=-1) > obj["inner_radius"]
         return mask
     if shape == "polygon":
-        points = np.asarray(obj.get("vertices", []), dtype=float)
+        points = np.asarray(obj.get("vertices", []), dtype=float) * size[:2]
         if points.ndim != 2 or points.shape[0] < 3 or points.shape[1] != 2:
             raise ValueError("A polygon needs at least three XY vertices")
         x, y = local[..., 0], local[..., 1]
@@ -86,6 +86,58 @@ def region_mask(obj, coordinates, tolerance, nodes=False):
             xj, yj = xi, yi
         return mask
     raise ValueError(f"Unsupported region shape: {shape!r}")
+
+
+def spatial_mask(obj, coordinates, tolerance, nodes):
+    """Sample genuinely spatial primitives, surfaces or embedded STL geometry."""
+    from .spatial import local_coordinates, stl_mask
+    if obj["shape"] == "stl":
+        return stl_mask(obj, coordinates, tolerance, nodes)
+    local = local_coordinates(obj, coordinates)
+    size = np.asarray(obj["size"], float)
+    shape = obj["shape"]
+    epsilon = 1e-8
+    extrusion = obj.get("extrusion")
+    if extrusion is not None:
+        flat = {**obj, "position": [0, 0, 0], "rotation": [0, 0, 0]}
+        if shape == "point":
+            distance = np.linalg.norm(local[..., :2], axis=-1)
+            mask = distance <= distance.min() + epsilon
+        else:
+            mask = region_mask(flat, local[..., :2], tolerance, nodes)
+        return mask & (local[..., 2] >= -epsilon) & (local[..., 2] <= extrusion + epsilon)
+    if shape == "point":
+        if not nodes:
+            raise ValueError("A point cannot define a volume")
+        distance = np.linalg.norm(local, axis=-1)
+        mask = np.zeros(distance.shape, bool)
+        mask.flat[np.argmin(distance)] = True
+        if distance.min() > tolerance * 1.5:
+            raise ValueError("Point lies outside the domain")
+        return mask
+    if shape == "line":
+        if not nodes or np.dot(size, size) <= 0:
+            raise ValueError("A line selects supports/loads and needs distinct endpoints")
+        fraction = np.clip(np.sum(local * size, axis=-1) / np.dot(size, size), 0, 1)
+        return np.linalg.norm(local - fraction[..., None] * size, axis=-1) <= tolerance
+    if shape == "box":
+        if np.any(size < 0) or (not nodes and np.any(size == 0)) or np.all(size == 0):
+            raise ValueError("Box sizes must be positive; a zero-thickness face is allowed for supports/loads")
+        return np.all((local >= -epsilon) & (local <= size + epsilon), axis=-1)
+    if shape == "sphere":
+        if np.any(size <= 0):
+            raise ValueError("Sphere diameters must be positive")
+        return np.sum((local / (size / 2)) ** 2, axis=-1) <= 1 + epsilon
+    if shape == "cylinder":
+        if np.any(size <= 0):
+            raise ValueError("Cylinder diameters and height must be positive")
+        return (np.sum((local[..., :2] / (size[:2] / 2)) ** 2, axis=-1) <= 1 + epsilon) & (local[..., 2] >= -epsilon) & (local[..., 2] <= size[2] + epsilon)
+    if shape in {"rectangle", "circle", "polygon"}:
+        if not nodes:
+            raise ValueError("A surface cannot define solid/void material in 3D; use a volume shape")
+        flat = {**obj, "position": [0, 0, 0], "rotation": [0, 0, 0]}
+        return region_mask(flat, local[..., :2], tolerance, nodes) & (np.abs(local[..., 2]) <= tolerance)
+    raise ValueError(f"Unsupported spatial shape: {shape!r}")
 
 
 def validate_object(obj, dims):
@@ -119,9 +171,10 @@ def apply_regions(problem):
         problem.fixed_z_nodes.fill(False)
     problem.load_node_sets = []
     problem.region_loads = []
+    problem.region_weights = []
     domain = np.zeros(problem.shape, bool)
     has_domain = False
-    tolerance = .51 * np.linalg.norm([problem.dx, problem.dy])
+    tolerance = .51 * np.linalg.norm([problem.dx, problem.dy, *([problem.dz] if problem.dims == 3 else [])])
     for obj in objects:
         validate_object(obj, problem.dims)
         role = obj["role"]
@@ -144,6 +197,11 @@ def apply_regions(problem):
             problem.load_nodes |= mask
             problem.load_node_sets.append(mask)
             problem.region_loads.append((obj["case"], mask, np.asarray(obj["force"][:problem.dims])))
+            weights = None
+            if problem.dims == 3 and obj.get("extrusion"):
+                weights = np.ones(problem.node_x.shape)
+                weights[np.isclose(problem.node_z, 0) | np.isclose(problem.node_z, obj["extrusion"])] = .5
+            problem.region_weights.append(weights)
     if has_domain:
         problem.void_elements |= ~domain
     if np.any(problem.void_elements & problem.passive_elements):
@@ -208,10 +266,13 @@ def validate_supports(problem, coordinates):
 def regional_force(problem, node_ids, dims, case_index):
     """Map total regional forces into any solver's node-numbering convention."""
     force = np.zeros(dims * problem.nn)
-    for index, mask, vector in problem.region_loads:
+    for region_index, (index, mask, vector) in enumerate(problem.region_loads):
         if index != case_index:
             continue
         ids = node_ids[mask]
+        weights = problem.region_weights[region_index]
+        shares = np.ones(len(ids)) if weights is None else weights[mask]
+        shares = shares / shares.sum()
         for axis in range(dims):
-            np.add.at(force, dims * ids + axis, vector[axis] / len(ids))
+            np.add.at(force, dims * ids + axis, vector[axis] * shares)
     return force

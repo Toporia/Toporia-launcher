@@ -47,7 +47,7 @@ not complete. Resume from the first unchecked step after reading git status.
   handling, project-specific output, fresh run directories and result provenance.
 - [x] 7. Verify complete 2D open/edit/save/reopen/run/export workflow visually and
   with meaningful integration tests; document usage and remaining limitations.
-- [ ] 8. General spatial regions and STL geometry adapter; independent 3D load/
+- [x] 8. General spatial regions and STL geometry adapter; independent 3D load/
   support/solid/void/domain assignments and conservative mesh validation.
 - [ ] 9. 3D viewport and inspector with spatial primitives, imports, transforms,
   selection and camera navigation; reuse the shared project/object model.
@@ -126,7 +126,17 @@ User instructions are in docs/gui-workflow.md. Final 2D checks: 177 GUI/editor
 checks plus 12 worker/lifecycle/mesh checks passed, including repeated asynchronous
 runs and post-run SVG export. Ruff passed. Results live under ignored results/.
 
-Next: milestone 8, true spatial region masks and portable STL assignments. A local
-.venv (system site packages enabled) has been created for optional visualization
-libraries; no global Python environment was changed. Use UV cache under results/
-in this sandbox. Implement the solver adapter before the 3D viewport.
+Milestone 8 complete: genuinely spatial point/line/face/box/sphere/cylinder
+sampling, Euler transforms, regional H8 vectors, and STL volume/surface sampling.
+Legacy extruded copies retain through-depth geometry and trapezoidal layer load
+shares. STL triangles are embedded as readable vertices/faces for portable .pro
+and .top documents, including support and load roles. Surface patches are allowed
+for supports/loads; material/domain roles require closed manifold volumes. Added
+geometry-only DXF profile importer for straight closed XY polylines/circles.
+Optional gui3d dependencies installed only into the local .venv; numpy/matplotlib/
+Pillow aligned to the existing verified versions. Validation: 35 regional/spatial/
+golden checks passed, including an actual H8 optimization and STL portability.
+
+Next: milestone 9, expose 3D creation/selection/inspector/camera in the GUI and
+wire STL/DXF import actions. Solver adapter is tested; viewport is still XY.
+Use .venv/Scripts/python.exe for optional geometry/viewport tests.

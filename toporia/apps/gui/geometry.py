@@ -43,4 +43,9 @@ def objects_from_scenario(scenario):
                  case.Fmag * math.cos(elevation) * math.sin(angle), case.Fmag * math.sin(elevation)]
         for x, y in loads:
             objects.append(make_object(position=(x, y, 0), role="load", force=force, case=case_index))
+    if scenario.Lz > 0:
+        for obj in objects:
+            obj["extrusion"] = scenario.Lz
+            if obj["role"] == "support" and "z" not in obj["axes"]:
+                obj["axes"].append("z")
     return objects

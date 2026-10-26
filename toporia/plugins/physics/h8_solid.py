@@ -120,7 +120,12 @@ class H8DofLayout:
                 parts.append(3 * self.node_ids[mask][:, None] + axis)
         self.fixed_dofs = np.unique(np.concatenate([p.ravel() for p in parts]).astype(int))
         self.free_dofs = np.setdiff1d(np.arange(self.ndof), self.fixed_dofs)
-        self.forces = [(case.weight, self._force(case)) for case in problem.scenario.load_cases]
+        if hasattr(problem, "region_loads"):
+            from toporia.framework.problem.regions import regional_force
+            self.forces = [(case.weight, regional_force(problem, self.node_ids, 3, i))
+                           for i, case in enumerate(problem.scenario.load_cases)]
+        else:
+            self.forces = [(case.weight, self._force(case)) for case in problem.scenario.load_cases]
 
     def _force(self, case):
         """The load case spread over every load region, each region carrying the full magnitude."""

@@ -50,6 +50,9 @@ def _validate_objects(objects):
                 for p in vertices
             ):
                 raise ValueError("Polygon vertices must be finite XY pairs")
+        if obj["shape"] == "stl":
+            from toporia.framework.problem.spatial import triangle_mesh
+            triangle_mesh(obj)
 
 
 def _atomic_json(path, data):
