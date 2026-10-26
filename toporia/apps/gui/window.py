@@ -41,6 +41,7 @@ from PySide6.QtWidgets import (
 )
 
 from .canvas import LiveCanvas
+from .editor import ProblemEditor
 from .help import text_topic, with_help
 from .home import HomePage
 from .method_view import MethodWorkspace
@@ -389,7 +390,9 @@ class MainWindow(ProjectActions, QMainWindow):
         """The live canvas, with the console under it."""
         self.workspace_views = QStackedWidget()
         self.problem_preview = LiveCanvas()
-        self.workspace_views.addWidget(self.problem_preview)
+        self.problem_editor = ProblemEditor()
+        self.problem_editor.changed.connect(self._on_scene_changed)
+        self.workspace_views.addWidget(self.problem_editor)
         self.method_view = MethodWorkspace()
         self.method_view.selected.connect(self._inspect_method_node)
         self.method_view.arranged.connect(self._remember_diagram)
@@ -414,6 +417,15 @@ class MainWindow(ProjectActions, QMainWindow):
         self.pipeline.setParent(self)
         self.pipeline.hide()
         return self.workspace_views
+
+    def _on_scene_changed(self, scenario, objects):
+        """Preserve explicit geometry while updating generated domain/mesh controls."""
+        from dataclasses import replace
+        self.project.objects = objects
+        self._base_cfg = replace(self._base_cfg, scenario=scenario)
+        self.design._Lx, self.design._Ly = scenario.Lx, scenario.Ly
+        self.design._show_counts()
+        self._refresh_pipeline()
 
     def _remember_diagram(self, positions):
         """Persist presentation coordinates independently of the computation graph."""
@@ -533,6 +545,7 @@ class MainWindow(ProjectActions, QMainWindow):
             self._log(f"[Preview] {error}")
             return
         title = self.project.name if hasattr(self, "project") else self.config_combo.currentText()
+        self.problem_editor.load(cfg.scenario, self.project.objects, self.project.benchmark is not None)
         self.problem_preview.show_problem(cfg.scenario, cfg.solver.m, title)
         self.canvas.show_problem(cfg.scenario, cfg.solver.m, title)
 

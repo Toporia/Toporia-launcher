@@ -39,7 +39,7 @@ not complete. Resume from the first unchecked step after reading git status.
   immutable originals, editable copies, notes and unsaved-change handling.
 - [x] 3. Distinct step workspaces; interactive Method diagram and filter ordering;
   preserve generated plugin controls and existing analysis modes.
-- [ ] 4. Interactive 2D geometry editor: selection/list/inspector, numeric and
+- [x] 4. Interactive 2D geometry editor: selection/list/inspector, numeric and
   graphical creation, transforms, domain/material settings, undo/redo and navigation.
 - [ ] 5. Compile custom 2D objects to solver inputs; independent regional loads,
   explicit supports, full/void regions, compatibility and preflight checks.
@@ -86,6 +86,14 @@ reordered filters. Diagram positions are project presentation state, not solver
 inputs. Validation: 180 regression checks plus 6 project/workspace tests passed.
 Ruff passed. No optimisation engine changes.
 
-Next: milestone 4, the 2D scene editor. The current Problem preview is still a
-Matplotlib preview. Build shared geometric objects and inspector first, then
-compile them to explicit solver inputs in milestone 5.
+Milestone 4 complete: physical-coordinate 2D editor with point/line/rectangle/
+circle tools, object list and inspector, role assignment, numeric coordinates,
+translation/rotation/scale, duplication, deletion and definition-level undo/redo.
+Benchmark geometry is visible and immutable; copying produces explicit editable
+objects. Domain dimensions/material edits preserve object coordinates. Scene
+objects persist in project/problem files. Validation: 176 GUI/editor/lifecycle
+checks passed; ruff passed after correcting QGraphicsScene ownership.
+
+Next: milestone 5. Editor objects are not yet applied to the engine. Implement an
+explicit regional scenario mode, preserve legacy default serialization/goldens,
+and test independent forces, rigid-body constraints and invalid empty problems.

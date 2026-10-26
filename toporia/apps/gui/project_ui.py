@@ -202,7 +202,11 @@ class ProjectActions:
         """Detach the physical definition from its reference without losing method settings."""
         if not self._running:
             self.project = replace(self._capture_project(), name=self.project.name + " copy", benchmark=None, path=None)
+            if self.project.objects is None:
+                from .geometry import objects_from_scenario
+                self.project.objects = objects_from_scenario(self.project.run.scenario)
             self._apply_problem_lock()
+            self.show_problem()
             self._update_project_title()
 
     def open_project(self, path=None):
