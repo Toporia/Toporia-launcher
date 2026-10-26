@@ -35,7 +35,7 @@ not complete. Resume from the first unchecked step after reading git status.
 - [x] 0. Inspect repository, record requirements and checkpoints (this commit).
 - [x] 1. Versioned project document and atomic save/load; separate problem files,
   notes, UI state and run output; serialization tests.
-- [ ] 2. Home/library and file actions; benchmark cards/previews, descriptions,
+- [x] 2. Home/library and file actions; benchmark cards/previews, descriptions,
   immutable originals, editable copies, notes and unsaved-change handling.
 - [ ] 3. Distinct step workspaces; interactive Method diagram and filter ordering;
   preserve generated plugin controls and existing analysis modes.
@@ -71,4 +71,12 @@ atomic writes. Validation: 18 project tests passed; ruff passed.
 Pytest needs --basetemp=results/<unique-test-name> in this sandbox because its
 system temporary-directory numbering fails. This is an environment issue.
 
-Next: milestone 2, Home/library and file controls. Keep generated plugin forms.
+Milestone 2 complete: Home has sourced illustrated benchmark cards and search.
+File menu supports new/open/save/save-as/import/export/copy, and View opens notes.
+Benchmarks protect physical controls. Save/discard/cancel protects replacements.
+Study settings (including comparison methods/load cases) round-trip with notes.
+Result ownership resets on project changes. Validation: 176 existing GUI/project
+checks and 4 new lifecycle tests passed; GUI ruff checks passed.
+
+Next: milestone 3, separate workspaces and interactive Method diagram. Current
+window keeps the old central canvas until this milestone. Do not change solvers.

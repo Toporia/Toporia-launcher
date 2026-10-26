@@ -41,7 +41,8 @@ from PySide6.QtWidgets import (
 )
 
 from .canvas import LiveCanvas
-from .help import problem_topic, text_topic, with_help
+from .help import text_topic, with_help
+from .home import HomePage
 from .panels import (
     CompareLoadCasesParamsGroup,
     CompareMethodsParamsGroup,
@@ -63,6 +64,8 @@ from .panels import (
     SweepParamsGroup,
     VariantsGroup,
 )
+from .project import Project
+from .project_ui import ProjectActions
 
 #: The steps along the top, in the order one walks through them before a run.
 STEPS = (
@@ -115,7 +118,7 @@ class _StopRequested(Exception):
     Using a dedicated type lets us catch it separately from real errors."""
 
 
-class MainWindow(QMainWindow):
+class MainWindow(ProjectActions, QMainWindow):
     """The application window: steps and Run along the top, the current step's settings
     on the left, the live canvas and the log in the middle, the pipeline on the right."""
 
@@ -147,7 +150,12 @@ class MainWindow(QMainWindow):
         body.addWidget(self._build_overview())
         body.setStretchFactor(1, 1)
         body.setSizes([390, 720, 330])
-        outer.addWidget(body, 1)
+        self.workspace = body
+        self.root_pages = QStackedWidget()
+        self.home = HomePage()
+        self.root_pages.addWidget(self.home)
+        self.root_pages.addWidget(body)
+        outer.addWidget(self.root_pages, 1)
 
         self._wire_panels()
 
@@ -158,6 +166,8 @@ class MainWindow(QMainWindow):
         self._on_mode("Run One")  # hide sweep-specific groups on startup
         self.go_to_step(0)
         self._report_plugin_errors()
+        self._setup_project_ui()
+        self.show_home()
 
     # ── Layout ────────────────────────────────────────────────────────────────
 
@@ -216,12 +226,18 @@ class MainWindow(QMainWindow):
         row.addWidget(title)
         row.addSpacing(16)
 
-        row.addWidget(QLabel("Preset:"))
+        home_button = QPushButton("Home")
+        home_button.clicked.connect(self.show_home)
+        row.addWidget(home_button)
+        self.project_label = QLabel()
+        row.addWidget(self.project_label)
         self.config_combo = QComboBox()
         self.config_combo.addItems(problem_names())
         self.config_combo.setCurrentText(DEFAULT_PROBLEM)
         self.config_combo.setToolTip("A ready-made problem: loads every step below with its settings.")
-        row.addWidget(with_help(self.config_combo, lambda: problem_topic(self.config_combo.currentText())))
+        # Kept as the preset-loading adapter for callers; the library is the visible selector.
+        self.config_combo.setParent(bar)
+        self.config_combo.hide()
         row.addSpacing(24)
 
         self._step_buttons = QButtonGroup(self)
@@ -490,18 +506,12 @@ class MainWindow(QMainWindow):
         except Exception as e:
             self._log(f"[Config error] {e}")
             return
-        self._base_cfg = cfg
-        self.core.load_from_config(cfg)
-        self.design.load_from_config(cfg)
-        self.material.load_spec(cfg.solver.interpolation)
-        self.objective.load_spec(cfg.scenario.objective)
-        self.constraints.load_specs(cfg.scenario.constraints)
-        self.filters.load_specs(cfg.solver.filter_specs)
-        self.schedules.load_specs(cfg.solver.schedules)
-        self.variants.load_spec(cfg.solver.variants)
-        self.post.load_specs(cfg.output.postprocess)
-        self.lc.load_from_config(cfg)
-        self._on_method_changed(self.core.method_name())
+        self.project = Project(name, cfg, benchmark=name)
+        self._populate_run(cfg)
+        self._apply_problem_lock()
+        if hasattr(self, "notes"):
+            self.notes.clear()
+            self._saved_state = self._capture_project().payload()
 
     def _on_method_changed(self, name):
         """Adapt the panels to what the selected method can do."""
