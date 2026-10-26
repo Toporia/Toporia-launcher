@@ -95,7 +95,7 @@ def test_every_method_is_discovered_in_menu_order():
 
 def test_every_filter_is_discovered_in_menu_order():
     assert FILTERS.names() == ["density", "pde", "pde_anisotropic", "sensitivity", "heaviside", "morphology", "am", "routing", "symmetry",
-                              "extrusion", "pattern", "casting", "machining"]
+                              "extrusion", "pattern", "casting", "machining", "self_support"]
 
 
 def test_aliases_and_case_are_accepted():

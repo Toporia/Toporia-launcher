@@ -115,7 +115,8 @@ the matching MAKE item below.
       Uniform gray-start limitations documented; not a complete adaptive Dunning solver.
 - [x] Machining accessibility: independent Høghøj–Träff Cartesian PDE variant;
       ideal tools, no forced-void regions or finite cutter/holder geometry.
-- [ ] Gaynor self-support
+- [x] Gaynor–Guest support projection: independent 2-D cell-centred wedge/local
+      projection with full adjoint; discrete threshold and projection limits documented.
 - [ ] Multi-resolution design and analysis meshes
 - [x] Geometrically non-linear elasticity
 

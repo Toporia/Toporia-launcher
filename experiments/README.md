@@ -5,7 +5,7 @@ and GUI. Failed performance gates are recorded rather than weakened.
 
 ## Machining accessibility
 
-`python -m experiments.machining --iterations 80` prints JSON only. It uses
+`python -m experiments.machining --iterations 80` prints measurements without saving runs. It uses
 24×8 Q4 and 24×8×4 H8 grids, a top-side tool, a radius-1.5 density filter and
 small-move MMA. The source start is calibrated to the physical volume budget.
 Each final objective is reevaluated after the final update.
@@ -22,6 +22,49 @@ Gray fractions between 0.1 and 0.9 are 18.75% and 3.91%. The independent ray
 check uses a 0.5 density threshold and the selected Cartesian tool side; it
 does not certify a finite cutter or holder. The PDE has known diffusion and
 projection artefacts. See the [filter scope](../toporia/plugins/filters/README.md#machining-accessibility).
+
+## Projection-based self-support
+
+`python -m experiments.self_support --iterations 1000 --mesh 1` uses the
+registered cell-centred projection, a bottom build plate, 45° support angle,
+radius 2.4 cells and support threshold 0.1. It prints progress and a final report;
+no run files are written. The 60×20 MBB and 60×30 cantilever grids resolve
+the features much better than 24-cell-wide smoke meshes, which retained 63–89%
+gray material in the tested short/continued runs.
+
+RAMP q increases 10→20→30 every 200 iterations. Local projection sharpness
+increases 10→25 after 50; support sharpness stays 20. Own MMA starts with
+move 0.01, asymptotes 0.02, expansion 1.05 and contraction 0.65; after 400
+iterations its move falls to 0.0005. The GUI and parameter schema now preserve
+these small values without changing the existing 0.2 default.
+
+With the already optional pyMOTO dependency, run
+`python -m experiments.self_support --iterations 500 --mesh 1 --updater pymoto_gcmma`.
+That wrapper fixes its move at 0.01 and uses conservative inner trial checks;
+the unsupported move schedule is omitted explicitly. Both variants use the same
+material and projection continuation. The initial physical design is reevaluated
+at the final q=30 so the initial/final compliances use the same material law.
+
+| Updater / iterations | Preset | Initial compliance | Final compliance | Physical volume / limit | Gray fraction 0.1–0.9 | Final maximum change |
+| :-- | :-- | --: | --: | --: | --: | --: |
+| Own MMA / 1000 | MBB | 12522.25648 | 484.89162 | 0.499837 / 0.5 | 16.67% | 0.10972 |
+| Own MMA / 1000 | Cantilever | 2901.78844 | 324.62781 | 0.399862 / 0.4 | 14.89% | 0.15345 |
+| pyMOTO GCMMA / 500 | MBB | 12522.25648 | 454.66344 | 0.499995 / 0.5 | 20.50% | 0.02508 |
+| pyMOTO GCMMA / 500 | Cantilever | 2901.78844 | 296.54728 | 0.399999 / 0.4 | 15.83% | 0.01052 |
+
+These are bounded improvement/feasibility runs, **not convergence claims** or
+timing comparisons. Small moves alone do not eliminate the projection's strong
+nonlinearity. The independent one-layer 45° test on the 0.5-thresholded physical
+field finds 1/2 unsupported cells for own MMA and 0/1 for GCMMA (MBB/cantilever).
+This stencil is stricter than the multi-layer wedge in some locations, but the
+discrepancy must still be inspected before fabrication.
+
+Thresholding changes the volume: own MMA gives 0.5125/0.407222 and GCMMA gives
+0.519167/0.411111. All four exceed their smooth-design budgets after thresholding.
+Fresh binary-field compliances are 385.85622/269.24762 and 347.78378/240.99253,
+respectively; they are not budget-matched performance comparisons. No binary
+result is labelled feasible or printable. The [filter documentation](../toporia/plugins/filters/README.md#gaynorguest-self-support-projection)
+describes the cell discretisation, boundary truncation and grid-dependent threshold.
 
 ## Minimum-length response: feasible-seed validation
 

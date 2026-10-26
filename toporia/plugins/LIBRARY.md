@@ -24,7 +24,7 @@ A test (`tests/apps/test_gui.py`) fails if a part ever stops being reachable fro
 | **Wraps** | Calls an outside Python package. That package is installed separately. Parts whose package is missing are greyed out in the app, with the install command. |
 | **Own** | Toporia's own idea or standard practice. |
 
-## In the library today: 83 selectable parts and 17 benchmark problems
+## In the library today: 84 selectable parts and 17 benchmark problems
 
 The selectable parts include models and whole methods; their eight underlying
 physics engines are counted separately in the [catalogue totals](README.md).
@@ -56,6 +56,7 @@ physics engines are counted separately in the [catalogue totals](README.md).
 | Pattern repetition | `pattern` | [pattern.py](filters/pattern.py) | Paper | Bendsøe & Sigmund 2003; Almeida, Paulino & Silva 2009 · papers [1](https://doi.org/10.1007/978-3-662-05086-6) [2](https://doi.org/10.1007/s00158-008-0332-6) |
 | Casting (no undercuts) | `casting` | [casting.py](filters/casting.py) | Paper | Gersborg & Andreasen, *SMO* 2011 · [paper](https://doi.org/10.1007/s00158-011-0632-0) |
 | PDE machining (axis directions) | `machining` | [machining.py](filters/machining.py) | Paper | Independent Cartesian Høghøj–Träff variant; ideal tools, no forced voids or cutter/holder geometry · [paper](https://doi.org/10.1016/j.cma.2021.114488) |
+| Gaynor–Guest self-support projection (2-D) | `self_support` | [self_support.py](filters/self_support.py) | Paper | Cell-centred multiplicative wedge support, local projection and full reverse sweep; grid-dependent threshold, no forced regions or exact angle/size certificate · [paper](https://doi.org/10.1007/s00158-016-1551-x) |
 
 ### Material laws: density to stiffness ([folder](interpolations/README.md))
 
@@ -204,7 +205,6 @@ Listed from least to most effort. "Code" means open code exists (port it, or che
 
 | What | Source |
 | :-- | :-- |
-| Projection-based self-support | Paper: Gaynor & Guest 2016 · [paper](https://doi.org/10.1007/s00158-016-1551-x) |
 | Multi-resolution design and analysis meshes | Paper: Nguyen et al. 2010 · [paper](https://doi.org/10.1007/s00158-009-0443-8) |
 | Neural reparameterisation (TOuNN) | Code: TOuNN (needs PyTorch or JAX, which may not install on Python 3.14) · [paper](https://doi.org/10.1007/s00158-020-02748-4) |
 | SINH and Hashin–Shtrikman material laws | Paper: Bruns 2005; Bendsøe & Sigmund 1999 (the material law has to see the volume and Poisson's ratio) · papers [1](https://doi.org/10.1007/s00158-005-0537-x) [2](https://doi.org/10.1007/s004190050248) |

@@ -20,10 +20,12 @@ PENAL = Param(
 
 MOVE = Param(
     "move", 0.2, "Move limit",
-    "Largest change of any element's density in a single update.",
-    min=0.01, max=1.0, step=0.05, decimals=2,
+    "Largest change of a design variable in one update. Sharp manufacturing projections "
+    "can require moves much smaller than 0.01.",
+    min=0.00001, max=1.0, step=0.01, decimals=5,
     source="The move limit of the optimality criteria update in the 99-line code and top88, "
-           "where it is 0.2.",
+           "where it is 0.2. The small-move range and precision are Toporia choices for "
+           "sharp manufacturing projections.",
 )
 
 RMIN = Param(

@@ -31,11 +31,12 @@ a current-round update containing additions, validation and limitations.
 | `9abc824` | Solid/void geometric minimum-length constraints and complete adjoint. |
 | `9c901b3` | GUI preserves small loads; Force Inverter's 0.001 N input no longer becomes zero. |
 | `81c9c37` | Compatible method-study selections, spring-aware measurement and mechanism metrics. |
+| `4decae8` | Cartesian PDE machining, full adjoints and physical-volume starts/convergence. |
 
 Heat conduction, thermal/dynamic pyMOTO models, eigenfrequency, harmonic response,
 local-stress augmented Lagrangian and nonlinear elasticity are already present.
-The catalogue has 83 selectable plugins, eight physics engines and 17 presets:
-108 implementations. Eleven models and 23 updaters form 253 compositions;
+The catalogue has 84 selectable plugins, eight physics engines and 17 presets:
+109 implementations. Eleven models and 23 updaters form 253 compositions;
 three whole methods bring the method-name total to 256.
 
 ## Important limits
@@ -64,7 +65,7 @@ on the presets' own physics; 70 incompatible combinations were excluded.
 Thermal comparisons measure heat rather than zero mechanical work; vibration
 reports fundamental angular frequency. Preset-recommended methods remain selected.
 
-The current full suite passes: **2363 passed, one optional multigrid test skipped**
+After machining, the full suite passed: **2363 passed, one optional multigrid test skipped**
 in 27 min 57 sec. Ruff and whitespace checks pass; all 486 local Markdown links resolve.
 Generated runs, downloaded papers, scratch scripts/images and caches are removed
 after validation. The implementation, regression tests, reusable research recipes
@@ -88,13 +89,28 @@ finite-tool certificates; see `experiments/machining.py`. The linked PDF include
 the new method and the earlier mechanism/comparison fixes; all 281 existing
 links and three outline entries are preserved, with three new links added.
 
+Gaynor–Guest self-support is implemented as a cell-centred 2-D wedge projection
+and local exponential projection, with a complete reverse sweep. Only Cartesian
+build directions, element densities and unpinned boxes are supported. The support
+threshold depends on the grid/angle; no exact size/angle or printing certificate
+is claimed. Both sharpnesses support continuation. Small move limits down to
+0.00001 now survive schema and GUI round trips; the 0.2 default is unchanged.
+
+The focused manufacturing/schema/variant group passes 434 tests; all 53 selected
+GUI form, reachability and small-move tests pass. Twenty-one self-support tests
+are included; 16 unchanged golden cases also pass. Ruff passes and all 491 local
+Markdown links resolve. The linked PDF adds a second update page (15 pages,
+286 links), preserving its existing catalogue and navigation. Fine-grid MMA/GCMMA runs improve compliance and meet smooth-volume
+budgets; they remain unconverged and retain gray material. Binary thresholding
+exceeds budgets and can leave one-layer support discrepancies. These results are
+explicitly recorded in `experiments/README.md`, not presented as printable designs.
+
 ## Remaining sequence
 
-1. Projection-based self-support (Gaynor and Guest).
-2. Multiresolution design and analysis meshes.
-3. Neural reparameterisation (TOuNN), subject to this Python/Windows environment.
-4. SINH and Hashin–Shtrikman material laws.
-5. Original MATLAB/Octave reference runs if a suitable runtime is available;
+1. Multiresolution design and analysis meshes.
+2. Neural reparameterisation (TOuNN), subject to this Python/Windows environment.
+3. SINH and Hashin–Shtrikman material laws.
+4. Original MATLAB/Octave reference runs if a suitable runtime is available;
    ask before installing or changing runtimes.
 
 Work stays sequential: finish verification, documentation and one commit per

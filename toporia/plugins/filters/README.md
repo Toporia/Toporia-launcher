@@ -9,10 +9,10 @@ Without a filter, a density method produces checkerboards and a mesh-dependent r
 This layer is not optional decoration — it is what makes the problem well posed.
 
 **In 3-D** (a scenario with a depth): the density, PDE, sensitivity, Heaviside, morphology, extrusion, pattern, casting and machining filters work;
-the AM overhang, routing and symmetry filters are written for plane problems and are refused
+the AM overhang, Gaynor–Guest self-support, routing and symmetry filters are written for plane problems and are refused
 on a 3-D one, with the filters that can.
 
-**Status: 13 plugins in Toporia (Heaviside includes a volume-preserving option) · 1 with open code · 6 paper only**
+**Status: 14 plugins in Toporia (Heaviside includes a volume-preserving option) · 1 with open code · 5 paper only**
 
 | Label | Meaning |
 | :-- | :-- |
@@ -38,6 +38,7 @@ on a 3-D one, with the filters that can.
 | ✅ Pattern repetition | [`pattern.py`](pattern.py) | `pattern` | Bendsøe & Sigmund, *Topology Optimization*, Springer 2003; Almeida, Paulino & Silva, *SMO* 39 (2009) |
 | ✅ Casting (no undercuts) | [`casting.py`](casting.py) | `casting` | Gersborg & Andreasen, *SMO* 44 (2011) 875–881; Xia et al., *CMAME* 2010 |
 | ✅ PDE machining (axis directions) | [`machining.py`](machining.py) | `machining` | Independent Cartesian variant of Høghøj & Träff, *CMAME* 391 (2022) 114488. |
+| ✅ Gaynor–Guest self-support projection (2-D) | [`self_support.py`](self_support.py) | `self_support` | Independent cell-centred discretisation of Gaynor & Guest, *SMO* 54 (2016) 1157–1172. |
 
 The projection already takes an arbitrary threshold η, which is the prerequisite for the
 robust formulation below.
@@ -220,6 +221,48 @@ Tests cover 2-D/3-D binary ray fixtures, an enclosed cavity and open channel,
 the cumulative-source limit, passive shadows, length-unit invariance, complete
 adjoints and physical-volume optimisation.
 
+### Gaynor–Guest self-support projection
+
+[`self_support.py`](self_support.py) implements the multiplicative support map
+`phi = psi * H_T(mean(phi_below))`, then a local cone average and the exponential
+projection `rho = 1 - exp(-beta_local * mean) + mean * exp(-beta_local)`.
+The support wedge extends 1.5 times the local radius below each design point.
+An exact reverse sweep propagates gradients through all lower-layer dependencies;
+the local projection uses its own transpose. Both sharpnesses are schedulable.
+This follows [Gaynor & Guest (2016)](https://doi.org/10.1007/s00158-016-1551-x)
+and [Gaynor's dissertation, chapter 3](https://jscholarship.library.jhu.edu/bitstream/handle/1774.2/38009/GAYNOR-DISSERTATION-2015.pdf).
+It is independently written; no published code is copied.
+
+- GUI: choose **Gaynor–Guest self-support projection (2-D)** as the last filter.
+  It includes its own local regularisation, so the benchmark uses this filter alone.
+  `+y` builds upwards from the bottom plate; the first cell layer is supported.
+- Angles are measured from the build plate: 90° permits vertical supports only.
+  Convert to the existing AM filter's from-vertical convention using `90 - angle`.
+  The radius is measured in shortest-cell widths; physical distances determine
+  both neighbourhoods on rectangular cells. Neighbourhoods truncate at box edges.
+- This implementation uses cell-centred design points, rather than the paper's
+  nodal examples. It currently requires element densities, a rectangular 2-D
+  domain and no forced-solid or forced-void regions. Overwriting manufactured
+  densities could invalidate support; these combinations are refused explicitly.
+- The support threshold is calibrated to the discrete wedge, not a universal
+  material property. Finite projection, smoothing, boundary truncation and grid
+  resolution can leave angle/size artefacts. This is not an exact angle or
+  minimum-feature certificate, or a printing-process simulation.
+- RAMP avoids a vanishing material slope in void regions. Projection and material
+  continuation, conservative MMA settings and a sufficiently resolved mesh matter.
+  Very coarse smoke runs can remain predominantly gray. The GUI now preserves
+  move limits down to 0.00001; the existing default remains 0.2.
+
+The [reproducible benchmark](../../../experiments/README.md#projection-based-self-support)
+reports physical and thresholded volume/compliance, gray fraction, final changes
+and an independent one-layer support diagnostic. It writes no run outputs.
+
+CLI recipe for Toporia's MMA with the same continuation (one shell line):
+
+```sh
+toporia run "Cantilever" --set method=q4+mma --set m=1 --set max_iter=1000 --set tol=0.00001 --set method.move=0.01 --set method.asyinit=0.02 --set method.asyincr=1.05 --set method.asydecr=0.65 --set 'interpolation={"type":"ramp","q":10}' --set 'filter_specs=[{"type":"self_support","beta_local":10}]' --set 'schedules=[{"path":"interpolation.q","type":"steps","start":10,"end":30,"step":10,"every":200},{"path":"filters[0].beta_local","type":"steps","start":10,"end":25,"step":15,"every":50},{"path":"method.move","type":"steps","start":0.01,"end":0.0005,"step":0.0095,"every":400}]'
+```
+
 ## Candidates — regularisation
 
 | Filter | Status | Reference | Why it matters |
@@ -239,13 +282,12 @@ using a separate geometric cone filter rather than modifying the physical pipeli
 
 ## Candidates — fabrication
 
-The AM overhang, extrusion, pattern-repetition and casting filters are implemented. Everything else in this table is a manufacturing
+The AM overhang, support projection, machining, extrusion, pattern-repetition and casting filters are implemented. Everything else in this table is a manufacturing
 rule Toporia cannot yet express, and this is where commercial "generative design" tools
 actually differentiate.
 
 | Rule | Status | Reference | Why it matters |
 | :-- | :-- | :-- | :-- |
-| Projection-based self-support | 📄 | Gaynor & Guest, *SMO* 2016 | An alternative overhang treatment to Langelaar's layer-wise filter; worth having both to compare. |
 | Enclosed void / powder removal | 📄 | Li et al., *SMO* 2016; Liu et al. 2015 | A virtual temperature field that only heats up inside disconnected voids, penalised to zero. Cheap and elegant. |
 | Residual stress / distortion aware | 📄 | Allaire & Jakabčin 2018; Miki & Yamada, *FEAD* 2021 | An inherent-strain model of the build inside the loop, so the *printed* shape is optimised rather than the designed one. |
 | Fibre orientation for composites | 🔗 FRC-TOuNN | Chandrasekhar, Sridhara & Suresh, *CAD* 2022 | Continuous fibre angle alongside density; the angle field itself needs regularising for printable tow paths. |

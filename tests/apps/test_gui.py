@@ -105,6 +105,26 @@ def test_the_pipeline_names_every_part_of_the_selection(window):
     assert dict(window.pipeline.stages())["Optimiser sees"] == "the design field itself"
 
 
+def test_sharp_support_projection_keeps_small_moves_and_its_settings_in_the_gui(window):
+    from toporia.apps.gui import runner
+    from toporia.engine.loop import initialized_method
+
+    window._on_config_changed("Cantilever")
+    window.core.select_method("q4+mma")
+    window.core._updater_forms["mma"].set_values({"move": 0.0005})
+    window.material.load_spec({"type": "ramp", "q": 10})
+    window.filters.load_specs([{"type": "self_support", "direction": "-y", "beta_local": 10}])
+    run = runner.build_config(window.core, window.lc, window.filters, base_cfg=window._base_cfg,
+                              interpolation=window.material)
+    assert run.solver.method_params["move"] == pytest.approx(0.0005)
+    assert run.solver.filter_specs[0]["direction"] == "-y"
+    assert run.solver.filter_specs[0]["beta_local"] == 10
+    assert run.solver.interpolation == {"type": "ramp", "q": 10}
+    method = initialized_method(run.updated(m=0.4, save_every=0))
+    method.step(1)
+    assert method._updater.move == pytest.approx(0.0005)
+
+
 def test_older_method_names_select_the_parts_they_stand_for(window):
     window.core.select_method("density_mma")
     assert window.core.method_name() == "q4+mma"
