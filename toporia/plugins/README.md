@@ -30,7 +30,7 @@ Nothing is ever labelled ✅ until it is registered, tested, and reachable from 
 | Folder | Layer | ✅ In Toporia | 🔗 Open code | 📄 Paper only |
 | :-- | :-- | --: | --: | --: |
 | [`methods/`](methods/README.md) | Whole methods; composed pairs are counted through their parts | 3 | 10 | 1 |
-| [`representations/`](representations/README.md) | What the design variables are | 5 | 0 | 1 |
+| [`representations/`](representations/README.md) | What the design variables are | 6 | 0 | 0 |
 | [`filters/`](filters/README.md) | How it is smoothed, projected, made manufacturable | 14 | 1 | 4 |
 | [`interpolations/`](interpolations/README.md) | How density becomes stiffness (the material law) | 3 | 0 | 3 |
 | [`schedules/`](schedules/README.md) | How a parameter changes during the run (continuation) | 4 | 0 | 1 |
@@ -40,9 +40,9 @@ Nothing is ever labelled ✅ until it is registered, tested, and reachable from 
 | [`responses/`](responses/README.md) | What is minimised or constrained | 13 | 4 | 12 |
 | [`updaters/`](updaters/README.md) | How the design moves each iteration | 23 | 4 | 0 |
 | [`problems/`](problems/README.md) | Benchmark problems and datasets | 17 | 6 | 0 |
-| **Total** | | **111** | **54** | **29** |
+| **Total** | | **112** | **54** | **28** |
 
-The implementation total is **85 registered selectable parts + 9 physics engines +
+The implementation total is **86 registered selectable parts + 9 physics engines +
 17 presets**. Counts follow registry classes: parameter options such as variable
 MMC thickness or volume-preserving Heaviside do not add another plugin. The 12
 models and 23 updaters form 276 named pairings; a pairing must support the chosen

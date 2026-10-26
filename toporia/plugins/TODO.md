@@ -41,7 +41,7 @@ first, and if a package will not install, reports it rather than working around 
 | [~] | pyMOTO, thermal / dynamics / mechanism modules | model | heat and eigenfrequency implemented; mechanism remains | MIT |
 | [ ] | dl4to + the SELTO datasets | problems | 3-D benchmark problems with reference solutions | *(check)* |
 | [ ] | JAX (+ AuTO, Chandrasekhar et al.) | model / representation | automatic differentiation for new responses, neural fields | Apache-2 / *(check)* |
-| [ ] | PyTorch or JAX for TOuNN (Chandrasekhar & Suresh) | representation + Adam updater | neural reparameterisation | *(check)* |
+| [x] | Independent TOuNN-style smooth coordinate network (Chandrasekhar & Suresh); original PyTorch port remains separate | representation + existing Adam updater | NumPy backpropagation, 2-D/3-D; no batch normalisation/AMSGrad or runtime dependency | Own; reference repository GPL-3.0, no code copied |
 | [ ] | google-research `neural-structural-optimization` (Hoyer et al.) | problems + representation | ~100 benchmark problems, neural reparameterisation | Apache-2 |
 | [ ] | ceviche | model | photonics (FDFD) on a grid | MIT |
 | [ ] | JAX-FEM | model | non-linear materials, GPU | GPL-3 *(optional only)* |

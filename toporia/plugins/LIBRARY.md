@@ -24,7 +24,7 @@ A test (`tests/apps/test_gui.py`) fails if a part ever stops being reachable fro
 | **Wraps** | Calls an outside Python package. That package is installed separately. Parts whose package is missing are greyed out in the app, with the install command. |
 | **Own** | Toporia's own idea or standard practice. |
 
-## In the library today: 85 selectable parts and 17 benchmark problems
+## In the library today: 86 selectable parts and 17 benchmark problems
 
 The selectable parts include models and whole methods; their nine underlying
 physics engines are counted separately in the [catalogue totals](README.md).
@@ -38,6 +38,7 @@ physics engines are counted separately in the [catalogue totals](README.md).
 | Moving morphable voids (restricted 2D superellipses) | `mmv` | [mmv.py](representations/mmv.py) | Paper | Zhang et al., *CMAME* 2017; own geometric dual of MMC, without B-spline surfaces or FE pruning · [paper](https://doi.org/10.1016/j.cma.2017.05.002) |
 | Geometry projection (2D/3D capsule bars) | `geometry_projection` | [geometry_projection.py](representations/geometry_projection.py) | Paper | Own fixed-radius, bounded-union variant with component activation; no GPTO code copied · papers [1](https://doi.org/10.1016/j.cma.2015.05.005) [2](https://doi.org/10.1007/s00158-020-02552-0) |
 | B-spline field | `bspline` | [bspline.py](representations/bspline.py) | Paper | Qian, *CMAME* 2013 · [paper](https://doi.org/10.1016/j.cma.2013.06.001) |
+| Neural coordinate field (2D/3D) | `neural` | [neural.py](representations/neural.py) | Own | Independent smooth TOuNN-style network with NumPy backpropagation; no PyTorch code copied · [paper](https://doi.org/10.1007/s00158-020-02748-4) |
 
 ### Filters: design to physical density, and fabrication rules ([folder](filters/README.md))
 
@@ -206,7 +207,6 @@ Listed from least to most effort. "Code" means open code exists (port it, or che
 
 | What | Source |
 | :-- | :-- |
-| Neural reparameterisation (TOuNN) | Code: TOuNN (needs PyTorch or JAX, which may not install on Python 3.14) · [paper](https://doi.org/10.1007/s00158-020-02748-4) |
 | SINH and Hashin–Shtrikman material laws | Paper: Bruns 2005; Bendsøe & Sigmund 1999 (the material law has to see the volume and Poisson's ratio) · papers [1](https://doi.org/10.1007/s00158-005-0537-x) [2](https://doi.org/10.1007/s004190050248) |
 
 ### Large: the framework has to change first

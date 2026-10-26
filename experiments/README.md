@@ -66,6 +66,29 @@ respectively; they are not budget-matched performance comparisons. No binary
 result is labelled feasible or printable. The [filter documentation](../toporia/plugins/filters/README.md#gaynorguest-self-support-projection)
 describes the cell discretisation, boundary truncation and grid-dependent threshold.
 
+## Neural coordinate field
+
+Run `python -m experiments.neural --iterations 600 --mesh 0.5 --updater adam`
+or choose `--updater mma`. The independent smooth TOuNN-style NumPy network has
+two tanh layers of width 20, sigmoid output, seed 0 and 501 trainable weights/biases.
+Adam uses lr 0.01 and decay 0.995; MMA uses move 0.005. Both use SIMP p=3 and
+density radius 1.5. The recipe prints fresh final evaluations and saves no files.
+
+| Updater / preset | Initial C | Final C | Physical volume / limit | Gray fraction 0.1-0.9 | Last weight change |
+| :-- | --: | --: | --: | --: | --: |
+| Adam / MBB | 984.55480 | 389.76771 | 0.499926 / 0.5 | 83.33% | 0.000841 |
+| Adam / Cantilever | 609.61732 | 192.14204 | 0.399894 / 0.4 | 64.89% | 0.000682 |
+| MMA / MBB | 984.55480 | 346.15640 | 0.499657 / 0.5 | 82.33% | 0.005000 |
+| MMA / Cantilever | 609.61732 | 144.21322 | 0.399825 / 0.4 | 38.00% | 0.005000 |
+
+All stop at the 600-step cap; these are improvement and smooth-budget checks,
+not convergence, crispness, performance parity or reproduction of original TOuNN.
+In particular the MBB retains mostly gray material. Network size/seed, finite
+weight bounds, tanh activation and the existing optimisers differ from the
+reference's batch-normalised LeakyReLU/AMSGrad procedure. No original GPL code
+is copied and no PyTorch/JAX dependency is installed. The full chain uses actual
+Q4 solves; the network represents the density, rather than replacing physics.
+
 <a id="multiresolution-analysis"></a>
 
 ## Multiresolution: coarse analysis, fine density

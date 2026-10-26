@@ -39,7 +39,7 @@ def _problem(name="MBB Beam", m=0.5):
 
 
 def test_all_are_registered_and_element_densities_are_the_default():
-    assert REPRESENTATIONS.names() == ["element_density", "mmc", "mmv", "geometry_projection", "bspline"]
+    assert REPRESENTATIONS.names() == ["element_density", "mmc", "mmv", "geometry_projection", "bspline", "neural"]
     assert _run().solver.representation == {"type": "element_density"}
 
 

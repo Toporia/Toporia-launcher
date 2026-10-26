@@ -33,11 +33,12 @@ a current-round update containing additions, validation and limitations.
 | `81c9c37` | Compatible method-study selections, spring-aware measurement and mechanism metrics. |
 | `4decae8` | Cartesian PDE machining, full adjoints and physical-volume starts/convergence. |
 | `314b2b6` | Cell-centred Gaynor-Guest self-support, full reverse sweep and small-move controls. |
+| `d74d056` | Nested 2-D Q4 multiresolution, exact subcell integration and independent fine referee. |
 
 Heat conduction, thermal/dynamic pyMOTO models, eigenfrequency, harmonic response,
 local-stress augmented Lagrangian and nonlinear elasticity are already present.
-The catalogue has 85 selectable plugins, nine physics engines and 17 presets:
-111 implementations. Twelve models and 23 updaters form 276 compositions;
+The catalogue has 86 selectable plugins, nine physics engines and 17 presets:
+112 implementations. Twelve models and 23 updaters form 276 compositions;
 three whole methods bring the method-name total to 279.
 
 ## Important limits
@@ -122,11 +123,26 @@ halve solve time in single-run measurements, with fine-compliance underestimates
 of 2.21% / 1.87%. They are not converged; one OC volume is 0.500019 against 0.5.
 Results and limits are recorded in `experiments/README.md` and the linked PDF.
 
+The `neural` representation is an independent smooth TOuNN-style coordinate MLP,
+with tanh hidden layers, sigmoid density output and explicit NumPy backpropagation.
+It supports 2-D/3-D through existing models, filters and general-vector updaters.
+It is not a port of the reference's GPL PyTorch code: batch normalisation,
+LeakyReLU, density offset, AMSGrad and built-in manufacturing rules are absent.
+No new runtime is installed. The existing Adam augmented Lagrangian is reused.
+Sixteen focused tests cover all parameter derivatives, physical/filter gradients,
+deterministic starts, mesh-independent parameter count and updater preflight.
+The combined representation group passes 40 tests, and 53 selected GUI form and
+reachability cases pass. Bounded 600-step Adam/MMA runs improve compliance and
+meet smooth-volume budgets, but retain 38-83% gray cells; no convergence or
+crispness claim is made. The recipe and measured limits are in experiments/PDF.
+The broader schema/composition/unchanged-golden group passes 957 tests. Ruff,
+whitespace and all 503 local Markdown file links pass. The updated PDF has 17
+pages and 290 links, preserving its three original internal links and outline entries.
+
 ## Remaining sequence
 
-1. Neural reparameterisation (TOuNN), subject to this Python/Windows environment.
-2. SINH and Hashin–Shtrikman material laws.
-3. Original MATLAB/Octave reference runs if a suitable runtime is available;
+1. SINH and Hashin–Shtrikman material laws.
+2. Original MATLAB/Octave reference runs if a suitable runtime is available;
    ask before installing or changing runtimes.
 
 Work stays sequential: finish verification, documentation and one commit per

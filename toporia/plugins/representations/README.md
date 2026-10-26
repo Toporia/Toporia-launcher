@@ -28,7 +28,7 @@ with every representation. Updaters whose rule moves each element's density on i
 with another representation is refused before the run, with the reason. The GUI's Pipeline
 box shows the same reason, and Compare Methods skips the pairing.
 
-**Status: 5 plugins in Toporia (MMC includes two thickness options) · 0 with open code · 1 paper only**
+**Status: 6 plugins in Toporia (MMC includes two thickness options) · 0 with open code · 0 paper only**
 
 | Label | Meaning |
 | :-- | :-- |
@@ -46,6 +46,7 @@ box shows the same reason, and Compare Methods skips the pairing.
 | ✅ Moving morphable voids | [`mmv.py`](mmv.py) | `mmv` | 5 per superelliptical hole; solid outside their union. Restricted 2-D variant | Zhang et al., *CMAME* 2017 |
 | ✅ Geometry projection | [`geometry_projection.py`](geometry_projection.py) | `geometry_projection` | Fixed-radius capsule bars: endpoints and an activation variable (5 per bar in 2-D, 7 in 3-D) | Norato, Bell & Tortorelli, *CMAME* 2015; Smith & Norato, *SMO* 2020 |
 | ✅ B-spline field | [`bspline.py`](bspline.py) | `bspline` | the coefficients of a tensor-product B-spline (degree 2 or 3) on a coarse control grid; the density is the spline at the element centres. 2-D and 3-D | Qian, *CMAME* 2013 |
+| ✅ Neural coordinate field | [`neural.py`](neural.py) | `neural` | dense tanh network weights/biases; sigmoid density output, 2-D/3-D | Independent TOuNN-style variant; Chandrasekhar & Suresh, *SMO* 2021 |
 
 **Using MMC.** Every variable is scaled to [0, 1] across its whole range, so the updater's
 move limit moves a bar a long way. Use `method.move` of about 0.02. With the usual 0.2,
@@ -211,11 +212,34 @@ References: [Norato, Bell & Tortorelli (2015)](https://doi.org/10.1016/j.cma.201
 *SMO* 62, 1579–1594. Shared endpoints, stacked-joint thickness and non-capsule
 feature families such as [GGP](https://github.com/topggp/GGP-Matlab) remain possible extensions.
 
-## Candidates
+## Neural coordinate field
 
-| Representation | Code | Reference | What it adds |
-| :-- | :-- | :-- | :-- |
-| 📄 Neural-network reparameterisation | — | Hoyer, Sohl-Dickstein & Greydanus, arXiv 2019; Chandrasekhar & Suresh, *SMO* 2021 | Network weights as the variables, its output as the density field: an implicit regulariser. Needs an autodiff library, declared through `dependencies`. |
+`neural` maps normalised physical coordinates through dense tanh layers and a
+sigmoid output. Its parameter count depends on width, depth and dimension, not
+the analysis mesh. The default two 20-wide hidden layers have 501 variables in
+2-D. Every weight and bias is optimised; explicit NumPy reverse propagation
+carries physical/filter gradients back to them. There is no dataset or training
+dependency. A local seeded generator initialises hidden features; zero output
+weights and a logit bias give the requested uniform starting fraction exactly.
+Finite symmetric bounds apply in weight units, not normalised density units.
+
+This is an independent smooth variant of [TOuNN](https://doi.org/10.1007/s00158-020-02748-4).
+The [reference implementation](https://github.com/UW-ERSL/TOuNN) uses batch-normalised
+LeakyReLU, a density offset and AMSGrad with continuation. Those details, Fourier
+features, learned surrogates and manufacturing/symmetry rules are not implemented
+here. The existing Adam uses an inequality augmented Lagrangian; its volume is
+only approximately enforced. General-vector MMA also works; OC/BESO/SiMPL are
+refused. A network is not a guarantee of crisp boundaries or a minimum length.
+
+```sh
+toporia run "MBB Beam" --set method=q4+adam --set representation.type=neural --set method.lr=0.01 --set max_iter=600 --set tol=0
+```
+
+Select **Neural coordinate field (TOuNN-style)** in the GUI's representation panel.
+Start with Adam `lr=0.01`, or MMA `move=0.005`. Small weight movement can coexist
+with gray material or poor stationarity: inspect the physical field and budget.
+Bounded Adam/MMA benchmarks and their substantial remaining gray fractions are
+recorded in [experiments](../../../experiments/README.md#neural-coordinate-field).
 
 ## Writing one
 
