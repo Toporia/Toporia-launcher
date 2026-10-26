@@ -422,10 +422,11 @@ class MainWindow(ProjectActions, QMainWindow):
         """Preserve explicit geometry while updating generated domain/mesh controls."""
         from dataclasses import replace
         self.project.objects = objects
-        self._base_cfg = replace(self._base_cfg, scenario=scenario)
+        self._base_cfg = replace(self._base_cfg, scenario=replace(scenario, regions=objects))
         self.design._Lx, self.design._Ly = scenario.Lx, scenario.Ly
         self.design._show_counts()
         self._refresh_pipeline()
+        self._preview_timer.start()
 
     def _remember_diagram(self, positions):
         """Persist presentation coordinates independently of the computation graph."""
@@ -546,8 +547,15 @@ class MainWindow(ProjectActions, QMainWindow):
             return
         title = self.project.name if hasattr(self, "project") else self.config_combo.currentText()
         self.problem_editor.load(cfg.scenario, self.project.objects, self.project.benchmark is not None)
+        self._update_preflight()
         self.problem_preview.show_problem(cfg.scenario, cfg.solver.m, title)
         self.canvas.show_problem(cfg.scenario, cfg.solver.m, title)
+
+    def _update_preflight(self):
+        """Explain definition/compatibility problems before starting an optimisation."""
+        from .preflight import problems
+        issues = problems(self.current_config(), check_mesh=True)
+        self.problem_editor.validation.setText("\n".join(issues) if issues else "Ready · physical definition and selected method are compatible.")
 
     # ── Steps ─────────────────────────────────────────────────────────────────
 
@@ -702,23 +710,8 @@ class MainWindow(ProjectActions, QMainWindow):
         """Show the chain the current selections describe, and why any part is unavailable."""
         from toporia.engine.pipeline import pipeline_graph, pipeline_notes, pipeline_stages
 
-        from .config import build_config
-
         try:
-            cfg = build_config(
-                self.core,
-                self.lc,
-                self.filters,
-                base_cfg=self._base_cfg,
-                objective=self.objective,
-                constraints=self.constraints,
-                interpolation=self.material,
-                representation=self.design,
-                schedules=self.schedules,
-                variants=self.variants,
-                postprocess=self.post,
-                design=self.design,
-            )
+            cfg = self.current_config()
             self.pipeline.show_pipeline(pipeline_stages(cfg), pipeline_notes(cfg.solver.method, cfg),
                                         graph=pipeline_graph(cfg))
             self.method_view.show_pipeline(pipeline_graph(cfg), pipeline_notes(cfg.solver.method, cfg))

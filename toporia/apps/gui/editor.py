@@ -222,6 +222,10 @@ class ProblemEditor(QWidget):
         layout.addWidget(body, 1)
         self.coordinates = QLabel("XY plane · millimetres")
         layout.addWidget(self.coordinates)
+        self.validation = QLabel()
+        self.validation.setWordWrap(True)
+        self.validation.setStyleSheet("color: #d9ac6c;")
+        layout.addWidget(self.validation)
         self.view.placed.connect(self._place)
         self.view.cursor_position.connect(lambda x, y: self.coordinates.setText(f"X {x:.3f} mm    Y {y:.3f} mm"))
         self.view.scene().selectionChanged.connect(self._scene_selection)
@@ -230,6 +234,7 @@ class ProblemEditor(QWidget):
 
     def load(self, scenario, objects, readonly=False):
         """Display an explicit scene or the actual geometry of a legacy benchmark."""
+        scenario = replace(scenario, regions=None)
         shown = deepcopy(objects) if objects is not None else objects_from_scenario(scenario)
         if scenario == self.scenario and shown == self.objects and readonly == self.readonly:
             return

@@ -29,7 +29,11 @@ _KIND_OF = {cls: kind for kind, cls in KINDS.items()}
 
 def to_dict(obj):
     """Return a dataclass as plain data (nested dataclasses become dicts)."""
-    return dataclasses.asdict(obj)
+    data = dataclasses.asdict(obj)
+    # Preserve historical scenario fingerprints and baseline provenance.
+    if isinstance(obj, Scenario) and data.get("regions") is None:
+        data.pop("regions", None)
+    return data
 
 
 def from_dict(cls, data):

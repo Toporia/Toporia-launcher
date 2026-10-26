@@ -68,11 +68,16 @@ class ProjectActions:
     def current_config(self):
         """Read the complete Run while preserving non-widget scenario fields."""
         from .config import build_config
-        return build_config(self.core, self.lc, self.filters, base_cfg=self._base_cfg,
+        cfg = build_config(self.core, self.lc, self.filters, base_cfg=self._base_cfg,
                             objective=self.objective, constraints=self.constraints,
                             interpolation=self.material, representation=self.design,
                             schedules=self.schedules, variants=self.variants,
                             postprocess=self.post, design=self.design)
+        if self.project.objects is not None:
+            cfg = replace(cfg, scenario=replace(cfg.scenario, regions=self.project.objects))
+        elif self.project.benchmark is not None:
+            cfg = replace(cfg, scenario=self.project.run.scenario)
+        return cfg
 
     def _capture_study(self):
         """Remember numeric, parameter and method selections for every study mode."""
@@ -160,6 +165,10 @@ class ProjectActions:
         from . import runner
         runner.last_run_folder = None
         self.project = project
+        if project.objects is not None:
+            project.run = replace(project.run, scenario=replace(project.run.scenario, regions=project.objects))
+        elif project.run.scenario.regions is not None:
+            project.objects = project.run.scenario.regions
         self.method_view.positions = project.view.get("method_positions", {})
         self.method_view._signature = None
         self._populate_run(project.run)
@@ -196,7 +205,7 @@ class ProjectActions:
     def new_blank(self):
         """Start an explicit empty scene rather than the solver's legacy cantilever fallback."""
         if self._maybe_discard():
-            self._activate_project(Project("Untitled", Run(scenario=Scenario(load_cases=[])), objects=[]))
+            self._activate_project(Project("Untitled", Run(scenario=Scenario(regions=[])), objects=[]))
 
     def copy_to_custom(self):
         """Detach the physical definition from its reference without losing method settings."""
@@ -205,6 +214,7 @@ class ProjectActions:
             if self.project.objects is None:
                 from .geometry import objects_from_scenario
                 self.project.objects = objects_from_scenario(self.project.run.scenario)
+            self._base_cfg = replace(self._base_cfg, scenario=replace(self._base_cfg.scenario, regions=self.project.objects))
             self._apply_problem_lock()
             self.show_problem()
             self._update_project_title()

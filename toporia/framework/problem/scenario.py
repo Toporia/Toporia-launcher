@@ -157,6 +157,11 @@ class Scenario:
     Emin: float = 1e-9    # stiffness of void; keeps the stiffness matrix non-singular
     nu:   float = 0.3     # Poisson's ratio
 
+    # None keeps the historical preset geometry/fallbacks. An explicit list,
+    # including [], uses only these physical objects (no implicit BCs or loads).
+    # Object definitions live in mm and are remeshed on every resolution change.
+    regions: list | None = None
+
 
 # Param declarations for the scenario fields the GUI and sweeps expose.
 SCENARIO_PARAMS = (

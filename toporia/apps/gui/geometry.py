@@ -30,7 +30,7 @@ def objects_from_scenario(scenario):
         objects.append(make_object(position=(x, y, 0), axes=["x", "y"] if dof == "both" else [dof]))
     for hole in scenario.holes:
         pos = (hole.cx, hole.cy, 0)
-        objects.append(make_object("circle", pos, (2 * hole.r_passive,) * 3, "solid"))
+        objects.append(make_object("circle", pos, (2 * hole.r_passive,) * 3, "solid", inner_radius=hole.r_void))
         objects.append(make_object("circle", pos, (2 * hole.r_void,) * 3, "void"))
         if hole.kind == "fixed":
             objects.append(make_object("circle", pos, (2 * hole.r_passive,) * 3, "support"))

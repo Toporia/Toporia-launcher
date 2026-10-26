@@ -265,6 +265,12 @@ class PymotoElasticModel(Model):
         """Build the (ndof, n_load_cases) block right-hand side and its weights."""
         load_cases = self.problem.scenario.load_cases
         forces = np.zeros((domain.nnodes * 2, len(load_cases)))
+        if hasattr(self.problem, "region_loads"):
+            for index, mask, vector in self.problem.region_loads:
+                nodes = self._nodes(domain, mask)
+                for axis in range(2):
+                    forces[domain.get_dofnumber(nodes, axis, 2), index] += vector[axis] / len(nodes)
+            return forces, np.array([case.weight for case in load_cases], dtype=float)
         for k, case in enumerate(load_cases):
             angle = np.deg2rad(case.Fa)
             vector = case.Fmag * np.array([np.cos(angle), np.sin(angle)])

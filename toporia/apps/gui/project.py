@@ -5,6 +5,7 @@
 # Writes replace the destination atomically; a failed save leaves the old file.
 
 import json
+import math
 import os
 import tempfile
 from copy import deepcopy
@@ -17,6 +18,38 @@ from toporia.framework.problem.scenario import Scenario
 from toporia.framework.problem.solver import Solver
 
 FORMAT = 1
+
+
+def _validate_objects(objects):
+    """Validate file structure before handing imported objects to graphics widgets."""
+    if objects is None:
+        return
+    if not isinstance(objects, list):
+        raise ValueError("Problem objects must be a list")
+    identities = set()
+    for obj in objects:
+        if not isinstance(obj, dict) or not isinstance(obj.get("id"), str) or obj["id"] in identities:
+            raise ValueError("Every object needs a unique string id")
+        identities.add(obj["id"])
+        if not isinstance(obj.get("name"), str) or obj.get("shape") not in {"point", "line", "rectangle", "circle", "polygon", "box", "sphere", "cylinder", "stl"}:
+            raise ValueError("Object name or shape is invalid")
+        if obj.get("role") not in {"support", "load", "solid", "void", "domain"}:
+            raise ValueError("Unknown object role")
+        for key in ("position", "size", "rotation", "force"):
+            value = obj.get(key)
+            if not isinstance(value, list) or len(value) != 3 or not all(isinstance(v, (int, float)) and math.isfinite(v) for v in value):
+                raise ValueError(f"Object {key} must contain three finite numbers")
+        if not isinstance(obj.get("axes"), list) or set(obj["axes"]) - set("xyz"):
+            raise ValueError("Object displacement axes are invalid")
+        if type(obj.get("case")) is not int or obj["case"] < 0:
+            raise ValueError("Object load case must be a nonnegative integer")
+        if obj["shape"] == "polygon":
+            vertices = obj.get("vertices")
+            if not isinstance(vertices, list) or len(vertices) < 3 or any(
+                not isinstance(p, list) or len(p) != 2 or not all(isinstance(v, (int, float)) and math.isfinite(v) for v in p)
+                for p in vertices
+            ):
+                raise ValueError("Polygon vertices must be finite XY pairs")
 
 
 def _atomic_json(path, data):
@@ -76,9 +109,10 @@ class ProblemDocument:
             from toporia.framework.problem.files import load
             return cls(load(path, "scenario"))
         data = _read(path, "problem", {"scenario", "objects"})
-        objects = data.get("objects")
-        if objects is not None and not isinstance(objects, list):
-            raise ValueError("Problem objects must be a list")
+        objects = data.get("objects", data["scenario"].get("regions"))
+        if objects is None:
+            objects = data["scenario"].get("regions")
+        _validate_objects(objects)
         return cls(from_dict(Scenario, data["scenario"]), objects)
 
 
@@ -134,9 +168,10 @@ class Project:
                                        ("study", {}, dict), ("view", {}, dict), ("output", {}, dict)):
             if not isinstance(data.get(key, default), expected):
                 raise ValueError(f"Project {key} must be {expected.__name__}")
-        objects = data.get("objects")
-        if objects is not None and not isinstance(objects, list):
-            raise ValueError("Project objects must be a list")
+        objects = data.get("objects", data["scenario"].get("regions"))
+        if objects is None:
+            objects = data["scenario"].get("regions")
+        _validate_objects(objects)
         path = Path(path).resolve()
         output = data.get("output", {})
         if set(output) - {"save_every", "postprocess"}:

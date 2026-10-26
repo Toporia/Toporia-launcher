@@ -41,7 +41,7 @@ not complete. Resume from the first unchecked step after reading git status.
   preserve generated plugin controls and existing analysis modes.
 - [x] 4. Interactive 2D geometry editor: selection/list/inspector, numeric and
   graphical creation, transforms, domain/material settings, undo/redo and navigation.
-- [ ] 5. Compile custom 2D objects to solver inputs; independent regional loads,
+- [x] 5. Compile custom 2D objects to solver inputs; independent regional loads,
   explicit supports, full/void regions, compatibility and preflight checks.
 - [ ] 6. Runner/results: prevent setup edits during execution, safe stop/error
   handling, project-specific output, fresh run directories and result provenance.
@@ -94,6 +94,17 @@ objects. Domain dimensions/material edits preserve object coordinates. Scene
 objects persist in project/problem files. Validation: 176 GUI/editor/lifecycle
 checks passed; ruff passed after correcting QGraphicsScene ownership.
 
-Next: milestone 5. Editor objects are not yet applied to the engine. Implement an
-explicit regional scenario mode, preserve legacy default serialization/goldens,
-and test independent forces, rigid-body constraints and invalid empty problems.
+Milestone 5 complete: explicit regions are compiled in framework/problem/regions.py.
+Legacy presets bypass the adapter and retain their historical serialization and
+numerical baselines. Custom 2D objects produce support, solid/void/domain masks
+and independent per-case total force vectors in Q4 and pyMOTO. Level-set auxiliary
+meshes now preserve explicit definitions. Validation catches missing supports/
+loads, residual rigid-body modes, unmeshed regions, excluded loads, material
+conflicts and budgets. Definitions remain in physical coordinates. Imported
+object structure is checked before it reaches graphics widgets.
+Validation: 378 framework/application tests passed; 29 regional/golden checks
+passed after active-material validation; ruff passed. Golden files unchanged.
+
+Next: milestone 6. Make execution use current_config(), save input snapshots in
+fresh per-project run directories, disable edits during runs, and own/export only
+completed results from this project. Existing runner is still synchronous Qt.

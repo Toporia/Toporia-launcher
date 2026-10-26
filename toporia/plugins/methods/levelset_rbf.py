@@ -193,12 +193,12 @@ class LevelSetRBFMethod(OptimizationMethod):
         if nnode <= self.settings["max_nodes"]:
             return problem  # mesh is small enough; use as-is
 
-        from toporia.framework.problem.mesh import RectangularProblem
+        from toporia.framework.problem.mesh import make_problem
 
         # Solve for the m that gives about max_nodes nodes: n = (Lx*m+1)(Ly*m+1) ≈ Lx*Ly*m²
         m = 0.95 * np.sqrt(self.settings["max_nodes"] / (problem.Lx * problem.Ly))
         print(f"levelset: using coarser internal mesh m={m:.3f} because dense RBF would have {nnode} nodes")
-        return RectangularProblem(problem.scenario, m)
+        return make_problem(problem.scenario, m)
 
     def _prepare_rbf(self):
         """Build the RBF interpolation system and initialise the level-set field Phi.
