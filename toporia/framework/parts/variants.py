@@ -4,7 +4,8 @@
 # combination.  The robust formulation of Wang, Lazarov & Sigmund (2011)
 # projects the design with three thresholds — eroded (η = 0.75), intermediate
 # (0.5), dilated (0.25) — and minimises the worst of the three compliances;
-# its result keeps a minimum length scale and tolerates manufacturing error.
+# this motivates our independent three-field recipe, whose differences below
+# mean it does not certify a minimum feature size or manufacturing tolerance.
 # Load uncertainty is the same idea with load cases, and a tolerance study
 # with perturbed geometry.  All are one setting in the solver:
 #
@@ -36,7 +37,7 @@
 # than a bound formulation with one constraint per variant (which needs an
 # updater that enforces several constraints), and the volume budget applies to
 # the intermediate design rather than to the dilated one with an updated
-# limit.  Both are common simplifications in the papers that followed.
+# limit. These choices are not a reproduction of the paper's formulation.
 
 import numpy as np
 

@@ -106,8 +106,12 @@ are 40 mm wide. The top edge of the vertical arm is clamped and a downward point
 at mid-height of the free end of the horizontal arm; the volume fraction is 0.4. It is the
 standard **stress-concentration benchmark**: the re-entrant corner at (40, 40) is a stress
 singularity that a compliance objective happily leaves sharp, and the case exists to show
-a stress constraint rounding it off (Duysinx & Bendsøe 1998; Le et al. 2010, which use this
-geometry). The preset minimises compliance, which is what `q4+oc` can run:
+a stress constraint rounding it off. Duysinx & Bendsøe (1998) and
+[Le et al. (2010)](https://doi.org/10.1007/s00158-009-0440-y) are background references;
+these dimensions, the point load and volume budget are Toporia choices, not a verified
+paper benchmark. The whole top edge is clamped, including nodes in the forced-empty
+region, whose elements retain residual ersatz stiffness. The preset minimises
+compliance, which is what `q4+oc` can run:
 `toporia run "L-bracket"`. The stress-limited version is the next preset.
 
 ### L-bracket (local stress)
@@ -122,7 +126,10 @@ stress of the compliance design, so the re-entrant corner has to be relieved. Co
 
 The MBB half-beam again, but every design is evaluated eroded / intermediate / dilated
 (Heaviside η = 0.75 / 0.5 / 0.25) and the worst compliance is minimised, with β doubled
-from 1 to 64. It shows the robust formulation of Wang, Lazarov & Sigmund (2011) end to end:
+from 1 to 64. This independent recipe is inspired by Wang, Lazarov & Sigmund (2011);
+it uses a smooth maximum and an intermediate-design volume budget instead of their
+dilated-design constraint with an updated bound. It does not certify a feature size or
+manufacturing tolerance:
 `toporia run "MBB Beam (Robust)"`. What it is and how to build it by hand is in the
 [schedules README](../schedules/README.md#several-versions-of-one-design-robust-formulations).
 

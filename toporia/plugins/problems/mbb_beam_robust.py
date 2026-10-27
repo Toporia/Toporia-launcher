@@ -2,8 +2,8 @@
 #
 # The same scenario as mbb_beam.py, but every design is projected three times
 # (eroded eta = 0.75, intermediate 0.5, dilated 0.25) and the worst of the three
-# compliances is minimised, so the result keeps its minimum length scale when
-# the part is made slightly too thin or too thick.  The projection sharpness
+# compliances is minimised through a smooth maximum. This independent recipe
+# does not certify a minimum feature size or manufacturing tolerance. The projection sharpness
 # beta follows the `geometric` schedule 1 -> 64 (doubled every 25 iterations).
 #
 # This is a ready-made recipe, not new mathematics: solver.variants
@@ -25,7 +25,9 @@ ABOUT = ('The MBB beam solved robustly: the worst of the eroded, intermediate an
          ' (Heaviside thresholds 0.75 / 0.5 / 0.25), with a doubling continuation of the sharpness.')
 REFERENCE = ('F. Wang, B. S. Lazarov and O. Sigmund, "On projection methods, convergence and robust'
              ' formulations in topology optimization", Struct. Multidisc. Optim. 43 (2011) 767-784.'
-             ' Papers: https://doi.org/10.1007/s00158-010-0602-y')
+             ' Independent recipe; thresholds match Fig. 6, but volume, aggregation and continuation differ.'
+             ' Papers: https://doi.org/10.1007/s00158-010-0602-y'
+             ' Correction: https://doi.org/10.1007/s00158-022-03326-6')
 
 
 def scenario():

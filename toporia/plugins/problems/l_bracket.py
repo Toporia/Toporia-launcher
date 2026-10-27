@@ -20,13 +20,14 @@
 # constraints=[{"type": "stress", "limit": ...}] (plugins/responses/README.md).
 #
 # The vertical arm's clamp uses the whole top edge; the nodes right of x = 40
-# touch only forced-empty elements, so they carry no stiffness and change nothing.
+# touch forced-empty elements with residual ersatz stiffness. This embedded-box
+# support convention is a Toporia choice, not an exact removed-domain model.
 #
 # References: P. Duysinx, M. P. Bendsøe, "Topology optimization of continuum
 # structures with local stress constraints", IJNME 43 (1998) 1453–1478;
 # C. Le, J. Norato, T. Bruns, C. Ha, D. Tortorelli, "Stress-based topology
-# optimization for continua", SMO 41 (2010) 605–620 (100 x 100 domain with a
-# 60 x 60 corner removed — the dimensions used here).
+# optimization for continua", SMO 41 (2010) 605–620. These are stress-optimization
+# references, not verified sources for this preset's dimensions or load point.
 
 from toporia.framework import EdgeConstraint, EnforcedArea, LoadCase, PointLoad, Scenario, Solver
 
@@ -36,7 +37,8 @@ ABOUT = ('An L-shaped plate clamped along its top edge and loaded at the tip of 
          ' standard stress benchmark, where a compliance design leaves the re-entrant corner sharp.')
 REFERENCE = ('P. Duysinx and M. P. Bendsoe, Int. J. Numer. Meth. Eng. 43 (1998) 1453-1478; C. Le, J.'
              ' Norato, T. Bruns, C. Ha and D. Tortorelli, Struct. Multidisc. Optim. 41 (2010) 605-620.'
-             ' Dimensions as commonly used, not checked against the papers.'
+             ' Toporia chooses the 100 x 100 domain, 40-wide arms, unit tip load and 0.4 volume;'
+             ' this is not a reproduction of the benchmarks in either paper.'
              ' Papers: https://doi.org/10.1002/%28SICI%291097-0207%2819981230%2943:8%3C1453::AID-NME480%3E3.0.CO%3B2-2 https://doi.org/10.1007/s00158-009-0440-y')
 
 

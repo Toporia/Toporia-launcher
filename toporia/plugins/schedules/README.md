@@ -130,8 +130,14 @@ filter followed by a Heaviside projection, the three η values 0.75 / 0.5 / 0.25
 (worst case, the intermediate design shown), and the `geometric` schedule on
 `filters[1].beta`, 1 → 64 doubled every 25 iterations. The paper is
 [Wang, Lazarov & Sigmund (2011)](https://doi.org/10.1007/s00158-010-0602-y); the η triplet is
-theirs, the β sequence is the usual doubling continuation rather than a copy of their
-iteration counts. Use it:
+the illustration in their Fig. 6, not a claim to reproduce their benchmark parameters.
+The β sequence is our doubling recipe. Section 5.1, equation (14), constrains dilated
+volume and updates its bound every 20 iterations; Toporia constrains intermediate volume
+and uses a smooth maximum. The full paper is reproduced in
+[Wang's DTU thesis, printed pp. 774–775](https://backend.orbit.dtu.dk/ws/files/38488317/DCAMM_report_S145.pdf).
+The publisher also lists a [2022 correction](https://doi.org/10.1007/s00158-022-03326-6);
+its subscription-only contents were not verified in this audit. The preset is an
+independent recipe, without a feature-size or manufacturing-tolerance certificate. Use it:
 
 - **GUI:** pick `MBB Beam (Robust)` in the problem list; the Variants and Schedules panels
   are filled in. On any other problem, add a Heaviside filter, press the robust button in

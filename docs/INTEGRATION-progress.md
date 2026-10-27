@@ -376,3 +376,17 @@ with C=1.558315e10 and change 0.037 and is rejected. The unchanged source still
 cannot run with removed legacy intlinprog options. MMC188 and RD remain
 original-source gaps. All seven reference tests, Ruff and whitespace pass.
 No original Q4/H8 source, golden baseline or production TOBS formula changed.
+
+## Preset provenance audit — 27 October 2026
+
+L-bracket dimensions, load and volume are now explicitly Toporia choices, rather
+than an unverified Le et al. benchmark reproduction. Its full-edge clamp includes
+ersatz elements in the forced-empty region; the previous zero-stiffness comment
+was incorrect. Le's publisher record verifies citation metadata, not these settings.
+
+The robust DOI is verified. Wang's author-hosted thesis reproduces Fig. 6's
+0.75/0.5/0.25 illustration and section 5.1's dilated-volume constraint with an
+updated bound. Our smooth maximum, intermediate budget and beta schedule are
+explicitly independent choices, without a size/tolerance certificate. The 2022
+correction is linked, with its subscription-only contents unverified.
+No numerical settings or algorithms changed; Ruff and compile checks pass.
