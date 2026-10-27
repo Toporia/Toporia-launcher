@@ -2,7 +2,8 @@
 
 Work stays in `toporia-integration` on `integration/physics`. The GUI and launcher
 checkouts are separate. The owner reviews and merges; no push or merge is implied.
-This is a concise handoff. Historical implementation and validation summaries remain in Git.
+Current handoff: 27 October 2026. Detailed historical measurements remain in Git
+and the [experiment recipes](../experiments/README.md).
 
 ## Scope
 
@@ -38,6 +39,16 @@ a current-round update containing additions, validation and limitations.
 | `819a111` | Basic shared-density SINH, effective-volume budget/adjoints and separate reporting. |
 | `124b902` | Scenario-bound fixed-nu Hashin-Shtrikman upper envelope, 2-D/3-D and thermal preflight. |
 | `eef0328` | Three strict original MATLAB reference cases, qualified RBF observation and source/dependency audit. |
+| `7c146ea` | Fixed-beta projection/MMA preset and GUI asymptote precision. |
+| `d578545` | Read-only MATLAB prerequisite audit. |
+| `779aee4` | Longer self-support checks and budget-limited binary diagnostics. |
+| `712c564` | Isolated fsparse/MMA setup and native MMA reference. |
+| `8864204` | Neural physical-density convergence monitoring and bounded validation. |
+| `073f6f3` | Minimum-length initialisation/refinement audit; print-only default. |
+| `c0fe5ca` | Actual signed objective in console output. |
+| `51cff02` | Clear structured CLI argument errors before physics/output creation. |
+| `6e92407` | Newly unblocked native originals and strict additional FE comparisons. |
+| `dbdb55d` | L-bracket/robust provenance and explicit guarantee limits. |
 
 Heat conduction, thermal/dynamic pyMOTO models, eigenfrequency, harmonic response,
 local-stress augmented Lagrangian and nonlinear elasticity are already present.
@@ -45,348 +56,97 @@ The catalogue has 88 selectable plugins, nine physics engines and 18 presets:
 115 implementations. Twelve models and 23 updaters form 276 compositions;
 three whole methods bring the method-name total to 279.
 
-## Important limits
+## Validation and practical limits
 
-- MMV is the restricted 2-D variant; geometry projection uses fixed-radius capsules.
-- Phase field is an energy response, not a dedicated Allen-Cahn/Cahn-Hilliard solver.
-- The HJ/TD method is not a standalone Amstutz geodesic optimiser.
-- Minimum-length constraints are calibrated geometric proxies, not exact size
-  certificates. Strict two-phase constraints can stall at uniform gray starts.
-  The feasible-seed recipe in `experiments/minimum_length.py` is deliberately local.
-- The annealing experiment misses the unchanged 10%-of-OC gate and is not registered.
-- Point springs require `q4_mechanism`. Updater and objective compatibility still
-  applies. MMA and CONLIN produce force inversion; other optimisers may find
-  disconnected zero-output stationary designs.
-- Original MATLAB/Octave oracle runs depend on an available runtime. Ask before
-  installing or changing runtimes. Original Q4/H8 sources and golden baselines
-  are unchanged.
+- **Fixed projection:** beta=16 with tightened MMA asymptotes. MBB/cantilever
+  600-step runs meet physical budgets, with 1.00%/0.89% gray cells; neither meets
+  the stricter 1e-4 MMA change tolerance. An independent recipe, not all Guest variants.
+- **Machining:** independent Cartesian advection-diffusion filter, 2-D/3-D and
+  passive-solid shadows. Forced voids/non-element representations are refused.
+  Bounded 80-step runs meet budgets and pass a thresholded ideal-ray check;
+  no finite cutter/holder or convergence certificate.
+- **Self-support:** independent 2-D cell-centred wedge/local projection. Longer
+  1000-step GCMMA runs remain unconverged with 20.08%/16.56% gray material.
+  Threshold 0.5 exceeds both budgets and leaves one unsupported cell each.
+  Budget-limited thresholds give zero unsupported cells in the discrete check;
+  this is not a printing certificate or a default optimizer change.
+- **Neural field:** opt-in physical-density convergence prevents premature small-
+  weight stopping. Fixed-beta MMA recipes tested at two seeds remain 89–100%
+  gray after small-move settling; thresholded FE compliance is poor. Fine-mesh
+  evaluations test the same weights without retraining. This is a documented
+  failed binary-design recipe, not a recommended production default.
+- **Minimum length:** calibrated geometric proxies with a full adjoint, not exact
+  size certificates. The feasible start reaches a locally feasible coarse design;
+  its remaining gray densities violate the proxy after 2x mesh refinement.
+  A uniform gray start stalls infeasible after two evaluations. The experiment
+  prints by default and refuses to call that start successful.
+- **Multiresolution:** aligned nested 2-D Q4 with exact fine-cell quadrature;
+  coarse displacement spaces can overstate disconnected designs. Fine Q4 remains
+  the independent study referee. No 3-D/adaptive enrichment or stiffness certificate.
+- **Material laws:** basic shared-density SINH and fixed-nu Hashin-Shtrikman
+  upper envelope only; no hybrid SINH/separate resource fields or variable-nu HS.
+- MMV is restricted 2-D; capsule geometry projection has fixed radii. Phase field
+  is an energy response, and HJ/TD is not a standalone Amstutz geodesic optimizer.
+  Annealing misses the unchanged performance gate and remains unregistered.
+- Point springs require `q4_mechanism` plus a compatible updater/response.
+  MMA/CONLIN invert force; other optimizers can settle at disconnected zero output.
+- L-bracket geometry/load/budget are Toporia choices. The robust preset uses a
+  smooth maximum and intermediate volume, unlike Wang's dilated-volume formulation;
+  it does not certify manufacturing tolerance. Source links are in the preset docs.
 
-## Current verification and cleanup
+## Original MATLAB references
 
-Compare Methods has a parametrised GUI-to-engine test for every registered preset.
-It checks preserved scenarios, valid defaults, actual short runs, grids and CSVs.
-These use coarse meshes and three iterations to test wiring, not convergence.
-An additional bounded audit passed all 321 compatible preset/updater combinations
-on the presets' own physics; 70 incompatible combinations were excluded.
-Thermal comparisons measure heat rather than zero mechanical work; vibration
-reports fundamental angular frequency. Preset-recommended methods remain selected.
+The owner installed Image Processing Toolbox in R2026a Update 5. No MATLAB upgrade
+was needed. The approved portable compiler, fsparse MEX, original sources and MMA
+helper remain outside the repo under `%LOCALAPPDATA%/ToporiaValidation`. They use
+process-local settings and isolated preferences; normal PATH, MATLAB startup,
+saved path and default compiler selection were not changed. Ask before any further
+installation or MATLAB change.
 
-Final verification on 27 October: **2655 passed, one optional multigrid test skipped**
-in 36 min 58 sec. Four added external-reference tests pass separately: the current
-collection contains 2660 cases, so all 2659 runnable cases pass. The full run
-reports 95 warnings from third-party pyMOTO/SciPy paths. Ruff and whitespace
-checks pass; all 513 local Markdown file links resolve.
-Generated runs, downloaded papers, scratch scripts/images and caches are removed
-after validation. The implementation, regression tests, reusable research recipes
-and library PDFs remain. The one-off PDF builder is removed as requested.
+- Strict original trajectories: top88 sensitivity/density filters and top3d.
+- Strict native MMA convex-problem reference, separate from Toporia's one-budget MMA.
+- Additional strict FE checks: Challis initial/final binary field and top3D125
+  initial sine-front-face load. These do not assert optimizer-trajectory equality.
+- Unchanged top99neo/top3D125 runs complete as bounded observations. Sharp neo
+  oscillates; top3D125 ends at reported volume 0.309 against 0.3. TOPRBF remains a
+  qualified observation with different normalization conventions.
+- TOBS unchanged source uses removed MATLAB options. A separately hashed temporary
+  compatibility copy hits its safety cap with poor compliance and is rejected.
+- MMC188 and reaction-diffusion lack a retrievable, byte-identifiable runnable
+  author source. Paper transcriptions would not be unchanged original oracles.
 
-## Current round — 26 October 2026
+Reference commands, source hashes, captured fields and scope live in
+[experiments/README.md](../experiments/README.md) and `tests/references/matlab.json`.
+Generic whole-method MATLAB Engine wrappers remain a separate framework project.
 
-Machining accessibility is implemented as an independent Høghøj–Träff Cartesian
-advection–diffusion filter. The full derivation is readable at arXiv:2102.12999;
-the institutional copy of Langelaar (2019) remained inaccessible. This is not a
-claim to reproduce Langelaar's finite-tool formulation. It supports 2-D/3-D
-axis directions and passive-solid shadows, with complete transpose solves.
-Forced voids and non-element representations are refused. The chain must end
-with machining. Element-density starts meet the physical budget; convergence
-also observes physical-density movement to avoid premature small-source stops.
+## Verification and cleanup
 
-Twenty-five focused tests and the full regression suite pass. The 80-iteration MMA recipes improve compliance
-and meet volume budgets, with zero inaccessible void cells in an independent
-thresholded ray check. They are coarse bounded runs, not convergence claims or
-finite-tool certificates; see `experiments/machining.py`. The linked PDF includes
-the new method and the earlier mechanism/comparison fixes; all 281 existing
-links and three outline entries are preserved, with three new links added.
+Compare Methods has preset-by-preset GUI-to-engine coverage plus a bounded audit
+of 321 compatible preset/updater combinations; 70 incompatible pairs are excluded.
+The new fixed-projection preset has separate reachability/round-trip/study checks.
+Thermal and vibration comparisons use their physical metrics.
 
-Gaynor–Guest self-support is implemented as a cell-centred 2-D wedge projection
-and local exponential projection, with a complete reverse sweep. Only Cartesian
-build directions, element densities and unpinned boxes are supported. The support
-threshold depends on the grid/angle; no exact size/angle or printing certificate
-is claimed. Both sharpnesses support continuation. Small move limits down to
-0.00001 now survive schema and GUI round trips; the 0.2 default is unchanged.
+Before this final follow-up round, the full suite passed 2655 tests with one optional
+multigrid skip in 36m58s; four then-added reference tests passed separately.
+That is a dated baseline, not a claim to have rerun the entire current suite.
+After the neural core change, 611 composition/variant/golden/manufacturing tests
+passed. Focused groups also passed: neural 18, minimum-length 21, CLI 26,
+analysis modes 12, original references 7, plus fixed-preset and GUI precision checks.
+Third-party pyMOTO/SciPy warnings remain. Final follow-up: 111 focused tests and 56 GUI preset/round-trip/
+reachability checks pass. Ruff passes across code, tests and experiments; all
+526 local Markdown file links resolve. The 16-page updated PDF retains the
+13 catalogue content streams, three internal links and three outlines. Original Q4/H8 sources and goldens stay unchanged.
 
-The focused manufacturing/schema/variant group passes 434 tests; all 53 selected
-GUI form, reachability and small-move tests pass. Twenty-one self-support tests
-are included; 16 unchanged golden cases also pass. Ruff passes and all 491 local
-Markdown links resolve. The linked PDF adds a second update page (15 pages,
-286 links), preserving its existing catalogue and navigation. Fine-grid MMA/GCMMA runs improve compliance and meet smooth-volume
-budgets; they remain unconverged and retain gray material. Binary thresholding
-exceeds budgets and can leave one-layer support discrepancies. These results are
-explicitly recorded in `experiments/README.md`, not presented as printable designs.
+Generated run outputs, downloaded papers, scratch scripts/images and our caches
+are removed after validation. Reusable experiments, tests, implementation and
+library PDFs remain. Concurrent research-origins documentation is preserved and
+excluded from this work's commits.
 
-Multiresolution now supports a fine Cartesian density grid with a nested coarse
-Q4 displacement grid. Loads transfer by virtual work and fine supports are imposed
-as interpolation constraints. Factor 1 retains the original Q4 path bit for bit;
-larger factors require divisible mesh counts. This aligned 2-D variant uses exact
-fine-cell quadrature, not the original MTOP centroid rule or an adaptive/three-mesh
-implementation. Complete compliance gradients pass independent finite differences.
-Independent subcell quadrature, off-grid supports and disconnected-cut tests cover
-the approximation's important behaviour. Compare Methods still uses fine Q4 as
-its referee. Coarse compliance can substantially overstate disconnected designs.
+## Remaining work
 
-The broad multiresolution/composition/schema/golden group passed 987 tests;
-102 selected GUI tests passed. Bounded 100-step MBB/cantilever benchmarks roughly
-halve solve time in single-run measurements, with fine-compliance underestimates
-of 2.21% / 1.87%. They are not converged; one OC volume is 0.500019 against 0.5.
-Results and limits are recorded in `experiments/README.md` and the linked PDF.
-
-The `neural` representation is an independent smooth TOuNN-style coordinate MLP,
-with tanh hidden layers, sigmoid density output and explicit NumPy backpropagation.
-It supports 2-D/3-D through existing models, filters and general-vector updaters.
-It is not a port of the reference's GPL PyTorch code: batch normalisation,
-LeakyReLU, density offset, AMSGrad and built-in manufacturing rules are absent.
-No new runtime is installed. The existing Adam augmented Lagrangian is reused.
-Sixteen focused tests cover all parameter derivatives, physical/filter gradients,
-deterministic starts, mesh-independent parameter count and updater preflight.
-The combined representation group passes 40 tests, and 53 selected GUI form and
-reachability cases pass. Bounded 600-step Adam/MMA runs improve compliance and
-meet smooth-volume budgets, but retain 38-83% gray cells; no convergence or
-crispness claim is made. The recipe and measured limits are in experiments/PDF.
-The broader schema/composition/unchanged-golden group passes 957 tests. Ruff,
-whitespace and all 503 local Markdown file links pass. The updated PDF has 17
-pages and 290 links, preserving its three original internal links and outline entries.
-
-## SINH — 27 October 2026
-
-Basic SINH uses linear stiffness and Bruns' nonlinear effective volume (equations
-22-23). The implemented shared-density variant is Table 2 case 5 with a density
-filter, case 4 without filtering. The case-6 resource-only filter and hybrid
-stiffness penalties remain outside it. Identity volume hooks on other laws keep
-their numerical behaviour. Effective cost now reaches the assembled model's
-evaluation, cheap updater volume checks, volume objective and complete adjoints.
-Element-density starts are calibrated to its budget. History keeps the displayed
-geometric volume, with effective cost reported separately on the current design.
-Limit checks and study feasibility use effective cost; studies add a separate
-effective-volume column and keep the common SIMP p=3 referee.
-
-Twenty-four focused SINH tests include 2-D/3-D FE/filter/representation derivatives,
-five updater paths, nominal variants, continuation, volume objectives, pinned
-material and feasibility reporting. The 53-case focused/interpolation/golden group
-passes. Bounded 300-step MBB/cantilever runs improve compliance and fit effective
-budgets; they retain 33.75% / 27.22% gray material and are not converged. Full
-measurements and scope are in the experiment README and linked PDF.
-The manufacturing/variants/study/SINH group passes 72 tests, with 53 selected
-GUI cases passing. Ruff, whitespace and 506 local Markdown file links pass.
-The PDF has 18 pages and 292 links, preserving the original navigation.
-
-## Hashin-Shtrikman — 27 October 2026
-
-The law binds the scenario's actual nu and dimension through an optional
-interpolation setup hook. Ordinary laws keep a no-op setup. A shared compatibility
-hook refuses elastic HS laws on thermal models before studies/runs start.
-The implemented scalar law follows the stricter of the HS bulk/shear upper
-limits along the solver's fixed-nu ray, including finite Emin in both phases.
-It supports plane stress and 3-D solid elasticity without changing the original
-Q4/H8 numerical sources. The exact slope feeds existing response adjoints.
-
-Scope is explicitly an upper envelope: this is not the paper's density-varying
-nu (eq.17), lower-bound enforcement, arbitrary phase Poisson ratios or proof of
-microstructure realisability. The 2-D nu=1/3, Emin=0 special case is recovered.
-Seventy-seven focused tests cover independent reciprocal HS formulas, six nu
-values, five contrasts, both dimensions, physical adjoints and thermal preflight.
-The focused/interpolation/unchanged-golden group passes 106 tests. Bounded 300-step
-MBB/cantilever runs improve compliance and meet geometric budgets, retaining
-34.83% / 26.72% gray material. They are not converged; full measurements and limits
-are in the experiment README and linked PDF.
-The combined HS/SINH/schema/variants/study group passes 504 tests and 53 selected
-GUI form/reachability cases pass. Ruff, whitespace and all 510 local Markdown
-file links pass. The PDF has 19 pages and 294 links with original navigation intact.
-
-## Original MATLAB references — 27 October 2026
-
-MATLAB R2026a Update 5 is installed and licensed; the direct batch route works
-without a Python Engine install. Unmodified top88 and top3d were downloaded
-from author sources and hashed. Three cases match Toporia's stopping iteration
-and first/last printed objectives to four-decimal precision. Both top88 mean
-densities also agree within 1e-10. The top3d reference recipe explicitly uses
-the original equal nodal depth forces; production line-load quadrature is unchanged.
-Native observations and hashes are stored separately from unchanged golden
-baselines in `tests/references/matlab.json`. A reusable optional driver verifies
-supplied source hashes, uses isolated temporary files and changes no MATLAB path.
-
-Original TOPRBF(40,20,0.5) completes in 88 steps with C=594277.942780 and volume
-0.499728; the 24x8 attempt produced non-finite fields and is rejected. The native
-RBF result is a standalone reference, not a strict oracle for Toporia's mean-
-normalised and guarded variant. An inaccurate port/authorship description was
-corrected; the existing RBF algorithm and baselines are unchanged.
-
-Other originals remain unresolved: fsparse is absent and no C compiler is
-selected; MMC needs absent mmasub/subsolv; original TOBS101 errors on its removed
-intlinprog CutGeneration option; Challis' source returns a challenge page and
-the reaction-diffusion source host is unavailable. The owner was asked for any
-existing local original/helper files. No compiler, toolbox or runtime is installed
-or reconfigured. These gaps do not invalidate the three matching reference cases.
-All four external-fixture tests pass, including source-hash refusal before MATLAB
-launch. The optional native rerun driver also reproduces all three original cases.
-Ruff, whitespace and 513 local Markdown file links pass. The PDF has 20 pages
-and 296 links; its original internal links, outlines and catalogue are preserved.
-Downloaded sources, traces, intermediate fields and PDF builders are removed.
-
-## Remaining sequence
-
-1. Complete a bounded audit of remaining original MATLAB reference cases. Do not
-   install dependencies, configure a compiler or change MATLAB without asking.
-2. Stronger bounded practical validation of self-support, neural and minimum-length recipes.
-3. Correct console objective reporting and malformed structured CLI configuration errors.
-4. Verify L-bracket and robust-formulation provenance, then reconcile catalogue/TODO status.
-
-Work stays sequential: finish verification, documentation and one commit per
-addition before starting the next. No generated runs or scratch papers are retained.
-
-## Fixed projection — 27 October 2026
-
-`MBB Beam (Fixed Projection)` composes existing density, Heaviside and MMA parts.
-Beta and beta_max stay 16; initial asymptotes follow Høghøj & Träff §3.1 eq.(11),
-with their conservative growth/shrink settings. This is an independent recipe,
-not a verified port of the subscription-only Guest et al. (2011) paper. The old
-claim that eliminating continuation necessarily needs a new filter is corrected.
-The MMA form retains enough decimal places to preserve the initial spacing.
-Two 600-step runs meet physical volume limits and retain 1.00% / 0.89% gray cells,
-but do not meet MMA's stricter change tolerance. Measurements and limits are in
-the experiment README. Three focused tests, five preset/reachability GUI cases and
-three GUI-precision/unchanged-MMA-golden cases pass. Ruff and whitespace checks
-pass. The PDF has 21 pages and 299 annotations with original navigation preserved.
-
-## Remaining original-reference audit — 27 October 2026
-
-Added `experiments.original_references --audit-matlab`, a read-only batch check
-of runtime, licence, helper locations and selected compiler. Native execution
-confirms R2026a Update 5 and Optimization Toolbox, absent fsparse/MMA/level-set
-helpers and no selected C compiler. No installation or MATLAB settings changed.
-Challis' main publisher source now downloads (hash recorded), but its bwdist
-helper still returns HTML; bwdist/padarray are absent from the installed toolbox.
-The primary top99neo/top3D125 page confirms fsparse is required; its author repo
-has no binary releases. RD's author host remains unavailable. Original TOBS101
-still needs a separately labelled compatibility adaptation for removed options.
-The experiment README has the per-original requirements. Numerical comparisons
-remain blocked; compiler/helper installation requires the owner's pending decision.
-The previously passing three reference cases and golden baselines are unchanged.
-
-## Stronger self-support validation — 27 October 2026
-
-Same-setting GCMMA runs extended from 500 to 1000 steps improve MBB/cantilever
-compliance to 391.36346 / 284.11337 and meet smooth budgets. They remain
-unconverged (changes 0.01428 / 0.01231) with 20.08% / 16.56% gray cells.
-The experiment now re-solves binary fields using both cutoff 0.5 and a strict
-cell-count cutoff that respects the volume budget. The latter gives exactly
-0.5 / 0.4 volume, C=319.60022 / 235.27987 and zero unsupported cells under the
-independent one-layer 45-degree stencil on both fields. This is not a printing
-certificate or generic support repair. All 21 core geometric/adjoint tests and
-Ruff pass; core filter mathematics and golden baselines are unchanged.
-The owner has now approved an isolated compiler/helper setup under
-`C:\Users\johan\AppData\Local\ToporiaValidation`, with no global PATH or MATLAB
-startup/default-compiler changes. Broader changes still require approval.
-Return to the original-reference checks after this validation commit, then
-continue neural/minimum-length validation and the remaining small fixes.
-
-## Isolated reference tools and native MMA — 27 October 2026
-
-Approved portable GCC 14.2 and author fsparse are installed only under
-`C:\Users\johan\AppData\Local\ToporiaValidation`. Compiler archive checksum,
-author source revision/hash and compiled MEX hash are recorded in the external
-fixture. Build setup asserted an isolated MATLAB_PREFDIR before selecting the
-compiler; MW_MINGW64_LOC was process-local. No global PATH, saved MATLAB path
-or normal default compiler changed. Four sparse-assembly checks pass.
-An identified GPL Svanberg MMA distribution copy with embedded subsolv was
-run unchanged on a six-variable convex reciprocal problem. mmapy's first/final
-designs, fresh objective, multiplier and volume agree within 1e-10; its objective
-also agrees with the analytic optimum to 2e-9 relative tolerance. The source
-copyright/COPYING stay in the external tool folder; no third-party code is bundled.
-`experiments.original_references --mma` and a regression test reproduce Python.
-
-The licensed Image Processing Toolbox is absent, blocking imfilter and the
-Challis helpers. The owner approved a toolbox-only R2026aU5 addition, then chose
-to install it personally after Windows refused elevation/write access. The
-agent's installer exited unsuccessfully; it did not add the toolbox or upgrade
-MATLAB. Await owner confirmation before dependent native checks. The existing
-MATLAB source and original golden baselines remain unchanged.
-
-## Stronger neural validation and convergence fix — 27 October 2026
-
-Added optional fixed projection, seed selection, final-stage weight moves,
-independent physical-change reporting, volume-limited thresholded solves and
-finer-grid evaluation of learned weights to the reusable neural recipe.
-Two seeds, two presets and 1000-step caps do not produce useful binary designs:
-89–100% gray cells remain after settling. Coarse budgets are met within 2e-7,
-but finer cantilever volumes exceed the target by up to 8.5e-5. Binary cutoffs
-produce very poor compliance; the README retains the full failure evidence.
-
-Unsettled fixed projection exposed physical changes up to 0.32 while weights
-move only 0.005. The new opt-in representation trait makes neural composed
-methods monitor physical density as well as weights for convergence; existing
-element/other-representation behavior is unchanged. A regression reproduces
-the mismatch and checks the larger change is reported. All 18 neural tests pass,
-including a sharp-projection physical adjoint. This is a stopping correction,
-not a claim that the smooth independent network reproduces original TOuNN.
-The composition/variants/unchanged-golden/self-support group passes 611 cases
-(68 existing third-party warnings); Ruff and whitespace checks pass.
-
-## Stronger minimum-length validation — 27 October 2026
-
-The reusable recipe now prints only unless --out is explicit. It compares the
-existing feasible straight-bar seed and uniform gray start, plus binary and
-2x-grid physical-field re-evaluations at the unchanged 4 mm proxy target.
-The seeded result reproduces C=111.907874 and coarse feasibility. Its binary
-field is feasible on both grids (C=116.34435 / 117.60605), but the smooth field
-fails on refinement with residuals +13.86719 / +12.80328. The mesh-dependent
-nodal tolerance and remaining gray densities prevent transferring feasibility.
-The uniform start stops after two NLopt evaluations with FTOL_REACHED while
-both residuals remain +13.87811; the independent feasible flag is false and
-the CLI exits nonzero. Thresholding uniform gray to empty also shows that
-geometric proxies alone do not ensure load-bearing capability. All 21 tests,
-Ruff and whitespace checks pass. No response formula or tolerance was weakened.
-
-## Console objective reporting — 27 October 2026
-
-The iteration console now prints the actual reported objective, matching the
-stored response/history, instead of labelling a delta from the first value as
-obj. Positive compliance and negative frequency-objective histories are checked
-end to end, including the first printed value. Recording, objective mathematics
-and optimization updates are unchanged.
-All 12 analysis-mode tests pass, including both console cases; Ruff passes.
-
-## Structured CLI arguments — 27 October 2026
-
-CLI overrides now reject a string/scalar where the selected field requires a
-JSON object or array, and reject non-object plugin-spec array entries. Errors
-identify --set and the field, explain JSON/shell quoting, and suggest field paths
-or exported JSON files before any physics or output-directory creation. Unknown
-or invalid indexed paths also give a concise CLI error. Sixteen malformed cases
-and valid JSON/field-path neural runs exercise the actual CLI; plain method names
-and existing scalar overrides remain supported. The quick start has PowerShell-
-safe examples. No parser attempts to guess missing JSON quotes.
-All 26 CLI tests, Ruff and whitespace checks pass.
-
-## Newly unblocked original runs — 27 October 2026
-
-The owner installed Image Processing Toolbox personally. Read-only verification
-confirms R2026a Update 5, imfilter/bwdist/padarray available, no normal selected
-compiler and no fsparse/MMA helpers on the saved path. Four unchanged author
-cases complete: two 20-step top99neo cases, 20-step top3D125 and Challis returning
-at 55 iterations with C=8.1996 and volume 0.5. Captured field data and hashes
-are in the external-reference fixture, separate from internal goldens.
-
-Strict additional FE checks match the Challis initial/final field to four printed
-decimals and top3D125's initial sine-front-face z load at its six-significant-digit
-precision. These are FE checks, not optimizer-trajectory equality claims.
-The native neo runs remain bounded observations; beta=8 top99neo oscillates,
-and top3D125's reported physical volume is 0.309 against 0.3.
-The separately hashed TOBS modern-options copy reaches its 200-step safety cap
-with C=1.558315e10 and change 0.037 and is rejected. The unchanged source still
-cannot run with removed legacy intlinprog options. MMC188 and RD remain
-original-source gaps. All seven reference tests, Ruff and whitespace pass.
-No original Q4/H8 source, golden baseline or production TOBS formula changed.
-
-## Preset provenance audit — 27 October 2026
-
-L-bracket dimensions, load and volume are now explicitly Toporia choices, rather
-than an unverified Le et al. benchmark reproduction. Its full-edge clamp includes
-ersatz elements in the forced-empty region; the previous zero-stiffness comment
-was incorrect. Le's publisher record verifies citation metadata, not these settings.
-
-The robust DOI is verified. Wang's author-hosted thesis reproduces Fig. 6's
-0.75/0.5/0.25 illustration and section 5.1's dilated-volume constraint with an
-updated bound. Our smooth maximum, intermediate budget and beta schedule are
-explicitly independent choices, without a size/tolerance certificate. The 2022
-correction is linked, with its subscription-only contents unverified.
-No numerical settings or algorithms changed; Ruff and compile checks pass.
+The agreed small/medium implementation and bounded-validation round is complete,
+within the explicit scopes above. There is no unfinished active task in this round.
+Original-source gaps, rejected recipes and unreproduced paper variants are limitations,
+not silently completed full ports. Further tuning, complete external reproductions,
+whole-method bridges and large framework/dataset work require a new agreed scope.
+The owner reviews and merges the independent branches; nothing is pushed or merged.

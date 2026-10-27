@@ -13,11 +13,16 @@ commit.
 | **MAKE** | Written here, from the paper or by porting a short code. The original, where it exists, is the oracle the test compares against. |
 | **ORACLE** | Not integrated: run outside on the same problem, and a test compares the results. |
 
-Status: `[ ]` to do · `[~]` an agent is on it · `[x]` merged and verified.
+Status: `[ ]` to do · `[~]` an agent is on it · `[x]` implemented and verified on the integration branch (not merged).
 The verified survey of every open code found is [SURVEY.md](SURVEY.md). Lines marked *(unverified)* are from memory and still have to be found and checked by the
 survey (wave 0).
 
 ---
+
+The agreed small/medium round is complete within its documented variant scopes.
+[Current status and limitations](../../docs/INTEGRATION-progress.md) takes precedence
+over this broader research backlog. Open package/bridge/framework rows are not part
+of a promise to implement every external code in this round.
 
 ## Wave 0: the survey
 
@@ -38,7 +43,7 @@ first, and if a package will not install, reports it rather than working around 
 | [x] | mmapy, Deetman's MMA/GCMMA Python port | updater + oracle for `mma.py` | the reference MMA | GPL-3 *(check; GPL means optional only)* |
 | [x] | Feppon's null-space optimizer | updater | constrained optimiser for level-set and shape problems | *(unverified)* |
 | [ ] | ParOpt | updater | interior point built for TO | LGPL *(unverified)* |
-| [~] | pyMOTO, thermal / dynamics / mechanism modules | model | heat and eigenfrequency implemented; mechanism remains | MIT |
+| [x] | pyMOTO, thermal / dynamics / mechanism modules | model / oracle | heat, eigenfrequency and mechanism cross-checks complete | MIT |
 | [ ] | dl4to + the SELTO datasets | problems | 3-D benchmark problems with reference solutions | *(check)* |
 | [ ] | JAX (+ AuTO, Chandrasekhar et al.) | model / representation | automatic differentiation for new responses, neural fields | Apache-2 / *(check)* |
 | [x] | Independent TOuNN-style smooth coordinate network (Chandrasekhar & Suresh); original PyTorch port remains separate | representation + existing Adam updater | NumPy backpropagation, 2-D/3-D; no batch normalisation/AMSGrad or runtime dependency | Own; reference repository GPL-3.0, no code copied |
@@ -51,7 +56,13 @@ first, and if a package will not install, reports it rather than working around 
 
 ## Wave 2: BRIDGE, MATLAB codes run unchanged
 
-**Blocked 2026-10-11:** the MATLAB Engine for R2026a supports Python ≤ 3.13 only (engine 26.2 = R2026b is the first for 3.14). Options: a Python 3.13 environment, MATLAB R2026b, or a `matlab -batch` subprocess bridge (final result only). Waiting for the user's choice.
+**Current status (27 October 2026):** R2026a batch execution works; no upgrade is
+needed for the completed original-reference checks. Image Processing Toolbox was
+installed by the owner; fsparse/compiler/MMA helpers use the approved isolated setup.
+Strict top88/top3d trajectories, native MMA and additional Challis/top3D125 FE checks
+are recorded in [the experiment notes](../../experiments/README.md). Qualified runs,
+TOBS incompatibility and MMC188/RD source gaps are explicit there. The rows below
+track **whole-method bridges**, which these external-oracle checks do not implement.
 
 One generic bridge first (MATLAB Engine for Python, `dependencies = ("matlab.engine",)`),
 then each code is a small wrapper that hands it our mesh size, loads, supports and volume.
@@ -138,7 +149,7 @@ C++ engines (GridapTopOpt.jl, TopOpt.jl, TopOpt_in_PETSc, MOOSE, OpenLSTO) stay 
 
 ## Small fixes noticed on the way
 
-- [ ] The console's `obj=` column prints the change from the first iteration (`engine/loop.py`), which reads as a negative compliance; label it `Δobj` or print the objective.
+- [x] Console `obj=` prints the actual signed objective, including the first iteration (`c0fe5ca`).
 - [x] `model:pymoto_elastic` failed its gradient check because pyMOTO auto-picked PARDISO once pypardiso was installed; the solver is now named (SciPy sparse LU).
-- [ ] L-bracket dimensions and load point, and the robust-paper DOI, were written from memory: check against Le et al. 2010 and Wang, Lazarov & Sigmund 2011.
-- [ ] `--set 'representation={...}'` with a JSON value that arrives as a plain string (PowerShell 5.1 strips the quotes) crashes in `engine/pipeline.py` with AttributeError; give a clear error instead.
+- [x] Preset provenance audited (`dbdb55d`): L-bracket settings are Toporia choices; robust DOI/Fig. 6 verified, formulation differences and correction-access limits explicit.
+- [x] Malformed structured CLI overrides fail with field-specific JSON/shell-quoting guidance before running (`51cff02`).

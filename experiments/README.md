@@ -1,5 +1,8 @@
 # Research experiments and validation recipes
 
+These are reproducible research evaluations, outside Toporia's plugin discovery
+and GUI. Failed performance gates are recorded rather than weakened.
+
 ## Fixed projection without beta continuation
 
 `python -m experiments.fixed_projection --iterations 600 --mesh 1` runs the
@@ -28,9 +31,6 @@ projected uniform field; its large improvement should be read with that in mind.
 Three focused tests cover fixed beta over 600 iterations, physical budgets and
 objective improvement on two small meshes. GUI round-trip/comparison checks also
 cover the preset. Broader reference: [Guest et al. (2011)](https://doi.org/10.1007/s00158-011-0676-1).
-
-These are reproducible research evaluations, outside Toporia's plugin discovery
-and GUI. Failed performance gates are recorded rather than weakened.
 
 ## Machining accessibility
 
