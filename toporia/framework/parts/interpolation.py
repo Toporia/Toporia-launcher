@@ -42,6 +42,14 @@ class Interpolation(ABC):
     #: True when the material budget differs from the geometric density sum.
     nonlinear_volume = False
 
+    def setup(self, problem):
+        """Bind optional scenario context; ordinary laws need no setup."""
+
+    @classmethod
+    def problems_with(cls, physics):
+        """Reasons this law cannot be used with a physics engine class."""
+        return []
+
     def volume_density(self, density):
         """Effective material cost per cell; identity for ordinary stiffness laws."""
         return density

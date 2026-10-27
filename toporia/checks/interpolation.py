@@ -7,6 +7,7 @@
 import numpy as np
 
 from toporia.framework.params import resolve_params
+from toporia.framework.problem.mesh import make_problem
 
 from .common import check_declaration, gradient_check, iterate, registered, small_run
 from .report import Report
@@ -23,6 +24,8 @@ def check_interpolation(cls):
     if not report.ok:
         return report
     law = cls(**resolve_params(cls.name, cls.params, {}))
+    reference_run = small_run(m=0.4)
+    law.setup(make_problem(reference_run.scenario, reference_run.solver.m))
 
     with report.step("void is void, solid is solid: E(0) = Emin, E(1) = E0") as check:
         ends = law.stiffness(np.array([0.0, 1.0]), E0, EMIN)

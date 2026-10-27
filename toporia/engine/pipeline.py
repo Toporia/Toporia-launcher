@@ -59,6 +59,12 @@ def solver_problems(method_cls, run):
     schedule must drive a parameter its part can change during a run.
     """
     reasons = []
+    if issubclass(method_cls, ComposedMethod) and method_cls.capabilities.accepts_interpolation:
+        from toporia.plugins.interpolations import INTERPOLATIONS
+        law = INTERPOLATIONS.get(run.solver.interpolation.get("type", "simp"))
+        physics = getattr(method_cls.model, "physics", None)
+        if physics is not None:
+            reasons += law.problems_with(physics)
     representation = representation_used(method_cls, run.solver)
     if representation is not None and issubclass(method_cls, ComposedMethod):
         updater = method_cls.updater

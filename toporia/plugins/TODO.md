@@ -88,7 +88,7 @@ the matching MAKE item below.
 | [x] | Morphology: erode, dilate, open, close | filter | Sigmund 2007 |
 | [x] | Anisotropic PDE filter | filter | Directional Helmholtz extension of Lazarov & Sigmund 2011, conservative finite volumes |
 | [x] | Extrusion, pattern repetition, casting direction | filter | Ishii & Aomura 2004; Bendsøe & Sigmund 2003; Xia et al. 2010 |
-| [~] | SINH, ordered SIMP, Hashin–Shtrikman | Ordered SIMP and basic shared-density SINH done, including effective volume/adjoints/reporting; HS still needs scenario ν | Bruns 2005; Zuo & Saitou 2017; Bendsøe & Sigmund 1999 |
+| [x] | SINH, ordered SIMP, Hashin–Shtrikman | Ordered SIMP; basic shared-density SINH with effective cost/adjoints/reporting; HS fixed-nu upper envelope with scenario context, 2-D/3-D. Separate resource filters, hybrid SINH and variable-nu HS are not included | Bruns 2005; Zuo & Saitou 2017; Bendsøe & Sigmund 1999 |
 | [~] | Convergence-triggered continuation, continuation-free projection (settled schedule done; continuation-free projection is a filter) | schedule | Wang et al. 2011; Guest et al. 2011 |
 | [x] | Grey level over the run, smoothed outlines | post-processor | Sigmund 2007; Subedi et al. 2020 |
 | [x] | TOBS (integer LP via `scipy.optimize.milp`) | updater | Picelli et al. 2021 |

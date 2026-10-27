@@ -8,6 +8,7 @@ by the INTERPOLATIONS registry.  A solver names one by type:
     ramp.py   E = Emin + ρ / (1 + q(1 − ρ)) (E0 − Emin)  (Stolpe & Svanberg 2001)
     ordered_simp.py   piecewise SIMP between ordered materials   (Zuo & Saitou 2017)
     sinh.py   linear stiffness and hyperbolic-sine effective volume (Bruns 2005)
+    hashin_shtrikman.py   fixed-nu envelope of elastic HS upper bounds, 2-D/3-D
 """
 
 from toporia.framework.parts.interpolation import Interpolation

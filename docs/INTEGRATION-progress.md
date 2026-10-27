@@ -35,11 +35,12 @@ a current-round update containing additions, validation and limitations.
 | `314b2b6` | Cell-centred Gaynor-Guest self-support, full reverse sweep and small-move controls. |
 | `d74d056` | Nested 2-D Q4 multiresolution, exact subcell integration and independent fine referee. |
 | `5700fc5` | NumPy smooth TOuNN-style coordinate field with explicit 2-D/3-D backpropagation. |
+| `819a111` | Basic shared-density SINH, effective-volume budget/adjoints and separate reporting. |
 
 Heat conduction, thermal/dynamic pyMOTO models, eigenfrequency, harmonic response,
 local-stress augmented Lagrangian and nonlinear elasticity are already present.
-The catalogue has 87 selectable plugins, nine physics engines and 17 presets:
-113 implementations. Twelve models and 23 updaters form 276 compositions;
+The catalogue has 88 selectable plugins, nine physics engines and 17 presets:
+114 implementations. Twelve models and 23 updaters form 276 compositions;
 three whole methods bring the method-name total to 279.
 
 ## Important limits
@@ -163,10 +164,32 @@ The manufacturing/variants/study/SINH group passes 72 tests, with 53 selected
 GUI cases passing. Ruff, whitespace and 506 local Markdown file links pass.
 The PDF has 18 pages and 292 links, preserving the original navigation.
 
+## Hashin-Shtrikman — 27 October 2026
+
+The law binds the scenario's actual nu and dimension through an optional
+interpolation setup hook. Ordinary laws keep a no-op setup. A shared compatibility
+hook refuses elastic HS laws on thermal models before studies/runs start.
+The implemented scalar law follows the stricter of the HS bulk/shear upper
+limits along the solver's fixed-nu ray, including finite Emin in both phases.
+It supports plane stress and 3-D solid elasticity without changing the original
+Q4/H8 numerical sources. The exact slope feeds existing response adjoints.
+
+Scope is explicitly an upper envelope: this is not the paper's density-varying
+nu (eq.17), lower-bound enforcement, arbitrary phase Poisson ratios or proof of
+microstructure realisability. The 2-D nu=1/3, Emin=0 special case is recovered.
+Seventy-seven focused tests cover independent reciprocal HS formulas, six nu
+values, five contrasts, both dimensions, physical adjoints and thermal preflight.
+The focused/interpolation/unchanged-golden group passes 106 tests. Bounded 300-step
+MBB/cantilever runs improve compliance and meet geometric budgets, retaining
+34.83% / 26.72% gray material. They are not converged; full measurements and limits
+are in the experiment README and linked PDF.
+The combined HS/SINH/schema/variants/study group passes 504 tests and 53 selected
+GUI form/reachability cases pass. Ruff, whitespace and all 510 local Markdown
+file links pass. The PDF has 19 pages and 294 links with original navigation intact.
+
 ## Remaining sequence
 
-1. Hashin–Shtrikman material law.
-2. Original MATLAB/Octave reference runs if a suitable runtime is available;
+1. Original MATLAB/Octave reference runs if a suitable runtime is available;
    ask before installing or changing runtimes.
 
 Work stays sequential: finish verification, documentation and one commit per

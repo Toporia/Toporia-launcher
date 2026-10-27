@@ -15,7 +15,7 @@ the GUI's **Material law** panel. Any physics engine that declares `uses_interpo
 (the Q4 engine does) takes it; models that bring their own (pyMOTO) or none (the level
 set) ignore it, and the Pipeline box says so.
 
-**Status: 4 in Toporia · 0 with open code · 2 paper only**
+**Status: 5 in Toporia · 0 with open code · 1 paper only**
 
 | Label | Meaning |
 | :-- | :-- |
@@ -31,6 +31,7 @@ set) ignore it, and the Pipeline box says so.
 | ✅ RAMP | [`ramp.py`](ramp.py) | `ramp` | ρ / (1 + q(1 − ρ)) (q = 8) | Stolpe & Svanberg, *SMO* 2001 |
 | ✅ Ordered SIMP | [`ordered_simp.py`](ordered_simp.py) | `ordered_simp` | piecewise t^p between ordered materials | Zuo & Saitou, *SMO* 2017 |
 | ✅ Basic SINH, shared-density variant | [`sinh.py`](sinh.py) | `sinh` | linear stiffness; effective volume `1-sinh(p(1-rho))/sinh(p)` | Bruns, *SMO* 2005, Table 2 case 5 |
+| ✅ Hashin-Shtrikman fixed-nu upper envelope | [`hashin_shtrikman.py`](hashin_shtrikman.py) | `hashin_shtrikman` | stricter elastic bulk/shear upper limit, at scenario nu | Bendsøe & Sigmund 1999; finite soft phase included |
 
 RAMP's slope at ρ = 0 is (E0 − Emin)/(1 + q), where SIMP's is zero: a void element still
 feels a sensitivity, which design-dependent loads (pressure, self-weight) need. Compare
@@ -41,7 +42,6 @@ method with each law.
 
 | Law | Reference | What it adds |
 | :-- | :-- | :-- |
-| 📄 Hashin–Shtrikman-bound laws (needs ν, which the interface does not receive, see below) | Bendsøe & Sigmund, *Arch. Appl. Mech.* 69 (1999) 635–654 | Shows when a power law corresponds to a physically realisable composite (p large enough for the Poisson's ratio); the bounds themselves as an interpolation. |
 | 📄 Discrete material optimisation (DMO) | Stegmann & Lund, *IJNME* 62 (2005) 2009–2027 | Several candidate materials per element, each with its own weight: the classic multi-material law. Needs one design variable per material — a design representation with several fields. |
 
 ## Ordered SIMP
@@ -109,12 +109,52 @@ GUI: choose **SINH (linear stiffness, penalised volume)** in Material law.
 `python -m experiments.material_laws` prints bounded fresh final checks; see
 [measured results](../../../experiments/README.md#sinh-effective-volume).
 
-## Not done, and why
+## Hashin-Shtrikman: fixed-nu upper envelope
 
-- **Hashin–Shtrikman bound law** (Bendsøe & Sigmund, *Arch. Appl. Mech.* 69 (1999) 635–654,
-  [doi:10.1007/s004190050248](https://doi.org/10.1007/s004190050248)): the bound depends on
-  Poisson's ratio ν, but `stiffness(density, E0, Emin)` receives only E0 and Emin, not the
-  scenario's material. Making ν reachable is a framework change.
+The law receives the scenario's actual Poisson ratio and dimension through
+`setup(problem)`; default laws retain a no-op setup. It takes the stricter of
+the HS bulk and shear upper bounds along the solver's fixed-nu elastic ray.
+For either channel M, with solid modulus M0 and soft modulus Mmin,
+
+```
+q_M = (M0-Mmin)/(Mmin+a_M)
+q = max(q_bulk, q_shear)
+E(rho) = Emin + (E0-Emin)*rho/(1+q*(1-rho))
+```
+
+For plane stress, `k=E/[2(1-nu)]`, `g=E/[2(1+nu)]`, `a_k=g`,
+`a_g=k*g/(k+2*g)`. In 3-D, `k=E/[3(1-2*nu)]`, `a_k=4*g/3`,
+`a_g=g*(9*k+8*g)/(6*(k+2*g))`. Shifts use the solid phase. Both phases share
+nu; Emin participates in the bound, rather than being added to a void-limit law.
+The derivative is analytic and nonzero at void for positive stiffness contrast.
+The volume measure stays geometric. There is no independent penalty knob.
+
+This is an **upper envelope with fixed nu**, not the density-dependent nu of
+[Bendsøe & Sigmund eq.17](https://doi.org/10.1007/s004190050248). Only at
+plane-stress nu=1/3 and Emin=0 does it reduce to their `E0*rho/(3-2*rho)`
+while preserving nu. It satisfies both upper-channel limits; it does not assert
+the lower bounds, joint attainability or a realisable microstructure. In particular,
+finite soft phases and extreme nu can make a fixed-nu tensor fall outside a lower
+channel bound. Variable-nu constitutive tensors and arbitrary phase Poisson ratios
+remain separate work. Underlying element limitations also remain.
+
+Only mechanical engines are supported. A thermal model is refused in preflight
+with an explanation; elastic HS limits are not conductivity limits. In direct
+Python use, call `law.setup(problem)` before passing it to a physics engine.
+The accepted solid range is `-1 < nu < 0.5`, with `0 <= Emin <= E0`, E0 positive.
+
+GUI: choose **Hashin-Shtrikman upper envelope (fixed nu)**. CLI:
+
+```sh
+toporia run "MBB Beam" --set method=q4+mma --set interpolation.type=hashin_shtrikman --set method.move=0.05 --set max_iter=300 --set tol=0
+```
+
+`python -m experiments.material_laws --law hashin_shtrikman` prints fresh final
+benchmarks. Independent reciprocal-form checks cover six nu values, five phase
+contrasts and both dimensions; physical compliance gradients also pass.
+The [3-D bound formula source](https://sepwww.stanford.edu/sep/berryman/PS/PHYS.pdf)
+and [benchmark notes](../../../experiments/README.md#hashin-shtrikman-upper-envelope)
+give context and measured limits.
 
 ## Writing one
 
@@ -123,6 +163,10 @@ as a keyword), and implement `stiffness(density, E0, Emin)` and
 `slope(density, E0, Emin)`, element-wise on arrays of any shape. Then
 `toporia check interpolation:<name>`: it checks E(0) = Emin, E(1) = E0, that E increases,
 the slope against finite differences, and a short run.
+Optional `setup(problem)` binds scenario context and `problems_with(physics)`
+declares restrictions shared by GUI/study preflight and model initialisation.
+Optional volume hooks provide an effective resource cost and its derivative;
+set `nonlinear_volume=True` when that budget differs from geometric density.
 
 ## References
 

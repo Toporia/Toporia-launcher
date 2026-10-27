@@ -66,6 +66,25 @@ respectively; they are not budget-matched performance comparisons. No binary
 result is labelled feasible or printable. The [filter documentation](../toporia/plugins/filters/README.md#gaynorguest-self-support-projection)
 describes the cell discretisation, boundary truncation and grid-dependent threshold.
 
+## Hashin-Shtrikman upper envelope
+
+Run `python -m experiments.material_laws --law hashin_shtrikman --iterations 300 --mesh 1`.
+This uses the scenario nu=0.3, Emin=1e-9, both fixed-nu HS upper-channel limits,
+MMA move 0.05 and density radius 1.5. Final physical responses are recomputed;
+the recipe saves no files. Geometric and budget volume are identical for this law.
+
+| Preset | Initial C | Final C | Volume / limit | Gray 0.1-0.9 | Last change |
+| :-- | --: | --: | --: | --: | --: |
+| MBB | 513.19396 | 199.62258 | 0.499988 / 0.5 | 34.83% | 0.002999 |
+| Cantilever | 222.04768 | 83.15603 | 0.399769 / 0.4 | 26.72% | 0.050000 |
+
+Both reach the 300-step cap, improve compliance and fit their budgets. They
+are not convergence or binary-design claims. The envelope satisfies both elastic
+upper limits at the solver's fixed nu. It neither implements the paper's variable
+nu nor certifies lower bounds, joint attainability or a manufacturable composite.
+The common SIMP p=3 comparison referee also uses a different interpolation.
+See the [material-law scope](../toporia/plugins/interpolations/README.md#hashin-shtrikman-fixed-nu-upper-envelope).
+
 ## SINH effective volume
 
 Run `python -m experiments.material_laws --iterations 300 --mesh 1`.

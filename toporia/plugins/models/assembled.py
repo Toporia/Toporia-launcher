@@ -102,6 +102,11 @@ class AssembledModel(Model):
 
         self.engine = type(self).physics()
         self.material = material_law(solver) if self.physics.uses_interpolation else None
+        if self.material is not None:
+            reasons = self.material.problems_with(self.physics)
+            if reasons:
+                raise ValueError("; ".join(reasons))
+            self.material.setup(problem)
         self.engine.initialize(problem, settings, self.material)
         self.representation = design_representation(solver)
         self.representation.setup(problem)

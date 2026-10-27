@@ -32,7 +32,7 @@ Nothing is ever labelled ✅ until it is registered, tested, and reachable from 
 | [`methods/`](methods/README.md) | Whole methods; composed pairs are counted through their parts | 3 | 10 | 1 |
 | [`representations/`](representations/README.md) | What the design variables are | 6 | 0 | 0 |
 | [`filters/`](filters/README.md) | How it is smoothed, projected, made manufacturable | 14 | 1 | 4 |
-| [`interpolations/`](interpolations/README.md) | How density becomes stiffness and resource cost | 4 | 0 | 2 |
+| [`interpolations/`](interpolations/README.md) | How density becomes stiffness and resource cost | 5 | 0 | 1 |
 | [`schedules/`](schedules/README.md) | How a parameter changes during the run (continuation) | 4 | 0 | 1 |
 | [`postprocessors/`](postprocessors/README.md) | What is made of the finished design: threshold, checks, exports | 8 | 0 | 1 |
 | [`models/`](models/README.md) | What computes the physics and the gradients | 12 | 24 | 3 |
@@ -40,9 +40,9 @@ Nothing is ever labelled ✅ until it is registered, tested, and reachable from 
 | [`responses/`](responses/README.md) | What is minimised or constrained | 13 | 4 | 12 |
 | [`updaters/`](updaters/README.md) | How the design moves each iteration | 23 | 4 | 0 |
 | [`problems/`](problems/README.md) | Benchmark problems and datasets | 17 | 6 | 0 |
-| **Total** | | **113** | **54** | **27** |
+| **Total** | | **114** | **54** | **26** |
 
-The implementation total is **87 registered selectable parts + 9 physics engines +
+The implementation total is **88 registered selectable parts + 9 physics engines +
 17 presets**. Counts follow registry classes: parameter options such as variable
 MMC thickness or volume-preserving Heaviside do not add another plugin. The 12
 models and 23 updaters form 276 named pairings; a pairing must support the chosen
