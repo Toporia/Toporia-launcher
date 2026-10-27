@@ -127,7 +127,11 @@ def main(path):
         if (folder / "stop.flag").exists():
             raise StopRequested()
         result = execute(project, iteration)
-        status.update(status="finished", result=result)
+        portable = dict(result)
+        for key in ("path", "folder"):
+            if key in portable:
+                portable[key] = str(Path(portable[key]).relative_to(folder))
+        status.update(status="finished", result=portable)
         emit("result", **result)
     except StopRequested:
         status["status"] = "stopped"

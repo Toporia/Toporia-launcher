@@ -136,11 +136,10 @@ class ExecutionActions:
             density = np.load(result["path"], allow_pickle=False)
             runner.last_run_folder = Path(result["folder"])
             for canvas in (self.canvas, self.post_canvas):
+                canvas.reset()
+                canvas.refresh(density, result.get("objectives", [0]), result.get("iteration", 0))
                 if density.ndim == 3:
                     canvas.show_3d(density, 1 / resolution, self._log)
-                else:
-                    canvas.reset()
-                    canvas.refresh(density, result.get("objectives", [0]), result.get("iteration", 0))
         elif result["kind"] == "image":
             for canvas in (self.canvas, self.post_canvas):
                 canvas.show_grid(result["path"], self.mode.currentText())
@@ -154,18 +153,24 @@ class ExecutionActions:
 
     def _worker_finished(self, exit_code, _status=None):
         """Leave an unambiguous durable status on completion, stop or process failure."""
-        self._read_worker()
         if not self._running:
             return
+        self._read_worker()
         status = {"result": "Finished", "stopped": "Stopped", "error": "Failed"}.get(self._terminal_event, "Interrupted")
         if exit_code != 0 and self._terminal_event != "error":
             status = "Interrupted"
-        if status == "Interrupted":
-            _atomic_json(self._run_folder / "session.json", {"status": "interrupted", "mode": self.mode.currentText()})
-        (self._run_folder / "console.txt").write_text(self.log.toPlainText(), encoding="utf-8")
         self._running = False
         self._set_execution_controls(True)
         self._show_run_label()
+        try:
+            session = self._run_folder / "session.json"
+            record = json.loads(session.read_text(encoding="utf-8")) if session.exists() else {}
+            if status == "Interrupted" or (status == "Failed" and record.get("status") != "error"):
+                _atomic_json(session, {"status": "interrupted" if status == "Interrupted" else "error",
+                                       "mode": self.mode.currentText(), "error": self.process.errorString()})
+            (self._run_folder / "console.txt").write_text(self.log.toPlainText(), encoding="utf-8")
+        except (OSError, ValueError) as error:
+            self._log(f"Could not persist the final session log: {error}")
         if status == "Finished":
             self.run_progress.setMaximum(100)
             self.run_progress.setValue(100)
@@ -210,7 +215,11 @@ class ExecutionActions:
                 self.log.setPlainText(log.read_text(encoding="utf-8"))
             if record.get("status") == "finished" and "result" in record:
                 snapshot = Project.load(path.parent / "input.top")
-                self._show_result(record["result"], snapshot.run.solver.m)
+                result = dict(record["result"])
+                for key in ("path", "folder"):
+                    if key in result and not Path(result[key]).is_absolute():
+                        result[key] = str(path.parent / result[key])
+                self._show_result(result, snapshot.run.solver.m)
                 self._refresh_export_buttons()
         except (OSError, ValueError, KeyError) as error:
             QMessageBox.warning(self, "Cannot open result", str(error))

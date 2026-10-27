@@ -51,7 +51,7 @@ not complete. Resume from the first unchecked step after reading git status.
   support/solid/void/domain assignments and conservative mesh validation.
 - [x] 9. 3D viewport and inspector with spatial primitives, imports, transforms,
   selection and camera navigation; reuse the shared project/object model.
-- [ ] 10. Final cross-workspace verification, regression checks and handoff.
+- [x] 10. Final cross-workspace verification, regression checks and handoff.
 
 ## Current checkpoint
 
@@ -147,6 +147,35 @@ and responsive toolbar/axis labels. Offscreen form tests avoid requiring a GPU.
 Validation: 178 existing GUI/editor checks passed; 16 spatial-editor/headless-
 worker checks passed including H8 subprocess output. Ruff passed.
 
-Next: milestone 10. Final code review, full regression/lint/compile checks,
-strengthen persistence/error handling discovered during review, and final handoff.
-Do not disturb the user's open Untitled window. QA uses separate examples only.
+Milestone 10 review: removed duplicated embedded geometry from documents while
+keeping editor objects authoritative for headless execution; validated saved
+camera/diagram state; made result-session paths relative; improved failed-worker
+cleanup and final logging; restored graph refresh on numeric schedule edits;
+made legacy extrusion depth editable; rejected out-of-domain point assignments.
+Added regression coverage and updated the existing unattended window-close test
+to discard its intentional project edit. The production unsaved-change prompt
+remains active. Documented the bounding-grid volume budget convention and .pro
+CLI import. User's open Untitled window was left alone during final review.
+
+Milestone 10 complete: full regression run passed on 27 October 2026:
+630 passed, 1 skipped, 28 dependency warnings in 17m19s. The diagnostic timer
+reported a long-running numerical test; the suite continued and exited zero.
+Report: ignored results/pytest-full-recorded.xml and pytest-full-recorded.log.
+Ruff, compileall and git diff --check pass. Numerical golden files unchanged.
+All milestones are complete in separate linear commits on GUI; no merge/push
+was performed. Integration and launcher working trees were not edited.
+
+Launch for review from this checkout: `.venv\Scripts\python.exe main.py`.
+Usage and limitations: docs/gui-workflow.md. Start with either example project
+under examples/gui-cantilever or examples/gui-spatial. Future changes should use
+new milestones/commits rather than rewriting this completed checkpoint sequence.
+
+For tests in this Windows sandbox, use a workspace-local TEMP as well as pytest's
+basetemp. The sandbox denies cleanup of some default temporary directories:
+
+```powershell
+New-Item -ItemType Directory -Path results/test-temp -Force | Out-Null
+$env:TEMP = Join-Path (Get-Location) 'results\test-temp'
+$env:TMP = $env:TEMP
+& .venv/Scripts/python.exe -m pytest --basetemp=results/pytest-unique-name
+```

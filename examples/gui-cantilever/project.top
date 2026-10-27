@@ -3,8 +3,8 @@
   "format": 1,
   "name": "Custom 2D cantilever",
   "scenario": {
-    "Lx": 30,
-    "Ly": 10,
+    "Lx": 30.0,
+    "Ly": 10.0,
     "Lz": 0.0,
     "holes": [],
     "enforced_areas": [],
@@ -26,71 +26,7 @@
     "constraints": [],
     "E0": 1.0,
     "Emin": 1e-09,
-    "nu": 0.3,
-    "regions": [
-      {
-        "id": "ff8eac7e6b064613a48ec2e7aab96b9b",
-        "name": "Clamped left edge",
-        "shape": "line",
-        "position": [
-          0,
-          0,
-          0
-        ],
-        "size": [
-          0,
-          10,
-          0
-        ],
-        "rotation": [
-          0.0,
-          0.0,
-          0.0
-        ],
-        "role": "support",
-        "axes": [
-          "x",
-          "y"
-        ],
-        "force": [
-          0.0,
-          -1.0,
-          0.0
-        ],
-        "case": 0
-      },
-      {
-        "id": "24e6ad107a2e4342b808ebe650a5ce4c",
-        "name": "Downward tip force",
-        "shape": "point",
-        "position": [
-          30,
-          5,
-          0
-        ],
-        "size": [
-          1.0,
-          1.0,
-          1.0
-        ],
-        "rotation": [
-          0.0,
-          0.0,
-          0.0
-        ],
-        "role": "load",
-        "axes": [
-          "x",
-          "y"
-        ],
-        "force": [
-          0,
-          -1,
-          0
-        ],
-        "case": 0
-      }
-    ]
+    "nu": 0.3
   },
   "solver": {
     "method": "q4+oc",
@@ -109,7 +45,7 @@
     ],
     "schedules": [],
     "variants": {},
-    "m": 1,
+    "m": 1.0,
     "max_iter": 60,
     "tol": 0.01
   },

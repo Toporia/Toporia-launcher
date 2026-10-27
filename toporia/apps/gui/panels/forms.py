@@ -4,6 +4,7 @@
 # widget.  Every method, filter and scenario panel in the GUI is a ParamForm,
 # so adding a parameter to a plugin makes it appear here with no GUI changes.
 
+from PySide6.QtCore import Signal
 from PySide6.QtWidgets import QCheckBox, QComboBox, QDoubleSpinBox, QFormLayout, QLabel, QSpinBox, QWidget
 
 from ..help import param_topic, with_help
@@ -18,6 +19,8 @@ class ParamForm(QWidget):
     `owner` is the plugin class that declares the parameters, whose reference
     stands in for a parameter that has no source of its own.
     """
+
+    changed = Signal()
 
     def __init__(self, params, parent=None, owner=None):
         super().__init__(parent)
@@ -34,6 +37,10 @@ class ParamForm(QWidget):
             form.addRow(label, with_help(editor, lambda p=param: param_topic(p, owner)))
             self._editors[param.name] = editor
         self.set_values({})
+        for editor in self._editors.values():
+            signal = (editor.toggled if isinstance(editor, QCheckBox) else editor.currentIndexChanged
+                      if isinstance(editor, QComboBox) else editor.valueChanged)
+            signal.connect(lambda *_: self.changed.emit())
 
     def names(self):
         """The parameter names shown in this form, in display order."""
@@ -46,7 +53,13 @@ class ParamForm(QWidget):
     def set_values(self, values):
         """Show `values`; any parameter not in the dict is reset to its default."""
         for param in self._params:
-            _write(self._editors[param.name], param, values.get(param.name, param.default))
+            editor = self._editors[param.name]
+            blocked = editor.blockSignals(True)
+            try:
+                _write(editor, param, values.get(param.name, param.default))
+            finally:
+                editor.blockSignals(blocked)
+        self.changed.emit()
 
 
 def _make_editor(param):

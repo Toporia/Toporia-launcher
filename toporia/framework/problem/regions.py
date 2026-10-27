@@ -47,6 +47,8 @@ def region_mask(obj, coordinates, tolerance, nodes=False):
     shape = obj["shape"]
     eps = 1e-8
     if shape == "point":
+        if np.any(position < coordinates.reshape(-1, dims).min(axis=0) - eps) or np.any(position > coordinates.reshape(-1, dims).max(axis=0) + eps):
+            raise ValueError(f"{obj['name']}: point lies outside the domain")
         dist = np.linalg.norm(local, axis=-1)
         mask = np.zeros(dist.shape, dtype=bool)
         mask.flat[np.argmin(dist)] = True
@@ -109,6 +111,9 @@ def spatial_mask(obj, coordinates, tolerance, nodes):
     if shape == "point":
         if not nodes:
             raise ValueError("A point cannot define a volume")
+        position = np.asarray(obj["position"])
+        if np.any(position < coordinates.reshape(-1, 3).min(axis=0) - epsilon) or np.any(position > coordinates.reshape(-1, 3).max(axis=0) + epsilon):
+            raise ValueError("Point lies outside the domain")
         distance = np.linalg.norm(local, axis=-1)
         mask = np.zeros(distance.shape, bool)
         mask.flat[np.argmin(distance)] = True

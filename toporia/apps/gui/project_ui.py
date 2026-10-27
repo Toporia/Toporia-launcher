@@ -60,6 +60,7 @@ class ProjectActions:
         self.home.import_requested.connect(self.import_problem)
         self.home.benchmark_requested.connect(self.open_benchmark)
         self._saved_state = self._capture_project().payload()
+        self._clean_geometry = self.project.objects
         self._dirty_timer = QTimer(self)
         self._dirty_timer.setInterval(800)
         self._dirty_timer.timeout.connect(self._update_project_title)
@@ -124,7 +125,16 @@ class ProjectActions:
 
     def _is_dirty(self):
         """Compare actual controls rather than relying on incomplete signal wiring."""
-        return self._capture_project().payload() != self._saved_state
+        # Do not copy embedded STL triangles at every title-bar timer tick.
+        # Editor operations replace the object list, so identity caches equality.
+        objects = self.project.objects
+        if objects is not getattr(self, "_compared_geometry", None):
+            self._compared_geometry = objects
+            self._geometry_dirty = objects != self._saved_state.get("objects")
+        geometry_dirty = False if objects is getattr(self, "_clean_geometry", None) else getattr(self, "_geometry_dirty", False)
+        saved = {**self._saved_state, "objects": None, "scenario": dict(self._saved_state["scenario"])}
+        saved["scenario"].pop("regions", None)
+        return geometry_dirty or self._capture_project().payload(include_geometry=False) != saved
 
     def _update_project_title(self):
         """Show the active project and a standard unsaved-change marker."""
@@ -184,6 +194,7 @@ class ProjectActions:
         self.post_canvas.reset()
         self._refresh_run_history()
         self._saved_state = self._capture_project().payload()
+        self._clean_geometry = self.project.objects
         self.root_pages.setCurrentIndex(1)
         self.go_to_step(0)
         self._update_project_title()
@@ -236,6 +247,8 @@ class ProjectActions:
             return False
         try:
             project = Project.load(path)
+            from toporia.engine.pipeline import pipeline_parts
+            pipeline_parts(project.run)  # Resolve every named plugin before replacing the working document.
             self._activate_project(project)
         except (OSError, ValueError, KeyError, TypeError) as error:
             QMessageBox.warning(self, "Cannot open project", str(error))
@@ -257,6 +270,7 @@ class ProjectActions:
             return False
         self.project = project
         self._saved_state = project.payload()
+        self._clean_geometry = self.project.objects
         self._update_project_title()
         self.statusBar().showMessage(f"Saved {project.path}", 6000)
         return True

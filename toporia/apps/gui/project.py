@@ -9,7 +9,7 @@ import math
 import os
 import tempfile
 from copy import deepcopy
-from dataclasses import dataclass, field
+from dataclasses import dataclass, field, replace
 from pathlib import Path
 
 from toporia.framework.problem.files import from_dict, to_dict
@@ -43,6 +43,9 @@ def _validate_objects(objects):
             raise ValueError("Object displacement axes are invalid")
         if type(obj.get("case")) is not int or obj["case"] < 0:
             raise ValueError("Object load case must be a nonnegative integer")
+        for key in ("extrusion", "inner_radius"):
+            if key in obj and (not isinstance(obj[key], (int, float)) or not math.isfinite(obj[key]) or obj[key] < 0):
+                raise ValueError(f"Object {key} must be a finite nonnegative number")
         if obj["shape"] == "polygon":
             vertices = obj.get("vertices")
             if not isinstance(vertices, list) or len(vertices) < 3 or any(
@@ -95,9 +98,17 @@ class ProblemDocument:
     scenario: Scenario
     objects: list | None = None
 
+    def __post_init__(self):
+        """Keep the visible scene and the independently runnable scenario consistent."""
+        if self.objects is None:
+            self.objects = self.scenario.regions
+        if self.objects is not None:
+            self.scenario = replace(self.scenario, regions=self.objects)
+
     def payload(self):
         """Return the portable definition without solver settings or results."""
-        return deepcopy({"kind": "problem", "format": FORMAT, "scenario": to_dict(self.scenario),
+        scenario = replace(self.scenario, regions=None) if self.objects is not None else self.scenario
+        return deepcopy({"kind": "problem", "format": FORMAT, "scenario": to_dict(scenario),
                          "objects": self.objects})
 
     def save(self, path):
@@ -110,7 +121,9 @@ class ProblemDocument:
         data = json.loads(Path(path).read_text(encoding="utf-8"))
         if isinstance(data, dict) and data.get("kind") == "scenario":
             from toporia.framework.problem.files import load
-            return cls(load(path, "scenario"))
+            scenario = load(path, "scenario")
+            _validate_objects(scenario.regions)
+            return cls(scenario)
         data = _read(path, "problem", {"scenario", "objects"})
         objects = data.get("objects", data["scenario"].get("regions"))
         if objects is None:
@@ -132,6 +145,13 @@ class Project:
     view: dict = field(default_factory=dict)
     path: Path | None = field(default=None, compare=False)
 
+    def __post_init__(self):
+        """The editor objects are authoritative inputs, including for headless workers."""
+        if self.objects is None:
+            self.objects = self.run.scenario.regions
+        if self.objects is not None:
+            self.run = replace(self.run, scenario=replace(self.run.scenario, regions=self.objects))
+
     @property
     def problem(self):
         """The independently exportable physical definition."""
@@ -144,13 +164,16 @@ class Project:
             raise ValueError("Save the project before creating a results directory")
         return self.path.parent / "results"
 
-    def payload(self):
+    def payload(self, include_geometry=True):
         """Serialize configuration and UI state, excluding paths and computed results."""
+        # Store editor geometry once; __post_init__ compiles it into the Scenario
+        # for both the GUI and headless worker. Older files with regions still load.
+        scenario = replace(self.run.scenario, regions=None) if self.objects is not None or not include_geometry else self.run.scenario
         return deepcopy({"kind": "project", "format": FORMAT, "name": self.name,
-                "scenario": to_dict(self.run.scenario), "solver": to_dict(self.run.solver),
+                "scenario": to_dict(scenario), "solver": to_dict(self.run.solver),
                 "output": {"save_every": self.run.output.save_every,
                            "postprocess": self.run.output.postprocess},
-                "benchmark": self.benchmark, "objects": self.objects, "notes": self.notes,
+                "benchmark": self.benchmark, "objects": self.objects if include_geometry else None, "notes": self.notes,
                 "study": self.study, "view": self.view})
 
     def save(self, path=None):
@@ -171,6 +194,19 @@ class Project:
                                        ("study", {}, dict), ("view", {}, dict), ("output", {}, dict)):
             if not isinstance(data.get(key, default), expected):
                 raise ValueError(f"Project {key} must be {expected.__name__}")
+        if data.get("benchmark") is not None and not isinstance(data["benchmark"], str):
+            raise ValueError("Benchmark must be a name or null")
+        study, view = data.get("study", {}), data.get("view", {})
+        if not isinstance(study.get("mode", "Run One"), str) or any(not isinstance(v, dict) for k, v in study.items() if k != "mode"):
+            raise ValueError("Study groups must be dictionaries and mode must be text")
+        positions = view.get("method_positions", {})
+        if not isinstance(positions, dict) or any(not isinstance(v, list) or len(v) != 2 or
+            not all(isinstance(n, (int, float)) and math.isfinite(n) for n in v) for v in positions.values()):
+            raise ValueError("Diagram positions must contain finite XY pairs")
+        camera = view.get("camera3d")
+        if camera is not None and (not isinstance(camera, list) or len(camera) != 3 or any(
+            not isinstance(v, list) or len(v) != 3 or not all(isinstance(n, (int, float)) and math.isfinite(n) for n in v) for v in camera)):
+            raise ValueError("Camera position must contain three finite XYZ vectors")
         objects = data.get("objects", data["scenario"].get("regions"))
         if objects is None:
             objects = data["scenario"].get("regions")

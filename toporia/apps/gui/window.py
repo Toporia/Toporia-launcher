@@ -1,21 +1,10 @@
 # apps/gui/window.py — the main application window
 #
-# MainWindow lays the app out like a slicer: you walk through numbered steps
-# along the top, the current step's settings sit in the sidebar, and the view
-# of the design is always in the middle.
-#
-#   ┌───────────────────────────────────────────────────────────────────────────┐
-#   │ Toporia  Preset [▼]   1 Problem › 2 Solver › 3 Study › 4 Post & Export [▶ Run] │
-#   ├──────────────────┬───────────────────────────────────────┬────────────────┤
-#   │ settings of the  │                                       │                │
-#   │ current step     │   LiveCanvas (density + convergence)  │  PipelineView  │
-#   │                  │                                       │  (what the run │
-#   │                  ├───────────────────────────────────────┤   is made of)  │
-#   │ [‹ Back][Next ›] │   Console log                         │                │
-#   └──────────────────┴───────────────────────────────────────┴────────────────┘
-#
-# This file contains no optimisation logic and no widget definitions.
-# It only wires together the pieces from panels/, canvas.py, and runner.py.
+# Home opens portable projects and the benchmark library. The persistent steps
+# switch both the left settings and the main workspace: physical editor, method
+# diagram, asynchronous runner, then post-processing. Numerical execution lives
+# in gui_worker.py, with the Qt lifecycle in execution.py. Plugin declarations
+# still generate controls; project_ui.py owns file actions and dirty tracking.
 
 import traceback  # for formatting Python exception messages into readable text
 
@@ -117,14 +106,8 @@ MODES = {
 }
 
 
-class _StopRequested(Exception):
-    """Custom exception type raised when the user clicks Stop.
-    Using a dedicated type lets us catch it separately from real errors."""
-
-
 class MainWindow(ProjectActions, ExecutionActions, QMainWindow):
-    """The application window: steps and Run along the top, the current step's settings
-    on the left, the live canvas and the log in the middle, the pipeline on the right."""
+    """A project desktop with separate physical, method, run and export workspaces."""
 
     def __init__(self):
         super().__init__()
@@ -641,6 +624,7 @@ class MainWindow(ProjectActions, ExecutionActions, QMainWindow):
         if hasattr(self, "notes"):
             self.notes.clear()
             self._saved_state = self._capture_project().payload()
+            self._clean_geometry = self.project.objects
 
     def _on_method_changed(self, name):
         """Adapt the panels to what the selected method can do."""

@@ -29,6 +29,8 @@ def test_problem_export_contains_no_solver_or_results(tmp_path):
     assert set(json.loads(path.read_text())) == {"kind", "format", "scenario", "objects"}
     legacy = save(original.scenario, tmp_path / "scenario.json")
     assert ProblemDocument.load(legacy).scenario == original.scenario
+    from toporia.framework.problem.files import load
+    assert load(path, "scenario") == original.scenario
 
 
 def test_failed_save_keeps_existing_document_and_location(tmp_path, monkeypatch):
@@ -53,6 +55,26 @@ def test_failed_save_keeps_existing_document_and_location(tmp_path, monkeypatch)
                                     {"output": {"dir": "elsewhere"}}])
 def test_project_loader_rejects_incompatible_documents(tmp_path, change):
     data = Project("Beam", get_run("MBB Beam")).payload() | change
+    path = tmp_path / "bad.top"
+    path.write_text(json.dumps(data))
+    with pytest.raises(ValueError):
+        Project.load(path)
+
+
+def test_editor_objects_are_the_saved_headless_definition_and_are_not_duplicated(tmp_path):
+    from toporia.apps.gui.geometry import make_object
+    objects = [make_object(position=(3, 4, 0))]
+    project = Project("Explicit", get_run("MBB Beam"), objects=objects)
+    path = project.save(tmp_path / "project.top")
+    data = json.loads(path.read_text())
+    assert "regions" not in data["scenario"]
+    assert Project.load(path).run.scenario.regions == objects
+
+
+@pytest.mark.parametrize("view", [{"method_positions": []}, {"method_positions": {"block": [1]}},
+                                  {"camera3d": [[1, 2], [0, 0, 0], [0, 0, 1]]}])
+def test_invalid_view_state_is_rejected_before_graphics_widgets(tmp_path, view):
+    data = Project("Beam", get_run("MBB Beam"), view=view).payload()
     path = tmp_path / "bad.top"
     path.write_text(json.dumps(data))
     with pytest.raises(ValueError):

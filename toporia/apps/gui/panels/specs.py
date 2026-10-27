@@ -55,6 +55,7 @@ class _SpecRow(QWidget):
         self._forms = {}
         for cls in self._classes:
             self._forms[cls.name] = ParamForm(cls.params, self, owner=cls)
+            self._forms[cls.name].changed.connect(self.changed.emit)
             outer.addWidget(self._forms[cls.name])
         self._fill_types([cls.name for cls in self._classes])
 

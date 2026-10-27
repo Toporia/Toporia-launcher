@@ -101,3 +101,19 @@ def test_dxf_profiles_become_independent_planar_regions(editor, tmp_path):
     assert editor.objects[0]["vertices"] == [[2., 2.], [4., 2.], [4., 4.], [2., 4.]]
     editor.undo()
     assert editor.objects == []
+
+
+def test_legacy_extrusion_depth_is_editable_without_tilting_its_cross_section(editor):
+    from toporia.apps.gui.geometry import objects_from_scenario
+    from toporia.plugins.problems import get_run
+    scenario = get_run("Cantilever 3D").scenario
+    objects = objects_from_scenario(scenario)
+    line = next(obj for obj in objects if obj["shape"] == "line")
+    editor.load(scenario, objects, False)
+    editor.select(line["id"])
+    assert editor.fields["d"].value() == scenario.Lz
+    editor.fields["d"].setValue(12)
+    editor.apply_inspector()
+    edited = next(obj for obj in editor.objects if obj["id"] == line["id"])
+    assert edited["extrusion"] == 12
+    assert edited["size"][2] == line["size"][2]

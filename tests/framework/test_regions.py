@@ -77,3 +77,10 @@ def test_custom_problem_reaches_the_actual_optimizer(tmp_path):
     assert density.shape == (5, 10)
     assert np.isfinite(density).all()
     assert (tmp_path / "run.json").exists()
+
+
+def test_point_outside_domain_is_rejected_instead_of_snapping_onto_boundary():
+    objects = beam_objects()
+    objects[-1]["position"][0] = 20.1
+    with pytest.raises(ValueError, match="outside"):
+        make_problem(replace(beam(), regions=objects))

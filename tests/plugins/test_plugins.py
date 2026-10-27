@@ -174,7 +174,7 @@ def test_a_run_refuses_a_missing_dependency_before_it_starts(needs_missing):
         initialized_method(run)
 
 
-def test_the_gui_greys_out_what_is_not_installed_and_says_why(needs_missing):
+def test_the_gui_greys_out_what_is_not_installed_and_says_why(needs_missing, monkeypatch):
     pytest.importorskip("PySide6.QtWidgets")
     import os
     os.environ.setdefault("QT_QPA_PLATFORM", "offscreen")
@@ -192,6 +192,9 @@ def test_the_gui_greys_out_what_is_not_installed_and_says_why(needs_missing):
 
     window.core.select_method("q4+needs_missing")      # e.g. from a preset written elsewhere
     assert any("Not installed here" in note for note in window.pipeline.notes())
+    # Selecting a different method now edits a project. Explicitly discard it
+    # instead of leaving the offscreen test inside the unsaved-change dialog.
+    monkeypatch.setattr(QtWidgets.QMessageBox, "question", lambda *_: QtWidgets.QMessageBox.Discard)
     window.close()
 
 

@@ -156,3 +156,26 @@ def test_target_element_count_shows_actual_mesh_without_changing_geometry(window
     assert window.design.elements_per_mm() == pytest.approx(2)
     assert "4,800" in window.design.counts.text()
     assert window._base_cfg.scenario == scenario
+
+
+def test_unknown_plugin_open_does_not_replace_the_active_document(window, tmp_path, monkeypatch):
+    import json
+    monkeypatch.setattr(QMessageBox, "question", lambda *_: QMessageBox.Discard)
+    monkeypatch.setattr(QMessageBox, "warning", lambda *_: None)
+    previous = window._capture_project().payload()
+    invalid = Project("Unavailable", get_run("MBB Beam")).payload()
+    invalid["solver"]["method"] = "missing_external_method"
+    path = tmp_path / "unavailable.top"
+    path.write_text(json.dumps(invalid))
+    assert not window.open_project(path)
+    assert window._capture_project().payload() == previous
+
+
+def test_numeric_schedule_edits_refresh_the_graph_without_changing_filters(window):
+    window._activate_project(Project("Live params", get_run("MBB Beam")))
+    window.schedules.load_specs([{"type": "steps", "path": "interpolation.penal", "start": 1., "end": 3., "step": 1., "every": 5}])
+    row = window.schedules._rows[0]
+    form = row._forms[row._type.currentData()]
+    form._editors["end"].setValue(4)
+    material = next(block.node for block in window.method_view.blocks.values() if block.node.kind == "material")
+    assert "4" in material.badges[0]

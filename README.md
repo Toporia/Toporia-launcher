@@ -1,4 +1,10 @@
-# Toporia-launcher
+# Toporia
+
+This `GUI` branch adds a project desktop with separate Problem, Method, Runner
+and Post & Export workspaces. Start with [the GUI workflow](docs/gui-workflow.md)
+and the editable [2D](examples/gui-cantilever/project.top) and
+[spatial H8](examples/gui-spatial/project.top) examples. The linear implementation
+checkpoints and validation log are in [the GUI plan](docs/gui-plan.md).
 
 A platform for topology-optimisation research: a robust framework in which algorithms,
 filters and other approaches from the literature can be implemented, compared fairly and
@@ -8,7 +14,7 @@ differ in one part are a fair comparison.
 ## Getting started
 
 ```bash
-pip install -e ".[dev,3d]"
+pip install -e ".[dev,3d,gui3d]"
 ```
 
 Then `toporia` opens the desktop app, and `toporia run "MBB Beam"` runs from the command

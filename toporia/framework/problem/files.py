@@ -93,6 +93,13 @@ def load(path, kind=None):
     passing a solver file where a scenario is expected fails with a clear message.
     """
     data = json.loads(Path(path).read_text(encoding="utf-8"))
+    if isinstance(data, dict) and data.get("kind") == "problem":
+        if kind not in (None, "scenario"):
+            raise ValueError(f"{path} is a problem/scenario file, but a {kind} file was expected")
+        if type(data.get("format")) is not int or data["format"] != FORMAT or set(data) - {"kind", "format", "scenario", "objects"}:
+            raise ValueError(f"{path}: unsupported problem document")
+        scenario = from_dict(Scenario, data["scenario"])
+        return dataclasses.replace(scenario, regions=data.get("objects", scenario.regions))
     found = data.pop("kind", None)
     version = data.pop("format", None)
     if found not in KINDS:

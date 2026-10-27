@@ -19,6 +19,7 @@ environment, install `pip install -e ".[dev,3d,gui3d]"` first.
   versions and unknown top-level fields are rejected.
 
 The File menu has new/open/save/save-as/import/export and benchmark-copy actions.
+Standalone `.pro` definitions can also be supplied as the scenario to the CLI.
 Unsaved changes prompt before replacing a project. View > Project notes opens
 the associated notes pane. `examples/gui-cantilever/project.top` is an editable
 2D example with explicit supports and a downward tip load.
@@ -46,6 +47,9 @@ removes a selected object and can be undone.
 
 Objects have roles: support, load, forced solid, excluded material, or design
 domain. Multiple domain objects form a union. Solid and void must not overlap.
+The current engine measures volume fraction against the rectangular bounding
+grid, with excluded/outside cells empty; it does not renormalize the budget to
+the imported shape's volume. This convention is shown in the domain inspector.
 Supports select displacement axes. Each load object owns a **total force vector**
 and a load-case number; the vector is divided evenly across its selected mesh
 nodes, so mesh refinement does not multiply the load. Load Cases controls the

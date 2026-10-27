@@ -258,6 +258,10 @@ class ProblemEditor(QWidget):
         domain.addRow(apply_domain)
         controls.addWidget(QLabel("Domain and physical material"))
         controls.addWidget(self.domain_form)
+        budget_note = QLabel("Material budget is measured against the bounding grid; excluded cells count as empty.")
+        budget_note.setWordWrap(True)
+        budget_note.setStyleSheet("color: #91a8ba; font-size: 11px;")
+        controls.addWidget(budget_note)
         controls.addStretch()
         scroll = QScrollArea()
         scroll.setWidgetResizable(True)
@@ -415,6 +419,8 @@ class ProblemEditor(QWidget):
         stl = obj["shape"] == "stl"
         for key, axis in (("w", "X"), ("h", "Y"), ("d", "Z")):
             self.field_labels[key].setText(f"Scale {axis}" if stl else f"Size / Δ{axis} [mm]")
+        if obj.get("extrusion"):
+            self.field_labels["d"].setText("Extrusion [mm]")
         self.sampling.setCurrentIndex(self.sampling.findData(obj.get("sampling", "volume")))
         self.sampling.setVisible(stl)
         self.object_form_layout.labelForField(self.sampling).setVisible(stl)
@@ -426,6 +432,8 @@ class ProblemEditor(QWidget):
             self.fields[key].setValue(value)
         for axis, check in self.axes.items():
             check.setChecked(axis in obj["axes"])
+        if obj.get("extrusion"):
+            self.fields["d"].setValue(obj["extrusion"])
         self.case.setValue(obj["case"] + 1)
         self._role_fields()
 
@@ -504,13 +512,15 @@ class ProblemEditor(QWidget):
         obj["role"] = self.role.currentData()
         obj["position"] = [self.fields[k].value() for k in ("x", "y", "z")]
         scale = self.fields["scale"].value()
+        original_depth = obj["size"][2]
         obj["size"] = [self.fields[k].value() * scale for k in ("w", "h", "d")]
         if self.scenario.Lz == 0:
             obj["size"][2] = self.fields["d"].value()
         obj["rotation"] = [self.fields[k].value() for k in ("rx", "ry", "angle")]
         obj["force"] = [self.fields[k].value() for k in ("fx", "fy", "fz")]
         if obj.get("extrusion"):
-            obj["extrusion"] *= scale
+            obj["size"][2] = original_depth
+            obj["extrusion"] = self.fields["d"].value() * scale
         if obj["shape"] == "stl":
             obj["sampling"] = self.sampling.currentData()
         obj["axes"] = [axis for axis, check in self.axes.items() if check.isChecked()]
