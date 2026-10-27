@@ -164,6 +164,16 @@ def test_a_preset_survives_the_round_trip_through_the_gui(window, preset):
         [s.get("type", "density") for s in original.solver.filter_specs]
 
 
+def test_fixed_projection_keeps_its_small_initial_asymptotes_in_the_gui(window):
+    from toporia.apps.gui import runner
+
+    preset = "MBB Beam (Fixed Projection)"
+    window._on_config_changed(preset)
+    cfg = runner.build_config(window.core, window.lc, window.filters, base_cfg=window._base_cfg)
+    expected = get_run(preset).solver.method_params
+    assert cfg.solver.method_params["asyinit"] == pytest.approx(expected["asyinit"], abs=5e-9)
+
+
 @pytest.mark.parametrize("name", METHOD_NAMES)
 def test_objective_and_constraints_follow_the_method(window, name):
     capabilities = method_class(name).capabilities

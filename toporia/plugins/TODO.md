@@ -89,7 +89,7 @@ the matching MAKE item below.
 | [x] | Anisotropic PDE filter | filter | Directional Helmholtz extension of Lazarov & Sigmund 2011, conservative finite volumes |
 | [x] | Extrusion, pattern repetition, casting direction | filter | Ishii & Aomura 2004; Bendsøe & Sigmund 2003; Xia et al. 2010 |
 | [x] | SINH, ordered SIMP, Hashin–Shtrikman | Ordered SIMP; basic shared-density SINH with effective cost/adjoints/reporting; HS fixed-nu upper envelope with scenario context, 2-D/3-D. Separate resource filters, hybrid SINH and variable-nu HS are not included | Bruns 2005; Zuo & Saitou 2017; Bendsøe & Sigmund 1999 |
-| [~] | Convergence-triggered continuation, continuation-free projection (settled schedule done; continuation-free projection is a filter) | schedule | Wang et al. 2011; Guest et al. 2011 |
+| [x] | Convergence-triggered continuation; fixed-beta projection preset with tightened MMA asymptotes (independent recipe; full Guest variants not reproduced) | schedule / preset | Wang et al. 2011; Guest et al. 2011; explicit settings from Høghøj & Träff 2021, section 3.1 |
 | [x] | Grey level over the run, smoothed outlines | post-processor | Sigmund 2007; Subedi et al. 2020 |
 | [x] | TOBS (integer LP via `scipy.optimize.milp`) | updater | Picelli et al. 2021 |
 | [x] | CONLIN, multi-constraint OC | updater | Fleury 1989; Zhou & Rozvany 1991 |

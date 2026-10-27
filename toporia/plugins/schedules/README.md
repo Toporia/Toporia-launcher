@@ -100,9 +100,17 @@ toporia run "MBB Beam" --set 'method=q4+oc' \
   --set 'schedules=[{"path":"filters[1].beta","type":"settled","start":1,"end":16,"change_below":0.03,"min_every":10,"max_every":40}]'
 ```
 
-**Continuation-free projection** (Guest, Asadpoure & Ha 2011) is a different thing: it
-changes the projection function so that no β schedule is needed. That is a filter, so it
-stays a candidate here and is not implemented.
+**Fixed projection without beta continuation** is available as
+`MBB Beam (Fixed Projection)`: density filter, fixed Heaviside beta=16 and conservative
+MMA settings. Setting `beta_max` equal to `beta` disables built-in doubling; no schedule
+is added. The explicit asymptote recipe comes from
+[Høghøj & Träff, section 3.1](https://arxiv.org/html/2102.12999#S3.SS1), which credits
+[Guest, Asadpoure & Ha (2011)](https://doi.org/10.1007/s00158-011-0676-1).
+This corrects the earlier claim here that eliminating continuation necessarily needs
+a different projection filter. The full Guest paper's additional variants have not
+been reproduced. Sharpness and optimizer tuning remain problem dependent; this recipe
+does not guarantee binary designs or work with arbitrary updaters. The bounded
+[validation recipe](../../../experiments/fixed_projection.py) reports grayness and volume.
 
 ## Several versions of one design: robust formulations
 

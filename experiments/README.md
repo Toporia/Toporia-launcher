@@ -1,5 +1,34 @@
 # Research experiments and validation recipes
 
+## Fixed projection without beta continuation
+
+`python -m experiments.fixed_projection --iterations 600 --mesh 1` runs the
+`MBB Beam (Fixed Projection)` recipe on MBB and cantilever, prints final physical
+measurements and saves no run outputs. GUI/CLI users can select the preset directly.
+This is an independent recipe using existing density, tanh Heaviside and MMA parts.
+The full Guest-Asadpoure-Ha (2011) paper remains subscription-only; its other
+projection/optimizer variants have not been reproduced.
+
+The readable parameter source is [Høghøj & Träff §3.1, eq. (11)](https://arxiv.org/html/2102.12999#S3.SS1):
+initial asymptote spacing `0.5/(2*beta+1)`, growth 1.05, shrink 0.65 and move 0.1.
+Here beta=beta_max=16 throughout, with no schedules. This differs from that paper's
+machining projection and uses Toporia's own one-constraint MMA scaling. GUI asymptote
+precision retains the small initial spacing. Default optimizer behavior is unchanged.
+
+| Preset / mesh | Initial C | Final C | Physical volume / limit | Gray cells (0.1–0.9) | Last change |
+| :-- | --: | --: | :-- | --: | --: |
+| MBB, 60×20 | 1007.02210 | 197.12351 | 0.500000 / 0.5 | 1.00% | 0.0001642 |
+| Cantilever, 60×30 | 658179.74724 | 81.28574 | 0.400000 / 0.4 | 0.89% | 0.0002181 |
+
+Both ran exactly 600 steps. Neither meets MMA's stricter 1e-4 change tolerance;
+gray indicators `mean(4*rho*(1-rho))` are 0.01007 and 0.01119. Constant projection
+does not guarantee binary solutions, global optima, manufacturing length scales or
+stability with arbitrary updaters. The low-volume cantilever starts with a very soft
+projected uniform field; its large improvement should be read with that in mind.
+Three focused tests cover fixed beta over 600 iterations, physical budgets and
+objective improvement on two small meshes. GUI round-trip/comparison checks also
+cover the preset. Broader reference: [Guest et al. (2011)](https://doi.org/10.1007/s00158-011-0676-1).
+
 These are reproducible research evaluations, outside Toporia's plugin discovery
 and GUI. Failed performance gates are recorded rather than weakened.
 

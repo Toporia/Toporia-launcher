@@ -38,7 +38,7 @@ class MMAUpdater(Updater):
               "The engine's tolerance still applies as well.",
               min=0.0, max=1.0, step=1e-4, decimals=6),
         Param("asyinit", 0.5, "Asymptote init", "Initial asymptote distance, as a fraction of the bounds.",
-              min=0.01, max=1.0, step=0.05, decimals=2),
+              min=0.01, max=1.0, step=0.001, decimals=8),
         Param("asyincr", 1.2, "Asymptote grow", "Asymptote expansion after consistent design motion.",
               min=1.0, max=2.0, step=0.05, decimals=2),
         Param("asydecr", 0.7, "Asymptote shrink", "Asymptote contraction after oscillating design motion.",

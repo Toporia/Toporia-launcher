@@ -24,7 +24,7 @@ A test (`tests/apps/test_gui.py`) fails if a part ever stops being reachable fro
 | **Wraps** | Calls an outside Python package. That package is installed separately. Parts whose package is missing are greyed out in the app, with the install command. |
 | **Own** | Toporia's own idea or standard practice. |
 
-## In the library today: 88 selectable parts and 17 benchmark problems
+## In the library today: 88 selectable parts and 18 benchmark problems
 
 The selectable parts include models and whole methods; their nine underlying
 physics engines are counted separately in the [catalogue totals](README.md).
@@ -169,6 +169,7 @@ and the preset *MBB Beam (Robust)*.
 | :-- | :-- | :-- |
 | MBB Beam | [mbb_beam.py](problems/mbb_beam.py) | the 99-line code and top88 · papers [1](https://doi.org/10.1007/s001580050176) [2](https://doi.org/10.1007/s00158-010-0594-7) |
 | MBB Beam (Robust) | [mbb_beam_robust.py](problems/mbb_beam_robust.py) | Wang, Lazarov & Sigmund 2011 · [paper](https://doi.org/10.1007/s00158-010-0602-y) |
+| MBB Beam (Fixed Projection) | [mbb_beam_fixed_projection.py](problems/mbb_beam_fixed_projection.py) | Independent fixed-beta/tightened-MMA recipe; explicit settings [Høghøj & Träff §3.1](https://arxiv.org/html/2102.12999#S3.SS1), motivation [Guest et al. 2011](https://doi.org/10.1007/s00158-011-0676-1) |
 | Vibrating Beam | [vibrating_beam.py](problems/vibrating_beam.py) | after Du & Olhoff 2007 · [paper](https://doi.org/10.1007/s00158-007-0101-y) |
 | Column Buckling | [column_buckling.py](problems/column_buckling.py) | Toporia column geometry, Ferrari, Sigmund & Guest's linearised formulation · [paper](https://doi.org/10.1007/s00158-021-02854-x) |
 | Cantilever | [cantilever.py](problems/cantilever.py) | the 99-line code · [paper](https://doi.org/10.1007/s001580050176) |

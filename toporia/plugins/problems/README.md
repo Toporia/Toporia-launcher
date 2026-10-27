@@ -5,7 +5,7 @@ material, volume target — plus the solver settings recommended for it. Two run
 a scenario and differ only in their solver are a benchmark, and that comparison is what
 Toporia exists to make.
 
-**Status: 17 in Toporia · 6 open datasets or suites · 0 paper only**
+**Status: 18 in Toporia · 6 open datasets or suites · 0 paper only**
 
 | Label | Meaning |
 | :-- | :-- |
@@ -30,6 +30,7 @@ Toporia exists to make.
 | ✅ L-bracket | [`l_bracket.py`](l_bracket.py) | `L-bracket` |
 | ✅ L-bracket (local stress) | [`l_bracket_stress.py`](l_bracket_stress.py) | `L-bracket (local stress)` |
 | ✅ MBB beam, robust | [`mbb_beam_robust.py`](mbb_beam_robust.py) | `MBB Beam (Robust)` |
+| ✅ MBB beam, fixed projection | [`mbb_beam_fixed_projection.py`](mbb_beam_fixed_projection.py) | `MBB Beam (Fixed Projection)` |
 | ✅ Heat sink | [`heat_sink.py`](heat_sink.py) | `Heat Sink` |
 | ✅ Vibrating beam | [`vibrating_beam.py`](vibrating_beam.py) | `Vibrating Beam` |
 | ✅ Column buckling | [`column_buckling.py`](column_buckling.py) | `Column Buckling` |

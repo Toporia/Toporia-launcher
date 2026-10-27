@@ -41,8 +41,8 @@ a current-round update containing additions, validation and limitations.
 
 Heat conduction, thermal/dynamic pyMOTO models, eigenfrequency, harmonic response,
 local-stress augmented Lagrangian and nonlinear elasticity are already present.
-The catalogue has 88 selectable plugins, nine physics engines and 17 presets:
-114 implementations. Twelve models and 23 updaters form 276 compositions;
+The catalogue has 88 selectable plugins, nine physics engines and 18 presets:
+115 implementations. Twelve models and 23 updaters form 276 compositions;
 three whole methods bring the method-name total to 279.
 
 ## Important limits
@@ -224,8 +224,25 @@ Downloaded sources, traces, intermediate fields and PDF builders are removed.
 
 ## Remaining sequence
 
-1. Unblock the remaining original-reference cases with local sources and suitable
-   dependencies/runtime compatibility; ask before installing or changing runtimes.
+1. Complete a bounded audit of remaining original MATLAB reference cases. Do not
+   install dependencies, configure a compiler or change MATLAB without asking.
+2. Stronger bounded practical validation of self-support, neural and minimum-length recipes.
+3. Correct console objective reporting and malformed structured CLI configuration errors.
+4. Verify L-bracket and robust-formulation provenance, then reconcile catalogue/TODO status.
 
 Work stays sequential: finish verification, documentation and one commit per
 addition before starting the next. No generated runs or scratch papers are retained.
+
+## Fixed projection — 27 October 2026
+
+`MBB Beam (Fixed Projection)` composes existing density, Heaviside and MMA parts.
+Beta and beta_max stay 16; initial asymptotes follow Høghøj & Träff §3.1 eq.(11),
+with their conservative growth/shrink settings. This is an independent recipe,
+not a verified port of the subscription-only Guest et al. (2011) paper. The old
+claim that eliminating continuation necessarily needs a new filter is corrected.
+The MMA form retains enough decimal places to preserve the initial spacing.
+Two 600-step runs meet physical volume limits and retain 1.00% / 0.89% gray cells,
+but do not meet MMA's stricter change tolerance. Measurements and limits are in
+the experiment README. Three focused tests, five preset/reachability GUI cases and
+three GUI-precision/unchanged-MMA-golden cases pass. Ruff and whitespace checks
+pass. The PDF has 21 pages and 299 annotations with original navigation preserved.
