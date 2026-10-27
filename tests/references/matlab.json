@@ -1,6 +1,13 @@
 {
   "runtime": "26.1.0.3346908 (R2026a) Update 5",
   "captured_on": "2026-10-27",
+  "runtime_audit": {
+    "captured_on": "2026-10-27",
+    "optimization_toolbox_licensed": true,
+    "c_compiler_selected": false,
+    "missing_path_helpers": ["fsparse", "mmasub", "subsolv", "MMC188", "top_levelset", "levelset88"],
+    "scope": "Read-only batch audit; no installation, compiler selection, path save or MATLAB configuration change."
+  },
   "protocol": "Unmodified downloaded functions, invisible figures, default stopping rules. Objectives are pre-update values printed to four decimals, not fresh final-design solves.",
   "sources": {
     "top88.m": {
@@ -13,6 +20,12 @@
     }
   },
   "additional_observations": {
+    "Challis": {
+      "source_url": "https://media.springernature.com/original/springer-static/esm/art%3A10.1007%2Fs00158-009-0430-0/MediaObjects/158_2009_430_MOESM3_ESM.m",
+      "sha256": "889a7048fa13a02563af7f6b0d090b52f83489cab588cef74b422083bf17e3f0",
+      "status": "source_recovered_not_run",
+      "message": "Main source now downloads; the author's bwdist helper still returns an HTML challenge. Image Processing Toolbox bwdist/padarray are absent from the installation. No replacement helper installed or substituted."
+    },
     "TOPRBF": {
       "url": "https://media.springernature.com/original/springer-static/esm/art%3A10.1007%2Fs00158-018-1904-8/MediaObjects/158_2018_1904_MOESM1_ESM.m",
       "sha256": "2943829d1229b172857e13e839f8052df89a7ec86871bee5d23ad588afeee384",

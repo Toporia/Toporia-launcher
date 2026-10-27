@@ -2,6 +2,7 @@
 
 Default: python -m experiments.original_references
 Optional original rerun: --matlab --source-dir PATH [--matlab-exe PATH]
+Read-only runtime/helper audit: --audit-matlab [--matlab-exe PATH]
 Download the two sources linked in tests/references/matlab.json into PATH.
 Their bytes must match the recorded hashes. No download, install, source
 patch, MATLAB path save or fixture update is performed by this recipe.
@@ -92,14 +93,46 @@ fid=fopen('report.json','w'); fprintf(fid,'%s',jsonencode(report)); fclose(fid);
         return report
 
 
+def audit_matlab(executable):
+    """Inspect the current runtime; never set a path, select a compiler or install helpers."""
+    with tempfile.TemporaryDirectory(prefix="toporia-matlab-audit-") as temporary:
+        scratch = Path(temporary)
+        script = """report.runtime=version;
+report.optimization_toolbox_licensed=logical(license('test','Optimization_Toolbox'));
+names={'fsparse','mmasub','subsolv','MMC188','top_levelset','levelset88','intlinprog'};
+for i=1:numel(names), report.helpers.(names{i})=which(names{i}); end
+try
+  selected=mex.getCompilerConfigurations('C','Selected');
+  report.c_compiler_selected=~isempty(selected);
+  if isempty(selected), report.c_compiler_name='';
+  else, report.c_compiler_name=selected(1).Name; end
+catch error
+  report.c_compiler_selected=false; report.compiler_audit_error=error.message;
+end
+fid=fopen('report.json','w'); fprintf(fid,'%s',jsonencode(report)); fclose(fid);
+"""
+        (scratch / "audit.m").write_text(script, encoding="utf-8")
+        completed = subprocess.run([executable, "-batch", "run('audit.m');"], cwd=scratch,
+                                   capture_output=True, text=True, timeout=300, check=False)
+        if completed.returncode:
+            raise RuntimeError(f"MATLAB audit failed:\n{completed.stdout}\n{completed.stderr}")
+        return json.loads((scratch / "report.json").read_text(encoding="utf-8"))
+
+
 def main():
     parser = argparse.ArgumentParser(description=__doc__)
-    parser.add_argument("--matlab", action="store_true")
+    mode = parser.add_mutually_exclusive_group()
+    mode.add_argument("--matlab", action="store_true")
+    mode.add_argument("--audit-matlab", action="store_true")
     parser.add_argument("--source-dir", type=Path)
     parser.add_argument("--matlab-exe", default=shutil.which("matlab"))
     args = parser.parse_args()
     reference = json.loads(REFERENCES.read_text(encoding="utf-8"))
-    if args.matlab:
+    if args.audit_matlab:
+        if not args.matlab_exe:
+            parser.error("The runtime audit needs an available --matlab-exe")
+        results = audit_matlab(args.matlab_exe)
+    elif args.matlab:
         if args.source_dir is None or not args.matlab_exe:
             parser.error("MATLAB reruns need --source-dir and an available --matlab-exe")
         results = rerun_matlab(reference, args.source_dir, args.matlab_exe)

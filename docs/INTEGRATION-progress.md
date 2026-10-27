@@ -246,3 +246,18 @@ but do not meet MMA's stricter change tolerance. Measurements and limits are in
 the experiment README. Three focused tests, five preset/reachability GUI cases and
 three GUI-precision/unchanged-MMA-golden cases pass. Ruff and whitespace checks
 pass. The PDF has 21 pages and 299 annotations with original navigation preserved.
+
+## Remaining original-reference audit — 27 October 2026
+
+Added `experiments.original_references --audit-matlab`, a read-only batch check
+of runtime, licence, helper locations and selected compiler. Native execution
+confirms R2026a Update 5 and Optimization Toolbox, absent fsparse/MMA/level-set
+helpers and no selected C compiler. No installation or MATLAB settings changed.
+Challis' main publisher source now downloads (hash recorded), but its bwdist
+helper still returns HTML; bwdist/padarray are absent from the installed toolbox.
+The primary top99neo/top3D125 page confirms fsparse is required; its author repo
+has no binary releases. RD's author host remains unavailable. Original TOBS101
+still needs a separately labelled compatibility adaptation for removed options.
+The experiment README has the per-original requirements. Numerical comparisons
+remain blocked; compiler/helper installation requires the owner's pending decision.
+The previously passing three reference cases and golden baselines are unchanged.

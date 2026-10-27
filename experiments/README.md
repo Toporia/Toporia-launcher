@@ -97,6 +97,25 @@ describes the cell discretisation, boundary truncation and grid-dependent thresh
 
 ## Original MATLAB references
 
+The reusable read-only prerequisite check is
+`python -m experiments.original_references --audit-matlab --matlab-exe "C:\Program Files\MATLAB\R2026a\bin\matlab.exe"`.
+It reports runtime, Optimization Toolbox licence, helper locations and selected
+C compiler using an automatically removed temporary directory. It never installs,
+selects a compiler, saves a MATLAB path or changes persistent settings.
+
+| Remaining original | Latest evidence (27 October) | Next requirement |
+| :-- | :-- | :-- |
+| top99neo / top3D125 | Author page requires fsparse; helper absent; no selected C compiler; author repository has no binary releases | Owner approval before compiler/helper installation |
+| MMC188 | Published appendix found; original runnable source and mmasub/subsolv absent locally | Obtain identifiable original source and matching MMA helpers; no claim of original-code equality |
+| TOBS101 | Unmodified source errors on removed intlinprog `CutGeneration` option | An explicitly labelled compatibility adaptation or compatible older runtime; ask before runtime changes |
+| Challis HJ/TD | Main publisher source recovered and hashed; author bwdist helper still returns HTML; installed toolbox lacks bwdist/padarray | Obtain working author helpers or approval for toolbox installation |
+| Otomori reaction-diffusion | Author code host remains inaccessible | Obtain identifiable original source |
+
+These are unresolved numerical comparisons, not passed reference checks. The
+compiler decision is pending; no dependencies or MATLAB settings have changed.
+The source checks and read-only runtime audit are complete. Temporary downloads
+are deleted; only provenance/hashes and the reusable audit are retained.
+
 Unmodified author-distributed functions were run with MATLAB R2026a Update 5
 on 27 October 2026. [`tests/references/matlab.json`](../tests/references/matlab.json)
 records commands, source SHA-256 hashes, runtime and observations. The original
