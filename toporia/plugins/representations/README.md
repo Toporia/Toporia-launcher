@@ -240,6 +240,13 @@ Start with Adam `lr=0.01`, or MMA `move=0.005`. Small weight movement can coexis
 with gray material or poor stationarity: inspect the physical field and budget.
 Bounded Adam/MMA benchmarks and their substantial remaining gray fractions are
 recorded in [experiments](../../../experiments/README.md#neural-coordinate-field).
+Convergence now includes physical-density change as well as weight change:
+small global weight steps can cause large density movement, particularly with
+sharp projection. Fixed beta=16 did not cure grayness in the bounded validation;
+smaller final moves reduced oscillation but still produced poor binary designs.
+The experiment reports both changes, budget-limited thresholded physics and a
+finer-grid evaluation of the same learned network without retraining. Its density
+filter radius is scaled in cells to preserve the physical radius on that grid.
 
 ## Writing one
 

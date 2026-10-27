@@ -64,9 +64,13 @@ def test_element_updaters_are_refused_before_running(updater):
     assert solver_problems(method_class(run.solver.method), run)
 
 
-def test_filtered_compliance_and_volume_gradients_through_the_network():
+@pytest.mark.parametrize("beta", [0, 16])
+def test_filtered_compliance_and_volume_gradients_through_the_network(beta):
+    filters = [{"type": "density", "rmin": 1.5}]
+    if beta:
+        filters.append({"type": "heaviside", "beta": beta, "beta_max": beta})
     run = get_run("Cantilever").updated(m=0.2, method="q4+mma", point_loads=[],
-                                       representation={"type": "neural", "width": 4})
+                                       representation={"type": "neural", "width": 4}, filter_specs=filters)
     method = initialized_method(run)
     model = method._model
     z = model.initial_design() + np.random.default_rng(2).normal(0, .05, model.initial_design().size)
@@ -76,3 +80,21 @@ def test_filtered_compliance_and_volume_gradients_through_the_network():
     plus, minus = model.evaluate(z + 1e-4 * direction), model.evaluate(z - 1e-4 * direction)
     assert (plus.objective - minus.objective) / 2e-4 == pytest.approx(actual.objective_gradient @ direction, rel=2e-6)
     assert (plus.volume - minus.volume) / 2e-4 == pytest.approx(actual.volume_gradient @ direction, rel=2e-6)
+
+
+def test_small_weight_steps_do_not_hide_large_projected_physical_motion():
+    run = get_run("MBB Beam").updated(
+        m=0.2, method="q4+mma", tol=0.01, method_params={"move": 0.005},
+        representation={"type": "neural"},
+        filter_specs=[{"type": "density"}, {"type": "heaviside", "beta": 16, "beta_max": 16}])
+    method = initialized_method(run)
+    physical_changes = []
+    for iteration in range(1, 5):
+        before_weights, before_density = method.x.copy(), method.get_density().copy()
+        method.step(iteration)
+        assert np.max(np.abs(method.x-before_weights)) <= 0.005+1e-12
+        physical = float(np.max(np.abs(method.get_density()-before_density)))
+        physical_changes.append(physical)
+        assert method.get_change() >= physical
+    assert max(physical_changes) > run.solver.tol
+    method.close()

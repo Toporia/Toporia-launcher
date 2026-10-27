@@ -300,3 +300,23 @@ to install it personally after Windows refused elevation/write access. The
 agent's installer exited unsuccessfully; it did not add the toolbox or upgrade
 MATLAB. Await owner confirmation before dependent native checks. The existing
 MATLAB source and original golden baselines remain unchanged.
+
+## Stronger neural validation and convergence fix — 27 October 2026
+
+Added optional fixed projection, seed selection, final-stage weight moves,
+independent physical-change reporting, volume-limited thresholded solves and
+finer-grid evaluation of learned weights to the reusable neural recipe.
+Two seeds, two presets and 1000-step caps do not produce useful binary designs:
+89–100% gray cells remain after settling. Coarse budgets are met within 2e-7,
+but finer cantilever volumes exceed the target by up to 8.5e-5. Binary cutoffs
+produce very poor compliance; the README retains the full failure evidence.
+
+Unsettled fixed projection exposed physical changes up to 0.32 while weights
+move only 0.005. The new opt-in representation trait makes neural composed
+methods monitor physical density as well as weights for convergence; existing
+element/other-representation behavior is unchanged. A regression reproduces
+the mismatch and checks the larger change is reported. All 18 neural tests pass,
+including a sharp-projection physical adjoint. This is a stopping correction,
+not a claim that the smooth independent network reproduces original TOuNN.
+The composition/variants/unchanged-golden/self-support group passes 611 cases
+(68 existing third-party warnings); Ruff and whitespace checks pass.

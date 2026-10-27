@@ -113,8 +113,8 @@ class AssembledModel(Model):
         self.lb, self.ub = self.representation.bounds()
         self.volume_limit = scenario.volfrac * n_total
         self.pipeline = DensityFilterPipeline(problem, solver)
-        self.monitor_physical_change = bool(self.pipeline.chain and any(
-            f.calibrate_initial_volume for f in self.pipeline.chain.filters))
+        self.monitor_physical_change = self.representation.monitor_physical_change or bool(
+            self.pipeline.chain and any(f.calibrate_initial_volume for f in self.pipeline.chain.filters))
 
         self.objective = self._response(scenario.objective, OBJECTIVE_ROLE)
         self.constraints = [self._response(spec, CONSTRAINT_ROLE) for spec in scenario.constraints]

@@ -22,6 +22,7 @@ class NeuralField(Representation):
     label = "Neural coordinate field (TOuNN-style)"
     order = 40
     dims = (2, 3)
+    monitor_physical_change = True
     reference = (
         'Independent smooth coordinate-network variant inspired by A. Chandrasekhar and '
         'K. Suresh, "TOuNN: Topology Optimization using Neural Networks", SMO 63 (2021) '
@@ -32,7 +33,8 @@ class NeuralField(Representation):
     advice = (
         "Network weights are the variables. Use Adam with lr around 0.01 or MMA with "
         "a small move (around 0.005). Start with tol=0 and a bounded iteration budget. "
-        "Neural fields can remain gray or get stuck; inspect volume and fine-grid physics."
+        "Sharp projection can need much smaller weight moves. Neural fields can remain gray "
+        "or get stuck; inspect volume, physical change and fine-grid physics."
     )
     params = (
         Param("width", 20, "Neurons per hidden layer", "Controls network capacity, not a certified feature size.",

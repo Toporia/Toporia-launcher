@@ -277,6 +277,36 @@ reference's batch-normalised LeakyReLU/AMSGrad procedure. No original GPL code
 is copied and no PyTorch/JAX dependency is installed. The full chain uses actual
 Q4 solves; the network represents the density, rather than replacing physics.
 
+### Stronger projection and mesh-transfer check
+
+`python -m experiments.neural --iterations 1000 --mesh .5 --updater mma --beta 16 --seed 0 --settle-move .0001`
+runs an intentionally bounded fixed-projection attempt. Repeat with `--seed 1`.
+Beta remains 16; the final 40% of iterations reduce the weight move from 0.005
+to 0.0001. This is a recorded failure case, not a recommended binary-design recipe.
+
+| Seed / preset | Fresh C | Volume | Gray cells | Last physical change | Finer-grid C |
+| :-- | --: | --: | --: | --: | --: |
+| 0 / MBB | 395.93920 | 0.50000002 | 91.00% | 0.0001507 | 399.78818 |
+| 0 / Cantilever | 287.15891 | 0.39999871 | 95.33% | 0.0054584 | 287.66119 |
+| 1 / MBB | 384.52250 | 0.49999973 | 89.00% | 0.0001822 | 389.24750 |
+| 1 / Cantilever | 326.97750 | 0.40000014 | 100.00% | 0.0004257 | 336.59210 |
+
+The same learned weights are evaluated at twice the grid resolution without
+training; filter radius doubles in cells to keep its physical size. Finer-grid
+cantilever volumes are 0.40008499 / 0.40005908: small budget violations remain.
+Volume-limited strict thresholding gives only 20.4–31.7% solid volume and
+compliances of 2.39e8–4.00e9, exposing disconnected/soft-background-dependent
+designs. Neither seed gives useful binary topology or convergence certification.
+
+Without `--settle-move`, seed 0 has physical changes 0.1364 / 0.3208 despite
+weight changes of only 0.005, with 90.3% / 91.3% gray cells. The cantilever
+volume is 0.40290 against 0.4. This exposed a real stopping issue: neural
+representations now opt into physical-change monitoring. The composed method
+reports the larger of variable and physical-density change, preventing tiny
+weight steps from hiding substantial physical motion. This does not turn a
+stationary gray design into a binary optimum. Eighteen focused tests include
+the sharp-projection adjoint and the premature-stopping regression.
+
 <a id="multiresolution-analysis"></a>
 
 ## Multiresolution: coarse analysis, fine density

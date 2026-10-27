@@ -42,6 +42,9 @@ class Representation(ABC):
     schedulable = ()
     #: True when the variables are one density per element (the identity map).
     element_wise = False
+    #: Include physical-density motion in composed-method convergence. Useful
+    #: when nonlinear global parameters amplify small design-variable steps.
+    monitor_physical_change = False
     #: The problem dimensions it works in (2 for plane problems, 3 for a box); None means any.
     dims = (2,)
     #: One sentence of advice on using it (a suitable move limit, say), shown
