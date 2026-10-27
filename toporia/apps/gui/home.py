@@ -38,6 +38,7 @@ class HomePage(QWidget):
         layout.setContentsMargins(28, 22, 28, 20)
         from . import GUI_VERSION
         title = QLabel(f"Toporia · {GUI_VERSION}")
+        self.title = title
         title.setStyleSheet("font-size: 28px; font-weight: 600;")
         layout.addWidget(title)
         layout.addWidget(QLabel("Define a problem. Build a method. Explore the result."))
@@ -46,7 +47,6 @@ class HomePage(QWidget):
                              ("New blank problem", self.blank_requested),
                              ("Import problem…", self.import_requested)):
             button = QPushButton(text)
-            button.setProperty("entryCard", True)
             button.setMinimumHeight(36)
             button.clicked.connect(signal.emit)
             actions.addWidget(button)
@@ -58,13 +58,16 @@ class HomePage(QWidget):
         landing_layout = QHBoxLayout(landing)
         landing_layout.setAlignment(Qt.AlignCenter)
         self.sections.addWidget(landing)
+        self.section_buttons = []
         for text, icon, index in (("Benchmarks", QStyle.SP_DirIcon, 1),
                                   ("Functions", QStyle.SP_FileDialogInfoView, 2)):
             button = QPushButton(text)
+            button.setProperty("entryCard", True)
             button.setIcon(self.style().standardIcon(icon))
             button.setMinimumSize(220, 140)
             button.clicked.connect(lambda _=False, i=index: self.open_section(i))
             landing_layout.addWidget(button)
+            self.section_buttons.append(button)
         library = QWidget()
         self.sections.addWidget(library)
         library_layout = QVBoxLayout(library)
@@ -137,6 +140,9 @@ class HomePage(QWidget):
             card.setVisible(text.casefold() in words)
 
     def refresh_appearance(self):
+        # Qt style sheets can reset explicit widget minima when unpolished.
+        for button in self.section_buttons:
+            button.setMinimumSize(220, 140)
         self._thumbnails_loaded = False
         if self.sections.currentIndex() == 1:
             self.open_section(1)

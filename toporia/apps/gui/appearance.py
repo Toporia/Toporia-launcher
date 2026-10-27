@@ -117,6 +117,13 @@ def apply_appearance(app, mode, *, persist=False):
     app.setPalette(palette)
     if mode == "sleek":
         app.setStyleSheet(SLEEK_STYLE)
+    # Font-only local style sheets can retain an inherited dark palette after
+    # the application sheet is removed. Reset chrome palettes explicitly.
+    for widget in app.allWidgets():
+        widget.setPalette(palette)
+        if widget.styleSheet():
+            widget.style().unpolish(widget)
+            widget.style().polish(widget)
     for window in app.topLevelWidgets():
         if hasattr(window, "refresh_appearance"):
             window.refresh_appearance()

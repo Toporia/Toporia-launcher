@@ -186,12 +186,15 @@ def test_appearance_switch_preserves_configuration_display_data_and_unapplied_ed
         assert window._capture_project().payload() == before
         assert window.problem_editor.fields["x"].value() == pytest.approx(12.3)
         assert window.appearance_actions["sleek"].isChecked()
+        assert all(button.minimumHeight() >= 140 for button in window.home.section_buttons)
     finally:
         window.set_appearance("basic", persist=False)
     assert QApplication.instance().styleSheet() == ""
     assert window.method_view.view.backgroundBrush().color().lightness() > 128
     assert window._capture_project().payload() == before
     assert window.canvas._im.get_cmap().name == "gray"
+    assert window.home.title.palette().color(QPalette.WindowText) == QApplication.instance().palette().color(QPalette.WindowText)
+    assert all(button.minimumHeight() >= 140 for button in window.home.section_buttons)
 
 
 def test_appearance_preference_restores_the_saved_mode(window, tmp_path, monkeypatch):
