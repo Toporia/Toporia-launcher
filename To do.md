@@ -1,5 +1,17 @@
 # TO DO
 
+## GUI v0.2.1 and follow-up
+
+Accepted requirements: [GUI v0.2.1 scope](docs/gui-v0.2.1-scope.md).
+
+- [ ] Implement the accepted v0.2.1 scope and review architecture for estimates.
+- [ ] Future: Basic / Sleek monochrome appearance selector across controls,
+  network and plot surrounds (roughly 1–3 developer days; ordinary Qt styling).
+- [ ] Future: GUI for authoring new computational functions (document the code
+  extension interface first).
+- [ ] Future: coupled solving and combination within optimization iterations.
+- [ ] Future: export version control; additional stress and price statistics.
+
 - [] Make a slicer looking GUI for the mode definition and results
   - [] making it multiple windows one goes through before running
   - [] making like a slicer that the options are on the side and on the top
