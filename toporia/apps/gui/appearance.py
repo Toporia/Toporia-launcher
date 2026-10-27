@@ -13,6 +13,10 @@ QTextEdit, QTextBrowser, QListWidget, QTreeWidget, QGroupBox {
     border: 1px solid #555555; border-radius: 0px;
 }
 QPushButton, QToolButton { padding: 6px 10px; min-height: 22px; }
+QGroupBox { margin-top: 10px; padding-top: 8px; }
+QGroupBox::title {
+    subcontrol-origin: margin; subcontrol-position: top left; padding: 0px 4px;
+}
 QPushButton[entryCard=true] { min-width: 220px; min-height: 140px; }
 QToolButton[helpButton=true] {
     padding: 0px; min-width: 20px; min-height: 20px;
@@ -61,7 +65,7 @@ def themed_icon(original):
                 for y in range(image.height()):
                     source = image.pixelColor(x, y)
                     luminance = (299 * source.red() + 587 * source.green() + 114 * source.blue()) // 1000
-                    shade = int((255 - luminance) * (1 if state == QIcon.Normal else .55))
+                    shade = int((100 + (255 - luminance) * 155 / 255) * (1 if state == QIcon.Normal else .55))
                     image.setPixelColor(x, y, QColor(shade, shade, shade, source.alpha()))
             result.addPixmap(QPixmap.fromImage(image), state)
     return result
