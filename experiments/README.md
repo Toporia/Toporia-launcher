@@ -339,8 +339,9 @@ and [QR-pattern study](https://doi.org/10.1007/s00158-018-2048-6).
 
 ## Minimum-length response: feasible-seed validation
 
-Run `python -m experiments.minimum_length` to write initial/final density,
-`report.json` and `validation.png` to `results/minimum-length-validation/`.
+Run `python -m experiments.minimum_length` to print the report without creating
+files. Add `--out results/minimum-length-validation` explicitly to save initial/final
+density, `report.json` and `validation.png`.
 This exercises the registered geometric response with NLopt MMA on a 24x16
 cantilever, 4 mm solid and void proxy targets and volume 0.5. It explicitly
 seeds a nearly binary straight bar using the identity representation. It uses
@@ -355,6 +356,33 @@ constraints stalled NLopt there, and a 700-step pyMOTO GCMMA continuation on the
 60x20 MBB, 6 mm target, retained a +0.953 solid violation. That run is **not**
 accepted as a feasible result. See the response documentation for discretisation,
 gray-field, exterior-boundary and tolerance limitations.
+
+The stronger check re-evaluates cutoff-0.5 binary fields and repeats each cell
+twice per axis for a 48x32 grid with the same physical 4 mm target. It changes
+no constraint tolerance and performs no finer-grid optimization:
+
+| Feasible-seed final field | C | Volume | Solid residual | Void residual |
+| :-- | --: | --: | --: | --: |
+| Coarse smooth | 111.90787 | 0.500000 | -2.22e-7 | -3.23e-8 |
+| Coarse binary | 116.34435 | 0.500000 | -0.03875 | -0.03875 |
+| Finer smooth | 113.15650 | 0.500000 | +13.86719 | +12.80328 |
+| Finer binary | 117.60605 | 0.500000 | -0.30642 | -0.30642 |
+
+The binary field passes both proxies on both grids. The optimized gray field
+does not transfer feasibility: the nodal tolerance scale tightens with mesh
+resolution and remaining intermediate densities violate it on refinement.
+This is a significant limitation of this calibrated physical-field proxy, not
+an exact continuum size certificate. The optimizer's local smooth gain does not
+survive binarization as an improvement over the original straight-bar concept.
+
+`python -m experiments.minimum_length --start uniform` records the uniform-start
+failure and exits nonzero because it is infeasible. NLopt reports FTOL_REACHED
+after two evaluations, but both coarse residuals remain **+13.87811**; the
+independent feasibility flag is false. On the finer grid they are **+235.54980**.
+Thresholding that exactly gray field produces no material and enormous compliance;
+passing geometric proxies alone therefore says nothing about load-bearing ability.
+All 21 analytical, geometry, adjoint and feasible-seed tests pass. No core response
+formula, numerical baseline or tolerance was changed by this validation.
 
 ## Simulated annealing: evaluated, not registered
 

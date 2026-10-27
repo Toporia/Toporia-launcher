@@ -84,7 +84,12 @@ straight-bar seed avoids the gray-start stall. Compliance decreases from
 residuals are -2.22e-7/-3.23e-8 after 244 NLopt evaluations (246 total FE solves
 including the initial/final checks). This modest local improvement is not a
 penalised SIMP benchmark or evidence of reliable topology creation from a
-uniform start. The script saves the fields, report and comparison figure.
+uniform start. The script prints measurements by default; `--out DIRECTORY`
+explicitly saves fields and a comparison figure. It also re-evaluates binary
+and finer-grid fields. The thresholded straight-bar design passes both proxies
+on both grids, while the smooth field fails after refinement: the calibrated
+nodal tolerance tightens with mesh resolution. Re-check on the actual analysis
+grid; coarse feasibility is not a transferable continuum size certificate.
 
 ### Phase-field regularised compliance
 

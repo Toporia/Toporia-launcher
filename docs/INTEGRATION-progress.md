@@ -320,3 +320,18 @@ including a sharp-projection physical adjoint. This is a stopping correction,
 not a claim that the smooth independent network reproduces original TOuNN.
 The composition/variants/unchanged-golden/self-support group passes 611 cases
 (68 existing third-party warnings); Ruff and whitespace checks pass.
+
+## Stronger minimum-length validation — 27 October 2026
+
+The reusable recipe now prints only unless --out is explicit. It compares the
+existing feasible straight-bar seed and uniform gray start, plus binary and
+2x-grid physical-field re-evaluations at the unchanged 4 mm proxy target.
+The seeded result reproduces C=111.907874 and coarse feasibility. Its binary
+field is feasible on both grids (C=116.34435 / 117.60605), but the smooth field
+fails on refinement with residuals +13.86719 / +12.80328. The mesh-dependent
+nodal tolerance and remaining gray densities prevent transferring feasibility.
+The uniform start stops after two NLopt evaluations with FTOL_REACHED while
+both residuals remain +13.87811; the independent feasible flag is false and
+the CLI exits nonzero. Thresholding uniform gray to empty also shows that
+geometric proxies alone do not ensure load-bearing capability. All 21 tests,
+Ruff and whitespace checks pass. No response formula or tolerance was weakened.
