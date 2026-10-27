@@ -37,6 +37,7 @@ a current-round update containing additions, validation and limitations.
 | `5700fc5` | NumPy smooth TOuNN-style coordinate field with explicit 2-D/3-D backpropagation. |
 | `819a111` | Basic shared-density SINH, effective-volume budget/adjoints and separate reporting. |
 | `124b902` | Scenario-bound fixed-nu Hashin-Shtrikman upper envelope, 2-D/3-D and thermal preflight. |
+| `eef0328` | Three strict original MATLAB reference cases, qualified RBF observation and source/dependency audit. |
 
 Heat conduction, thermal/dynamic pyMOTO models, eigenfrequency, harmonic response,
 local-stress augmented Lagrangian and nonlinear elasticity are already present.
@@ -70,8 +71,11 @@ on the presets' own physics; 70 incompatible combinations were excluded.
 Thermal comparisons measure heat rather than zero mechanical work; vibration
 reports fundamental angular frequency. Preset-recommended methods remain selected.
 
-After machining, the full suite passed: **2363 passed, one optional multigrid test skipped**
-in 27 min 57 sec. Ruff and whitespace checks pass; all 486 local Markdown links resolve.
+Final verification on 27 October: **2655 passed, one optional multigrid test skipped**
+in 36 min 58 sec. Four added external-reference tests pass separately: the current
+collection contains 2660 cases, so all 2659 runnable cases pass. The full run
+reports 95 warnings from third-party pyMOTO/SciPy paths. Ruff and whitespace
+checks pass; all 513 local Markdown file links resolve.
 Generated runs, downloaded papers, scratch scripts/images and caches are removed
 after validation. The implementation, regression tests, reusable research recipes
 and library PDFs remain. The one-off PDF builder is removed as requested.
@@ -222,7 +226,6 @@ Downloaded sources, traces, intermediate fields and PDF builders are removed.
 
 1. Unblock the remaining original-reference cases with local sources and suitable
    dependencies/runtime compatibility; ask before installing or changing runtimes.
-2. Complete final regression verification and remove generated run/scratch files.
 
 Work stays sequential: finish verification, documentation and one commit per
 addition before starting the next. No generated runs or scratch papers are retained.
