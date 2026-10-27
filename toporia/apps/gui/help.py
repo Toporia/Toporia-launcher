@@ -175,6 +175,7 @@ class HelpButton(QToolButton):
     def __init__(self, provider, target=None, parent=None):
         super().__init__(parent)
         self._provider = provider
+        self.setProperty("helpButton", True)
         self.setText("?")
         self.setFixedSize(20, 20)
         self.setAutoRaise(True)

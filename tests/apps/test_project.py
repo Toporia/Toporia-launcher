@@ -33,6 +33,32 @@ def test_problem_export_contains_no_solver_or_results(tmp_path):
     assert load(path, "scenario") == original.scenario
 
 
+def test_workflow_configuration_survives_presentation_reset_and_legacy_migration(tmp_path):
+    from toporia.framework.problem.workflow import optimization
+    tree = optimization("Saved computation")
+    project = Project("Workflow", get_run("MBB Beam"), workflow=tree)
+    project.view = {"method_positions": {"node": [10, 20]}}
+    path = project.save(tmp_path / "workflow.top")
+    loaded = Project.load(path)
+    loaded.view = {}
+    loaded.save()
+    assert Project.load(path).workflow == tree
+    legacy = project.payload()
+    legacy.pop("workflow")
+    legacy["view"]["workflow"] = tree
+    path.write_text(json.dumps(legacy))
+    migrated = Project.load(path)
+    assert migrated.workflow == tree
+    assert "workflow" not in migrated.view
+    migrated.save()
+    assert json.loads(path.read_text())["workflow"] == tree
+    conflicting = migrated.payload()
+    conflicting["view"]["workflow"] = optimization("Different computation")
+    path.write_text(json.dumps(conflicting))
+    with pytest.raises(ValueError, match="Conflicting"):
+        Project.load(path)
+
+
 def test_failed_save_keeps_existing_document_and_location(tmp_path, monkeypatch):
     project = Project("Beam", get_run("MBB Beam"))
     path = project.save(tmp_path / "project.top")

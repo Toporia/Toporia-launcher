@@ -26,6 +26,8 @@ def launch(project_path=None):
     """Start the desktop app and block until its window is closed."""
     app = QApplication(sys.argv)  # one QApplication per process — mandatory
     app.setStyle("Fusion")        # cross-platform look that works on all OS
+    from .appearance import apply_appearance, saved_appearance
+    apply_appearance(app, saved_appearance())
 
     # Force the English locale so all spinboxes use "." as the decimal
     # separator regardless of the operating system's regional settings.

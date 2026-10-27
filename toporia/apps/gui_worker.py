@@ -15,7 +15,6 @@ matplotlib.use("Agg")
 import numpy as np
 
 from toporia.apps.gui.project import Project, _atomic_json
-from toporia.framework.problem.mesh import projection
 
 
 class StopRequested(Exception):
@@ -36,11 +35,15 @@ def execute(project, on_iteration):
     mode = study.get("mode", "Run One")
     callback = {"on_iteration": on_iteration}
     if mode == "Run One":
+        tree = project.workflow
+        if tree and tree["kind"] != "optimization":
+            from toporia.engine.workflow import execute_workflow
+            return execute_workflow(cfg, tree, on_iteration, getattr(on_iteration, "on_stage", None))
         store, density = run_one(cfg, **callback)
         path = Path(cfg.output.dir) / "design.npy"
         np.save(path, density)
         return {"kind": "density", "path": str(path), "folder": str(store.output_dir),
-                "objectives": store.objectives, "iteration": len(store.objectives)}
+                "objectives": store.objectives, "volumes": store.volumes, "iteration": len(store.objectives)}
     if mode == "Check Parts":
         if not check_parts(cfg):
             raise ValueError("One or more selected parts failed their conformance checks")
@@ -113,9 +116,14 @@ def main(path):
     def iteration(density, objectives, number):
         if (folder / "stop.flag").exists():
             raise StopRequested()
-        shown = np.ascontiguousarray(projection(density), dtype="float32")
+        shown = np.ascontiguousarray(density, dtype="float32")
         emit("iteration", shape=shown.shape, density=base64.b64encode(shown.tobytes()).decode("ascii"),
              objectives=objectives, iteration=number)
+
+    def stage(node, run):
+        emit("stage", name=node["name"], objective=run.scenario.objective, max_iter=run.solver.max_iter)
+
+    iteration.on_stage = stage
 
     status = {"mode": "", "status": "running"}
     sys.stdout = Logs()

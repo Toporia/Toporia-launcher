@@ -122,7 +122,8 @@ class SpatialView(QWidget):
             self.plotter = QtInteractor(self, auto_update=False)
             self.layout_box.addWidget(self.plotter.interactor)
             self.placeholder.hide()
-            self.plotter.set_background("#17212b")
+            from .appearance import colours
+            self.plotter.set_background(colours(self)["background"].name())
             self.plotter.iren.add_observer("EndInteractionEvent", lambda *_: self._camera_changed())
             self.draw()
         except (RuntimeError, AttributeError, ValueError) as error:
@@ -148,7 +149,10 @@ class SpatialView(QWidget):
         self.plotter.clear()
         self.actors = {}
         domain = pv.Box(bounds=(0, self.scenario.Lx, 0, self.scenario.Ly, 0, self.scenario.Lz))
-        self.plotter.add_mesh(domain, style="wireframe", color="#748da2", pickable=False, name="domain-boundary")
+        from .appearance import colours
+        colors = colours(self)
+        self.plotter.set_background(colors["background"].name())
+        self.plotter.add_mesh(domain, style="wireframe", color=colors["border"].name(), pickable=False, name="domain-boundary")
         marker = max(self.scenario.Lx, self.scenario.Ly, self.scenario.Lz) * .012
         for obj in self.objects:
             try:
@@ -165,7 +169,7 @@ class SpatialView(QWidget):
         self.plotter.add_axes(interactive=True)
         self.plotter.add_camera_orientation_widget(animate=False)
         self.plotter.show_bounds(grid=False, location="outer", xtitle="X [mm]", ytitle="Y [mm]", ztitle="Z [mm]",
-                                 color="#adc1d3", font_size=10, bold=False, fmt="%.1f")
+                                 color=colors["text"].name(), font_size=10, bold=False, fmt="%.1f")
         if camera is not None:
             self.plotter.camera_position = camera
         else:
@@ -202,6 +206,10 @@ class SpatialView(QWidget):
                                               picker="cell", left_clicking=True, show_message=False, show_point=False)
         self.plotter.render()
 
+    def refresh_appearance(self):
+        if self.plotter is not None and self.scenario is not None:
+            self.draw()
+
     def select(self, identity):
         """Highlight the selected object and attach the built-in translation/rotation gizmo."""
         self.identity = identity
@@ -209,8 +217,9 @@ class SpatialView(QWidget):
             return
         self._remove_gizmo()
         for key, actor in self.actors.items():
+            from .appearance import colours
             actor.prop.line_width = 4 if key == identity else 1
-            actor.prop.edge_color = "white" if key == identity else "#263543"
+            actor.prop.edge_color = colours(self)["accent" if key == identity else "border"].name()
         if identity in self.actors and not self.readonly and self.tool in {"select", "pan"}:
             obj = next(o for o in self.objects if o["id"] == identity)
 

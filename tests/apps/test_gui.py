@@ -334,7 +334,8 @@ def test_post_processors_can_be_switched_on_in_any_combination(window):
     assert cfg.output.postprocess[1]["thickness"] == 2.0
     assert dict(window.pipeline.stages())["Post-processing"] == "Threshold to black and white -> Export solid (STL)"
     window.core.select_method("levelset")                     # any method's design can be post-processed
-    assert not window.post.isHidden() and len(_built(window).output.postprocess) == 2
+    # Legacy processor lists round-trip behind the minimal manual-post UI.
+    assert window.post.isHidden() and len(_built(window).output.postprocess) == 2
     window.post.load_specs([])
 
 

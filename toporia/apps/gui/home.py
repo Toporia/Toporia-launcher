@@ -5,6 +5,7 @@ from matplotlib.figure import Figure
 from PySide6.QtCore import Qt, Signal
 from PySide6.QtGui import QImage, QPixmap
 from PySide6.QtWidgets import (
+    QApplication,
     QFrame,
     QGridLayout,
     QHBoxLayout,
@@ -12,6 +13,8 @@ from PySide6.QtWidgets import (
     QLineEdit,
     QPushButton,
     QScrollArea,
+    QStackedWidget,
+    QStyle,
     QVBoxLayout,
     QWidget,
 )
@@ -33,7 +36,8 @@ class HomePage(QWidget):
         super().__init__(parent)
         layout = QVBoxLayout(self)
         layout.setContentsMargins(28, 22, 28, 20)
-        title = QLabel("Toporia")
+        from . import GUI_VERSION
+        title = QLabel(f"Toporia · {GUI_VERSION}")
         title.setStyleSheet("font-size: 28px; font-weight: 600;")
         layout.addWidget(title)
         layout.addWidget(QLabel("Define a problem. Build a method. Explore the result."))
@@ -42,15 +46,35 @@ class HomePage(QWidget):
                              ("New blank problem", self.blank_requested),
                              ("Import problem…", self.import_requested)):
             button = QPushButton(text)
+            button.setProperty("entryCard", True)
             button.setMinimumHeight(36)
             button.clicked.connect(signal.emit)
             actions.addWidget(button)
         actions.addStretch()
         layout.addLayout(actions)
-        layout.addWidget(QLabel("Benchmark library — open a reference, or copy it to create your own problem."))
+        self.sections = QStackedWidget()
+        layout.addWidget(self.sections, 1)
+        landing = QWidget()
+        landing_layout = QHBoxLayout(landing)
+        landing_layout.setAlignment(Qt.AlignCenter)
+        self.sections.addWidget(landing)
+        for text, icon, index in (("Benchmarks", QStyle.SP_DirIcon, 1),
+                                  ("Functions", QStyle.SP_FileDialogInfoView, 2)):
+            button = QPushButton(text)
+            button.setIcon(self.style().standardIcon(icon))
+            button.setMinimumSize(220, 140)
+            button.clicked.connect(lambda _=False, i=index: self.open_section(i))
+            landing_layout.addWidget(button)
+        library = QWidget()
+        self.sections.addWidget(library)
+        library_layout = QVBoxLayout(library)
+        back = QPushButton("‹ Home")
+        back.clicked.connect(lambda: self.open_section(0))
+        library_layout.addWidget(back, alignment=Qt.AlignLeft)
+        library_layout.addWidget(QLabel("Benchmark library — open a reference, or copy it to create your own problem."))
         self.search = QLineEdit()
         self.search.setPlaceholderText("Find a benchmark, feature or reference…")
-        layout.addWidget(self.search)
+        library_layout.addWidget(self.search)
         scroll = QScrollArea()
         scroll.setWidgetResizable(True)
         scroll.setFrameShape(QFrame.NoFrame)
@@ -65,7 +89,8 @@ class HomePage(QWidget):
             box = QVBoxLayout(card)
             preview = QLabel()
             preview.setAlignment(Qt.AlignCenter)
-            preview.setPixmap(_thumbnail(name))
+            # Render previews only when the benchmark section is opened.
+            preview.setProperty("benchmark", name)
             box.addWidget(preview)
             label = QLabel(name)
             label.setStyleSheet("font-size: 15px; font-weight: 600;")
@@ -75,7 +100,7 @@ class HomePage(QWidget):
             box.addWidget(description)
             source = QLabel(reference)
             source.setWordWrap(True)
-            source.setStyleSheet("color: #81909e; font-size: 11px;")
+            source.setStyleSheet("font-size: 11px;")
             box.addWidget(source)
             box.addStretch()
             open_button = QPushButton("Explore benchmark")
@@ -84,21 +109,48 @@ class HomePage(QWidget):
             grid.addWidget(card, i // 3, i % 3)
             self.cards.append((card, f"{name} {about} {reference}".casefold()))
         scroll.setWidget(holder)
-        layout.addWidget(scroll, 1)
+        library_layout.addWidget(scroll, 1)
         self.search.textChanged.connect(self._filter)
+        from .function_library import FunctionExplorer
+        functions = QWidget()
+        functions_layout = QVBoxLayout(functions)
+        back_functions = QPushButton("‹ Home")
+        back_functions.clicked.connect(lambda: self.open_section(0))
+        functions_layout.addWidget(back_functions, alignment=Qt.AlignLeft)
+        self.explorer = FunctionExplorer()
+        functions_layout.addWidget(self.explorer)
+        self.sections.addWidget(functions)
+        self._thumbnails_loaded = False
+
+    def open_section(self, index):
+        self.sections.setCurrentIndex(index)
+        if index == 1 and not self._thumbnails_loaded:
+            for card, _ in self.cards:
+                for label in card.findChildren(QLabel):
+                    if label.property("benchmark"):
+                        label.setPixmap(_thumbnail(label.property("benchmark")))
+            self._thumbnails_loaded = True
 
     def _filter(self, text):
         """Search descriptions and references as well as benchmark titles."""
         for card, words in self.cards:
             card.setVisible(text.casefold() in words)
 
+    def refresh_appearance(self):
+        self._thumbnails_loaded = False
+        if self.sections.currentIndex() == 1:
+            self.open_section(1)
+
 
 def _thumbnail(name):
     """Render a preset without starting a solver or creating result files."""
-    figure = Figure(figsize=(3.4, 1.5), dpi=80, facecolor="#f5f7fa")
+    from .appearance import colours
+    colors = colours(QApplication.instance())
+    figure = Figure(figsize=(3.4, 1.5), dpi=80, facecolor=colors["background"].name())
     canvas = FigureCanvasAgg(figure)
     axis = figure.add_subplot(111)
-    draw_problem(axis, get_run(name).scenario, "#253341")
+    axis.set_facecolor(colors["background"].name())
+    draw_problem(axis, get_run(name).scenario, colors["text"].name())
     axis.get_legend().remove() if axis.get_legend() else None
     figure.tight_layout(pad=0.4)
     canvas.draw()

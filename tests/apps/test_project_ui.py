@@ -85,6 +85,7 @@ def test_workspace_navigation_and_method_selection_share_actual_controls(window)
         assert window.root_pages.currentWidget() is window.workspace
         assert window.workspace_views.currentIndex() == index
     window.go_to_step(1)
+    window.method_view.enter(window._active_stage + "/physics")
     assert all(len(block.childItems()) == 2 for block in window.method_view.blocks.values())
     node = next(block.node for block in window.method_view.blocks.values() if block.node.kind == "objective")
     original = window.objective.parentWidget()
@@ -174,6 +175,7 @@ def test_unknown_plugin_open_does_not_replace_the_active_document(window, tmp_pa
 def test_numeric_schedule_edits_refresh_the_graph_without_changing_filters(window):
     window._activate_project(Project("Live params", get_run("MBB Beam")))
     window.schedules.load_specs([{"type": "steps", "path": "interpolation.penal", "start": 1., "end": 3., "step": 1., "every": 5}])
+    window.method_view.enter(window._active_stage + "/physics")
     row = window.schedules._rows[0]
     form = row._forms[row._type.currentData()]
     form._editors["end"].setValue(4)

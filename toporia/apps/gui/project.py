@@ -144,6 +144,8 @@ class Project:
     study: dict = field(default_factory=dict)
     view: dict = field(default_factory=dict)
     path: Path | None = field(default=None, compare=False)
+    # Execution structure is configuration, separate from presentation state.
+    workflow: dict | None = None
 
     def __post_init__(self):
         """The editor objects are authoritative inputs, including for headless workers."""
@@ -169,12 +171,15 @@ class Project:
         # Store editor geometry once; __post_init__ compiles it into the Scenario
         # for both the GUI and headless worker. Older files with regions still load.
         scenario = replace(self.run.scenario, regions=None) if self.objects is not None or not include_geometry else self.run.scenario
-        return deepcopy({"kind": "project", "format": FORMAT, "name": self.name,
+        data = {"kind": "project", "format": FORMAT, "name": self.name,
                 "scenario": to_dict(scenario), "solver": to_dict(self.run.solver),
                 "output": {"save_every": self.run.output.save_every,
                            "postprocess": self.run.output.postprocess},
                 "benchmark": self.benchmark, "objects": self.objects if include_geometry else None, "notes": self.notes,
-                "study": self.study, "view": self.view})
+                "study": self.study, "view": self.view}
+        if self.workflow is not None:
+            data["workflow"] = self.workflow
+        return deepcopy(data)
 
     def save(self, path=None):
         """Save atomically and remember the location only after a successful write."""
@@ -189,7 +194,7 @@ class Project:
     def load(cls, path):
         """Recreate all settings; execution output is redirected beside the project."""
         data = _read(path, "project", {"name", "scenario", "solver", "output", "benchmark", "objects",
-                                       "notes", "study", "view"})
+                                       "notes", "study", "view", "workflow"})
         for key, default, expected in (("name", "Untitled", str), ("notes", "", str),
                                        ("study", {}, dict), ("view", {}, dict), ("output", {}, dict)):
             if not isinstance(data.get(key, default), expected):
@@ -197,6 +202,20 @@ class Project:
         if data.get("benchmark") is not None and not isinstance(data["benchmark"], str):
             raise ValueError("Benchmark must be a name or null")
         study, view = data.get("study", {}), data.get("view", {})
+        if "display" in view:
+            from .display_options import validate_display
+            validate_display(view["display"])
+        # Preserve early development snapshots that placed the execution tree
+        # in view state; all new saves give it a dedicated configuration field.
+        if data.get("workflow") is not None and view.get("workflow") is not None and data["workflow"] != view["workflow"]:
+            raise ValueError("Conflicting workflow definitions in configuration and legacy view state")
+        workflow = data.get("workflow") if data.get("workflow") is not None else view.get("workflow")
+        if workflow is not None:
+            from toporia.framework.problem.workflow import nodes, validate_workflow
+            validate_workflow(workflow)
+            if "active_stage" in view and (not isinstance(view["active_stage"], str) or view["active_stage"] not in {node["id"] for node in nodes(workflow) if node["kind"] == "optimization"}):
+                raise ValueError("Active stage must name an optimization function in the workflow")
+            view = {key: value for key, value in view.items() if key != "workflow"}
         if "blank_setup" in view:
             setup = view["blank_setup"]
             limits = {"Lx": (0, 10000), "Ly": (0, 10000), "Lz": (0, 10000),
@@ -233,4 +252,4 @@ class Project:
                   output=Output(dir=path.parent / "results", **output))
         return cls(name=data.get("name", path.stem), run=run, benchmark=data.get("benchmark"),
                    objects=objects, notes=data.get("notes", ""), study=data.get("study", {}),
-                   view=data.get("view", {}), path=path)
+                   view=view, path=path, workflow=workflow)

@@ -6,6 +6,9 @@
 # "from gui import ...".  Here we just re-export the launch function
 # so the top-level gui.py only needs one import line.
 
+GUI_VERSION = "0.2.1"
+
+
 def launch(project_path=None):
     """Load Qt only when launching; headless workers may use project documents."""
     from .app import launch as start

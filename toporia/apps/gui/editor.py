@@ -98,7 +98,8 @@ class ProblemView(QGraphicsView):
         self.setScene(QGraphicsScene(self))
         self.tool = "select"
         self.setRenderHint(QPainter.Antialiasing)
-        self.setBackgroundBrush(QColor("#17212b"))
+        from .appearance import colours
+        self.setBackgroundBrush(colours(self)["background"])
         self.setTransformationAnchor(QGraphicsView.AnchorUnderMouse)
         self.setMouseTracking(True)
         self.setDragMode(QGraphicsView.RubberBandDrag)
@@ -260,7 +261,7 @@ class ProblemEditor(QWidget):
         controls.addWidget(self.domain_form)
         budget_note = QLabel("Material budget is measured against the bounding grid; excluded cells count as empty.")
         budget_note.setWordWrap(True)
-        budget_note.setStyleSheet("color: #91a8ba; font-size: 11px;")
+        budget_note.setStyleSheet("font-size: 11px;")
         controls.addWidget(budget_note)
         controls.addStretch()
         scroll = QScrollArea()
@@ -274,7 +275,6 @@ class ProblemEditor(QWidget):
         layout.addWidget(self.coordinates)
         self.validation = QLabel()
         self.validation.setWordWrap(True)
-        self.validation.setStyleSheet("color: #d9ac6c;")
         layout.addWidget(self.validation)
         self.view.placed.connect(self._place)
         self.view.cursor_position.connect(lambda x, y: self.coordinates.setText(f"X {x:.3f} mm    Y {y:.3f} mm"))
@@ -310,11 +310,13 @@ class ProblemEditor(QWidget):
         self.object_list.clear()
         if self.scenario is not None:
             boundary = QGraphicsRectItem(0, -self.scenario.Ly, self.scenario.Lx, self.scenario.Ly)
+            boundary.setData(0, "domain-frame")
             boundary.setPen(QPen(QColor("#637d91"), 0))
             boundary.setBrush(QColor("#243341"))
             boundary.setZValue(-1)
             scene.addItem(boundary)
             origin = scene.addSimpleText("0,0 · XY [mm]")
+            origin.setData(0, "origin-label")
             origin.setBrush(QColor("#91a8ba"))
             origin.setFlag(QGraphicsItem.ItemIgnoresTransformations)
             origin.setPos(0, 0)
@@ -375,6 +377,19 @@ class ProblemEditor(QWidget):
                           else "Click the XY placement plane to create a shape, then edit XYZ values in the inspector." if three
                           else "Select a tool, then click the canvas. Lines and rectangles use two clicks. Shapes are defined in mm.")
         self._show_inspector()
+        self.refresh_appearance()
+
+    def refresh_appearance(self):
+        from .appearance import colours
+        colors = colours(self)
+        self.view.setBackgroundBrush(colors["background"])
+        for item in self.view.scene().items():
+            if item.data(0) == "domain-frame":
+                item.setPen(QPen(colors["border"], 0))
+                item.setBrush(colors["surface"])
+            elif item.data(0) == "origin-label":
+                item.setBrush(colors["muted"])
+        self.view.viewport().update()
 
     def selected_id(self):
         """Return the selected object's stable identity, independent of list order."""

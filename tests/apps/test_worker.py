@@ -82,3 +82,27 @@ def test_worker_refuses_an_unfinished_blank_project_even_with_runnable_hidden_de
     assert status["status"] == "error"
     assert "initial setup" in status["error"]
     assert not (tmp_path / "design.npy").exists()
+
+
+def test_worker_executes_saved_parallel_functions_before_boolean_export_result(tmp_path):
+    from toporia.framework.problem.workflow import optimization, stage_settings
+    path = snapshot(tmp_path)
+    project = Project.load(path)
+    branches = [optimization("First physics"), optimization("Second physics")]
+    for branch in branches:
+        branch["settings"] = stage_settings(project.run)
+    project.workflow = {"id": "parallel", "name": "Independent physics", "kind": "parallel",
+                                 "operation": "union", "children": branches}
+    project.save()
+    result = subprocess.run([sys.executable, "-m", "toporia.apps.gui_worker", str(path)],
+                            capture_output=True, text=True, timeout=60)
+    assert result.returncode == 0, result.stdout + result.stderr
+    events = [json.loads(line[8:]) for line in result.stdout.splitlines() if line.startswith("TOPORIA ")]
+    assert [event["name"] for event in events if event["event"] == "stage"] == ["First physics", "Second physics"]
+    status = json.loads((tmp_path / "session.json").read_text())
+    assert status["status"] == "finished"
+    assert status["result"]["objectives"] == []
+    assert set(np.unique(np.load(tmp_path / "design.npy"))) <= {0, 1}
+    record = json.loads((tmp_path / "run.json").read_text())
+    assert record["result"]["feasible"] is None
+    assert len(record["workflow"]["stages"]) == 2

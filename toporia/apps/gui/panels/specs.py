@@ -264,7 +264,6 @@ class ConstraintsGroup(SpecListGroup):
         budget.setWordWrap(True)
         self._note = QLabel()
         self._note.setWordWrap(True)
-        self._note.setStyleSheet("color: #a05a00;")
         layout.insertWidget(0, budget)
         layout.insertWidget(1, self._note)
         self._note.hide()

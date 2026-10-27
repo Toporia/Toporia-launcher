@@ -132,8 +132,12 @@ class PipelineGraph(QWidget):
 
     def _box(self, painter, rect, node):
         colour = QColor(KIND_COLOURS.get(node.kind, "#888888"))
+        from PySide6.QtWidgets import QApplication
+        monochrome = QApplication.instance().property("appearance") == "sleek"
+        if monochrome:
+            colour = QColor("#ffffff")
         fill = QColor(colour)
-        fill.setAlpha(110 if node is self._hover else 55)
+        fill.setAlpha(25 if monochrome else 110 if node is self._hover else 55)
         painter.setPen(QPen(colour, 2 if node is self._hover else 1.2))
         painter.setBrush(fill)
         painter.drawRoundedRect(rect, 6, 6)

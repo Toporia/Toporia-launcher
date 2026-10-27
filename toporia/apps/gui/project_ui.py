@@ -55,6 +55,8 @@ class ProjectActions:
             self.file_actions.append(action)
         view = self.menuBar().addMenu("View")
         view.addAction(self.notes_dock.toggleViewAction())
+        from .appearance import add_appearance_menu
+        add_appearance_menu(self, view)
         self.home.open_requested.connect(self.open_project)
         self.home.blank_requested.connect(self.new_blank)
         self.home.import_requested.connect(self.import_problem)
@@ -120,6 +122,7 @@ class ProjectActions:
 
     def _capture_project(self):
         """Snapshot editable inputs; result arrays never enter the project document."""
+        self._store_active_stage()
         return replace(self.project, run=self.current_config(), notes=self.notes.toPlainText() if hasattr(self, "notes") else "",
                        study=self._capture_study())
 
@@ -140,7 +143,8 @@ class ProjectActions:
         """Show the active project and a standard unsaved-change marker."""
         if self._running:
             return
-        self.setWindowTitle(f"{self.project.name}[*] — Toporia")
+        from . import GUI_VERSION
+        self.setWindowTitle(f"{self.project.name}[*] — Toporia GUI {GUI_VERSION}")
         self.setWindowModified(self._is_dirty())
 
     def _maybe_discard(self):
@@ -175,7 +179,14 @@ class ProjectActions:
         """Replace the document and reset result ownership when changing projects."""
         from . import runner
         runner.last_run_folder = None
+        self._result_density = None
+        self._result_config = None
+        self._result_objectives = []
+        self._result_iteration = 0
         self.project = project
+        self._active_stage = project.view.get("active_stage")
+        self.display_options.load(project.view.get("display", {}))
+        self._set_display_options(self.display_options.values())
         self._restore_inspector()
         self.problem_editor.spatial.restore_camera(project.view.get("camera3d"))
         if project.objects is not None:
@@ -184,7 +195,16 @@ class ProjectActions:
             project.objects = project.run.scenario.regions
         self.method_view.positions = project.view.get("method_positions", {})
         self.method_view._signature = None
-        self._populate_run(project.run)
+        tree = self._ensure_workflow()
+        from toporia.framework.problem.workflow import nodes, stage_run
+        stage = next(node for node in nodes(tree) if node["id"] == self._active_stage)
+        self.method_view.context = "root"
+        self._loading_stage = True
+        try:
+            self._populate_run(stage_run(project.run, stage))
+        finally:
+            self._loading_stage = False
+        self._refresh_pipeline()
         if hasattr(self, "notes"):
             self.notes.setPlainText(project.notes)
         self._restore_study(project.study)
@@ -236,6 +256,12 @@ class ProjectActions:
         saved = self._saved_state
         view = {k: v for k, v in self.project.view.items() if k != "blank_setup"}
         project = replace(self._capture_project(), run=Run(scenario=scenario, solver=solver), objects=[], view=view)
+        # Completing onboarding replaces provisional computational defaults with
+        # the explicitly chosen settings. Preserve the workflow and its identity.
+        tree = project.workflow
+        if tree is not None and tree["kind"] == "optimization":
+            from toporia.framework.problem.workflow import stage_settings
+            tree["settings"] = stage_settings(project.run)
         self._activate_project(project)
         self._saved_state = saved  # Creating a domain is an unsaved physical edit.
         self._update_project_title()
@@ -254,7 +280,9 @@ class ProjectActions:
     def show_home(self):
         """Keep the current project in memory while browsing the library."""
         if not self._running:
+            self.home.open_section(0)
             self.root_pages.setCurrentIndex(0)
+            self.navigation_bar.hide()
 
     def open_benchmark(self, name):
         """Open an immutable reference; existing custom work gets a save prompt."""
@@ -292,6 +320,11 @@ class ProjectActions:
             project = Project.load(path)
             from toporia.engine.pipeline import pipeline_parts
             pipeline_parts(project.run)  # Resolve every named plugin before replacing the working document.
+            if project.workflow is not None:
+                from toporia.framework.problem.workflow import nodes, stage_run
+                for node in nodes(project.workflow):
+                    if node["kind"] == "optimization":
+                        pipeline_parts(stage_run(project.run, node))
             self._activate_project(project)
         except (OSError, ValueError, KeyError, TypeError) as error:
             QMessageBox.warning(self, "Cannot open project", str(error))

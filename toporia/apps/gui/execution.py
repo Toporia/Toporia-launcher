@@ -29,6 +29,11 @@ class ExecutionActions:
             return
         cfg = self.current_config()
         issues = problems(cfg, check_mesh=True, mesh_limit=None)
+        self._store_active_stage(cfg)
+        if self.mode.currentText() == "Run One":
+            issues += self._workflow_preflight(cfg)
+        elif self._ensure_workflow()["kind"] != "optimization":
+            issues.append("Composed workflows currently use Run One; parameter studies remain single-workflow-stage operations.")
         if cfg.scenario.regions is not None and self.mode.currentText() == "Compare Load Cases":
             issues.append("Regional loads own their vectors. Compare Load Cases currently edits legacy shared vectors; use separate projects or cases for regional loads.")
         if issues:
@@ -53,6 +58,9 @@ class ExecutionActions:
         self._running, self._stop = True, False
         self.log.clear()
         self.canvas.reset()
+        self._pending_iteration = None
+        self._stage_objective_label = self._objective_label(cfg)
+        self.canvas.set_display(self.display_options.values(), self._objective_label(cfg))
         self.go_to_step(2)
         self.run_status.setText("Starting…")
         self.run_progress.setMaximum(cfg.solver.max_iter)
@@ -85,7 +93,7 @@ class ExecutionActions:
         for button in self._step_buttons.buttons():
             button.setEnabled(enabled)
         self._back_btn.setEnabled(enabled and self.current_step() > 0)
-        self._next_btn.setEnabled(enabled and self.current_step() < 3)
+        self._next_btn.setEnabled(enabled and self.current_step() < self._pages.count() - 1)
         self.config_combo.setEnabled(enabled)
 
     def stop_execution(self):
@@ -117,19 +125,50 @@ class ExecutionActions:
         event = message["event"]
         if event == "log":
             self._log(message["text"])
+        elif event == "stage":
+            from toporia.plugins.responses import RESPONSES
+            self._display_timer.stop()
+            self._pending_iteration = None
+            self.canvas.reset()
+            self._stage_objective_label = RESPONSES.get(message["objective"].get("type", "compliance")).label
+            self.canvas.set_display(self.display_options.values(), self._stage_objective_label)
+            self.run_progress.setMaximum(message["max_iter"])
+            self.run_progress.setValue(0)
+            self._log(f"[Function] {message['name']} · {self._stage_objective_label}")
         elif event == "iteration":
             density = np.frombuffer(base64.b64decode(message["density"]), dtype="float32").reshape(message["shape"])
             if message["iteration"] <= self.run_progress.value():
                 self.canvas.reset()
-            self.canvas.refresh(density, message["objectives"], message["iteration"])
+            number = message["iteration"]
+            self.canvas._volumes[number] = float(density.mean())
+            options = self.display_options.values()
+            if options["live"] and (number == 1 or number % options["interval"] == 0):
+                self._pending_iteration = (density, message["objectives"], number)
+                if not self._display_timer.isActive():
+                    self._display_timer.start()
             self.run_progress.setValue(message["iteration"])
-            self.run_status.setText(f"Iteration {message['iteration']} · material {density.mean():.1%}")
+            stats = []
+            if options["iteration"]:
+                stats.append(f"Iteration {number}")
+            if options["volume"]:
+                stats.append(f"Volume fraction {density.mean():.1%}")
+            if options["objective"] and message["objectives"]:
+                stats.append(f"{self._stage_objective_label}: {message['objectives'][-1]:.5g}")
+            self.run_status.setText(" · ".join(stats) or "Running")
         elif event in {"result", "stopped", "error"}:
+            self._display_timer.stop()
+            self._pending_iteration = None
             self._terminal_event = event
             if event == "result":
                 self._show_result(message, self._run_config.solver.m)
             elif event == "error":
                 self._log(message["text"])
+
+    def _draw_pending_iteration(self):
+        """Coalesce bursts of worker events to one Qt-thread frame."""
+        pending, self._pending_iteration = self._pending_iteration, None
+        if pending is not None and self.display_options.values()["live"]:
+            self.canvas.refresh(*pending)
 
     def _show_result(self, result, resolution):
         """Own only finished single-run results; studies display their result image."""
@@ -138,11 +177,33 @@ class ExecutionActions:
         if result["kind"] == "density":
             density = np.load(result["path"], allow_pickle=False)
             runner.last_run_folder = Path(result["folder"])
+            from toporia.framework.problem.files import from_dict
+            from toporia.framework.problem.run import Run
+            from toporia.framework.problem.scenario import Scenario
+            from toporia.framework.problem.solver import Solver
+            record = json.loads((runner.last_run_folder / "run.json").read_text(encoding="utf-8"))
+            self._result_config = Run(scenario=from_dict(Scenario, record["scenario"]["definition"]),
+                                      solver=from_dict(Solver, record["solver"]["definition"]))
+            self._result_density = density.copy()
+            self._result_objectives = result.get("objectives", [])
+            self._result_iteration = result.get("iteration", 0)
+            self.post_progress.setMaximum(result.get("max_iterations", self._result_config.solver.max_iter))
+            self.post_progress.setValue(self._result_iteration)
+            self._result_objective_label = result.get("objective_label") or self._objective_label(self._result_config)
             for canvas in (self.canvas, self.post_canvas):
                 canvas.reset()
+                canvas.set_display(self.display_options.values(), self._result_objective_label)
+                canvas._volumes = {i + 1: value for i, value in enumerate(result.get("volumes", []))}
                 canvas.refresh(density, result.get("objectives", [0]), result.get("iteration", 0))
                 if density.ndim == 3:
                     canvas.show_3d(density, 1 / resolution, self._log)
+            current = runner.last_run_folder / "post" / "current_design.npy"
+            if current.exists():
+                processed = np.load(current, allow_pickle=False)
+                if processed.shape != density.shape or not np.isfinite(processed).all():
+                    raise ValueError("Saved processed result has an invalid shape or values")
+                self._result_density = processed
+                self._draw_current_result(processed=True)
         elif result["kind"] == "image":
             for canvas in (self.canvas, self.post_canvas):
                 canvas.show_grid(result["path"], self.mode.currentText())
@@ -175,8 +236,8 @@ class ExecutionActions:
         except (OSError, ValueError) as error:
             self._log(f"Could not persist the final session log: {error}")
         if status == "Finished":
-            self.run_progress.setMaximum(100)
-            self.run_progress.setValue(100)
+            # Actual iteration count remains comparable with the configured limit.
+            self.run_progress.setValue(self._result_iteration or self.run_progress.value())
         self.run_status.setText(status + " · " + str(self._run_folder))
         self._refresh_export_buttons()
         self._refresh_run_history()
