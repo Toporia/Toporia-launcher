@@ -1,7 +1,9 @@
-# Project GUI
+# Project GUI v0.2.1
 
-Launch `python main.py` from this checkout. Home offers a sourced benchmark
-library, a blank physical definition, and project/problem import.
+Launch `python main.py` from this checkout. Home has two entry cards:
+**Benchmarks** (the sourced reference library) and **Functions** (the registry-backed
+encyclopedia). Open/new/import actions remain nearby; benchmark previews load
+only when their section is opened.
 Use `python main.py --project path/to/project.top` to open a project directly.
 The local `.venv` includes the optional spatial editor dependencies. On Windows,
 use `.venv\Scripts\python.exe main.py` for the full 3D viewport. For a fresh
@@ -10,7 +12,9 @@ environment, install `pip install -e ".[dev,3d,gui3d]"` first.
 ## Files
 
 - `.top`: readable JSON with the scenario, solver, output options, notes, study
-  selections and diagram arrangement. It contains no computed result arrays.
+  selections, a separate workflow configuration, and diagram/display state.
+  It contains no computed result arrays. Earlier development snapshots with a
+  workflow inside view state migrate without discarding the network.
 - `.pro`: independently reusable physical problem and editor objects.
 - A project's `results/` contains one new folder per run. `input.top` is the
   exact submitted configuration; `session.json` records its status. Finished
@@ -110,18 +114,63 @@ regions can be solved without a renderer.
 
 ## Method
 
-The main canvas displays the supported optimisation pipeline. Select a block to
-show its actual generated parameter controls on the left. Dragging boxes changes
-the diagram arrangement, not computation. Wheel zooms, dragging empty space pans,
-and Fit/Reset layout restore a readable view.
+The top network contains the operating space, an optimization/composition
+function, and a mandatory terminal export function. Click a container to make
+its local network fill the workspace. **Parent** and **Workflow** navigate out;
+the top and bottom contracts explain incoming data and expected output.
+Optimization functions contain design representation, filters, physics calculation,
+updater and convergence. Physics contains material law, physics, objective and
+constraints. Select a computational leaf to open its actual parameter controls
+in a contextual window; select it again or close the window to dismiss it.
 
-Filters execute in their listed order. Use ↑/↓ in Filters to reorder them;
-schedules, variants and study paths continue to refer to the same filter. General
-graph rewiring is intentionally reserved for a later implementation.
+The function library offers compatible insertions for the current network.
+Double-click a library item or select it and press **Insert selected**. The
+filter-chain network offers installed filters compatible with the problem's
+dimension. Select a filter block to edit/reorder/remove filters. Schedules,
+variants and study paths continue to refer to the same reordered filter.
+Other method selectors show one representative current method for this release;
+existing saved method selections remain readable. The initial problem editor
+retains its available choices.
 
-## Runner and Post & Export
+Dragging boxes changes their saved presentation, not computation. Arrowheads
+follow the terminal connector direction after movement. Wheel zooms, dragging
+empty space pans, and Fit/Reset layout restore a readable view. Computation notes
+are collapsed by default. **?** opens contextual explanations; Home > Functions
+contains plugin descriptions, parameters, references, placement and independent
+infrastructure. See [function development](gui-function-development.md) to add
+methods in code; GUI authoring is future work.
 
-Run first saves the project, validates inputs, and launches an independent
+### Composition
+
+At Workflow level, insert **Sequential stage** or **Parallel branch** to wrap
+the existing function and add another optimization. Inside a composition,
+insert optimizations or nested sequential/parallel functions. Each optimization
+stores independent solver, objective, material budget and load-case settings.
+Select/open that optimization before editing its local computational functions.
+The operating domain, physical supports/load positions and mesh remain shared.
+
+- Sequential connections include an explicit previous-volume transformation:
+  density >= 0.5 becomes the next stage's allowed material domain. The next
+  stage cannot reintroduce material outside it. Its volume budget is relative
+  to that allowed volume. Initial restriction supports composed methods with
+  element densities and no variants; incompatible stages are refused in preflight.
+- Parallel branches receive the same input domain and finish independently.
+  They are scheduled consecutively to limit peak memory, then combined. They
+  do not exchange data every iteration. Select union, intersection, or difference
+  in the composition's library. Difference means first branch minus all others;
+  all Boolean operations cut completed densities at 0.5 on the shared mesh.
+- Every pipeline has terminal export. Boolean results have no single evaluated
+  physical objective or proven feasibility; individual stage provenance remains
+  available. Coupled physics and combination during iterations are future work.
+
+Networks and the selected optimization are saved in the `.top` document. Each
+workflow stage writes its exact design, numerical provenance and history in a
+separate subfolder. Restricted stages also save `allowed_domain.npy`.
+
+## Runner, Post-process and Export
+
+**Run appears only in step 3 (Runner).** It first saves the project, validates
+inputs, and launches an independent
 headless process from the immutable snapshot. Inputs are frozen until completion;
 the interface, plots and console remain responsive. Stop requests interruption
 after the current numerical iteration; it cannot interrupt a native sparse solve
@@ -132,14 +181,43 @@ loss is shown as unfinished. Starting another run always creates a fresh folder.
 The application can reopen its saved inputs; it does not yet resume optimizer
 internal state from the middle of an iteration.
 
-Post & Export applies the selected post-processors to a completed single result,
-without reoptimising. Result ownership resets on project changes. Regional
+**Display options** controls live updates (on/off), update interval (default 1),
+visibility of volume fraction/iteration/objective values, and optional graphs.
+The objective is named explicitly. Its graph is on by default; the volume graph
+and iteration progress bar are off by default. Iteration progress uses the actual
+maximum iteration count rather than pretending early convergence reached that
+limit. Burst updates are coalesced into Qt frames. Volume fraction is measured
+against the original rectangular mesh, as in the existing numerical engine.
+
+**Post-process (step 4)** initially offers one manually executed operation:
+density < 0.5 becomes 0, density >= 0.5 becomes 1. Executing it refreshes the figure
+immediately and saves `post/current_design.npy`. Objective values/curves are
+explicitly labeled as source-run values that have not been re-evaluated.
+
+**Export (step 5)** writes the current processed result (or the original result
+when no operation was applied) to a chosen folder. STL, 2D SVG/DXF and NumPy
+density exports are available. The format exporters put files under the chosen
+folder's `post/` subfolder; NumPy writes `design.npy` directly. Export preserves
+the displayed Boolean geometry even if it removed a region fixed in an input.
+Export version control is future work. Legacy saved automatic postprocessor lists
+remain compatible but are not the manual post-processing UI.
+
+Result ownership resets on project changes. Regional
 definitions cannot use the legacy Compare Load Cases editor yet: its shared
 magnitude/angle controls do not describe independent regional vectors. Other
 existing compatible studies remain available.
 
 ## Development handoff
 
-`docs/gui-plan.md` is the linear implementation checklist and validation log.
-Each completed milestone has its own commit on GUI. No integration or launcher
-checkout is modified, and numerical golden baselines are not regenerated.
+`docs/gui-v0.2.1-scope.md` is the current implementation checklist; `gui-plan.md`
+records the earlier GUI work. v0.2.1 lives on `gui-v0.2.1`. No integration or
+launcher checkout is modified, and numerical golden baselines are not regenerated.
+View > Appearance selects **Basic** or **Sleek monochrome**, and remembers the
+choice for the next launch. Basic uses plain Qt controls. Sleek uses black
+surfaces, white text/icons and thin borders, including network/editor backgrounds
+and plot surrounds. Physical support/load colors and scientific result data keep
+their meaning. Switching appearance preserves configuration, live result data,
+network positions and unapplied editor inputs. It uses ordinary styling with no
+blur, animated effects or custom shader pipeline.
+For density images, solid is dark in Basic and white in Sleek so it remains
+visible against the surrounding background; the density values do not change.

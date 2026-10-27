@@ -4,13 +4,20 @@
 
 Accepted requirements: [GUI v0.2.1 scope](docs/gui-v0.2.1-scope.md).
 
-- [ ] Implement the accepted v0.2.1 scope and review architecture for estimates.
-- [ ] Future: Basic / Sleek monochrome appearance selector across controls,
-  network and plot surrounds (roughly 1–3 developer days; ordinary Qt styling).
+- [x] Implement the accepted v0.2.1 scope and review architecture for estimates.
+- [x] Current v0.2.1: Basic / Sleek monochrome appearance selector across controls,
+  network and plot surrounds (moved into current scope by the user).
 - [ ] Future: GUI for authoring new computational functions (document the code
   extension interface first).
 - [ ] Future: coupled solving and combination within optimization iterations.
 - [ ] Future: export version control; additional stress and price statistics.
+- [ ] Future: expose additional integrated computational methods in the GUI library.
+- [ ] Future: expand function explanations and references with researcher input.
+
+## Earlier backlog
+
+Historical entries are retained for traceability; current GUI completion status
+is recorded in the versioned scope and GUI implementation plans above.
 
 - [] Make a slicer looking GUI for the mode definition and results
   - [] making it multiple windows one goes through before running

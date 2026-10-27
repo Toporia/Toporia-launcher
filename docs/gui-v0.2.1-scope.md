@@ -1,8 +1,8 @@
 # GUI v0.2.1 — accepted scope
 
 Source: user discussion and clarifications, 27 October 2026. This records
-requirements, not completed implementation. It supersedes conflicting earlier
-GUI design assumptions. Implementation/code review follows scope capture.
+requirements and implementation checkpoints. It supersedes conflicting earlier
+GUI design assumptions.
 
 ## Interface and navigation
 
@@ -64,7 +64,7 @@ GUI design assumptions. Implementation/code review follows scope capture.
 - Maximum local stress and price are future statistics; the user's example
   price model is scaled volume fraction plus an initial offset.
 
-## Future appearance task
+## Appearance (added to current scope)
 
 - Add a persistent appearance selector: Basic and Sleek monochrome.
 - Basic: plain, inexpensive Qt controls, minimal decoration, no animated effects.
@@ -77,8 +77,13 @@ GUI design assumptions. Implementation/code review follows scope capture.
 - Preliminary source review: app.py sets Qt Fusion; method_view.py has hardcoded
   scene colors; canvas.py styles plot backgrounds separately. A complete switch
   needs coordinated styling and visual verification across workspaces.
-- Rough effort: 1–3 developer days; defer to future to-do list as requested for
-  larger appearance work. This is an estimate, not a measured performance claim.
+- The user moved both appearance modes into current implementation after the
+  initial deferral. View > Appearance changes the application-wide setting;
+  it persists independently of projects. Basic uses plain Qt Fusion controls;
+  Sleek uses black backgrounds, white chrome/text/icons and thin borders.
+- Controls, network scenes, 2D editor chrome, optional 3D viewport chrome,
+  benchmark preview backgrounds and embedded plot surrounds share the mode.
+  Physical support/load colors and scientific result data retain their meaning.
 
 ## Implementation checkpoints
 
@@ -87,15 +92,67 @@ The user authorized implementation with "GO" on 27 October 2026. Earlier
 gui-plan.md checkpoints describe v0.2 and remain historical context.
 
 - [x] Capture accepted scope, create version branch and confirm Run placement.
-- [ ] Simplify Home, build registry-backed Function Explorer and fix Run placement.
-- [ ] Contextual method controls, nested network navigation/library and arrows.
-- [ ] Separate post-processing/export and refresh manually processed results.
-- [ ] Selectable statistics/graphs and configurable live display updates.
-- [ ] Executable sequential/parallel composition with Boolean combination.
-- [ ] Persistence, documentation, regression and visual verification.
+- [x] Simplify Home, build registry-backed Function Explorer and fix Run placement.
+- [x] Contextual method controls, nested network navigation/library and arrows.
+- [x] Separate post-processing/export and refresh manually processed results.
+- [x] Selectable statistics/graphs and configurable live display updates.
+- [x] Executable sequential/parallel composition with Boolean combination.
+- [x] Basic / Sleek monochrome appearance switch, persistence and verification.
+- [x] Persistence, documentation, regression and visual verification.
 
-Other defaults above are implementation assumptions where exact details were
-not specified. Detailed architecture review is still needed before revising
-the overall implementation estimate. The existing graph is a read-only
-description of a Run, not yet an execution graph: composition needs an explicit
-validated execution contract, not only additional graphical connections.
+## Architecture review and implementation notes
+
+The earlier graph described a fixed Run rather than driving execution. v0.2.1
+adds an explicit validated workflow tree, independent stage settings, shared
+physical-domain/mesh contracts, nested navigation and a headless executor.
+Workflow configuration has its own project field, separate from view state;
+legacy development snapshots migrate without discarding the execution tree.
+
+Sequential restriction uses actual problem void bounds and a material budget
+relative to the allowed preceding volume. Initial restriction supports composed
+methods with element densities and no variants. Empty/invalid domains are
+refused, and unsupported restricted stages are identified before execution.
+The mesh remains shared; arbitrary remeshing/transfers are outside this version.
+
+Parallel branches are independent in their data flow and scheduled consecutively
+to bound peak memory. Their completed results are combined at 0.5. Union,
+intersection and first-minus-others difference are implemented. Boolean output
+is not claimed to have a single evaluated objective or proven feasibility.
+Each stage keeps separate exact density/provenance/history files.
+
+Nested composition is typed and acyclic; arbitrary free rewiring/cycles are not
+enabled. This provides the requested simple initial framework without implying
+that any visually drawn connection can compute. Function creation remains a
+documented plugin extension path, with GUI authoring on the future list.
+
+The prior 20–40 developer-day estimate was a pre-inspection planning range, not
+a measured duration. Core v0.2.1 implementation is now present; the substantial
+remaining items are the separately deferred authoring interface, coupled
+physics, export version control and integration of additional computational
+methods. See gui-workflow.md and gui-function-development.md for usage/contracts.
+
+## Validation record
+
+- Initial applications/engine/golden regression: 288 passed.
+- Full suite: 650 passed, 1 skipped; 8 checks failed exclusively while cleaning
+  temporary directories in the Windows sandbox's system-temp location.
+- Re-ran all 8 affected postprocessor/guide checks with TEMP/TMP in the workspace:
+  all 8 passed. No numerical baselines were changed to resolve those failures.
+- Final applications/engine/golden regression after appearance integration:
+  **295 passed**. This includes real Qt worker processes, saved nested workflows,
+  actual sequential solves and domain-mask enforcement, Boolean operations,
+  processed-array and STL export ownership, contextual click/reopen behavior,
+  project migration and appearance persistence/data preservation.
+- The last focused appearance round-trip check passed both tests, including
+  dark/light density contrast without changing the underlying density array.
+- Final focused v0.2.1 interaction/appearance/export smoke check: **9 passed**.
+- Ruff passed for all changed Python source/test files; git diff --check passed.
+- Offscreen visual review covered Home, Function Explorer, root/nested/parallel
+  networks, Runner, Post-process, Export and processed results in both modes.
+  Windows fonts were loaded explicitly because the offscreen plugin otherwise
+  exposes no font families on this host. Live GPU rendering of the optional VTK
+  viewport was not exercised by those offscreen captures.
+
+Local visual previews are in results/v021-previews/ (ignored generated outputs).
+For conformance checks in this sandbox, set process-local TEMP and TMP to an
+existing directory under results/ and use pytest --basetemp=results/<unique-name>.
