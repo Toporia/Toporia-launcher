@@ -38,4 +38,8 @@ class Volume(Response):
 
     def evaluate(self, state, gradient=True):
         density = state.density
+        material = getattr(self.physics, "material", None)
+        if material is not None and material.nonlinear_volume:
+            return ResponseValue(float(np.sum(material.volume_density(density))),
+                                 material.volume_slope(density) if gradient else None)
         return ResponseValue(float(np.sum(density)), np.ones_like(density, dtype=float) if gradient else None)

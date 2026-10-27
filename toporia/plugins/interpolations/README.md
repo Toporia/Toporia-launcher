@@ -15,7 +15,7 @@ the GUI's **Material law** panel. Any physics engine that declares `uses_interpo
 (the Q4 engine does) takes it; models that bring their own (pyMOTO) or none (the level
 set) ignore it, and the Pipeline box says so.
 
-**Status: 3 in Toporia · 0 with open code · 3 paper only**
+**Status: 4 in Toporia · 0 with open code · 2 paper only**
 
 | Label | Meaning |
 | :-- | :-- |
@@ -30,6 +30,7 @@ set) ignore it, and the Pipeline box says so.
 | ✅ SIMP | [`simp.py`](simp.py) | `simp` | ρ^p (p = 3) | Bendsøe, *Struct. Optim.* 1989 |
 | ✅ RAMP | [`ramp.py`](ramp.py) | `ramp` | ρ / (1 + q(1 − ρ)) (q = 8) | Stolpe & Svanberg, *SMO* 2001 |
 | ✅ Ordered SIMP | [`ordered_simp.py`](ordered_simp.py) | `ordered_simp` | piecewise t^p between ordered materials | Zuo & Saitou, *SMO* 2017 |
+| ✅ Basic SINH, shared-density variant | [`sinh.py`](sinh.py) | `sinh` | linear stiffness; effective volume `1-sinh(p(1-rho))/sinh(p)` | Bruns, *SMO* 2005, Table 2 case 5 |
 
 RAMP's slope at ρ = 0 is (E0 − Emin)/(1 + q), where SIMP's is zero: a void element still
 feels a sensitivity, which design-dependent loads (pressure, self-weight) need. Compare
@@ -40,7 +41,6 @@ method with each law.
 
 | Law | Reference | What it adds |
 | :-- | :-- | :-- |
-| 📄 SINH (needs a framework change: the volume response must take a law, see below) | Bruns, *SMO* 30 (2005) 428–436 | Penalises the *volume* instead of the stiffness (a sinh law on the density), with consequences for filtering and for what counts as solid. |
 | 📄 Hashin–Shtrikman-bound laws (needs ν, which the interface does not receive, see below) | Bendsøe & Sigmund, *Arch. Appl. Mech.* 69 (1999) 635–654 | Shows when a power law corresponds to a physically realisable composite (p large enough for the Poisson's ratio); the bounds themselves as an interpolation. |
 | 📄 Discrete material optimisation (DMO) | Stegmann & Lund, *IJNME* 62 (2005) 2009–2027 | Several candidate materials per element, each with its own weight: the classic multi-material law. Needs one design variable per material — a design representation with several fields. |
 
@@ -72,13 +72,45 @@ in the solver JSON, the **Material law** picker in the GUI, or
 toporia run "MBB Beam" --set method=q4+oc --set interpolation.type=ordered_simp --set interpolation.n_materials=3
 ```
 
+## SINH: effective volume rather than stiffness penalisation
+
+Bruns' [equations 22-23](https://doi.org/10.1007/s00158-005-0537-x) define
+`eta1=rho`, `eta2=1-sinh(p*(1-rho))/sinh(p)`. Stiffness is linear between Emin
+and E0, while the budget constrains `sum(eta2)`, whose derivative is
+`p*cosh(p*(1-rho))/sinh(p)`. The p=0 limit is linear stiffness and volume.
+`p` defaults to 3 and is schedulable as `interpolation.penal`.
+
+The implemented shared-density variant uses the same filtered field in both
+measures: Table 2 case 5 with a density filter, case 4 without filters. The
+paper's basic case 6 filters only the resource field; that separate-filter
+formulation and hybrid SINH are not included. Shared filtering can retain diffuse
+gray boundaries. No claim is made to reproduce the paper's case-6 topologies.
+
+The interpolation interface now supplies `volume_density` and `volume_slope`,
+with identity defaults preserving existing laws. Assembled models apply the
+selected cost to evaluation, cheap updater bisections and volume objectives,
+and carry its derivative through the filters and representation. Element-density
+starts are calibrated to the effective budget. Passive solids cost one and voids
+cost zero. Other representations may start over budget and rely on the updater.
+
+Geometric density remains the displayed field and the usual `volume` history/
+study column. `effective_volume_fraction` is reported on the actual current
+design; limit checks use it and label the effective budget explicitly. Compare
+Methods adds `effective_volume` and keeps the common SIMP p=3 referee. SINH's
+linear-stiffness objective and that referee measure different material models.
+Intermediate effective cost is not true geometric volume, mass or a certified
+homogenised composite. Smooth and binary volumes coincide only at 0/1.
+
+```sh
+toporia run "MBB Beam" --set method=q4+mma --set interpolation.type=sinh --set interpolation.penal=3 --set method.move=0.05 --set max_iter=300 --set tol=0
+```
+
+GUI: choose **SINH (linear stiffness, penalised volume)** in Material law.
+`python -m experiments.material_laws` prints bounded fresh final checks; see
+[measured results](../../../experiments/README.md#sinh-effective-volume).
+
 ## Not done, and why
 
-- **SINH** (Bruns, *SMO* 30 (2005) 428–436, [doi:10.1007/s00158-005-0543-3](https://doi.org/10.1007/s00158-005-0543-3)):
-  it penalises the *volume* (mass) with a sinh law while stiffness stays linear. An
-  `Interpolation` only maps ρ to stiffness, and the volume response measures Σρ without
-  asking any law. Implementing "stiffness linear" alone would be SIMP with p = 1, not SINH,
-  so it is left out until the volume response can take an interpolation.
 - **Hashin–Shtrikman bound law** (Bendsøe & Sigmund, *Arch. Appl. Mech.* 69 (1999) 635–654,
   [doi:10.1007/s004190050248](https://doi.org/10.1007/s004190050248)): the bound depends on
   Poisson's ratio ν, but `stiffness(density, E0, Emin)` receives only E0 and Emin, not the

@@ -192,6 +192,10 @@ def _run_method(name, base_config, folder, on_iteration):
     start = time.perf_counter()
     store, density = run_single_with_store(run, on_iteration)
     final = {key: values[-1] for key, values in store.responses.items()}
+    # The study's geometric volume stays comparable across methods; SINH also
+    # exposes the effective volume actually constrained by its optimiser.
+    if "effective_volume_fraction" in final:
+        row["effective_volume"] = final["effective_volume_fraction"]
     row.update(table_metrics(store.postprocess))     # e.g. threshold.compliance, the same for every method
     if "output_displacement" in final:
         row["output_displacement"] = final["output_displacement"]

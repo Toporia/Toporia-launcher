@@ -24,7 +24,7 @@ A test (`tests/apps/test_gui.py`) fails if a part ever stops being reachable fro
 | **Wraps** | Calls an outside Python package. That package is installed separately. Parts whose package is missing are greyed out in the app, with the install command. |
 | **Own** | Toporia's own idea or standard practice. |
 
-## In the library today: 86 selectable parts and 17 benchmark problems
+## In the library today: 87 selectable parts and 17 benchmark problems
 
 The selectable parts include models and whole methods; their nine underlying
 physics engines are counted separately in the [catalogue totals](README.md).
@@ -65,6 +65,7 @@ physics engines are counted separately in the [catalogue totals](README.md).
 | :-- | :-- | :-- | :-- | :-- |
 | SIMP (power law) | `simp` | [simp.py](interpolations/simp.py) | Paper | Bendsøe 1989 · [paper](https://doi.org/10.1007/BF01650949) |
 | RAMP (rational) | `ramp` | [ramp.py](interpolations/ramp.py) | Paper | Stolpe & Svanberg 2001 · [paper](https://doi.org/10.1007/s001580100129) |
+| SINH (shared-density variant) | `sinh` | [sinh.py](interpolations/sinh.py) | Paper | Bruns 2005, eqs. 22-23, Table 2 case 5: linear stiffness and effective-volume cost · [paper](https://doi.org/10.1007/s00158-005-0537-x) |
 | Ordered SIMP (multi-material) | `ordered_simp` | [ordered_simp.py](interpolations/ordered_simp.py) | Paper | Zuo & Saitou, *SMO* 2017 · [paper](https://doi.org/10.1007/s00158-016-1513-3) |
 
 ### Physics models: what computes displacements and gradients ([folder](models/README.md), elements in [physics/](physics/README.md))
@@ -207,7 +208,7 @@ Listed from least to most effort. "Code" means open code exists (port it, or che
 
 | What | Source |
 | :-- | :-- |
-| SINH and Hashin–Shtrikman material laws | Paper: Bruns 2005; Bendsøe & Sigmund 1999 (the material law has to see the volume and Poisson's ratio) · papers [1](https://doi.org/10.1007/s00158-005-0537-x) [2](https://doi.org/10.1007/s004190050248) |
+| Hashin–Shtrikman material law | Paper: Bendsøe & Sigmund 1999 (the material law has to see Poisson's ratio) · [paper](https://doi.org/10.1007/s004190050248) |
 
 ### Large: the framework has to change first
 

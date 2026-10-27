@@ -153,11 +153,11 @@ def check_limits(scenario, responses):
     did not report is listed with "satisfied": None rather than guessed.
     """
     report = []
-    volume = responses.get("volume")
+    volume = responses.get("effective_volume_fraction", responses.get("volume"))
     if volume is not None:
         report.append(
             {
-                "name": "volume budget",
+                "name": "effective volume budget" if "effective_volume_fraction" in responses else "volume budget",
                 "value": float(volume),
                 "limit": scenario.volfrac,
                 "satisfied": bool(volume <= scenario.volfrac * (1 + TOLERANCE)),

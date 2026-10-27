@@ -20,6 +20,8 @@
 
 from abc import ABC, abstractmethod
 
+import numpy as np
+
 
 class Interpolation(ABC):
     """A material law: E(ρ) for every element, and its slope dE/dρ."""
@@ -37,6 +39,16 @@ class Interpolation(ABC):
     dims = None
     #: Parameters a schedule may change during a run (framework/parts/schedule.py).
     schedulable = ()
+    #: True when the material budget differs from the geometric density sum.
+    nonlinear_volume = False
+
+    def volume_density(self, density):
+        """Effective material cost per cell; identity for ordinary stiffness laws."""
+        return density
+
+    def volume_slope(self, density):
+        """Derivative of volume_density, before the filter/representation adjoints."""
+        return np.ones_like(density, dtype=float)
 
     @abstractmethod
     def stiffness(self, density, E0, Emin):

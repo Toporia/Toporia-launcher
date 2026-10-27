@@ -101,7 +101,8 @@ class AssembledModel(Model):
             )
 
         self.engine = type(self).physics()
-        self.engine.initialize(problem, settings, material_law(solver) if self.physics.uses_interpolation else None)
+        self.material = material_law(solver) if self.physics.uses_interpolation else None
+        self.engine.initialize(problem, settings, self.material)
         self.representation = design_representation(solver)
         self.representation.setup(problem)
         self.lb, self.ub = self.representation.bounds()
@@ -133,21 +134,23 @@ class AssembledModel(Model):
     def initial_design(self):
         design = self.representation.initial()
         chain = self.pipeline.chain
-        if (not self.representation.element_wise or chain is None
-                or not any(f.calibrate_initial_volume for f in chain.filters)):
+        nonlinear_volume = self.material is not None and self.material.nonlinear_volume
+        calibrated_filter = chain is not None and any(f.calibrate_initial_volume for f in chain.filters)
+        if not self.representation.element_wise or not (nonlinear_volume or calibrated_filter):
             return design
         # A cumulative shadow of a uniform gray source is almost all solid.
         # Start on the physical volume budget instead, without changing the
         # source scale or weakening the manufacturing equations. Fixed solids
         # (and their unavoidable shadows) must fit even at the lowest design.
-        if self.physical(self.lb).sum() > self.volume_limit + 1e-8:
+        # A nonlinear volume law likewise starts within its effective budget.
+        if self.volume_of(self.lb) > self.volume_limit + 1e-8:
             raise ValueError("Manufacturing-filter shadows of fixed solids exceed the volume budget")
-        if self.physical(design).sum() <= self.volume_limit:
+        if self.volume_of(design) <= self.volume_limit:
             return design
         low, high = 0.0, 1.0
         for _ in range(50):
             mid = 0.5 * (low + high)
-            if self.physical(self.lb + mid * (design - self.lb)).sum() > self.volume_limit:
+            if self.volume_of(self.lb + mid * (design - self.lb)) > self.volume_limit:
                 high = mid
             else:
                 low = mid
@@ -158,6 +161,11 @@ class AssembledModel(Model):
 
     def physical(self, z):
         return self.pipeline.physical_density(self.representation.density(z))
+
+    def volume_of(self, z):
+        """Cheap budget evaluation, including a selected effective-volume law."""
+        rho = self.physical(z)
+        return np.sum(self.material.volume_density(rho) if self.material is not None else rho)
 
     def _backward(self, z, sensitivity):
         """A sensitivity w.r.t. the element field x, carried back to the variables z."""
@@ -179,10 +187,15 @@ class AssembledModel(Model):
         # representation's to the design variables.
         dc = dv = None
         if gradients:
-            dc, dv = self.pipeline.sensitivities(objective.gradient, np.ones_like(x))
+            volume_slope = self.material.volume_slope(x_phys) if self.material is not None else np.ones_like(x)
+            dc, dv = self.pipeline.sensitivities(objective.gradient, volume_slope)
             dc, dv = self._backward(z, dc), self._backward(z, dv)
 
         reported = dict(objective.reported)
+        volume = np.sum(self.material.volume_density(x_phys) if self.material is not None else x_phys)
+        if self.material is not None and self.material.nonlinear_volume:
+            reported.update(geometric_volume_fraction=float(np.mean(x_phys)),
+                            effective_volume_fraction=float(volume / x_phys.size))
         constraints = []
         for i, response in enumerate(self.constraints):
             result = response.evaluate(state, gradient=gradients)
@@ -194,7 +207,7 @@ class AssembledModel(Model):
             reported["compliance"] = self.compliance.evaluate(state, gradient=False).value
 
         return Evaluation(objective=objective.value, objective_gradient=dc,
-                          volume=np.sum(x_phys), volume_gradient=dv,
+                          volume=volume, volume_gradient=dv,
                           constraints=tuple(constraints), reported=reported)
 
     def advance(self, completed):

@@ -34,11 +34,12 @@ a current-round update containing additions, validation and limitations.
 | `4decae8` | Cartesian PDE machining, full adjoints and physical-volume starts/convergence. |
 | `314b2b6` | Cell-centred Gaynor-Guest self-support, full reverse sweep and small-move controls. |
 | `d74d056` | Nested 2-D Q4 multiresolution, exact subcell integration and independent fine referee. |
+| `5700fc5` | NumPy smooth TOuNN-style coordinate field with explicit 2-D/3-D backpropagation. |
 
 Heat conduction, thermal/dynamic pyMOTO models, eigenfrequency, harmonic response,
 local-stress augmented Lagrangian and nonlinear elasticity are already present.
-The catalogue has 86 selectable plugins, nine physics engines and 17 presets:
-112 implementations. Twelve models and 23 updaters form 276 compositions;
+The catalogue has 87 selectable plugins, nine physics engines and 17 presets:
+113 implementations. Twelve models and 23 updaters form 276 compositions;
 three whole methods bring the method-name total to 279.
 
 ## Important limits
@@ -139,9 +140,32 @@ The broader schema/composition/unchanged-golden group passes 957 tests. Ruff,
 whitespace and all 503 local Markdown file links pass. The updated PDF has 17
 pages and 290 links, preserving its three original internal links and outline entries.
 
+## SINH — 27 October 2026
+
+Basic SINH uses linear stiffness and Bruns' nonlinear effective volume (equations
+22-23). The implemented shared-density variant is Table 2 case 5 with a density
+filter, case 4 without filtering. The case-6 resource-only filter and hybrid
+stiffness penalties remain outside it. Identity volume hooks on other laws keep
+their numerical behaviour. Effective cost now reaches the assembled model's
+evaluation, cheap updater volume checks, volume objective and complete adjoints.
+Element-density starts are calibrated to its budget. History keeps the displayed
+geometric volume, with effective cost reported separately on the current design.
+Limit checks and study feasibility use effective cost; studies add a separate
+effective-volume column and keep the common SIMP p=3 referee.
+
+Twenty-four focused SINH tests include 2-D/3-D FE/filter/representation derivatives,
+five updater paths, nominal variants, continuation, volume objectives, pinned
+material and feasibility reporting. The 53-case focused/interpolation/golden group
+passes. Bounded 300-step MBB/cantilever runs improve compliance and fit effective
+budgets; they retain 33.75% / 27.22% gray material and are not converged. Full
+measurements and scope are in the experiment README and linked PDF.
+The manufacturing/variants/study/SINH group passes 72 tests, with 53 selected
+GUI cases passing. Ruff, whitespace and 506 local Markdown file links pass.
+The PDF has 18 pages and 292 links, preserving the original navigation.
+
 ## Remaining sequence
 
-1. SINH and Hashin–Shtrikman material laws.
+1. Hashin–Shtrikman material law.
 2. Original MATLAB/Octave reference runs if a suitable runtime is available;
    ask before installing or changing runtimes.
 

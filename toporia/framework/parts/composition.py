@@ -216,6 +216,11 @@ class ComposedMethod(OptimizationMethod):
                 responses[f"constraint_{i}_{constraint.name}"] = constraint.value
                 if constraint.exact is not None:
                     responses[f"constraint_{i}_{constraint.name}_exact"] = constraint.exact
+        if "effective_volume_fraction" in responses:
+            # Responses usually describe the pre-update objective. Effective
+            # volume is cheap: report the displayed design's actual budget cost.
+            responses["effective_volume_fraction"] = float(self._model.volume_of(self.x) / self.density.size)
+            responses["geometric_volume_fraction"] = float(self.density.mean())
         return responses
 
 

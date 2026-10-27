@@ -66,6 +66,25 @@ respectively; they are not budget-matched performance comparisons. No binary
 result is labelled feasible or printable. The [filter documentation](../toporia/plugins/filters/README.md#gaynorguest-self-support-projection)
 describes the cell discretisation, boundary truncation and grid-dependent threshold.
 
+## SINH effective volume
+
+Run `python -m experiments.material_laws --iterations 300 --mesh 1`.
+This uses basic SINH p=3 with shared density filtering (radius 1.5), MMA move
+0.05 and fresh final Q4 evaluations. No run files are saved. The geometric
+field and effective cost use different measures, as in Bruns Table 2 case 5.
+
+| Preset | Initial C | Final linear-material C | Geometric fraction | Effective cost / limit | Gray 0.1-0.9 | Last change |
+| :-- | --: | --: | --: | --: | --: | --: |
+| MBB | 550.63805 | 202.79554 | 0.414981 | 0.500000 / 0.5 | 33.75% | 0.007759 |
+| Cantilever | 234.23086 | 84.58895 | 0.337000 | 0.398823 / 0.4 | 27.22% | 0.038767 |
+
+Both runs reach the 300-step cap, improve compliance and meet effective budgets.
+They remain gray and are not convergence or paper-reproduction claims. SINH's
+linear stiffness and taxed cost cannot be compared directly with a SIMP p=3
+objective at the same geometric fraction. Compare Methods still uses its common
+SIMP p=3 referee and additionally records the actual effective volume. The
+resource-only filtered and hybrid formulations from the paper are not implemented.
+
 ## Neural coordinate field
 
 Run `python -m experiments.neural --iterations 600 --mesh 0.5 --updater adam`

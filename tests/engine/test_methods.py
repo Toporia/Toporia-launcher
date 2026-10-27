@@ -140,6 +140,19 @@ def test_comparison_preflight_uses_the_candidate_models_dimensions():
     assert any("2-D" in reason for reason in comparison_problems(method_class("q4+mma"), run))
 
 
+def test_sinh_study_records_its_actual_effective_budget_alongside_geometric_volume(tmp_path):
+    from toporia.plugins.interpolations.sinh import SINH
+
+    run = _small(m=.2, max_iter=3, interpolation={"type": "sinh"}).with_output_dir(tmp_path)
+    _, (row,) = compare_methods(["q4+mma"], run)
+    assert row["status"] == "ran" and row["effective_volume"] > row["volume"]
+    density = np.loadtxt(tmp_path / "compare_methods" / "q4+mma" / "final_density.csv", delimiter=",", skiprows=2)
+    # The exported field has four decimal places; bound the induced cost
+    # error by the largest analytic slope times half a CSV rounding unit.
+    rounding_error = 0.5e-4 * float(SINH().volume_slope(np.array([0.]))[0])
+    assert row["effective_volume"] == pytest.approx(float(SINH().volume_density(density).mean()), abs=rounding_error)
+
+
 def test_the_grey_level_is_zero_for_black_and_white_and_one_for_uniform_grey():
     assert grey_level(np.array([[0.0, 1.0], [1.0, 0.0]])) == 0.0
     assert grey_level(np.full((3, 3), 0.5)) == pytest.approx(1.0)

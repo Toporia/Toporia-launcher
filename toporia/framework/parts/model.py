@@ -36,8 +36,9 @@ class Evaluation:
     """Everything an updater needs to know about one design.
 
     Gradients have the shape of the design, or are None when the evaluation
-    was asked for values only (Model.evaluate(x, gradients=False)).  `volume` is the total physical
-    material, in the units of Model.volume_limit — the volume budget every
+    was asked for values only (Model.evaluate(x, gradients=False)). `volume` is the
+    material budget measure (effective cost for SINH, geometric material otherwise),
+    in the units of Model.volume_limit — the volume budget every
     method enforces.  `constraints` holds the scenario's further constraints
     in scenario order; `reported` holds extra scalars worth recording in the
     run history (a peak stress, or the compliance when it is not the objective).
