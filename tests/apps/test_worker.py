@@ -56,3 +56,15 @@ def test_worker_reports_invalid_problem_and_cooperative_stop_distinctly(tmp_path
     assert result.returncode == 0
     assert json.loads((stopped / "session.json").read_text())["status"] == "stopped"
     assert not (stopped / "design.npy").exists()
+
+
+def test_worker_runs_h8_with_a_true_spatial_point_force(tmp_path):
+    objects = [make_object("box", (0, 0, 0), (0, 4, 4), "support", axes=["x", "y", "z"]),
+               make_object(position=(10, 2, 3), role="load", force=[0, 0, -2])]
+    run = Run(scenario=Scenario(Lx=10, Ly=4, Lz=4, regions=objects),
+              solver=Solver(method="h8+oc", m=.5, max_iter=2, filter_specs=[{"type": "density"}]))
+    path = Project("Spatial worker", run, objects=objects).save(tmp_path / "input.top")
+    result = subprocess.run([sys.executable, "-m", "toporia.apps.gui_worker", str(path)], capture_output=True, text=True, timeout=60)
+    assert result.returncode == 0, result.stdout + result.stderr
+    density = np.load(tmp_path / "design.npy")
+    assert density.shape == (2, 2, 5) and np.isfinite(density).all()

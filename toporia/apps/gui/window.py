@@ -273,7 +273,7 @@ class MainWindow(ProjectActions, ExecutionActions, QMainWindow):
     def _build_sidebar(self):
         """One scrollable page per step, and Back / Next under it."""
         side = QWidget()
-        side.setMinimumWidth(20)
+        side.setMinimumWidth(300)
         side.setMaximumWidth(560)
         layout = QVBoxLayout(side)
         layout.setContentsMargins(8, 8, 4, 8)
@@ -400,6 +400,7 @@ class MainWindow(ProjectActions, ExecutionActions, QMainWindow):
         self.problem_editor = ProblemEditor()
         self.problem_editor.changed.connect(self._on_scene_changed)
         self.problem_editor.copy_requested.connect(self.copy_to_custom)
+        self.problem_editor.view_changed.connect(lambda values: self.project.view.update(values) if hasattr(self, "project") else None)
         self.workspace_views.addWidget(self.problem_editor)
         self.method_view = MethodWorkspace()
         self.method_view.selected.connect(self._inspect_method_node)
@@ -565,8 +566,9 @@ class MainWindow(ProjectActions, ExecutionActions, QMainWindow):
         title = self.project.name if hasattr(self, "project") else self.config_combo.currentText()
         self.problem_editor.load(cfg.scenario, self.project.objects, self.project.benchmark is not None)
         self._update_preflight()
-        self.problem_preview.show_problem(cfg.scenario, cfg.solver.m, title)
-        self.canvas.show_problem(cfg.scenario, cfg.solver.m, title)
+        if self.project.objects is None:
+            self.problem_preview.show_problem(cfg.scenario, cfg.solver.m, title)
+            self.canvas.show_problem(cfg.scenario, cfg.solver.m, title)
 
     def _update_preflight(self):
         """Explain definition/compatibility problems before starting an optimisation."""
@@ -736,6 +738,7 @@ class MainWindow(ProjectActions, ExecutionActions, QMainWindow):
             self.pipeline.show_pipeline(pipeline_stages(cfg), pipeline_notes(cfg.solver.method, cfg),
                                         graph=pipeline_graph(cfg))
             self.method_view.show_pipeline(pipeline_graph(cfg), pipeline_notes(cfg.solver.method, cfg))
+            self._preview_timer.start()
         except (ValueError, KeyError) as error:
             self.pipeline.show_pipeline([], [f"Cannot describe this selection: {error}"])
 

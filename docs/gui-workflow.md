@@ -3,6 +3,9 @@
 Launch `python main.py` from this checkout. Home offers a sourced benchmark
 library, a blank physical definition, and project/problem import.
 Use `python main.py --project path/to/project.top` to open a project directly.
+The local `.venv` includes the optional spatial editor dependencies. On Windows,
+use `.venv\Scripts\python.exe main.py` for the full 3D viewport. For a fresh
+environment, install `pip install -e ".[dev,3d,gui3d]"` first.
 
 ## Files
 
@@ -53,6 +56,39 @@ Preflight reports insufficient supports (a rigid-body rank test), invalid region
 zero-cell meshes, missing loads and material conflicts. Regions that sample no
 nodes/elements require a finer mesh or larger region. These checks do not prove
 stability for every disconnected topology or future physics model.
+
+## Spatial objects and geometry imports
+
+3D uses H8 elements with XYZ coordinates. A spatial point is one physical point;
+it is not a line repeated through the depth. A copied legacy 3D benchmark retains
+its explicitly marked extrusion and original through-depth load shares.
+
+The 3D viewport uses the same object list, inspector, undo and files as 2D. Select
+Box, Sphere or Cylinder (or a point/line/surface tool), then click the XY placement
+plane. Change Placement plane Z to create at another elevation. Enter precise XYZ,
+three-axis rotations and sizes in the inspector. A box with one zero dimension
+can define a support/load face. Spheres use diameters and a centre; cylinders use
+XY diameters and a base Z with a height. Select an object in the list or viewport
+to show translation/rotation handles. Uniform scaling is entered in the inspector.
+Pan mode, Shift+drag, wheel zoom, Fit, standard camera buttons and the interactive
+orientation widget provide navigation. Camera arrangement is project view state.
+
+Import geometry accepts STL in 3D and DXF in 2D. STL triangles are embedded in the
+readable project/problem file, so the source STL can be moved without breaking the
+project. STL size fields are scale factors. Assign domain, support, load, solid
+or void in Role. Closed volume sampling requires a closed manifold mesh; surface
+proximity sampling accepts open support/load patches. Surface selection uses a
+mesh-dependent distance tolerance, so inspect/refine the mesh for small details.
+Loads are total vectors shared across selected nodes, not pressure/traction.
+
+DXF import currently supports closed straight XY polylines and XY circles.
+Unsupported entities are reported rather than partly discarded. Imported profiles
+can be moved, rotated, scaled and assigned roles. Native CAD booleans, surface
+repair, arbitrary unstructured meshing and graph rewiring remain future work.
+
+`examples/gui-spatial/project.top` is a true spatial H8 example. STL regions need
+the optional geometry libraries even for a headless worker; primitive spatial
+regions can be solved without a renderer.
 
 ## Method
 

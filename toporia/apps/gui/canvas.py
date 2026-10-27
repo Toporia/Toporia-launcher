@@ -73,6 +73,23 @@ class LiveCanvas(FigureCanvas):
 
     # ── Public methods called by the window ───────────────────────────────────
 
+    def showEvent(self, event):
+        """Use the final inherited Qt palette after the canvas is parented/shown."""
+        super().showEvent(event)
+        bg, tc, lc = self._colours()
+        self._fig.patch.set_facecolor(bg)
+        for axis in self._fig.axes:
+            axis.set_facecolor(bg)
+            axis.tick_params(colors=tc)
+            axis.title.set_color(tc)
+            axis.xaxis.label.set_color(tc)
+            axis.yaxis.label.set_color(tc)
+            for spine in axis.spines.values():
+                spine.set_edgecolor(tc)
+            for line in axis.lines:
+                line.set_color(lc)
+        self.draw_idle()
+
     def show_problem(self, scenario, m, name=""):
         """Draw the problem as set up — domain, holes, supports, loads — filling the whole canvas."""
         from .preview import describe_problem, draw_problem

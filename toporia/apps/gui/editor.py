@@ -11,6 +11,7 @@ from PySide6.QtWidgets import (
     QCheckBox,
     QComboBox,
     QDoubleSpinBox,
+    QFileDialog,
     QFormLayout,
     QGraphicsItem,
     QGraphicsPathItem,
@@ -22,15 +23,19 @@ from PySide6.QtWidgets import (
     QLineEdit,
     QListWidget,
     QListWidgetItem,
+    QMessageBox,
     QPushButton,
     QScrollArea,
     QSpinBox,
     QSplitter,
+    QStackedWidget,
+    QToolButton,
     QVBoxLayout,
     QWidget,
 )
 
 from .geometry import make_object, objects_from_scenario
+from .spatial_view import SpatialView
 
 COLOURS = {"support": "#49a5db", "load": "#f87777", "solid": "#c2cad3", "void": "#e1bc66", "domain": "#82cfa0"}
 
@@ -122,6 +127,7 @@ class ProblemEditor(QWidget):
 
     changed = Signal(object, object)  # Scenario, explicit object list
     copy_requested = Signal()
+    view_changed = Signal(object)
 
     def __init__(self, parent=None):
         super().__init__(parent)
@@ -134,27 +140,54 @@ class ProblemEditor(QWidget):
         layout = QVBoxLayout(self)
         toolbar = QHBoxLayout()
         self.tool_buttons = []
-        for tool in ("Select", "Pan", "Point", "Line", "Rectangle", "Circle"):
-            button = QPushButton(tool)
+        for tool in ("Select", "Pan", "Point", "Line", "Rectangle", "Circle", "Box", "Sphere", "Cylinder"):
+            button = QToolButton()
+            button.setText(tool)
             button.clicked.connect(lambda _=False, t=tool: self.set_tool(t.lower()))
             toolbar.addWidget(button)
             self.tool_buttons.append(button)
+        self.import_button = QPushButton("Import geometry…")
+        self.import_button.clicked.connect(self.import_geometry)
+        toolbar.addWidget(self.import_button)
         toolbar.addStretch()
         self.copy_button = QPushButton("Copy to custom")
         self.copy_button.clicked.connect(self.copy_requested.emit)
         toolbar.addWidget(self.copy_button)
         for text, callback in (("Undo", self.undo), ("Redo", self.redo), ("Fit", self.fit)):
-            button = QPushButton(text)
+            button = QToolButton()
+            button.setText(text)
             button.clicked.connect(callback)
             toolbar.addWidget(button)
             setattr(self, text.lower() + "_button", button)
         layout.addLayout(toolbar)
+        self.spatial_bar = QWidget()
+        spatial_tools = QHBoxLayout(self.spatial_bar)
+        spatial_tools.setContentsMargins(0, 0, 0, 0)
+        spatial_tools.addWidget(QLabel("Placement plane Z [mm]"))
+        self.plane_z = _number(0)
+        spatial_tools.addWidget(self.plane_z)
+        for title, plane in (("XY", "xy"), ("XZ", "xz"), ("YZ", "yz"), ("Isometric", "isometric")):
+            button = QPushButton(title)
+            button.clicked.connect(lambda _=False, p=plane: self.spatial.camera_view(p))
+            spatial_tools.addWidget(button)
+        spatial_tools.addStretch()
+        layout.addWidget(self.spatial_bar)
         self.hint = QLabel()
         self.hint.setWordWrap(True)
         layout.addWidget(self.hint)
         body = QSplitter()
         self.view = ProblemView()
-        body.addWidget(self.view)
+        self.viewport_stack = QStackedWidget()
+        self.viewport_stack.addWidget(self.view)
+        self.spatial = SpatialView()
+        self.viewport_stack.addWidget(self.spatial)
+        body.addWidget(self.viewport_stack)
+        self.spatial.selected.connect(self.select)
+        self.spatial.placed.connect(self._place_spatial)
+        self.spatial.transformed.connect(self._spatial_transform)
+        self.spatial.camera_changed.connect(lambda camera: self.view_changed.emit({"camera3d": camera}))
+        self.spatial.diagnostic.connect(self._diagnostic)
+        self.plane_z.valueChanged.connect(self._plane_changed)
         inspector = QWidget()
         inspector.setMaximumWidth(300)
         controls = QVBoxLayout(inspector)
@@ -170,18 +203,26 @@ class ProblemEditor(QWidget):
         for role in COLOURS:
             self.role.addItem(role.title(), role)
         form.addRow("Role", self.role)
+        self.sampling = QComboBox()
+        self.sampling.addItem("Closed volume", "volume")
+        self.sampling.addItem("Surface proximity", "surface")
+        form.addRow("STL sampling", self.sampling)
         self.fields = {}
-        for label, key, value in (("X [mm]", "x", 0), ("Y [mm]", "y", 0),
+        self.field_labels = {}
+        for label, key, value in (("X [mm]", "x", 0), ("Y [mm]", "y", 0), ("Z [mm]", "z", 0),
                                    ("Width / ΔX [mm]", "w", 1), ("Height / ΔY [mm]", "h", 1),
+                                   ("Depth / ΔZ [mm]", "d", 1), ("Rotation X [°]", "rx", 0), ("Rotation Y [°]", "ry", 0),
                                    ("Rotation [°]", "angle", 0), ("Scale factor", "scale", 1),
-                                   ("Force X [N]", "fx", 0), ("Force Y [N]", "fy", -1)):
+                                   ("Force X [N]", "fx", 0), ("Force Y [N]", "fy", -1), ("Force Z [N]", "fz", 0)):
             field = _number(value)
             form.addRow(label, field)
             self.fields[key] = field
+            self.field_labels[key] = form.labelForField(field)
+        self.fields["scale"].setMinimum(.000001)
         self.axes = {}
         axes = QWidget()
         row = QHBoxLayout(axes)
-        for axis in ("x", "y"):
+        for axis in ("x", "y", "z"):
             check = QCheckBox(axis.upper())
             row.addWidget(check)
             self.axes[axis] = check
@@ -189,6 +230,7 @@ class ProblemEditor(QWidget):
         self.case = QSpinBox()
         self.case.setRange(1, 100)
         form.addRow("Load case", self.case)
+        self.object_form_layout = form
         self.apply_button = QPushButton("Apply object changes")
         self.apply_button.clicked.connect(self.apply_inspector)
         form.addRow(self.apply_button)
@@ -309,9 +351,24 @@ class ProblemEditor(QWidget):
             button.setEnabled(not self.readonly)
         self.domain_form.setEnabled(not self.readonly)
         self.copy_button.setVisible(self.readonly)
+        three = self.scenario is not None and self.scenario.Lz > 0
+        for button in self.tool_buttons[6:]:
+            button.setVisible(three)
+        self.spatial_bar.setVisible(three)
+        self.import_button.setEnabled(not self.readonly)
+        self.viewport_stack.setCurrentIndex(1 if three else 0)
+        for key in ("z", "d", "rx", "ry", "fz"):
+            self.fields[key].setVisible(three)
+            self.field_labels[key].setVisible(three)
+        self.axes["z"].setVisible(three)
+        self.coordinates.setText("XYZ · millimetres · drag to orbit, Shift+drag to pan, wheel to zoom" if three else "XY plane · millimetres")
+        if three:
+            self.spatial.load(self.scenario, self.objects, self.readonly)
+            self.spatial.select(selected)
         self.undo_button.setEnabled(bool(self._undo) and not self.readonly)
         self.redo_button.setEnabled(bool(self._redo) and not self.readonly)
         self.hint.setText("Reference problem · use File → Copy benchmark to custom problem to edit." if self.readonly
+                          else "Click the XY placement plane to create a shape, then edit XYZ values in the inspector." if three
                           else "Select a tool, then click the canvas. Lines and rectangles use two clicks. Shapes are defined in mm.")
         self._show_inspector()
 
@@ -331,6 +388,8 @@ class ProblemEditor(QWidget):
                 self.object_list.setCurrentItem(item)
         self._loading = False
         self._show_inspector()
+        if self.scenario is not None and self.scenario.Lz > 0:
+            self.spatial.select(identity)
 
     def _scene_selection(self):
         if not self._loading:
@@ -348,13 +407,22 @@ class ProblemEditor(QWidget):
     def _show_inspector(self):
         obj = next((o for o in self.objects if o["id"] == self.selected_id()), None)
         self.object_form.setEnabled(obj is not None and not self.readonly)
+        self.object_form.setVisible(obj is not None)
         if obj is None:
             return
         self.name.setText(obj["name"])
         self.role.setCurrentIndex(self.role.findData(obj["role"]))
+        stl = obj["shape"] == "stl"
+        for key, axis in (("w", "X"), ("h", "Y"), ("d", "Z")):
+            self.field_labels[key].setText(f"Scale {axis}" if stl else f"Size / Δ{axis} [mm]")
+        self.sampling.setCurrentIndex(self.sampling.findData(obj.get("sampling", "volume")))
+        self.sampling.setVisible(stl)
+        self.object_form_layout.labelForField(self.sampling).setVisible(stl)
         for key, value in {"x": obj["position"][0], "y": obj["position"][1],
                            "w": obj["size"][0], "h": obj["size"][1], "angle": obj["rotation"][2],
-                           "scale": 1, "fx": obj["force"][0], "fy": obj["force"][1]}.items():
+                           "z": obj["position"][2], "d": obj["size"][2],
+                           "rx": obj["rotation"][0], "ry": obj["rotation"][1],
+                           "scale": 1, "fx": obj["force"][0], "fy": obj["force"][1], "fz": obj["force"][2]}.items():
             self.fields[key].setValue(value)
         for axis, check in self.axes.items():
             check.setChecked(axis in obj["axes"])
@@ -362,7 +430,7 @@ class ProblemEditor(QWidget):
         self._role_fields()
 
     def _role_fields(self):
-        for key in ("fx", "fy"):
+        for key in ("fx", "fy", "fz"):
             self.fields[key].setEnabled(self.role.currentData() == "load")
         self.case.setEnabled(self.role.currentData() == "load")
         for check in self.axes.values():
@@ -383,6 +451,8 @@ class ProblemEditor(QWidget):
         """Choose a placement tool or return to selection/pan."""
         self._first = None
         self.view.tool = tool
+        if self.scenario is not None and self.scenario.Lz > 0:
+            self.spatial.set_tool(tool)
         self.view.setDragMode(QGraphicsView.ScrollHandDrag if tool == "pan" else QGraphicsView.RubberBandDrag)
         self.hint.setText(f"{tool.title()}: click to place." + (" Click a second point to finish." if tool in {"line", "rectangle"} else ""))
 
@@ -432,11 +502,17 @@ class ProblemEditor(QWidget):
         obj = next(o for o in self.objects if o["id"] == self.selected_id())
         obj["name"] = self.name.text().strip() or obj["shape"].title()
         obj["role"] = self.role.currentData()
-        obj["position"][:2] = [self.fields[k].value() for k in ("x", "y")]
+        obj["position"] = [self.fields[k].value() for k in ("x", "y", "z")]
         scale = self.fields["scale"].value()
-        obj["size"][:2] = [self.fields[k].value() * scale for k in ("w", "h")]
-        obj["rotation"][2] = self.fields["angle"].value()
-        obj["force"][:2] = [self.fields[k].value() for k in ("fx", "fy")]
+        obj["size"] = [self.fields[k].value() * scale for k in ("w", "h", "d")]
+        if self.scenario.Lz == 0:
+            obj["size"][2] = self.fields["d"].value()
+        obj["rotation"] = [self.fields[k].value() for k in ("rx", "ry", "angle")]
+        obj["force"] = [self.fields[k].value() for k in ("fx", "fy", "fz")]
+        if obj.get("extrusion"):
+            obj["extrusion"] *= scale
+        if obj["shape"] == "stl":
+            obj["sampling"] = self.sampling.currentData()
         obj["axes"] = [axis for axis, check in self.axes.items() if check.isChecked()]
         obj["case"] = self.case.value() - 1
         self._commit(before, obj["id"])
@@ -485,6 +561,9 @@ class ProblemEditor(QWidget):
         """Show the whole domain and all geometry without distorting its aspect ratio."""
         if self.scenario is None:
             return
+        if self.scenario.Lz > 0:
+            self.spatial.fit()
+            return
         # Screen-sized annotations must not enlarge the physical fitting bounds.
         bounds = QRectF(0, -self.scenario.Ly, self.scenario.Lx, self.scenario.Ly)
         for item in self._items.values():
@@ -493,6 +572,61 @@ class ProblemEditor(QWidget):
         bounds = bounds.adjusted(-margin, -margin, margin, margin)
         self.view.setSceneRect(bounds)
         self.view.fitInView(bounds, Qt.KeepAspectRatio)
+
+    def _place_spatial(self, point):
+        """Create a 3D primitive on the working plane, then edit its precise XYZ values."""
+        if self.readonly:
+            return
+        tool = self.spatial.tool
+        x, y, z = point
+        length = min(self.scenario.Lx, self.scenario.Ly, self.scenario.Lz) / 3
+        size = (length, length, length)
+        if tool == "line":
+            if self._first is None:
+                self._first = point
+                return
+            size = tuple(b - a for a, b in zip(self._first, point, strict=True))
+            x, y, z = self._first
+            self._first = None
+        if tool == "rectangle":
+            size = (length, length, 0)
+        role = "support" if tool in {"point", "line", "rectangle", "circle"} else "void"
+        self.add_object(make_object(tool, (x, y, z), size, role, axes=["x", "y", "z"]))
+        self.set_tool("select")
+
+    def _spatial_transform(self, edited):
+        """Record one completed gizmo movement as one undoable edit."""
+        if not self.readonly:
+            before = self._snapshot()
+            self.objects = [edited if obj["id"] == edited["id"] else obj for obj in self.objects]
+            self._commit(before, edited["id"])
+
+    def _plane_changed(self, value):
+        self.spatial.workplane_z = value
+        self.spatial.set_tool(self.spatial.tool)
+
+    def _diagnostic(self, text):
+        self.hint.setText(text)
+
+    def import_geometry(self, path=None):
+        """Import geometry as an editable region; assign its physical role in the inspector."""
+        if self.readonly:
+            return
+        three = self.scenario.Lz > 0
+        if path is None:
+            path, _ = QFileDialog.getOpenFileName(self, "Import geometry", "",
+                                                 "STL geometry (*.stl)" if three else "DXF profile (*.dxf)")
+        if not path:
+            return
+        try:
+            from .geometry_import import import_dxf, import_stl
+            objects = [import_stl(path)] if three else import_dxf(path)
+            before = self._snapshot()
+            self.objects.extend(objects)
+            self._commit(before, objects[-1]["id"])
+            self.fit()
+        except (OSError, ValueError, RuntimeError) as error:
+            QMessageBox.warning(self, "Cannot import geometry", str(error))
 
 
 def _number(value):

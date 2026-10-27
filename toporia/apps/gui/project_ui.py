@@ -166,6 +166,8 @@ class ProjectActions:
         from . import runner
         runner.last_run_folder = None
         self.project = project
+        self._restore_inspector()
+        self.problem_editor.spatial.restore_camera(project.view.get("camera3d"))
         if project.objects is not None:
             project.run = replace(project.run, scenario=replace(project.run.scenario, regions=project.objects))
         elif project.run.scenario.regions is not None:
@@ -189,6 +191,7 @@ class ProjectActions:
     def _apply_problem_lock(self):
         """Protect reference problems while allowing solver and resolution experiments."""
         locked = self.project.benchmark is not None
+        self.lc.set_regional(self.project.objects is not None)
         for widget in (self.core.volume_box, self.lc, self.objective, self.constraints,
                        self.design.dims, self.design.depth):
             widget.setEnabled(not locked)
@@ -290,6 +293,7 @@ class ProjectActions:
     def closeEvent(self, event):
         """Prevent closing an active run or losing unsaved configuration changes."""
         if self._maybe_discard():
+            self.problem_editor.spatial.shutdown()
             event.accept()
         else:
             event.ignore()

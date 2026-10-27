@@ -40,10 +40,10 @@ class DesignSection(QWidget):
         form.setContentsMargins(0, 0, 0, 0)
         self.dims = QComboBox()
         self.dims.addItem("2-D (plane stress)", userData=2)
-        self.dims.addItem("3-D (extruded to a depth)", userData=3)
+        self.dims.addItem("3-D (spatial / H8)", userData=3)
         add_tooltip_row(form, "Dimensions", self.dims,
-                        "2-D solves the case's rectangle in plane stress. 3-D extrudes it to the depth "
-                        "below: holes go through, supports and loads act through the thickness.",
+                        "2-D solves a plane-stress domain. 3-D uses H8 bricks and spatial objects. "
+                        "Legacy benchmarks may define through-depth extrusions; custom objects use full XYZ coordinates.",
                         "2-D: four-node plane-stress elements as in top88 (Andreassen et al. 2011). "
                         "3-D: eight-node bricks as in top3d (Liu & Tovar, Struct. Multidisc. Optim. 50 (2014)).")
         self.depth = double_box(10.0, 0.1, 10000.0, dec=2, step=1.0)

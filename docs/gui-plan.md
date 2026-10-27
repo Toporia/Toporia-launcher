@@ -49,7 +49,7 @@ not complete. Resume from the first unchecked step after reading git status.
   with meaningful integration tests; document usage and remaining limitations.
 - [x] 8. General spatial regions and STL geometry adapter; independent 3D load/
   support/solid/void/domain assignments and conservative mesh validation.
-- [ ] 9. 3D viewport and inspector with spatial primitives, imports, transforms,
+- [x] 9. 3D viewport and inspector with spatial primitives, imports, transforms,
   selection and camera navigation; reuse the shared project/object model.
 - [ ] 10. Final cross-workspace verification, regression checks and handoff.
 
@@ -137,6 +137,16 @@ Optional gui3d dependencies installed only into the local .venv; numpy/matplotli
 Pillow aligned to the existing verified versions. Validation: 35 regional/spatial/
 golden checks passed, including an actual H8 optimization and STL portability.
 
-Next: milestone 9, expose 3D creation/selection/inspector/camera in the GUI and
-wire STL/DXF import actions. Solver adapter is tested; viewport is still XY.
-Use .venv/Scripts/python.exe for optional geometry/viewport tests.
+Milestone 9 complete: optional lazy VTK/Qt viewport with full XYZ inspector,
+primitive creation on an adjustable XY plane, object picking/list selection,
+translation/rotation gizmos, numeric scaling, camera navigation/orientation widget,
+STL role/sampling assignment, and DXF import. Shares object definitions, undo,
+serialization and masks with 2D. Added true spatial example. Native Windows
+rendering and list/XYZ selection verified. Fixed renderer initialization reentry
+and responsive toolbar/axis labels. Offscreen form tests avoid requiring a GPU.
+Validation: 178 existing GUI/editor checks passed; 16 spatial-editor/headless-
+worker checks passed including H8 subprocess output. Ruff passed.
+
+Next: milestone 10. Final code review, full regression/lint/compile checks,
+strengthen persistence/error handling discovered during review, and final handoff.
+Do not disturb the user's open Untitled window. QA uses separate examples only.
