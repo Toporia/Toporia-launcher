@@ -80,6 +80,8 @@ at the final q=30 so the initial/final compliances use the same material law.
 | Own MMA / 1000 | Cantilever | 2901.78844 | 324.62781 | 0.399862 / 0.4 | 14.89% | 0.15345 |
 | pyMOTO GCMMA / 500 | MBB | 12522.25648 | 454.66344 | 0.499995 / 0.5 | 20.50% | 0.02508 |
 | pyMOTO GCMMA / 500 | Cantilever | 2901.78844 | 296.54728 | 0.399999 / 0.4 | 15.83% | 0.01052 |
+| pyMOTO GCMMA / 1000 | MBB | 12522.25648 | 391.36346 | 0.499992 / 0.5 | 20.08% | 0.01428 |
+| pyMOTO GCMMA / 1000 | Cantilever | 2901.78844 | 284.11337 | 0.399995 / 0.4 | 16.56% | 0.01231 |
 
 These are bounded improvement/feasibility runs, **not convergence claims** or
 timing comparisons. Small moves alone do not eliminate the projection's strong
@@ -94,6 +96,24 @@ Fresh binary-field compliances are 385.85622/269.24762 and 347.78378/240.99253,
 respectively; they are not budget-matched performance comparisons. No binary
 result is labelled feasible or printable. The [filter documentation](../toporia/plugins/filters/README.md#gaynorguest-self-support-projection)
 describes the cell discretisation, boundary truncation and grid-dependent threshold.
+
+The longer GCMMA check uses the same settings and reproduces the 500-step
+baseline before continuing to 1000. Objectives improve, but neither run settles.
+At cutoff 0.5, volumes are 0.516667 / 0.409444 and each field has one unsupported
+cell in the independent one-layer test. The script now also chooses a strict
+cell-count cutoff that respects the smooth-design budget, then re-solves physics:
+
+| 1000-step GCMMA | Cutoff (`rho > cutoff`) | Binary volume | Fresh binary C | Unsupported cells |
+| :-- | --: | --: | --: | --: |
+| MBB | 0.554823 | 0.500000 | 319.60022 | 0 |
+| Cantilever | 0.532182 | 0.400000 | 235.27987 | 0 |
+
+Equal-valued cutoff cells are excluded, so ties cannot exceed the cell-count
+budget. This is a diagnostic post-processing threshold, not a geometry repair
+or a general guarantee: thresholding can remove supports on other designs.
+These two binary fields pass the stated budget and stencil checks only; point
+hinges, stress, nonlinear response and the actual printing process are unchecked.
+All 21 geometric/adjoint tests pass. No core self-support formula was changed.
 
 ## Original MATLAB references
 

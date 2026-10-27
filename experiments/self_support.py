@@ -16,6 +16,22 @@ from toporia.engine.loop import initialized_method, make_schedules
 from toporia.plugins.problems import get_run
 
 
+def binary_diagnostic(density, model, threshold):
+    """Re-solve a thresholded field and independently check its one-layer supports.
+
+    Strict > makes equal-valued cutoff cells void, so a quantile cutoff never
+    exceeds the selected cell-count budget. Thresholding may remove supports.
+    """
+    solid = density > threshold
+    state = model.engine.solve(solid.astype(float))
+    compliance = model.objective.evaluate(state, gradient=False).value
+    below = np.pad(solid[:-1], ((0, 0), (1, 1)), constant_values=False)
+    supported = below[:, :-2] | below[:, 1:-1] | below[:, 2:]
+    return {"threshold": float(threshold), "volume_fraction": float(solid.mean()),
+            "compliance": float(compliance),
+            "unsupported_cells_one_layer_45_degree": int(np.sum(solid[1:] & ~supported))}
+
+
 def validate(preset, iterations=1000, mesh=1.0, updater="mma"):
     settings = {"move": 0.01}
     if updater == "mma":
@@ -53,22 +69,26 @@ def validate(preset, iterations=1000, mesh=1.0, updater="mma"):
                   f"{method.get_change():.4g}", flush=True)
     final = model.evaluate(method.x, gradients=False)
     density = method.get_density()
-    solid = density >= 0.5
-    binary_state = model.engine.solve(solid.astype(float))
-    binary_compliance = model.objective.evaluate(binary_state, gradient=False).value
-    below = np.pad(solid[:-1], ((0, 0), (1, 1)), constant_values=False)
-    supported = below[:, :-2] | below[:, 1:-1] | below[:, 2:]
-    return {
+    binary = binary_diagnostic(density, model, 0.5)
+    # Retain at most floor(volfrac * cell_count) cells. Sorting only chooses
+    # a post-processing cutoff; it does not repair the manufacturing geometry.
+    allowed = int(np.floor(run.scenario.volfrac * density.size))
+    cutoff = np.sort(density.ravel())[-allowed - 1]
+    budget_binary = binary_diagnostic(density, model, max(0.5, cutoff))
+    report = {
         "preset": preset, "updater": updater, "shape": density.shape, "iterations": iterations,
         "initial_compliance": initial, "final_compliance": final.objective,
         "comparison_ramp_q": final_q,
         "physical_volume_fraction": float(density.mean()), "volume_limit": run.scenario.volfrac,
         "last_change": method.get_change(),
-        "thresholded_volume_fraction": float(solid.mean()),
-        "thresholded_compliance": binary_compliance,
-        "unsupported_cells_in_one_layer_45_degree_check": int(np.sum(solid[1:] & ~supported)),
+        "thresholded_volume_fraction": binary["volume_fraction"],
+        "thresholded_compliance": binary["compliance"],
+        "unsupported_cells_in_one_layer_45_degree_check": binary["unsupported_cells_one_layer_45_degree"],
+        "budget_thresholded_diagnostic": budget_binary,
         "gray_fraction_0.1_to_0.9": float(np.mean((density > 0.1) & (density < 0.9))),
     }
+    method.close()
+    return report
 
 
 def main():

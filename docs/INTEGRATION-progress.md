@@ -261,3 +261,20 @@ still needs a separately labelled compatibility adaptation for removed options.
 The experiment README has the per-original requirements. Numerical comparisons
 remain blocked; compiler/helper installation requires the owner's pending decision.
 The previously passing three reference cases and golden baselines are unchanged.
+
+## Stronger self-support validation — 27 October 2026
+
+Same-setting GCMMA runs extended from 500 to 1000 steps improve MBB/cantilever
+compliance to 391.36346 / 284.11337 and meet smooth budgets. They remain
+unconverged (changes 0.01428 / 0.01231) with 20.08% / 16.56% gray cells.
+The experiment now re-solves binary fields using both cutoff 0.5 and a strict
+cell-count cutoff that respects the volume budget. The latter gives exactly
+0.5 / 0.4 volume, C=319.60022 / 235.27987 and zero unsupported cells under the
+independent one-layer 45-degree stencil on both fields. This is not a printing
+certificate or generic support repair. All 21 core geometric/adjoint tests and
+Ruff pass; core filter mathematics and golden baselines are unchanged.
+The owner has now approved an isolated compiler/helper setup under
+`C:\Users\johan\AppData\Local\ToporiaValidation`, with no global PATH or MATLAB
+startup/default-compiler changes. Broader changes still require approval.
+Return to the original-reference checks after this validation commit, then
+continue neural/minimum-length validation and the remaining small fixes.
