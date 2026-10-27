@@ -1,0 +1,40 @@
+{
+  "schema": 1,
+  "case_id": "schedule_linear",
+  "batch": 2,
+  "functions": [
+    "schedule:linear"
+  ],
+  "preset": "Research: Linear parameter ramp",
+  "source_url": "",
+  "target": "Toporia engineering rule; no direct research figure.",
+  "paper_status": "paper_reproduction_to_fix",
+  "paper_visual_status": "not_assessed",
+  "checks": {
+    "clock_rule_error": 0.0,
+    "rule_tolerance": 1e-12,
+    "checks_passed": true,
+    "event_signal": "own exponential change signal; not a paper iteration history",
+    "companion": {
+      "iterations": 200,
+      "stop_reason": "iteration limit (200)",
+      "last_pre_update_compliance": 240.03950116961394,
+      "physical_fraction": 0.49997440133486415,
+      "parameter_path": "interpolation.penal",
+      "last_parameter": 3.0,
+      "converged": false
+    }
+  },
+  "limitations": "This function has no claimed originating paper. A parameter-history demonstration is not a research-figure reproduction.",
+  "parameters": {
+    "type": "linear",
+    "start": 1.0,
+    "end": 3.0,
+    "after": 20,
+    "over": 80
+  },
+  "next_check": "Select a defensible research application or retain this as an explicitly original engineering ramp; no originating paper is claimed.",
+  "quarantined_reason": "",
+  "generated_at": "2026-10-27T22:29:09.384367+00:00",
+  "reproduce": "python -m experiments.research_batch2 --case schedule_linear"
+}

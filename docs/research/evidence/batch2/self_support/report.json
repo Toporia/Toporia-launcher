@@ -1,0 +1,43 @@
+{
+  "schema": 1,
+  "case_id": "self_support",
+  "batch": 2,
+  "functions": [
+    "filter:self_support"
+  ],
+  "preset": "Research: Gaynor-Guest support",
+  "source_url": "https://doi.org/10.1007/s00158-016-1551-x",
+  "target": "Gaynor-Guest (2016), support projection; exact nodal paper panel not reproduced.",
+  "paper_status": "paper_reproduction_to_fix",
+  "paper_visual_status": "not_assessed",
+  "checks": {
+    "input_origin": "own controlled bitmap, row 0 at physical y=0",
+    "shape": [
+      20,
+      60
+    ],
+    "input_mean": 0.38666666666666666,
+    "directional_adjoint_error": 1.5137106310478867e-09,
+    "adjoint_tolerance": 2e-05,
+    "adjoint_pass": true,
+    "checks_passed": true,
+    "output_mean": 0.5207245130154856,
+    "output_range": [
+      0.0,
+      1.0
+    ]
+  },
+  "limitations": "Toporia uses cell centres and a grid-dependent threshold; the paper's nodal examples and this controlled pattern differ. A smooth supported field does not certify a binary design, exact angle or material budget.",
+  "parameters": {
+    "type": "self_support",
+    "direction": "+y",
+    "rmin": 2.4,
+    "threshold": 0.1,
+    "beta_support": 20.0,
+    "beta_local": 35.0
+  },
+  "next_check": "Align nodal versus cell-centred design points and threshold calibration on a named source example before comparing final topologies.",
+  "quarantined_reason": "",
+  "generated_at": "2026-10-27T22:28:46.603322+00:00",
+  "reproduce": "python -m experiments.research_batch2 --case self_support"
+}

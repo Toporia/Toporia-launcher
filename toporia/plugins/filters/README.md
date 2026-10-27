@@ -87,10 +87,18 @@ solution, and second-order convergence to the continuous Neumann solution.
 
 ## Volume-preserving Heaviside
 
+**Known research-audit failure:** the implicit-threshold adjoint can divide by
+zero on saturated all-solid fields. Smooth-field/root tests pass, but discrete
+method comparisons can reach this singular case. The new companion recipe is
+[quarantined](../../../docs/research/to-fix/batch2-heaviside_volume/README.md);
+it is not a selectable preset. The underlying existing filter is unchanged in
+this batch. Fixed-threshold projection is a separate mode.
+
 The Heaviside projection normally uses a fixed threshold η, which shifts the volume as β
 grows. With `eta_mode = "volume_preserving"` the filter solves for η on every forward pass
 (bisection) so the projected mean density equals the input's, and the backward pass includes
-the derivative of η with respect to the input, so the gradient stays exact. The default
+the derivative of η with respect to the input, giving the exact adjoint where
+the implicit threshold is differentiable and its denominator is nonzero. The default
 (`"fixed"`) is unchanged.
 
 - Papers: Xu, Cai & Cheng, *SMO* 41 (2010) 495–505; Ferrari & Sigmund, *SMO* 62 (2020) (open code: `top99neo.m`).

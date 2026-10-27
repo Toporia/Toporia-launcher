@@ -1,0 +1,42 @@
+{
+  "schema": 1,
+  "case_id": "routing",
+  "batch": 2,
+  "functions": [
+    "filter:routing"
+  ],
+  "preset": "Research: Router-radius closing",
+  "source_url": "https://doi.org/10.1007/s00158-006-0087-x",
+  "target": "Inspired by Sigmund morphology; no published figure for this Toporia-specific router rule.",
+  "paper_status": "paper_reproduction_to_fix",
+  "paper_visual_status": "not_assessed",
+  "checks": {
+    "input_origin": "own controlled bitmap, row 0 at physical y=0",
+    "shape": [
+      20,
+      60
+    ],
+    "input_mean": 0.38666666666666666,
+    "directional_adjoint_error": 1.3179277358609167e-09,
+    "adjoint_tolerance": 2e-05,
+    "adjoint_pass": true,
+    "checks_passed": true,
+    "output_mean": 0.4648241750725001,
+    "output_range": [
+      0.0,
+      1.0
+    ]
+  },
+  "limitations": "A p-norm construction and threshold differ from the paper's exponential operators. A boundary band bypasses the operation. The volume backward pass floors sensitivity at 1e-6 for OC stability and is not the exact volume derivative where that floor is active. It is not a finite-tool accessibility or collision certificate.",
+  "parameters": {
+    "type": "routing",
+    "radius_mm": 2.0,
+    "P": 20.0,
+    "start_iter": 0,
+    "ramp_iters": 1
+  },
+  "next_check": "Choose a research reference for the current normalized p-norm/interior-mask router rule; it is not the paper's exponential morphology operator.",
+  "quarantined_reason": "",
+  "generated_at": "2026-10-27T22:28:44.456970+00:00",
+  "reproduce": "python -m experiments.research_batch2 --case routing"
+}

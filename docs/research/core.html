@@ -72,6 +72,11 @@ representation. Here <img class="equation" src="data:image/png;base64,iVBORw0KGg
 the transpose with the row normalization on the gradient input. Constraint
 responses supply their own values and gradients, normally normalized so a value
 at most zero is feasible. Not every updater accepts every objective or constraint.</p>
+<p>This exact chain-rule description does not certify every filter variant. The
+routing filter floors its volume sensitivity for OC stability, and the Batch 2
+audit found a singular saturated-input case in volume-preserving projection.
+See the <a href="batch-2.md">documented exceptions and evidence</a> before treating those
+paths as universally exact or differentiable.</p>
 <p>Code: <a href="../../toporia/plugins/models/assembled.py">assembled.py</a>,
 <a href="../../toporia/framework/parts/response.py">response.py</a>,
 <a href="../../toporia/plugins/responses/compliance.py">compliance.py</a>.</p>

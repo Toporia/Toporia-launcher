@@ -1,0 +1,32 @@
+{
+  "schema": 1,
+  "case_id": "heaviside",
+  "batch": 2,
+  "functions": [
+    "filter:heaviside"
+  ],
+  "preset": "Research: Heaviside projection curves",
+  "source_url": "https://doi.org/10.1007/s00158-010-0602-y",
+  "target": "Wang et al. (2011), equation (9); Figure 5(f) is a separate pattern-based target.",
+  "paper_status": "paper_reproduction_to_fix",
+  "paper_visual_status": "not_assessed",
+  "checks": {
+    "directional_adjoint_error": 1.923407211279482e-09,
+    "adjoint_tolerance": 2e-05,
+    "adjoint_pass": true,
+    "equivalent_logistic_error": 3.3306690738754696e-16,
+    "equation_tolerance": 1e-12,
+    "checks_passed": true
+  },
+  "limitations": "The exact Figure 5 design bitmap is not available here. The transfer curves check the published equation, but are not a reproduction of its pattern panel or evidence of minimum length-scale control.",
+  "parameters": {
+    "type": "heaviside",
+    "beta": 8.0,
+    "eta": 0.5,
+    "beta_max": 8.0
+  },
+  "next_check": "Obtain the Figure 5 source bitmap and exact filtering settings; do not substitute the diagnostic ramp for the paper pattern.",
+  "quarantined_reason": "",
+  "generated_at": "2026-10-27T22:28:42.147707+00:00",
+  "reproduce": "python -m experiments.research_batch2 --case heaviside"
+}

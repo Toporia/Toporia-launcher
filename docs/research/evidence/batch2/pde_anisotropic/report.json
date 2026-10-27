@@ -1,0 +1,40 @@
+{
+  "schema": 1,
+  "case_id": "pde_anisotropic",
+  "batch": 2,
+  "functions": [
+    "filter:pde_anisotropic"
+  ],
+  "preset": "Research: Directional PDE filter",
+  "source_url": "https://doi.org/10.1002/nme.3072",
+  "target": "Lazarov-Sigmund Helmholtz formulation; no matching directional finite-volume paper panel identified.",
+  "paper_status": "paper_reproduction_to_fix",
+  "paper_visual_status": "not_assessed",
+  "checks": {
+    "input_origin": "cell-centre Neumann cosine mode, not a paper bitmap",
+    "shape": [
+      20,
+      60
+    ],
+    "input_mean": 0.38666666666666666,
+    "discrete_cosine_error": 9.992007221626409e-16,
+    "discrete_tolerance": 1e-12,
+    "continuous_discretization_error": 7.244625033431262e-06,
+    "checks_passed": true,
+    "output_mean": 0.5000000000000002,
+    "output_range": [
+      0.10781355856186792,
+      0.8921864414381324
+    ]
+  },
+  "limitations": "Toporia's anisotropic cell-centred extension differs from the paper's nodal discretization. The generated impulse/cosine figure is an analytic verification, not a reproduced research panel.",
+  "parameters": {
+    "type": "pde_anisotropic",
+    "rmin_x": 6.0,
+    "rmin_y": 2.0
+  },
+  "next_check": "Select a published directional FV example or establish this as an explicitly independent extension; the cosine verification already passes.",
+  "quarantined_reason": "",
+  "generated_at": "2026-10-27T22:28:41.805824+00:00",
+  "reproduce": "python -m experiments.research_batch2 --case pde_anisotropic"
+}

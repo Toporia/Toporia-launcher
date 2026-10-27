@@ -38,3 +38,16 @@ resetting in mind when restructuring GUI tests; this batch leaves those files al
 The research renderer requires no network or TeX installation. Existing presets
 without DESCRIPTION keep ordinary help; their fuller mathematical descriptions
 are added when their figure examples are developed in subsequent batches.
+
+## Batch 2 additions
+
+Twenty further registered research companions carry descriptions. Transfer and
+constitutive figures remain experiment outputs; ordinary GUI Run performs the
+documented optimization companion. The gallery and structured reports are under
+`docs/research/evidence/batch2/`. Future card/Function Explorer links can use them.
+
+Keep numerical checks, equation/curve agreement, visual paper review and unresolved
+targets separate when displaying status. The volume-preserving-projection recipe
+is quarantined: its saturated-input adjoint can become undefined. Do not expose
+that companion as ready until the numerical/compatibility issue is resolved.
+The existing underlying mode remains unchanged by this documentation batch.

@@ -5,7 +5,7 @@ material, volume target — plus the solver settings recommended for it. Two run
 a scenario and differ only in their solver are a benchmark, and that comparison is what
 Toporia exists to make.
 
-**Status: 20 in Toporia · 6 open datasets or suites · 0 paper only**
+**Status: 40 in Toporia · 6 open datasets or suites · 0 paper only**
 
 | Label | Meaning |
 | :-- | :-- |
@@ -240,3 +240,34 @@ is a genuine contribution — and it is already most of the way there in
 - A. G. M. Michell, "The limits of economy of material in frame-structures", *Phil. Mag.* 8 (1904) 589–597.
 - S. Erzmann, C. Dittmer, et al., "SELTO: sample-efficient learned topology optimization", [arXiv:2209.05098](https://arxiv.org/abs/2209.05098).
 - O. Sigmund, "On the usefulness of non-gradient approaches in topology optimization", *SMO* 43 (2011) 589–596 — on why benchmark resolution and function-evaluation counts must be reported together.
+
+## Research demonstrations added in Batch 2
+
+
+Each registered recipe has a mathematical description in preset help. The ordinary GUI Run is its optimization companion; transfer curves use the reproduction command. [Evidence and unresolved targets](../../../docs/research/batch-2.md).
+
+
+| Recipe | File | Menu name |
+| :-- | :-- | :-- |
+| PDE filter: top82 Fig. 4(b) | [research_pde.py](research_pde.py) | Research: PDE filter: top82 Fig. 4(b) |
+| Directional PDE filter | [research_pde_anisotropic.py](research_pde_anisotropic.py) | Research: Directional PDE filter |
+| Heaviside projection curves | [research_heaviside.py](research_heaviside.py) | Research: Heaviside projection curves |
+| Morphology: four operations | [research_morphology.py](research_morphology.py) | Research: Morphology: four operations |
+| AM overhang filter | [research_am.py](research_am.py) | Research: AM overhang filter |
+| Mirror symmetry | [research_symmetry.py](research_symmetry.py) | Research: Mirror symmetry |
+| Router-radius closing | [research_routing.py](research_routing.py) | Research: Router-radius closing |
+| Constant cross-section | [research_extrusion.py](research_extrusion.py) | Research: Constant cross-section |
+| Repeated layout pattern | [research_pattern.py](research_pattern.py) | Research: Repeated layout pattern |
+| Casting draw direction | [research_casting.py](research_casting.py) | Research: Casting draw direction |
+| PDE machining shadows | [research_machining.py](research_machining.py) | Research: PDE machining shadows |
+| Gaynor-Guest support | [research_self_support.py](research_self_support.py) | Research: Gaynor-Guest support |
+| RAMP stiffness curves | [research_ramp.py](research_ramp.py) | Research: RAMP stiffness curves |
+| Ordered SIMP: formula audit | [research_ordered_simp.py](research_ordered_simp.py) | Research: Ordered SIMP: formula audit |
+| SINH effective-cost curves | [research_sinh.py](research_sinh.py) | Research: SINH effective-cost curves |
+| SIMP and HS envelope | [research_hashin_shtrikman.py](research_hashin_shtrikman.py) | Research: SIMP and HS envelope |
+| Equal-step continuation | [research_schedule_steps.py](research_schedule_steps.py) | Research: Equal-step continuation |
+| Geometric beta continuation | [research_schedule_geometric.py](research_schedule_geometric.py) | Research: Geometric beta continuation |
+| Linear parameter ramp | [research_schedule_linear.py](research_schedule_linear.py) | Research: Linear parameter ramp |
+| Convergence-triggered beta | [research_schedule_settled.py](research_schedule_settled.py) | Research: Convergence-triggered beta |
+
+The volume-preserving-projection companion is quarantined in the to-fix queue and is not counted or discovered as a GUI preset.

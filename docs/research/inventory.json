@@ -12,13 +12,25 @@
         "https://doi.org/10.1007/s00158-016-1522-2",
         "https://doi.org/10.1016/j.addma.2016.06.010"
       ],
-      "citation_review": "metadata only; primary-source figure selection pending",
-      "target_figure": "not selected",
+      "citation_review": "See per-case primary sources and explicit comparison scope; other citations remain unreviewed.",
+      "target_figure": "am",
       "target_type": "input/output density field and relevant manufacturing metric",
       "batch": 2,
-      "status": "pending",
-      "evidence": [],
-      "notes": ""
+      "status": "paper_reproduction_to_fix",
+      "evidence": [
+        "evidence/batch2/am/report.json"
+      ],
+      "notes": "",
+      "research_cases": [
+        {
+          "case_id": "am",
+          "paper_status": "paper_reproduction_to_fix",
+          "target": "Langelaar (2017), illustrative printing/filter examples; exact panel and geometry require source alignment.",
+          "source_url": "https://doi.org/10.1007/s00158-016-1522-2",
+          "checks_passed": true,
+          "evidence": "evidence/batch2/am/report.json"
+        }
+      ]
     },
     {
       "id": "filter:casting",
@@ -29,13 +41,25 @@
       "source_urls": [
         "https://doi.org/10.1007/s00158-011-0632-0"
       ],
-      "citation_review": "metadata only; primary-source figure selection pending",
-      "target_figure": "not selected",
+      "citation_review": "See per-case primary sources and explicit comparison scope; other citations remain unreviewed.",
+      "target_figure": "casting",
       "target_type": "input/output density field and relevant manufacturing metric",
       "batch": 2,
-      "status": "pending",
-      "evidence": [],
-      "notes": ""
+      "status": "paper_reproduction_to_fix",
+      "evidence": [
+        "evidence/batch2/casting/report.json"
+      ],
+      "notes": "",
+      "research_cases": [
+        {
+          "case_id": "casting",
+          "paper_status": "paper_reproduction_to_fix",
+          "target": "Gersborg-Andreasen (2011), casting parameterization; exact formulation differs.",
+          "source_url": "https://doi.org/10.1007/s00158-011-0632-0",
+          "checks_passed": true,
+          "evidence": "evidence/batch2/casting/report.json"
+        }
+      ]
     },
     {
       "id": "filter:density",
@@ -68,13 +92,25 @@
       "source_urls": [
         "https://doi.org/10.1299/jsmea.47.198"
       ],
-      "citation_review": "metadata only; primary-source figure selection pending",
-      "target_figure": "not selected",
+      "citation_review": "See per-case primary sources and explicit comparison scope; other citations remain unreviewed.",
+      "target_figure": "extrusion",
       "target_type": "input/output density field and relevant manufacturing metric",
       "batch": 2,
-      "status": "pending",
-      "evidence": [],
-      "notes": ""
+      "status": "paper_reproduction_to_fix",
+      "evidence": [
+        "evidence/batch2/extrusion/report.json"
+      ],
+      "notes": "",
+      "research_cases": [
+        {
+          "case_id": "extrusion",
+          "paper_status": "paper_reproduction_to_fix",
+          "target": "Ishii-Aomura (2004), constant-cross-section design; specific optimized panel not reconstructed.",
+          "source_url": "https://doi.org/10.1299/jsmea.47.198",
+          "checks_passed": true,
+          "evidence": "evidence/batch2/extrusion/report.json"
+        }
+      ]
     },
     {
       "id": "filter:heaviside",
@@ -87,13 +123,34 @@
         "https://doi.org/10.1007/s00158-010-0602-y",
         "https://doi.org/10.1007/s00158-020-02629-w"
       ],
-      "citation_review": "metadata only; primary-source figure selection pending",
-      "target_figure": "not selected",
+      "citation_review": "See per-case primary sources and explicit comparison scope; other citations remain unreviewed.",
+      "target_figure": "heaviside, heaviside_volume",
       "target_type": "input/output density field and relevant manufacturing metric",
       "batch": 2,
-      "status": "pending",
-      "evidence": [],
-      "notes": ""
+      "status": "paper_reproduction_to_fix",
+      "evidence": [
+        "evidence/batch2/heaviside/report.json",
+        "evidence/batch2/heaviside_volume/report.json"
+      ],
+      "notes": "",
+      "research_cases": [
+        {
+          "case_id": "heaviside",
+          "paper_status": "paper_reproduction_to_fix",
+          "target": "Wang et al. (2011), equation (9); Figure 5(f) is a separate pattern-based target.",
+          "source_url": "https://doi.org/10.1007/s00158-010-0602-y",
+          "checks_passed": true,
+          "evidence": "evidence/batch2/heaviside/report.json"
+        },
+        {
+          "case_id": "heaviside_volume",
+          "paper_status": "paper_reproduction_to_fix",
+          "target": "Ferrari-Sigmund (2020) volume-preserving construction; exact source figure remains to select.",
+          "source_url": "https://doi.org/10.1007/s00158-020-02629-w",
+          "checks_passed": false,
+          "evidence": "evidence/batch2/heaviside_volume/report.json"
+        }
+      ]
     },
     {
       "id": "filter:machining",
@@ -105,13 +162,25 @@
         "https://doi.org/10.1016/j.cma.2021.114488",
         "https://arxiv.org/abs/2102.12999"
       ],
-      "citation_review": "metadata only; primary-source figure selection pending",
-      "target_figure": "not selected",
+      "citation_review": "See per-case primary sources and explicit comparison scope; other citations remain unreviewed.",
+      "target_figure": "machining",
       "target_type": "input/output density field and relevant manufacturing metric",
       "batch": 2,
-      "status": "pending",
-      "evidence": [],
-      "notes": ""
+      "status": "paper_reproduction_to_fix",
+      "evidence": [
+        "evidence/batch2/machining/report.json"
+      ],
+      "notes": "",
+      "research_cases": [
+        {
+          "case_id": "machining",
+          "paper_status": "paper_reproduction_to_fix",
+          "target": "Hoghoj-Traff (2022), advection-diffusion machining; paper geometry is not reproduced by the diagnostic.",
+          "source_url": "https://doi.org/10.1016/j.cma.2021.114488",
+          "checks_passed": true,
+          "evidence": "evidence/batch2/machining/report.json"
+        }
+      ]
     },
     {
       "id": "filter:morphology",
@@ -122,13 +191,25 @@
       "source_urls": [
         "https://doi.org/10.1007/s00158-006-0087-x"
       ],
-      "citation_review": "metadata only; primary-source figure selection pending",
-      "target_figure": "not selected",
+      "citation_review": "See per-case primary sources and explicit comparison scope; other citations remain unreviewed.",
+      "target_figure": "morphology",
       "target_type": "input/output density field and relevant manufacturing metric",
       "batch": 2,
-      "status": "pending",
-      "evidence": [],
-      "notes": ""
+      "status": "paper_reproduction_to_fix",
+      "evidence": [
+        "evidence/batch2/morphology/report.json"
+      ],
+      "notes": "",
+      "research_cases": [
+        {
+          "case_id": "morphology",
+          "paper_status": "paper_reproduction_to_fix",
+          "target": "Sigmund (2007), Figure 3, basic morphology operations; equations (18)-(21).",
+          "source_url": "https://doi.org/10.1007/s00158-006-0087-x",
+          "checks_passed": true,
+          "evidence": "evidence/batch2/morphology/report.json"
+        }
+      ]
     },
     {
       "id": "filter:pattern",
@@ -140,13 +221,25 @@
         "https://doi.org/10.1007/978-3-662-05086-6",
         "https://doi.org/10.1007/s00158-008-0332-6"
       ],
-      "citation_review": "metadata only; primary-source figure selection pending",
-      "target_figure": "not selected",
+      "citation_review": "See per-case primary sources and explicit comparison scope; other citations remain unreviewed.",
+      "target_figure": "pattern",
       "target_type": "input/output density field and relevant manufacturing metric",
       "batch": 2,
-      "status": "pending",
-      "evidence": [],
-      "notes": ""
+      "status": "paper_reproduction_to_fix",
+      "evidence": [
+        "evidence/batch2/pattern/report.json"
+      ],
+      "notes": "",
+      "research_cases": [
+        {
+          "case_id": "pattern",
+          "paper_status": "paper_reproduction_to_fix",
+          "target": "Almeida et al. layout-pattern restrictions; exact paper geometry/panel pending.",
+          "source_url": "https://doi.org/10.1007/s00158-008-0332-6",
+          "checks_passed": true,
+          "evidence": "evidence/batch2/pattern/report.json"
+        }
+      ]
     },
     {
       "id": "filter:pde",
@@ -158,13 +251,25 @@
         "https://doi.org/10.1002/nme.3072",
         "https://doi.org/10.1007/s00158-010-0594-7"
       ],
-      "citation_review": "metadata only; primary-source figure selection pending",
-      "target_figure": "not selected",
+      "citation_review": "See per-case primary sources and explicit comparison scope; other citations remain unreviewed.",
+      "target_figure": "pde",
       "target_type": "input/output density field and relevant manufacturing metric",
       "batch": 2,
-      "status": "pending",
-      "evidence": [],
-      "notes": ""
+      "status": "research_example_verified",
+      "evidence": [
+        "evidence/batch2/pde/report.json"
+      ],
+      "notes": "",
+      "research_cases": [
+        {
+          "case_id": "pde",
+          "paper_status": "native_code_match",
+          "target": "Andreassen et al. (2011), Figure 4, middle bottom density-filter panel, 150 by 50 cells, radius 6.",
+          "source_url": "https://doi.org/10.1007/s00158-010-0594-7",
+          "checks_passed": true,
+          "evidence": "evidence/batch2/pde/report.json"
+        }
+      ]
     },
     {
       "id": "filter:pde_anisotropic",
@@ -175,13 +280,25 @@
       "source_urls": [
         "https://doi.org/10.1002/nme.3072"
       ],
-      "citation_review": "metadata only; primary-source figure selection pending",
-      "target_figure": "not selected",
+      "citation_review": "See per-case primary sources and explicit comparison scope; other citations remain unreviewed.",
+      "target_figure": "pde_anisotropic",
       "target_type": "input/output density field and relevant manufacturing metric",
       "batch": 2,
-      "status": "pending",
-      "evidence": [],
-      "notes": ""
+      "status": "paper_reproduction_to_fix",
+      "evidence": [
+        "evidence/batch2/pde_anisotropic/report.json"
+      ],
+      "notes": "",
+      "research_cases": [
+        {
+          "case_id": "pde_anisotropic",
+          "paper_status": "paper_reproduction_to_fix",
+          "target": "Lazarov-Sigmund Helmholtz formulation; no matching directional finite-volume paper panel identified.",
+          "source_url": "https://doi.org/10.1002/nme.3072",
+          "checks_passed": true,
+          "evidence": "evidence/batch2/pde_anisotropic/report.json"
+        }
+      ]
     },
     {
       "id": "filter:routing",
@@ -192,13 +309,25 @@
       "source_urls": [
         "https://doi.org/10.1007/s00158-006-0087-x"
       ],
-      "citation_review": "metadata only; primary-source figure selection pending",
-      "target_figure": "not selected",
+      "citation_review": "See per-case primary sources and explicit comparison scope; other citations remain unreviewed.",
+      "target_figure": "routing",
       "target_type": "input/output density field and relevant manufacturing metric",
       "batch": 2,
-      "status": "pending",
-      "evidence": [],
-      "notes": ""
+      "status": "paper_reproduction_to_fix",
+      "evidence": [
+        "evidence/batch2/routing/report.json"
+      ],
+      "notes": "",
+      "research_cases": [
+        {
+          "case_id": "routing",
+          "paper_status": "paper_reproduction_to_fix",
+          "target": "Inspired by Sigmund morphology; no published figure for this Toporia-specific router rule.",
+          "source_url": "https://doi.org/10.1007/s00158-006-0087-x",
+          "checks_passed": true,
+          "evidence": "evidence/batch2/routing/report.json"
+        }
+      ]
     },
     {
       "id": "filter:self_support",
@@ -209,13 +338,25 @@
       "source_urls": [
         "https://doi.org/10.1007/s00158-016-1551-x"
       ],
-      "citation_review": "metadata only; primary-source figure selection pending",
-      "target_figure": "not selected",
+      "citation_review": "See per-case primary sources and explicit comparison scope; other citations remain unreviewed.",
+      "target_figure": "self_support",
       "target_type": "input/output density field and relevant manufacturing metric",
       "batch": 2,
-      "status": "pending",
-      "evidence": [],
-      "notes": ""
+      "status": "paper_reproduction_to_fix",
+      "evidence": [
+        "evidence/batch2/self_support/report.json"
+      ],
+      "notes": "",
+      "research_cases": [
+        {
+          "case_id": "self_support",
+          "paper_status": "paper_reproduction_to_fix",
+          "target": "Gaynor-Guest (2016), support projection; exact nodal paper panel not reproduced.",
+          "source_url": "https://doi.org/10.1007/s00158-016-1551-x",
+          "checks_passed": true,
+          "evidence": "evidence/batch2/self_support/report.json"
+        }
+      ]
     },
     {
       "id": "filter:sensitivity",
@@ -248,13 +389,25 @@
       "source_urls": [
         "https://doi.org/10.1007/978-3-662-05086-6"
       ],
-      "citation_review": "metadata only; primary-source figure selection pending",
-      "target_figure": "not selected",
+      "citation_review": "See per-case primary sources and explicit comparison scope; other citations remain unreviewed.",
+      "target_figure": "symmetry",
       "target_type": "input/output density field and relevant manufacturing metric",
       "batch": 2,
-      "status": "pending",
-      "evidence": [],
-      "notes": ""
+      "status": "paper_reproduction_to_fix",
+      "evidence": [
+        "evidence/batch2/symmetry/report.json"
+      ],
+      "notes": "",
+      "research_cases": [
+        {
+          "case_id": "symmetry",
+          "paper_status": "paper_reproduction_to_fix",
+          "target": "Standard symmetry restriction; no specific book figure assigned to this Toporia implementation.",
+          "source_url": "https://doi.org/10.1007/978-3-662-05086-6",
+          "checks_passed": true,
+          "evidence": "evidence/batch2/symmetry/report.json"
+        }
+      ]
     },
     {
       "id": "interpolation:hashin_shtrikman",
@@ -266,30 +419,55 @@
         "https://doi.org/10.1007/s004190050248",
         "https://sepwww.stanford.edu/sep/berryman/PS/PHYS.pdf"
       ],
-      "citation_review": "metadata only; primary-source figure selection pending",
-      "target_figure": "not selected",
+      "citation_review": "See per-case primary sources and explicit comparison scope; other citations remain unreviewed.",
+      "target_figure": "hashin_shtrikman",
       "target_type": "material-property curve and a design example",
       "batch": 2,
-      "status": "pending",
-      "evidence": [],
-      "notes": ""
+      "status": "research_example_verified",
+      "evidence": [
+        "evidence/batch2/hashin_shtrikman/report.json"
+      ],
+      "notes": "",
+      "research_cases": [
+        {
+          "case_id": "hashin_shtrikman",
+          "paper_status": "source_equation_curve_match",
+          "target": "Bendsoe-Sigmund (1999), Figure 2, constitutive curves only.",
+          "source_url": "https://doi.org/10.1007/s004190050248",
+          "checks_passed": true,
+          "evidence": "evidence/batch2/hashin_shtrikman/report.json"
+        }
+      ]
     },
     {
       "id": "interpolation:ordered_simp",
       "kind": "interpolation",
       "label": "Ordered SIMP (multi-material)",
       "source_file": "toporia/plugins/interpolations/ordered_simp.py",
-      "reference_declaration": "W. Zuo and K. Saitou, \"Multi-material topology optimization using ordered SIMP interpolation\", Struct. Multidisc. Optim. 55 (2017) 477-491. Papers: https://doi.org/10.1007/s00158-016-1513-3",
+      "reference_declaration": "Interval-local ordered SIMP: the increasing-modulus branch of O. A. A. da Silveira and L. F. Palma, \"Some considerations on multi-material topology optimization using ordered SIMP\", SMO 65 (2022) 261, equations 4-6. Inspired by Zuo and Saitou (2017), but not their global-power formula. Stiffness only; cost interpolation and non-monotone material properties are not implemented. Papers: https://doi.org/10.1007/s00158-022-03379-7 https://doi.org/10.1007/s00158-016-1513-3",
       "source_urls": [
+        "https://doi.org/10.1007/s00158-022-03379-7",
         "https://doi.org/10.1007/s00158-016-1513-3"
       ],
-      "citation_review": "metadata only; primary-source figure selection pending",
-      "target_figure": "not selected",
+      "citation_review": "See per-case primary sources and explicit comparison scope; other citations remain unreviewed.",
+      "target_figure": "ordered_simp",
       "target_type": "material-property curve and a design example",
       "batch": 2,
-      "status": "pending",
-      "evidence": [],
-      "notes": ""
+      "status": "research_example_verified",
+      "evidence": [
+        "evidence/batch2/ordered_simp/report.json"
+      ],
+      "notes": "",
+      "research_cases": [
+        {
+          "case_id": "ordered_simp",
+          "paper_status": "source_equation_curve_match",
+          "target": "da Silveira-Palma (2022), Figure 1 modified curves, Table 1; compare original equations (2)-(3) separately.",
+          "source_url": "https://doi.org/10.1007/s00158-022-03379-7",
+          "checks_passed": true,
+          "evidence": "evidence/batch2/ordered_simp/report.json"
+        }
+      ]
     },
     {
       "id": "interpolation:ramp",
@@ -300,13 +478,25 @@
       "source_urls": [
         "https://doi.org/10.1007/s001580100129"
       ],
-      "citation_review": "metadata only; primary-source figure selection pending",
-      "target_figure": "not selected",
+      "citation_review": "See per-case primary sources and explicit comparison scope; other citations remain unreviewed.",
+      "target_figure": "ramp",
       "target_type": "material-property curve and a design example",
       "batch": 2,
-      "status": "pending",
-      "evidence": [],
-      "notes": ""
+      "status": "paper_reproduction_to_fix",
+      "evidence": [
+        "evidence/batch2/ramp/report.json"
+      ],
+      "notes": "",
+      "research_cases": [
+        {
+          "case_id": "ramp",
+          "paper_status": "paper_reproduction_to_fix",
+          "target": "Stolpe-Svanberg (2001); original figure/parameter set not available in this source review.",
+          "source_url": "https://doi.org/10.1007/s001580100129",
+          "checks_passed": true,
+          "evidence": "evidence/batch2/ramp/report.json"
+        }
+      ]
     },
     {
       "id": "interpolation:simp",
@@ -337,13 +527,25 @@
       "source_urls": [
         "https://doi.org/10.1007/s00158-005-0537-x"
       ],
-      "citation_review": "metadata only; primary-source figure selection pending",
-      "target_figure": "not selected",
+      "citation_review": "See per-case primary sources and explicit comparison scope; other citations remain unreviewed.",
+      "target_figure": "sinh",
       "target_type": "material-property curve and a design example",
       "batch": 2,
-      "status": "pending",
-      "evidence": [],
-      "notes": ""
+      "status": "research_example_verified",
+      "evidence": [
+        "evidence/batch2/sinh/report.json"
+      ],
+      "notes": "",
+      "research_cases": [
+        {
+          "case_id": "sinh",
+          "paper_status": "source_equation_curve_match",
+          "target": "Bruns (2005), Figure 4, equations (22)-(23).",
+          "source_url": "https://doi.org/10.1007/s00158-005-0537-x",
+          "checks_passed": true,
+          "evidence": "evidence/batch2/sinh/report.json"
+        }
+      ]
     },
     {
       "id": "method:levelset",
@@ -1233,13 +1435,25 @@
         "https://doi.org/10.1002/nme.1064",
         "https://doi.org/10.1007/s00158-010-0602-y"
       ],
-      "citation_review": "metadata only; primary-source figure selection pending",
-      "target_figure": "not selected",
+      "citation_review": "See per-case primary sources and explicit comparison scope; other citations remain unreviewed.",
+      "target_figure": "schedule_geometric",
       "target_type": "parameter history and effect on a reference design",
       "batch": 2,
-      "status": "pending",
-      "evidence": [],
-      "notes": ""
+      "status": "paper_reproduction_to_fix",
+      "evidence": [
+        "evidence/batch2/schedule_geometric/report.json"
+      ],
+      "notes": "",
+      "research_cases": [
+        {
+          "case_id": "schedule_geometric",
+          "paper_status": "paper_reproduction_to_fix",
+          "target": "Wang et al. (2011), section 4 continuation accompanying Figures 3-4.",
+          "source_url": "https://doi.org/10.1007/s00158-010-0602-y",
+          "checks_passed": true,
+          "evidence": "evidence/batch2/schedule_geometric/report.json"
+        }
+      ]
     },
     {
       "id": "schedule:linear",
@@ -1248,13 +1462,25 @@
       "source_file": "toporia/plugins/schedules/linear.py",
       "reference_declaration": "Toporia's own: a straight ramp between two values, a common continuation variant.",
       "source_urls": [],
-      "citation_review": "metadata only; primary-source figure selection pending",
-      "target_figure": "not selected",
+      "citation_review": "See per-case primary sources and explicit comparison scope; other citations remain unreviewed.",
+      "target_figure": "schedule_linear",
       "target_type": "parameter history and effect on a reference design",
       "batch": 2,
-      "status": "pending",
-      "evidence": [],
-      "notes": ""
+      "status": "paper_reproduction_to_fix",
+      "evidence": [
+        "evidence/batch2/schedule_linear/report.json"
+      ],
+      "notes": "",
+      "research_cases": [
+        {
+          "case_id": "schedule_linear",
+          "paper_status": "paper_reproduction_to_fix",
+          "target": "Toporia engineering rule; no direct research figure.",
+          "source_url": "",
+          "checks_passed": true,
+          "evidence": "evidence/batch2/schedule_linear/report.json"
+        }
+      ]
     },
     {
       "id": "schedule:settled",
@@ -1265,13 +1491,25 @@
       "source_urls": [
         "https://doi.org/10.1007/s00158-010-0602-y"
       ],
-      "citation_review": "metadata only; primary-source figure selection pending",
-      "target_figure": "not selected",
+      "citation_review": "See per-case primary sources and explicit comparison scope; other citations remain unreviewed.",
+      "target_figure": "schedule_settled",
       "target_type": "parameter history and effect on a reference design",
       "batch": 2,
-      "status": "pending",
-      "evidence": [],
-      "notes": ""
+      "status": "paper_reproduction_to_fix",
+      "evidence": [
+        "evidence/batch2/schedule_settled/report.json"
+      ],
+      "notes": "",
+      "research_cases": [
+        {
+          "case_id": "schedule_settled",
+          "paper_status": "paper_reproduction_to_fix",
+          "target": "Convergence-triggered continuation described in section 4; exact design history unavailable.",
+          "source_url": "https://doi.org/10.1007/s00158-010-0602-y",
+          "checks_passed": true,
+          "evidence": "evidence/batch2/schedule_settled/report.json"
+        }
+      ]
     },
     {
       "id": "schedule:steps",
@@ -1282,13 +1520,25 @@
       "source_urls": [
         "https://doi.org/10.1007/BF01214002"
       ],
-      "citation_review": "metadata only; primary-source figure selection pending",
-      "target_figure": "not selected",
+      "citation_review": "See per-case primary sources and explicit comparison scope; other citations remain unreviewed.",
+      "target_figure": "schedule_steps",
       "target_type": "parameter history and effect on a reference design",
       "batch": 2,
-      "status": "pending",
-      "evidence": [],
-      "notes": ""
+      "status": "paper_reproduction_to_fix",
+      "evidence": [
+        "evidence/batch2/schedule_steps/report.json"
+      ],
+      "notes": "",
+      "research_cases": [
+        {
+          "case_id": "schedule_steps",
+          "paper_status": "paper_reproduction_to_fix",
+          "target": "General SIMP continuation; no source figure for this exact clock.",
+          "source_url": "https://doi.org/10.1007/BF01214002",
+          "checks_passed": true,
+          "evidence": "evidence/batch2/schedule_steps/report.json"
+        }
+      ]
     },
     {
       "id": "updater:adam",
@@ -1865,6 +2115,226 @@
         "interpolation:simp",
         "response:compliance",
         "updater:oc"
+      ]
+    },
+    {
+      "name": "Research: AM overhang filter",
+      "source_file": "toporia/plugins/problems/research_am.py",
+      "about": "Demonstrate AM overhang filter; see preset help for mathematics and evidence scope.",
+      "reference": "Research demonstration. Papers: https://doi.org/10.1007/s00158-016-1522-2",
+      "research_description": true,
+      "target_figure": "Langelaar (2017), illustrative printing/filter examples; exact panel and geometry require source alignment.",
+      "functions": [
+        "filter:am"
+      ]
+    },
+    {
+      "name": "Research: Casting draw direction",
+      "source_file": "toporia/plugins/problems/research_casting.py",
+      "about": "Demonstrate Casting draw direction; see preset help for mathematics and evidence scope.",
+      "reference": "Research demonstration. Papers: https://doi.org/10.1007/s00158-011-0632-0",
+      "research_description": true,
+      "target_figure": "Gersborg-Andreasen (2011), casting parameterization; exact formulation differs.",
+      "functions": [
+        "filter:casting"
+      ]
+    },
+    {
+      "name": "Research: Constant cross-section",
+      "source_file": "toporia/plugins/problems/research_extrusion.py",
+      "about": "Demonstrate Constant cross-section; see preset help for mathematics and evidence scope.",
+      "reference": "Research demonstration. Papers: https://doi.org/10.1299/jsmea.47.198",
+      "research_description": true,
+      "target_figure": "Ishii-Aomura (2004), constant-cross-section design; specific optimized panel not reconstructed.",
+      "functions": [
+        "filter:extrusion"
+      ]
+    },
+    {
+      "name": "Research: Convergence-triggered beta",
+      "source_file": "toporia/plugins/problems/research_schedule_settled.py",
+      "about": "Demonstrate Convergence-triggered beta; see preset help for mathematics and evidence scope.",
+      "reference": "Research demonstration. Papers: https://doi.org/10.1007/s00158-010-0602-y",
+      "research_description": true,
+      "target_figure": "Convergence-triggered continuation described in section 4; exact design history unavailable.",
+      "functions": [
+        "schedule:settled"
+      ]
+    },
+    {
+      "name": "Research: Directional PDE filter",
+      "source_file": "toporia/plugins/problems/research_pde_anisotropic.py",
+      "about": "Demonstrate Directional PDE filter; see preset help for mathematics and evidence scope.",
+      "reference": "Research demonstration. Papers: https://doi.org/10.1002/nme.3072",
+      "research_description": true,
+      "target_figure": "Lazarov-Sigmund Helmholtz formulation; no matching directional finite-volume paper panel identified.",
+      "functions": [
+        "filter:pde_anisotropic"
+      ]
+    },
+    {
+      "name": "Research: Equal-step continuation",
+      "source_file": "toporia/plugins/problems/research_schedule_steps.py",
+      "about": "Demonstrate Equal-step continuation; see preset help for mathematics and evidence scope.",
+      "reference": "Research demonstration. Papers: https://doi.org/10.1007/BF01214002",
+      "research_description": true,
+      "target_figure": "General SIMP continuation; no source figure for this exact clock.",
+      "functions": [
+        "schedule:steps"
+      ]
+    },
+    {
+      "name": "Research: Gaynor-Guest support",
+      "source_file": "toporia/plugins/problems/research_self_support.py",
+      "about": "Demonstrate Gaynor-Guest support; see preset help for mathematics and evidence scope.",
+      "reference": "Research demonstration. Papers: https://doi.org/10.1007/s00158-016-1551-x",
+      "research_description": true,
+      "target_figure": "Gaynor-Guest (2016), support projection; exact nodal paper panel not reproduced.",
+      "functions": [
+        "filter:self_support"
+      ]
+    },
+    {
+      "name": "Research: Geometric beta continuation",
+      "source_file": "toporia/plugins/problems/research_schedule_geometric.py",
+      "about": "Demonstrate Geometric beta continuation; see preset help for mathematics and evidence scope.",
+      "reference": "Research demonstration. Papers: https://doi.org/10.1007/s00158-010-0602-y",
+      "research_description": true,
+      "target_figure": "Wang et al. (2011), section 4 continuation accompanying Figures 3-4.",
+      "functions": [
+        "schedule:geometric"
+      ]
+    },
+    {
+      "name": "Research: Heaviside projection curves",
+      "source_file": "toporia/plugins/problems/research_heaviside.py",
+      "about": "Demonstrate Heaviside projection curves; see preset help for mathematics and evidence scope.",
+      "reference": "Research demonstration. Papers: https://doi.org/10.1007/s00158-010-0602-y",
+      "research_description": true,
+      "target_figure": "Wang et al. (2011), equation (9); Figure 5(f) is a separate pattern-based target.",
+      "functions": [
+        "filter:heaviside"
+      ]
+    },
+    {
+      "name": "Research: Linear parameter ramp",
+      "source_file": "toporia/plugins/problems/research_schedule_linear.py",
+      "about": "Demonstrate Linear parameter ramp; see preset help for mathematics and evidence scope.",
+      "reference": "Toporia engineering demonstration; no originating research figure claimed.",
+      "research_description": true,
+      "target_figure": "Toporia engineering rule; no direct research figure.",
+      "functions": [
+        "schedule:linear"
+      ]
+    },
+    {
+      "name": "Research: Mirror symmetry",
+      "source_file": "toporia/plugins/problems/research_symmetry.py",
+      "about": "Demonstrate Mirror symmetry; see preset help for mathematics and evidence scope.",
+      "reference": "Research demonstration. Papers: https://doi.org/10.1007/978-3-662-05086-6",
+      "research_description": true,
+      "target_figure": "Standard symmetry restriction; no specific book figure assigned to this Toporia implementation.",
+      "functions": [
+        "filter:symmetry"
+      ]
+    },
+    {
+      "name": "Research: Morphology: four operations",
+      "source_file": "toporia/plugins/problems/research_morphology.py",
+      "about": "Demonstrate Morphology: four operations; see preset help for mathematics and evidence scope.",
+      "reference": "Research demonstration. Papers: https://doi.org/10.1007/s00158-006-0087-x",
+      "research_description": true,
+      "target_figure": "Sigmund (2007), Figure 3, basic morphology operations; equations (18)-(21).",
+      "functions": [
+        "filter:morphology"
+      ]
+    },
+    {
+      "name": "Research: Ordered SIMP: formula audit",
+      "source_file": "toporia/plugins/problems/research_ordered_simp.py",
+      "about": "Demonstrate Ordered SIMP: formula audit; see preset help for mathematics and evidence scope.",
+      "reference": "Research demonstration. Papers: https://doi.org/10.1007/s00158-022-03379-7",
+      "research_description": true,
+      "target_figure": "da Silveira-Palma (2022), Figure 1 modified curves, Table 1; compare original equations (2)-(3) separately.",
+      "functions": [
+        "interpolation:ordered_simp"
+      ]
+    },
+    {
+      "name": "Research: PDE filter: top82 Fig. 4(b)",
+      "source_file": "toporia/plugins/problems/research_pde.py",
+      "about": "Demonstrate PDE filter: top82 Fig. 4(b); see preset help for mathematics and evidence scope.",
+      "reference": "Research demonstration. Papers: https://doi.org/10.1007/s00158-010-0594-7",
+      "research_description": true,
+      "target_figure": "Andreassen et al. (2011), Figure 4, middle bottom density-filter panel, 150 by 50 cells, radius 6.",
+      "functions": [
+        "filter:pde"
+      ]
+    },
+    {
+      "name": "Research: PDE machining shadows",
+      "source_file": "toporia/plugins/problems/research_machining.py",
+      "about": "Demonstrate PDE machining shadows; see preset help for mathematics and evidence scope.",
+      "reference": "Research demonstration. Papers: https://doi.org/10.1016/j.cma.2021.114488",
+      "research_description": true,
+      "target_figure": "Hoghoj-Traff (2022), advection-diffusion machining; paper geometry is not reproduced by the diagnostic.",
+      "functions": [
+        "filter:machining"
+      ]
+    },
+    {
+      "name": "Research: RAMP stiffness curves",
+      "source_file": "toporia/plugins/problems/research_ramp.py",
+      "about": "Demonstrate RAMP stiffness curves; see preset help for mathematics and evidence scope.",
+      "reference": "Research demonstration. Papers: https://doi.org/10.1007/s001580100129",
+      "research_description": true,
+      "target_figure": "Stolpe-Svanberg (2001); original figure/parameter set not available in this source review.",
+      "functions": [
+        "interpolation:ramp"
+      ]
+    },
+    {
+      "name": "Research: Repeated layout pattern",
+      "source_file": "toporia/plugins/problems/research_pattern.py",
+      "about": "Demonstrate Repeated layout pattern; see preset help for mathematics and evidence scope.",
+      "reference": "Research demonstration. Papers: https://doi.org/10.1007/s00158-008-0332-6",
+      "research_description": true,
+      "target_figure": "Almeida et al. layout-pattern restrictions; exact paper geometry/panel pending.",
+      "functions": [
+        "filter:pattern"
+      ]
+    },
+    {
+      "name": "Research: Router-radius closing",
+      "source_file": "toporia/plugins/problems/research_routing.py",
+      "about": "Demonstrate Router-radius closing; see preset help for mathematics and evidence scope.",
+      "reference": "Research demonstration. Papers: https://doi.org/10.1007/s00158-006-0087-x",
+      "research_description": true,
+      "target_figure": "Inspired by Sigmund morphology; no published figure for this Toporia-specific router rule.",
+      "functions": [
+        "filter:routing"
+      ]
+    },
+    {
+      "name": "Research: SIMP and HS envelope",
+      "source_file": "toporia/plugins/problems/research_hashin_shtrikman.py",
+      "about": "Demonstrate SIMP and HS envelope; see preset help for mathematics and evidence scope.",
+      "reference": "Research demonstration. Papers: https://doi.org/10.1007/s004190050248",
+      "research_description": true,
+      "target_figure": "Bendsoe-Sigmund (1999), Figure 2, constitutive curves only.",
+      "functions": [
+        "interpolation:hashin_shtrikman"
+      ]
+    },
+    {
+      "name": "Research: SINH effective-cost curves",
+      "source_file": "toporia/plugins/problems/research_sinh.py",
+      "about": "Demonstrate SINH effective-cost curves; see preset help for mathematics and evidence scope.",
+      "reference": "Research demonstration. Papers: https://doi.org/10.1007/s00158-005-0537-x",
+      "research_description": true,
+      "target_figure": "Bruns (2005), Figure 4, equations (22)-(23).",
+      "functions": [
+        "interpolation:sinh"
       ]
     },
     {
@@ -2993,6 +3463,13 @@
       "source_summary": "Plain research-description data; no GUI, plotting or solver dependencies."
     },
     {
+      "source_file": "toporia/plugins/problems/_research_batch2.py",
+      "defines_functions": [],
+      "is_preset": false,
+      "classification": "supporting module",
+      "source_summary": "Batch 2 scientific descriptions and companion optimization recipes."
+    },
+    {
       "source_file": "toporia/plugins/problems/cantilever.py",
       "defines_functions": [],
       "is_preset": true,
@@ -3110,6 +3587,146 @@
       "is_preset": true,
       "classification": "preset recipe",
       "source_summary": "Figure 3(a), top panel: sensitivity filtering with the paper's radius."
+    },
+    {
+      "source_file": "toporia/plugins/problems/research_am.py",
+      "defines_functions": [],
+      "is_preset": true,
+      "classification": "preset recipe",
+      "source_summary": "Research demonstration: AM overhang filter."
+    },
+    {
+      "source_file": "toporia/plugins/problems/research_casting.py",
+      "defines_functions": [],
+      "is_preset": true,
+      "classification": "preset recipe",
+      "source_summary": "Research demonstration: Casting draw direction."
+    },
+    {
+      "source_file": "toporia/plugins/problems/research_extrusion.py",
+      "defines_functions": [],
+      "is_preset": true,
+      "classification": "preset recipe",
+      "source_summary": "Research demonstration: Constant cross-section."
+    },
+    {
+      "source_file": "toporia/plugins/problems/research_hashin_shtrikman.py",
+      "defines_functions": [],
+      "is_preset": true,
+      "classification": "preset recipe",
+      "source_summary": "Research demonstration: SIMP and HS envelope."
+    },
+    {
+      "source_file": "toporia/plugins/problems/research_heaviside.py",
+      "defines_functions": [],
+      "is_preset": true,
+      "classification": "preset recipe",
+      "source_summary": "Research demonstration: Heaviside projection curves."
+    },
+    {
+      "source_file": "toporia/plugins/problems/research_machining.py",
+      "defines_functions": [],
+      "is_preset": true,
+      "classification": "preset recipe",
+      "source_summary": "Research demonstration: PDE machining shadows."
+    },
+    {
+      "source_file": "toporia/plugins/problems/research_morphology.py",
+      "defines_functions": [],
+      "is_preset": true,
+      "classification": "preset recipe",
+      "source_summary": "Research demonstration: Morphology: four operations."
+    },
+    {
+      "source_file": "toporia/plugins/problems/research_ordered_simp.py",
+      "defines_functions": [],
+      "is_preset": true,
+      "classification": "preset recipe",
+      "source_summary": "Research demonstration: Ordered SIMP: formula audit."
+    },
+    {
+      "source_file": "toporia/plugins/problems/research_pattern.py",
+      "defines_functions": [],
+      "is_preset": true,
+      "classification": "preset recipe",
+      "source_summary": "Research demonstration: Repeated layout pattern."
+    },
+    {
+      "source_file": "toporia/plugins/problems/research_pde.py",
+      "defines_functions": [],
+      "is_preset": true,
+      "classification": "preset recipe",
+      "source_summary": "Research demonstration: PDE filter: top82 Fig. 4(b)."
+    },
+    {
+      "source_file": "toporia/plugins/problems/research_pde_anisotropic.py",
+      "defines_functions": [],
+      "is_preset": true,
+      "classification": "preset recipe",
+      "source_summary": "Research demonstration: Directional PDE filter."
+    },
+    {
+      "source_file": "toporia/plugins/problems/research_ramp.py",
+      "defines_functions": [],
+      "is_preset": true,
+      "classification": "preset recipe",
+      "source_summary": "Research demonstration: RAMP stiffness curves."
+    },
+    {
+      "source_file": "toporia/plugins/problems/research_routing.py",
+      "defines_functions": [],
+      "is_preset": true,
+      "classification": "preset recipe",
+      "source_summary": "Research demonstration: Router-radius closing."
+    },
+    {
+      "source_file": "toporia/plugins/problems/research_schedule_geometric.py",
+      "defines_functions": [],
+      "is_preset": true,
+      "classification": "preset recipe",
+      "source_summary": "Research demonstration: Geometric beta continuation."
+    },
+    {
+      "source_file": "toporia/plugins/problems/research_schedule_linear.py",
+      "defines_functions": [],
+      "is_preset": true,
+      "classification": "preset recipe",
+      "source_summary": "Research demonstration: Linear parameter ramp."
+    },
+    {
+      "source_file": "toporia/plugins/problems/research_schedule_settled.py",
+      "defines_functions": [],
+      "is_preset": true,
+      "classification": "preset recipe",
+      "source_summary": "Research demonstration: Convergence-triggered beta."
+    },
+    {
+      "source_file": "toporia/plugins/problems/research_schedule_steps.py",
+      "defines_functions": [],
+      "is_preset": true,
+      "classification": "preset recipe",
+      "source_summary": "Research demonstration: Equal-step continuation."
+    },
+    {
+      "source_file": "toporia/plugins/problems/research_self_support.py",
+      "defines_functions": [],
+      "is_preset": true,
+      "classification": "preset recipe",
+      "source_summary": "Research demonstration: Gaynor-Guest support."
+    },
+    {
+      "source_file": "toporia/plugins/problems/research_sinh.py",
+      "defines_functions": [],
+      "is_preset": true,
+      "classification": "preset recipe",
+      "source_summary": "Research demonstration: SINH effective-cost curves."
+    },
+    {
+      "source_file": "toporia/plugins/problems/research_symmetry.py",
+      "defines_functions": [],
+      "is_preset": true,
+      "classification": "preset recipe",
+      "source_summary": "Research demonstration: Mirror symmetry."
     },
     {
       "source_file": "toporia/plugins/problems/standard_bar.py",

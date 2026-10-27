@@ -1,0 +1,42 @@
+{
+  "pde": {
+    "source_url": "https://www.topopt.mek.dtu.dk/-/media/subsites/topopt/apps/dokumenter-og-filer-til-apps/topopt88.pdf",
+    "sha256": "21f2f864bd0e53791fdef7c996ba9b8846e6ef59b555c5dbcd8ae087956181d9",
+    "version": "author-hosted uncorrected manuscript",
+    "pdf_page": 9,
+    "figure": "4(b), bottom",
+    "visual_status": "qualitative_panel_match_reviewed",
+    "scope": "Topology and gray features reviewed; exact native field/trajectory comparison is separate.",
+    "reviewed_on": "2026-10-27"
+  },
+  "sinh": {
+    "source_url": "https://giref.ulaval.ca/~deteix/bois/documents_references/simp-sinh.pdf",
+    "sha256": "a5cc87fcf742d9b95471f226f06a8bf752df6968d949b2a027ed41d91d4f5040",
+    "pdf_page": 5,
+    "printed_page": 432,
+    "figure": "4",
+    "visual_status": "constitutive_curve_shapes_reviewed",
+    "scope": "First and second density measures, p=1.1,2.1,3.1,4.1,5.1; derivative is an added diagnostic, not a source panel.",
+    "reviewed_on": "2026-10-27"
+  },
+  "hashin_shtrikman": {
+    "source_url": "https://giref.ulaval.ca/~deteix/bois/documents_references/bendsoe1999.pdf",
+    "sha256": "0f3f0e927f14d1fcce56a2aa194aba8f0a82c105aa8d23615982897bb4c7abe7",
+    "pdf_page": 6,
+    "printed_page": 640,
+    "figure": "2",
+    "visual_status": "constitutive_curve_shapes_reviewed",
+    "scope": "HS upper ray at nu=1/3 and SIMP curves; inset inverse-homogenized microstructures are not reproduced.",
+    "reviewed_on": "2026-10-27"
+  },
+  "ordered_simp": {
+    "source_url": "https://www.researchgate.net/profile/Lucas-Palma-2/publication/363358729_Some_considerations_on_multi-material_topology_optimization_using_ordered_SIMP/links/631cee6b0a70852150e32b04/Some-considerations-on-multi-material-topology-optimization-using-ordered-SIMP.pdf",
+    "doi": "10.1007/s00158-022-03379-7",
+    "figure": "1",
+    "table": "1",
+    "equations": "2-6",
+    "visual_status": "not_assessed",
+    "scope": "Primary paper text and table inspected through the web tool. Direct local PDF download returned HTTP 403; no local document hash or visual-image match is claimed.",
+    "reviewed_on": "2026-10-27"
+  }
+}

@@ -1,0 +1,41 @@
+{
+  "schema": 1,
+  "case_id": "casting",
+  "batch": 2,
+  "functions": [
+    "filter:casting"
+  ],
+  "preset": "Research: Casting draw direction",
+  "source_url": "https://doi.org/10.1007/s00158-011-0632-0",
+  "target": "Gersborg-Andreasen (2011), casting parameterization; exact formulation differs.",
+  "paper_status": "paper_reproduction_to_fix",
+  "paper_visual_status": "not_assessed",
+  "checks": {
+    "input_origin": "own controlled bitmap, row 0 at physical y=0",
+    "shape": [
+      20,
+      60
+    ],
+    "input_mean": 0.38666666666666666,
+    "max_increase_along_draw": 0.0004997499997520863,
+    "monotonicity_tolerance": 0.0005000001,
+    "directional_adjoint_error": 1.8103573085070934e-09,
+    "adjoint_tolerance": 2e-05,
+    "adjoint_pass": true,
+    "checks_passed": true,
+    "output_mean": 0.19043779211785908,
+    "output_range": [
+      4.8444892742543e-09,
+      1.0
+    ]
+  },
+  "limitations": "The cited paper uses a Heaviside parameterization. This smooth running-minimum variant is not a direct reproduction; its output is only approximately monotone and does not model a full mould.",
+  "parameters": {
+    "type": "casting",
+    "direction": "+y"
+  },
+  "next_check": "Resolve the formulation difference: source Heaviside casting parameterization versus the current smooth cumulative minimum.",
+  "quarantined_reason": "",
+  "generated_at": "2026-10-27T22:28:45.765285+00:00",
+  "reproduce": "python -m experiments.research_batch2 --case casting"
+}

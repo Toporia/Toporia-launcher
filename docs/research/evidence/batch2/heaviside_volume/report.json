@@ -1,0 +1,39 @@
+{
+  "schema": 1,
+  "case_id": "heaviside_volume",
+  "batch": 2,
+  "functions": [
+    "filter:heaviside"
+  ],
+  "preset": "Research: Volume-preserving projection",
+  "source_url": "https://doi.org/10.1007/s00158-020-02629-w",
+  "target": "Ferrari-Sigmund (2020) volume-preserving construction; exact source figure remains to select.",
+  "paper_status": "paper_reproduction_to_fix",
+  "paper_visual_status": "not_assessed",
+  "checks": {
+    "directional_adjoint_error": 2.1818280515617516e-09,
+    "adjoint_tolerance": 2e-05,
+    "adjoint_pass": true,
+    "independent_root_eta": 0.44627821304152104,
+    "root_field_error": 2.220446049250313e-16,
+    "preserved_mean_error": 1.1102230246251565e-16,
+    "checks_passed": false,
+    "saturation_probe": {
+      "all_solid_adjoint_finite": false,
+      "input": "all ones",
+      "gradient_seed": "all ones",
+      "failure": "Zero sum of threshold derivatives; implicit-adjoint division is undefined."
+    }
+  },
+  "limitations": "Mean preservation does not make every cell or optimized topology agree with top99neo. The input field here is a controlled ramp, not a paper design.",
+  "parameters": {
+    "type": "heaviside",
+    "beta": 16.0,
+    "beta_max": 16.0,
+    "eta_mode": "volume_preserving"
+  },
+  "next_check": "Resolve the undefined implicit adjoint at saturated inputs before registration: establish a valid derivative/limit or reject incompatible designs/methods. Do not conceal division by zero with an arbitrary epsilon. Then align a numbered source figure.",
+  "quarantined_reason": "Saturated all-solid inputs give a zero implicit-threshold denominator and a non-finite adjoint; GUI Compare Methods can reach this through discrete updates. The recipe is not registered.",
+  "generated_at": "2026-10-27T22:28:42.528133+00:00",
+  "reproduce": "python -m experiments.research_batch2 --case heaviside_volume"
+}

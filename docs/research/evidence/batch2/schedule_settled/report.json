@@ -1,0 +1,43 @@
+{
+  "schema": 1,
+  "case_id": "schedule_settled",
+  "batch": 2,
+  "functions": [
+    "schedule:settled"
+  ],
+  "preset": "Research: Convergence-triggered beta",
+  "source_url": "https://doi.org/10.1007/s00158-010-0602-y",
+  "target": "Convergence-triggered continuation described in section 4; exact design history unavailable.",
+  "paper_status": "paper_reproduction_to_fix",
+  "paper_visual_status": "not_assessed",
+  "checks": {
+    "clock_rule_error": 0.0,
+    "rule_tolerance": 1e-12,
+    "checks_passed": true,
+    "event_signal": "own exponential change signal; not a paper iteration history",
+    "companion": {
+      "iterations": 450,
+      "stop_reason": "iteration limit (450)",
+      "last_pre_update_compliance": 1227.3681304454099,
+      "physical_fraction": 0.5000000961124038,
+      "parameter_path": "filters[1].beta",
+      "last_parameter": 128.0,
+      "converged": false
+    }
+  },
+  "limitations": "The synthetic change signal and minimum-duration guard are declared Toporia choices. The source paper's actual observed design history is not reconstructed.",
+  "parameters": {
+    "type": "settled",
+    "start": 1.0,
+    "end": 128.0,
+    "factor": 2.0,
+    "change_below": 0.03,
+    "settle": 1,
+    "min_every": 10,
+    "max_every": 50
+  },
+  "next_check": "Recover actual paper design-change observations and trigger settings; synthetic rule agreement and an unconverged OC companion are insufficient.",
+  "quarantined_reason": "",
+  "generated_at": "2026-10-27T22:29:19.160447+00:00",
+  "reproduce": "python -m experiments.research_batch2 --case schedule_settled"
+}

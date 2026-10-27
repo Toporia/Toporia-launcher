@@ -6,6 +6,10 @@ This is the V0.2.2 research track, alongside the GUI work. Start with the
 The [complete module map](modules.md) identifies numerical implementation files,
 supporting modules and preset recipes.
 
+[Batch 2 report](batch-2.md) · [Case index](batch-2-cases.md) ·
+[Figure gallery](evidence/batch2/index.html). Four new comparisons match identified
+source targets; unresolved cases and a numerical saturation failure are explicit.
+
 Every research preset pairs a runnable setup with a short explanation of the
 function, typeset equations, symbol definitions, source figure and comparison
 scope. Its existing preset **?** opens the explanation. The same content exports
@@ -44,8 +48,10 @@ See [conventions](conventions.md), the [preset template](templates/preset.md),
 the [researcher contribution template](templates/research-note.md) and the
 [`to-fix` queue](to-fix/README.md).
 
-The inventory separates **97 selectable functions/engines** from **20 presets**
-(18 existing plus two research recipes). One example can demonstrate several
+The inventory separates **97 selectable functions/engines** from **40 presets**
+(18 original and 22 registered research recipes). A further volume-preserving
+projection companion is quarantined, with its description and failed probe in
+the to-fix queue; it is not counted as a selectable preset. One example can demonstrate several
 functions. Metadata citations are starting points; pending rows are not claims
 of paper review or successful reproduction.
 

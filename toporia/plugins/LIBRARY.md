@@ -24,7 +24,7 @@ A test (`tests/apps/test_gui.py`) fails if a part ever stops being reachable fro
 | **Wraps** | Calls an outside Python package. That package is installed separately. Parts whose package is missing are greyed out in the app, with the install command. |
 | **Own** | Toporia's own idea or standard practice. |
 
-## In the library today: 88 selectable parts and 20 benchmark/research presets
+## In the library today: 88 selectable parts and 40 benchmark/research presets
 
 The selectable parts include models and whole methods; their nine underlying
 physics engines are counted separately in the [catalogue totals](README.md).
@@ -67,7 +67,7 @@ physics engines are counted separately in the [catalogue totals](README.md).
 | RAMP (rational) | `ramp` | [ramp.py](interpolations/ramp.py) | Paper | Stolpe & Svanberg 2001 · [paper](https://doi.org/10.1007/s001580100129) |
 | SINH (shared-density variant) | `sinh` | [sinh.py](interpolations/sinh.py) | Paper | Bruns 2005, eqs. 22-23, Table 2 case 5: linear stiffness and effective-volume cost · [paper](https://doi.org/10.1007/s00158-005-0537-x) |
 | Hashin-Shtrikman (fixed-nu upper envelope) | `hashin_shtrikman` | [hashin_shtrikman.py](interpolations/hashin_shtrikman.py) | Own | Independent envelope of both elastic upper-channel bounds, 2-D/3-D; not variable nu or realisability certification · [paper](https://doi.org/10.1007/s004190050248) |
-| Ordered SIMP (multi-material) | `ordered_simp` | [ordered_simp.py](interpolations/ordered_simp.py) | Paper | Zuo & Saitou, *SMO* 2017 · [paper](https://doi.org/10.1007/s00158-016-1513-3) |
+| Ordered SIMP (interval-local multi-material) | `ordered_simp` | [ordered_simp.py](interpolations/ordered_simp.py) | Paper | Increasing-modulus branch of da Silveira & Palma 2022, equations 4-6; differs from Zuo & Saitou's original global-power law · [paper](https://doi.org/10.1007/s00158-022-03379-7), [audit](../../docs/research/batch-2.md) |
 
 ### Physics models: what computes displacements and gradients ([folder](models/README.md), elements in [physics/](physics/README.md))
 
@@ -227,3 +227,7 @@ Listed from least to most effort. "Code" means open code exists (port it, or che
 | ParOpt | not on PyPI |
 | TOFLUX | the repository states no licence, so it cannot be reused |
 | MATLAB bridge (run the originals as whole methods) | the MATLAB Engine for R2026a supports Python ≤ 3.13; GNU Octave is the free alternative |
+
+### Batch 2 research companions
+
+Twenty additional registered recipes expose mathematical descriptions and runnable companions for filters, material laws and schedules. [Case index](../../docs/research/batch-2-cases.md) and [gallery](../../docs/research/evidence/batch2/index.html) distinguish four matched targets from unresolved comparisons. One further projection recipe is quarantined and excluded from the count.

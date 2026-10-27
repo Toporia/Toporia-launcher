@@ -1,0 +1,42 @@
+{
+  "schema": 1,
+  "case_id": "extrusion",
+  "batch": 2,
+  "functions": [
+    "filter:extrusion"
+  ],
+  "preset": "Research: Constant cross-section",
+  "source_url": "https://doi.org/10.1299/jsmea.47.198",
+  "target": "Ishii-Aomura (2004), constant-cross-section design; specific optimized panel not reconstructed.",
+  "paper_status": "paper_reproduction_to_fix",
+  "paper_visual_status": "not_assessed",
+  "checks": {
+    "input_origin": "own controlled bitmap, row 0 at physical y=0",
+    "shape": [
+      20,
+      60
+    ],
+    "input_mean": 0.38666666666666666,
+    "projector_error": 0.0,
+    "idempotence_error": 2.220446049250313e-16,
+    "mean_error": 0.0,
+    "directional_adjoint_error": 1.0473741873795461e-09,
+    "adjoint_tolerance": 2e-05,
+    "adjoint_pass": true,
+    "checks_passed": true,
+    "output_mean": 0.38666666666666666,
+    "output_range": [
+      0.15,
+      0.75
+    ]
+  },
+  "limitations": "The diagnostic is 2-D. Reproducing a 3-D optimized paper figure also requires its loads, geometry and optimizer settings.",
+  "parameters": {
+    "type": "extrusion",
+    "axis": "y"
+  },
+  "next_check": "Recover the 3-D paper geometry, loads and optimized panel; the 2-D mean projector is already independently checked.",
+  "quarantined_reason": "",
+  "generated_at": "2026-10-27T22:28:44.918471+00:00",
+  "reproduce": "python -m experiments.research_batch2 --case extrusion"
+}

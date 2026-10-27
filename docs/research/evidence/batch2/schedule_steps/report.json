@@ -1,0 +1,40 @@
+{
+  "schema": 1,
+  "case_id": "schedule_steps",
+  "batch": 2,
+  "functions": [
+    "schedule:steps"
+  ],
+  "preset": "Research: Equal-step continuation",
+  "source_url": "https://doi.org/10.1007/BF01214002",
+  "target": "General SIMP continuation; no source figure for this exact clock.",
+  "paper_status": "paper_reproduction_to_fix",
+  "paper_visual_status": "not_assessed",
+  "checks": {
+    "clock_rule_error": 0.0,
+    "rule_tolerance": 1e-12,
+    "checks_passed": true,
+    "event_signal": "own exponential change signal; not a paper iteration history",
+    "companion": {
+      "iterations": 200,
+      "stop_reason": "iteration limit (200)",
+      "last_pre_update_compliance": 240.04632438744636,
+      "physical_fraction": 0.49997866500343996,
+      "parameter_path": "interpolation.penal",
+      "last_parameter": 3.0,
+      "converged": false
+    }
+  },
+  "limitations": "The increment and interval are Toporia demonstration settings, not a reproduced research trajectory.",
+  "parameters": {
+    "type": "steps",
+    "start": 1.0,
+    "end": 3.0,
+    "step": 0.5,
+    "every": 20
+  },
+  "next_check": "Recover a paper iteration history and exact continuation settings; the own fixed-step clock is not such a history.",
+  "quarantined_reason": "",
+  "generated_at": "2026-10-27T22:28:54.167050+00:00",
+  "reproduce": "python -m experiments.research_batch2 --case schedule_steps"
+}

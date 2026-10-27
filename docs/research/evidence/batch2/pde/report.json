@@ -1,0 +1,54 @@
+{
+  "schema": 1,
+  "case_id": "pde",
+  "batch": 2,
+  "functions": [
+    "filter:pde"
+  ],
+  "preset": "Research: PDE filter: top82 Fig. 4(b)",
+  "source_url": "https://doi.org/10.1007/s00158-010-0594-7",
+  "target": "Andreassen et al. (2011), Figure 4, middle bottom density-filter panel, 150 by 50 cells, radius 6.",
+  "paper_status": "native_code_match",
+  "paper_visual_status": "qualitative_panel_match_reviewed",
+  "checks": {
+    "checks_passed": true,
+    "comparison": {
+      "same_iterations": true,
+      "field_shape": true,
+      "final_density_max_abs_error": 4.6197218273036356e-10,
+      "pre_update_compliance_max_abs_error": 4.991313809910025e-05,
+      "volume_error": 1.9997892231060632e-12,
+      "coordinate_conversion": "flip author rows once: top-down image to bottom-up physical y",
+      "tolerances": {
+        "density_abs": 1e-07,
+        "printed_compliance_abs": 5.1e-05,
+        "volume_abs": 1e-08
+      },
+      "native_code_match": true,
+      "paper_panel_status": "visual_review_required"
+    },
+    "iterations": 461,
+    "fresh_final_compliance": 235.3654393865173,
+    "physical_volume_fraction": 0.49999704164736786,
+    "source_sha256": "3e2fc7e86e21087dc8c84b616feb3a35a7eb7379ae58beff3a216d51556201da"
+  },
+  "limitations": "The corrected author top82 refuses radii below 2.5; this recipe uses 6. Printed compliance is pre-update. Final-field agreement is checked after one declared vertical row conversion.",
+  "parameters": {
+    "type": "pde",
+    "rmin": 6.0
+  },
+  "next_check": "",
+  "quarantined_reason": "",
+  "generated_at": "2026-10-27T22:28:41.189454+00:00",
+  "reproduce": "python -m experiments.research_batch2 --case pde",
+  "primary_source_review": {
+    "source_url": "https://www.topopt.mek.dtu.dk/-/media/subsites/topopt/apps/dokumenter-og-filer-til-apps/topopt88.pdf",
+    "sha256": "21f2f864bd0e53791fdef7c996ba9b8846e6ef59b555c5dbcd8ae087956181d9",
+    "version": "author-hosted uncorrected manuscript",
+    "pdf_page": 9,
+    "figure": "4(b), bottom",
+    "visual_status": "qualitative_panel_match_reviewed",
+    "scope": "Topology and gray features reviewed; exact native field/trajectory comparison is separate.",
+    "reviewed_on": "2026-10-27"
+  }
+}

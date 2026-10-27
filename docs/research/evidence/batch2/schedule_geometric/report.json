@@ -1,0 +1,40 @@
+{
+  "schema": 1,
+  "case_id": "schedule_geometric",
+  "batch": 2,
+  "functions": [
+    "schedule:geometric"
+  ],
+  "preset": "Research: Geometric beta continuation",
+  "source_url": "https://doi.org/10.1007/s00158-010-0602-y",
+  "target": "Wang et al. (2011), section 4 continuation accompanying Figures 3-4.",
+  "paper_status": "paper_reproduction_to_fix",
+  "paper_visual_status": "not_assessed",
+  "checks": {
+    "clock_rule_error": 0.0,
+    "rule_tolerance": 1e-12,
+    "checks_passed": true,
+    "event_signal": "own exponential change signal; not a paper iteration history",
+    "companion": {
+      "iterations": 450,
+      "stop_reason": "iteration limit (450)",
+      "last_pre_update_compliance": 335201388.56659865,
+      "physical_fraction": 0.49999423077904104,
+      "parameter_path": "filters[1].beta",
+      "last_parameter": 128.0,
+      "converged": false
+    }
+  },
+  "limitations": "A schedule plot verifies the fixed-interval rule only. It omits early increases at convergence and does not reproduce an optimized paper design.",
+  "parameters": {
+    "type": "geometric",
+    "start": 1.0,
+    "end": 128.0,
+    "factor": 2.0,
+    "every": 50
+  },
+  "next_check": "Match the paper's optimizer and early-convergence trigger as well as its 50-step clock; the bounded OC companion is not converged.",
+  "quarantined_reason": "",
+  "generated_at": "2026-10-27T22:29:04.821228+00:00",
+  "reproduce": "python -m experiments.research_batch2 --case schedule_geometric"
+}

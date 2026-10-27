@@ -1,0 +1,60 @@
+{
+  "schema": 1,
+  "case_id": "morphology",
+  "batch": 2,
+  "functions": [
+    "filter:morphology"
+  ],
+  "preset": "Research: Morphology: four operations",
+  "source_url": "https://doi.org/10.1007/s00158-006-0087-x",
+  "target": "Sigmund (2007), Figure 3, basic morphology operations; equations (18)-(21).",
+  "paper_status": "paper_reproduction_to_fix",
+  "paper_visual_status": "not_assessed",
+  "checks": {
+    "input_origin": "own controlled bitmap, row 0 at physical y=0",
+    "shape": [
+      20,
+      60
+    ],
+    "input_mean": 0.38666666666666666,
+    "operation_checks": [
+      {
+        "directional_adjoint_error": 1.1873982908028324e-09,
+        "adjoint_tolerance": 2e-05,
+        "adjoint_pass": true
+      },
+      {
+        "directional_adjoint_error": 3.4423409957909475e-09,
+        "adjoint_tolerance": 2e-05,
+        "adjoint_pass": true
+      },
+      {
+        "directional_adjoint_error": 2.214475269823879e-09,
+        "adjoint_tolerance": 2e-05,
+        "adjoint_pass": true
+      },
+      {
+        "directional_adjoint_error": 4.339751377025895e-09,
+        "adjoint_tolerance": 2e-05,
+        "adjoint_pass": true
+      }
+    ],
+    "checks_passed": true,
+    "output_mean": 0.49160461342106115,
+    "output_range": [
+      -6.9388939039072276e-18,
+      0.999872855990057
+    ]
+  },
+  "limitations": "The paper uses a five-cell structuring element and uniform weights for its illustrative binary example. Toporia uses cone weights and finite sharpness; the recreated pattern is not the original bitmap. Opening/closing are not generally exactly volume preserving on arbitrary fields.",
+  "parameters": {
+    "type": "morphology",
+    "mode": "open",
+    "beta": 32.0,
+    "rmin": 2.4
+  },
+  "next_check": "Recover Figure 3's bitmap and five-cell structuring element; compare the uniform-weight hard limit separately from finite-beta cone weighting.",
+  "quarantined_reason": "",
+  "generated_at": "2026-10-27T22:28:43.220447+00:00",
+  "reproduce": "python -m experiments.research_batch2 --case morphology"
+}

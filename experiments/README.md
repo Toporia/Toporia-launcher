@@ -5,6 +5,14 @@ and GUI. Failed performance gates are recorded rather than weakened.
 
 ## Paper figure presets and core guide
 
+Batch 2: `python -m experiments.research_batch2` generates all 21 filter/law/
+schedule demonstrations and returns nonzero for the documented quarantined
+volume-preserving saturation failure. Select an individual case with `--case`.
+`--companions` also records actual optimization histories for schedules.
+`research_capture` optionally recaptures the unchanged top82 reference;
+`research_publish` promotes reviewed records without bundling downloaded papers,
+author code or ordinary run folders. See the [Batch 2 report](../docs/research/batch-2.md).
+
 `python -m experiments.research_figures` runs the two selectable top88 Figure
 3(a) presets against captured unchanged author fields and histories. Each preset
 carries an explanation with mathematics in its GUI help. Results, independent

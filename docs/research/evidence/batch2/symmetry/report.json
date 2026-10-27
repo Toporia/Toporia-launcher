@@ -1,0 +1,42 @@
+{
+  "schema": 1,
+  "case_id": "symmetry",
+  "batch": 2,
+  "functions": [
+    "filter:symmetry"
+  ],
+  "preset": "Research: Mirror symmetry",
+  "source_url": "https://doi.org/10.1007/978-3-662-05086-6",
+  "target": "Standard symmetry restriction; no specific book figure assigned to this Toporia implementation.",
+  "paper_status": "paper_reproduction_to_fix",
+  "paper_visual_status": "not_assessed",
+  "checks": {
+    "input_origin": "own controlled bitmap, row 0 at physical y=0",
+    "shape": [
+      20,
+      60
+    ],
+    "input_mean": 0.38666666666666666,
+    "projector_error": 0.0,
+    "idempotence_error": 0.0,
+    "mean_error": 0.0,
+    "directional_adjoint_error": 1.0565009977980822e-09,
+    "adjoint_tolerance": 2e-05,
+    "adjoint_pass": true,
+    "checks_passed": true,
+    "output_mean": 0.38666666666666666,
+    "output_range": [
+      0.0,
+      0.75
+    ]
+  },
+  "limitations": "This is an engineering operator demonstration. Symmetric density is not the same as symmetric loads or a symmetric state solution.",
+  "parameters": {
+    "type": "symmetry",
+    "axis": "both"
+  },
+  "next_check": "Select an identifiable research example for the symmetry restriction, or classify this Toporia operator as an engineering demonstration.",
+  "quarantined_reason": "",
+  "generated_at": "2026-10-27T22:28:44.120358+00:00",
+  "reproduce": "python -m experiments.research_batch2 --case symmetry"
+}

@@ -1,0 +1,55 @@
+{
+  "schema": 1,
+  "case_id": "ordered_simp",
+  "batch": 2,
+  "functions": [
+    "interpolation:ordered_simp"
+  ],
+  "preset": "Research: Ordered SIMP: formula audit",
+  "source_url": "https://doi.org/10.1007/s00158-022-03379-7",
+  "target": "da Silveira-Palma (2022), Figure 1 modified curves, Table 1; compare original equations (2)-(3) separately.",
+  "paper_status": "source_equation_curve_match",
+  "paper_visual_status": "not_assessed",
+  "checks": {
+    "source_curve_parameters": [
+      1.0,
+      3.0,
+      5.0
+    ],
+    "curve_max_abs_error": 5.000000413701855e-10,
+    "curve_tolerance": 1e-08,
+    "off_knot_derivative_error": 1.3391010522667557e-10,
+    "checks_passed": true,
+    "original_2017_formula_max_errors": [
+      5.000000413701855e-10,
+      0.07934693854031027,
+      0.09627234076568114
+    ],
+    "original_2017_reproduction_to_fix": true,
+    "attribution": "Increasing-modulus branch of da Silveira-Palma 2022 modified law; not the original 2017 equation."
+  },
+  "limitations": "This verifies stiffness interpolation only, with 1e-8 absolute tolerance for the finite soft phase. No cost interpolation, non-monotone moduli, optimizer trajectory or paper bridge design is claimed.",
+  "parameters": {
+    "type": "ordered_simp",
+    "n_materials": 4,
+    "rho2": 0.4,
+    "rho3": 0.6,
+    "E2": 0.5,
+    "E3": 0.7,
+    "penal": 3.0
+  },
+  "next_check": "Current attribution is corrected to the 2022 modified law. Reproducing the distinct original 2017 formula would need a separately declared variant, not an undocumented algorithm change.",
+  "quarantined_reason": "",
+  "generated_at": "2026-10-27T22:28:47.572846+00:00",
+  "reproduce": "python -m experiments.research_batch2 --case ordered_simp",
+  "primary_source_review": {
+    "source_url": "https://www.researchgate.net/profile/Lucas-Palma-2/publication/363358729_Some_considerations_on_multi-material_topology_optimization_using_ordered_SIMP/links/631cee6b0a70852150e32b04/Some-considerations-on-multi-material-topology-optimization-using-ordered-SIMP.pdf",
+    "doi": "10.1007/s00158-022-03379-7",
+    "figure": "1",
+    "table": "1",
+    "equations": "2-6",
+    "visual_status": "not_assessed",
+    "scope": "Primary paper text and table inspected through the web tool. Direct local PDF download returned HTTP 403; no local document hash or visual-image match is claimed.",
+    "reviewed_on": "2026-10-27"
+  }
+}

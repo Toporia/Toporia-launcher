@@ -58,7 +58,7 @@ def description_html(description):
     url = description.source_url
     if url.startswith(("https://", "http://")):
         rows.append(f'<p><b>Paper</b><br><a href="{escape(url, quote=True)}">{escape(url)}</a></p>')
-    else:
+    elif url:
         rows.append(f"<p><b>Paper</b><br>{escape(url)}</p>")
     return "\n".join(rows)
 

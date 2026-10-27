@@ -146,6 +146,7 @@ Generated from every Python module under `toporia/`. A supporting module defines
 | [toporia/plugins/postprocessors/threshold.py](../../toporia/plugins/postprocessors/threshold.py) | numerical function implementation | postprocessor:threshold |
 | [toporia/plugins/problems/__init__.py](../../toporia/plugins/problems/__init__.py) | supporting module | - |
 | [toporia/plugins/problems/_research.py](../../toporia/plugins/problems/_research.py) | supporting module | - |
+| [toporia/plugins/problems/_research_batch2.py](../../toporia/plugins/problems/_research_batch2.py) | supporting module | - |
 | [toporia/plugins/problems/cantilever.py](../../toporia/plugins/problems/cantilever.py) | preset recipe | - |
 | [toporia/plugins/problems/cantilever_3d.py](../../toporia/plugins/problems/cantilever_3d.py) | preset recipe | - |
 | [toporia/plugins/problems/column_buckling.py](../../toporia/plugins/problems/column_buckling.py) | preset recipe | - |
@@ -163,6 +164,26 @@ Generated from every Python module under `toporia/`. A supporting module defines
 | [toporia/plugins/problems/nonlinear_cantilever.py](../../toporia/plugins/problems/nonlinear_cantilever.py) | preset recipe | - |
 | [toporia/plugins/problems/paper_top88_density.py](../../toporia/plugins/problems/paper_top88_density.py) | preset recipe | - |
 | [toporia/plugins/problems/paper_top88_sensitivity.py](../../toporia/plugins/problems/paper_top88_sensitivity.py) | preset recipe | - |
+| [toporia/plugins/problems/research_am.py](../../toporia/plugins/problems/research_am.py) | preset recipe | - |
+| [toporia/plugins/problems/research_casting.py](../../toporia/plugins/problems/research_casting.py) | preset recipe | - |
+| [toporia/plugins/problems/research_extrusion.py](../../toporia/plugins/problems/research_extrusion.py) | preset recipe | - |
+| [toporia/plugins/problems/research_hashin_shtrikman.py](../../toporia/plugins/problems/research_hashin_shtrikman.py) | preset recipe | - |
+| [toporia/plugins/problems/research_heaviside.py](../../toporia/plugins/problems/research_heaviside.py) | preset recipe | - |
+| [toporia/plugins/problems/research_machining.py](../../toporia/plugins/problems/research_machining.py) | preset recipe | - |
+| [toporia/plugins/problems/research_morphology.py](../../toporia/plugins/problems/research_morphology.py) | preset recipe | - |
+| [toporia/plugins/problems/research_ordered_simp.py](../../toporia/plugins/problems/research_ordered_simp.py) | preset recipe | - |
+| [toporia/plugins/problems/research_pattern.py](../../toporia/plugins/problems/research_pattern.py) | preset recipe | - |
+| [toporia/plugins/problems/research_pde.py](../../toporia/plugins/problems/research_pde.py) | preset recipe | - |
+| [toporia/plugins/problems/research_pde_anisotropic.py](../../toporia/plugins/problems/research_pde_anisotropic.py) | preset recipe | - |
+| [toporia/plugins/problems/research_ramp.py](../../toporia/plugins/problems/research_ramp.py) | preset recipe | - |
+| [toporia/plugins/problems/research_routing.py](../../toporia/plugins/problems/research_routing.py) | preset recipe | - |
+| [toporia/plugins/problems/research_schedule_geometric.py](../../toporia/plugins/problems/research_schedule_geometric.py) | preset recipe | - |
+| [toporia/plugins/problems/research_schedule_linear.py](../../toporia/plugins/problems/research_schedule_linear.py) | preset recipe | - |
+| [toporia/plugins/problems/research_schedule_settled.py](../../toporia/plugins/problems/research_schedule_settled.py) | preset recipe | - |
+| [toporia/plugins/problems/research_schedule_steps.py](../../toporia/plugins/problems/research_schedule_steps.py) | preset recipe | - |
+| [toporia/plugins/problems/research_self_support.py](../../toporia/plugins/problems/research_self_support.py) | preset recipe | - |
+| [toporia/plugins/problems/research_sinh.py](../../toporia/plugins/problems/research_sinh.py) | preset recipe | - |
+| [toporia/plugins/problems/research_symmetry.py](../../toporia/plugins/problems/research_symmetry.py) | preset recipe | - |
 | [toporia/plugins/problems/standard_bar.py](../../toporia/plugins/problems/standard_bar.py) | preset recipe | - |
 | [toporia/plugins/problems/three_point_bending.py](../../toporia/plugins/problems/three_point_bending.py) | preset recipe | - |
 | [toporia/plugins/problems/vibrating_beam.py](../../toporia/plugins/problems/vibrating_beam.py) | preset recipe | - |

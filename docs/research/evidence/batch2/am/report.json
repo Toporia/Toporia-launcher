@@ -1,0 +1,40 @@
+{
+  "schema": 1,
+  "case_id": "am",
+  "batch": 2,
+  "functions": [
+    "filter:am"
+  ],
+  "preset": "Research: AM overhang filter",
+  "source_url": "https://doi.org/10.1007/s00158-016-1522-2",
+  "target": "Langelaar (2017), illustrative printing/filter examples; exact panel and geometry require source alignment.",
+  "paper_status": "paper_reproduction_to_fix",
+  "paper_visual_status": "not_assessed",
+  "checks": {
+    "input_origin": "own controlled bitmap, row 0 at physical y=0",
+    "shape": [
+      20,
+      60
+    ],
+    "input_mean": 0.38666666666666666,
+    "directional_adjoint_error": 8.334510859242528e-11,
+    "adjoint_tolerance": 2e-05,
+    "adjoint_pass": true,
+    "checks_passed": true,
+    "output_mean": 0.19935060516674297,
+    "output_range": [
+      1.0493043904489727e-06,
+      1.0042715193478418
+    ]
+  },
+  "limitations": "The field is a controlled diagnostic, not an optimized paper topology or a printability certificate. Angle stencils are discrete and display direction must be checked explicitly.",
+  "parameters": {
+    "type": "am",
+    "direction": 0,
+    "overhang_angle": 45.0
+  },
+  "next_check": "Align an identified Langelaar source panel and input geometry with the build direction and tiny shift/backshift conventions.",
+  "quarantined_reason": "",
+  "generated_at": "2026-10-27T22:28:43.654917+00:00",
+  "reproduce": "python -m experiments.research_batch2 --case am"
+}

@@ -29,7 +29,7 @@ set) ignore it, and the Pipeline box says so.
 | :-- | :-- | :-- | :-- | :-- |
 | ✅ SIMP | [`simp.py`](simp.py) | `simp` | ρ^p (p = 3) | Bendsøe, *Struct. Optim.* 1989 |
 | ✅ RAMP | [`ramp.py`](ramp.py) | `ramp` | ρ / (1 + q(1 − ρ)) (q = 8) | Stolpe & Svanberg, *SMO* 2001 |
-| ✅ Ordered SIMP | [`ordered_simp.py`](ordered_simp.py) | `ordered_simp` | piecewise t^p between ordered materials | Zuo & Saitou, *SMO* 2017 |
+| ✅ Ordered SIMP, interval-local variant | [`ordered_simp.py`](ordered_simp.py) | `ordered_simp` | piecewise t^p between ordered materials | da Silveira & Palma 2022 modified law, increasing-modulus branch; inspired by Zuo & Saitou 2017 |
 | ✅ Basic SINH, shared-density variant | [`sinh.py`](sinh.py) | `sinh` | linear stiffness; effective volume `1-sinh(p(1-rho))/sinh(p)` | Bruns, *SMO* 2005, Table 2 case 5 |
 | ✅ Hashin-Shtrikman fixed-nu upper envelope | [`hashin_shtrikman.py`](hashin_shtrikman.py) | `hashin_shtrikman` | stricter elastic bulk/shear upper limit, at scenario nu | Bendsøe & Sigmund 1999; finite soft phase included |
 
@@ -45,6 +45,12 @@ method with each law.
 | 📄 Discrete material optimisation (DMO) | Stegmann & Lund, *IJNME* 62 (2005) 2009–2027 | Several candidate materials per element, each with its own weight: the classic multi-material law. Needs one design variable per material — a design representation with several fields. |
 
 ## Ordered SIMP
+
+The [Batch 2 source audit](../../../docs/research/batch-2.md) distinguishes the
+implemented interval-local expression below from the original 2017
+`A*rho**p+B` equation. It matches the increasing-modulus branch of
+[da Silveira & Palma (2022), equations 4-6 and Figure 1](https://doi.org/10.1007/s00158-022-03379-7).
+The reference metadata is corrected; numerical behavior is unchanged.
 
 ```
 t = (ρ − ρ_i) / (ρ_{i+1} − ρ_i),    E(ρ) = Emin + [f_i + t^p (f_{i+1} − f_i)] (E0 − Emin)
@@ -63,7 +69,9 @@ is constrained). Toporia's volume response constrains Σρ, so the constraint is
 fraction implied by the densities; a per-material cost would need the volume response to
 accept an interpolation, which is a framework change.
 
-Paper: W. Zuo, K. Saitou, *SMO* 55 (2017) 477–491, [doi:10.1007/s00158-016-1513-3](https://doi.org/10.1007/s00158-016-1513-3).
+Original inspiration: W. Zuo, K. Saitou, *SMO* 55 (2017) 477–491,
+[doi:10.1007/s00158-016-1513-3](https://doi.org/10.1007/s00158-016-1513-3).
+That original formula is plotted separately in the reproduction audit.
 
 Use it: `"interpolation": {"type": "ordered_simp", "n_materials": 3, "rho2": 0.5, "E2": 0.3}`
 in the solver JSON, the **Material law** picker in the GUI, or

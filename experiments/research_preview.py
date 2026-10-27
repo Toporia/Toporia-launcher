@@ -4,7 +4,9 @@ python -m experiments.research_preview
 Writes screenshots under ignored results/research/preview, opens no desktop UI.
 """
 
+import argparse
 import os
+import re
 from pathlib import Path
 
 os.environ.setdefault("QT_QPA_PLATFORM", "offscreen")
@@ -17,6 +19,9 @@ from toporia.apps.gui.help import HelpWindow, problem_topic
 
 
 def main():
+    parser = argparse.ArgumentParser(description=__doc__)
+    parser.add_argument("--preset", action="append", help="Full preset name; repeat for several descriptions.")
+    args = parser.parse_args()
     app = QApplication.instance() or QApplication([])
     # Offscreen Windows Qt may have no system fonts in the sandbox. Use the
     # already bundled Matplotlib font for QA only; do not change application UI.
@@ -28,11 +33,12 @@ def main():
     output = Path(__file__).resolve().parents[1] / "results/research/preview"
     output.mkdir(parents=True, exist_ok=True)
     window = HelpWindow()
-    for kind in ("Density", "Sensitivity"):
+    for name in (args.preset or ["Paper: top88 Fig. 3(a) - Density", "Paper: top88 Fig. 3(a) - Sensitivity"]):
+        tag = name.rsplit(" - ", 1)[-1].lower() if name.startswith("Paper:") else re.sub(r"[^a-z0-9]+", "-", name.lower()).strip("-")
         window.resize(520, 440)
-        window.show_topic(problem_topic("Paper: top88 Fig. 3(a) - " + kind))
+        window.show_topic(problem_topic(name))
         app.processEvents()
-        window.grab().save(str(output / f"{kind.lower()}-setup.png"))
+        window.grab().save(str(output / f"{tag}-setup.png"))
         window.browser.find("Mathematics")
         cursor = window.browser.textCursor()
         cursor.movePosition(QTextCursor.StartOfBlock)
@@ -42,10 +48,10 @@ def main():
         # Put the math heading near the top, rather than the last visible line.
         scroll.setValue(min(scroll.maximum(), scroll.value() + window.browser.height() - 55))
         app.processEvents()
-        window.grab().save(str(output / f"{kind.lower()}-math.png"))
+        window.grab().save(str(output / f"{tag}-math.png"))
         scroll.setValue(scroll.maximum())
         app.processEvents()
-        window.grab().save(str(output / f"{kind.lower()}-source.png"))
+        window.grab().save(str(output / f"{tag}-source.png"))
     window.close()
     guide = QTextBrowser()
     guide.resize(1000, 1000)

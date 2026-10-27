@@ -128,7 +128,8 @@ def compare(result, reference):
     return checks
 
 
-def plot_comparison(kind, result, reference, comparison, destination):
+def plot_comparison(kind, result, reference, comparison, destination, *, title=None, settings=None,
+                    reference_label="Unchanged author top88"):
     from matplotlib.backends.backend_agg import FigureCanvasAgg
     from matplotlib.figure import Figure
 
@@ -136,10 +137,10 @@ def plot_comparison(kind, result, reference, comparison, destination):
     figure = Figure(figsize=(12, 6.2), dpi=150, facecolor="white")
     FigureCanvasAgg(figure)
     grid = figure.add_gridspec(2, 3, height_ratios=[1, 1.05], hspace=.65, wspace=.28)
-    for col, field, title in ((0, expected, "Unchanged author top88"), (1, actual, "Toporia research preset")):
+    for col, field, panel_title in ((0, expected, reference_label), (1, actual, "Toporia research preset")):
         axis = figure.add_subplot(grid[0, col])
         axis.imshow(field, cmap="gray_r", vmin=0, vmax=1, origin="lower", interpolation="nearest")
-        axis.set_title(title, fontsize=11)
+        axis.set_title(panel_title, fontsize=11)
         axis.set_axis_off()
     axis = figure.add_subplot(grid[0, 2])
     error = np.abs(actual - expected)
@@ -162,9 +163,9 @@ def plot_comparison(kind, result, reference, comparison, destination):
               f"Physical volume: {actual.mean():.8f}\n"
               f"Last printed C: {trace[-1, 1]:.6f}\n"
               f"Fresh final C: {result['fresh_final_compliance']:.6f}\n\n"
-              "Paper panel: separate visual review\n60 x 20; radius 2.4; p=3; OC",
+              "Paper panel: separate visual review\n" + (settings or "60 x 20; radius 2.4; p=3; OC"),
               va="top", fontsize=10, linespacing=1.6)
-    figure.suptitle(f"Andreassen et al. Figure 3(a): {kind} filtering", fontsize=15, x=.06, ha="left")
+    figure.suptitle(title or f"Andreassen et al. Figure 3(a): {kind} filtering", fontsize=15, x=.06, ha="left")
     figure.text(.06, .015, "Final physical fields, no thresholding. Reference: unchanged, hash-identified author code; DOI 10.1007/s00158-010-0594-7.", fontsize=8)
     figure.subplots_adjust(left=.06, right=.96, top=.88, bottom=.12)
     figure.savefig(destination, dpi=150)

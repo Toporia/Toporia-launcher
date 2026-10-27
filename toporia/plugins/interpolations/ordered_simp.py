@@ -20,9 +20,10 @@
 # ρ_i as given.  Constraining another per-material cost would need the volume
 # response to accept an interpolation (a framework change); it is not done.
 #
-# Reference: W. Zuo, K. Saitou, "Multi-material topology optimization using
-# ordered SIMP interpolation", Structural and Multidisciplinary Optimization 55
-# (2017) 477–491, doi:10.1007/s00158-016-1513-3.
+# Attribution audited in research Batch 2: the interval-local expression above
+# matches the increasing-modulus branch of da Silveira & Palma (2022), eqs.4-6.
+# It differs from Zuo & Saitou (2017)'s global-power A*rho**p+B expression.
+# This is a documentation correction; the numerical implementation is unchanged.
 
 import numpy as np
 
@@ -36,9 +37,12 @@ class OrderedSIMP(Interpolation):
 
     name = "ordered_simp"
     reference = (
-        'W. Zuo and K. Saitou, "Multi-material topology optimization using ordered SIMP '
-        'interpolation", Struct. Multidisc. Optim. 55 (2017) 477-491.'
-        ' Papers: https://doi.org/10.1007/s00158-016-1513-3'
+        'Interval-local ordered SIMP: the increasing-modulus branch of O. A. A. da Silveira '
+        'and L. F. Palma, "Some considerations on multi-material topology optimization using '
+        'ordered SIMP", SMO 65 (2022) 261, equations 4-6. Inspired by Zuo and Saitou (2017), '
+        'but not their global-power formula. Stiffness only; cost interpolation and '
+        'non-monotone material properties are not implemented.'
+        ' Papers: https://doi.org/10.1007/s00158-022-03379-7 https://doi.org/10.1007/s00158-016-1513-3'
     )
     label = "Ordered SIMP (multi-material)"
     order = 30

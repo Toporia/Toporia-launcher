@@ -58,6 +58,11 @@ class HeavisideFilter(Filter):
     beta_interval : number of iterations between each doubling of beta
     eta_mode      : "fixed" uses eta as given; "volume_preserving" solves for
                     eta every pass so the projection keeps the mean density
+
+    Known limitation: the volume-preserving implicit adjoint can be undefined
+    on saturated all-solid fields. Research Batch 2 quarantines that companion
+    recipe; fixed-threshold projection is a separate mode. No universal
+    differentiability or compatibility with discrete updates is implied.
     """
 
     name = "heaviside"

@@ -4,6 +4,11 @@ This queue stores attempted cases whose required evidence did not match, or
 whose paper/setup information is missing. Untouched backlog entries remain in
 the coverage inventory; do not pretend they have been attempted.
 
+Batch 2 contributes 17 unresolved paper cases and a separate original-2017
+ordered-SIMP target. The volume-preserving-projection companion also has a
+documented numerical failure and is quarantined outside preset discovery.
+See the [Batch 2 report](../batch-2.md) and [case index](../batch-2-cases.md).
+
 For each unresolved case create a folder containing:
 
 - `README.md`: function IDs, paper/panel, discrepancy and next useful check.
