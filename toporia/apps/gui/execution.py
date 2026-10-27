@@ -24,6 +24,9 @@ class ExecutionActions:
         """Validate, snapshot and launch the selected study in a headless process."""
         if self._running:
             return
+        if self._blank_pending():
+            QMessageBox.information(self, "Finish problem setup", "Choose the initial problem settings and create the design space before running.")
+            return
         cfg = self.current_config()
         issues = problems(cfg, check_mesh=True, mesh_limit=None)
         if cfg.scenario.regions is not None and self.mode.currentText() == "Compare Load Cases":

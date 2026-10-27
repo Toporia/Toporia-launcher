@@ -52,6 +52,8 @@ not complete. Resume from the first unchecked step after reading git status.
 - [x] 9. 3D viewport and inspector with spatial primitives, imports, transforms,
   selection and camera navigation; reuse the shared project/object model.
 - [x] 10. Final cross-workspace verification, regression checks and handoff.
+- [x] 11. Progressive blank-project setup: explicit choices, resumable drafts,
+  compatible initial methods, run/export guards and focused regression checks.
 
 ## Current checkpoint
 
@@ -179,3 +181,19 @@ $env:TEMP = Join-Path (Get-Location) 'results\test-temp'
 $env:TMP = $env:TEMP
 & .venv/Scripts/python.exe -m pytest --basetemp=results/pytest-unique-name
 ```
+
+Milestone 11 complete: new blank projects show only an unselected dimension,
+then progressively reveal compatible representations, physical sizes/resolution,
+physics/material and objective/budget. No creation field is preselected. Creating
+the domain opens the normal editor without invented supports/loads. The initial
+updater is compatible with the representation (OC for densities, MMA for MMC);
+method settings remain editable. Partial setup lives in project view metadata,
+can be saved/reopened with notes, and is validated before replacing a document.
+Method/Runner/Post navigation and run/problem export are gated until creation;
+the headless worker also rejects incomplete drafts. Existing projects and imports
+open directly. Setup ranges match the editor to avoid silent clamping.
+Validation: 251 application/plugin regression checks passed; 49 focused checks
+passed after range alignment, including a real worker rejection. Ruff, compileall
+and diff whitespace checks pass. Reviewed initial and completed setup renders
+offscreen with an explicitly loaded Windows font. No live user window disturbed.
+Only the GUI checkout was edited. Next work starts as a new milestone.

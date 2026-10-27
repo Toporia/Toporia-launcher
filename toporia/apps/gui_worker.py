@@ -121,6 +121,8 @@ def main(path):
     sys.stdout = Logs()
     try:
         project = Project.load(path)
+        if "blank_setup" in project.view:
+            raise ValueError("Finish the blank project's initial setup before running it.")
         status["mode"] = project.study.get("mode", "Run One")
         _atomic_json(folder / "session.json", status)
         project.run = project.run.with_output_dir(folder)

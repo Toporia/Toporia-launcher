@@ -26,6 +26,20 @@ the associated notes pane. `examples/gui-cantilever/project.top` is an editable
 
 ## Problem
 
+New blank problems start with only an unselected dimension. Choose dimension,
+then representation, then the physical width/height (and depth in 3D) and element
+size. The mesh counts appear before proceeding. Compatible physics choices are
+then revealed, followed by material properties, objective and volume budget.
+Nothing is preselected; enter each value and choose **Create design space**.
+The normal editor and scalar controls appear afterward, with no automatic
+supports or loads. Method starts with a compatible updater and the standard
+density filter; review or change these in the Method step.
+
+An unfinished setup can be saved as a `.top` project, including notes, and
+reopened at the same point. Method/Runner/Post navigation, Run and independent
+problem export are unavailable until the design space has been created. Existing
+projects, imported problems and benchmark copies continue to open directly.
+
 Reference problems are immutable; use **Copy to custom** to make an editable
 definition. Changing a solver does not change the original benchmark's physical
 problem. A blank custom definition has no automatic supports or loads.

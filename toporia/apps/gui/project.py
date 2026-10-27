@@ -197,6 +197,20 @@ class Project:
         if data.get("benchmark") is not None and not isinstance(data["benchmark"], str):
             raise ValueError("Benchmark must be a name or null")
         study, view = data.get("study", {}), data.get("view", {})
+        if "blank_setup" in view:
+            setup = view["blank_setup"]
+            limits = {"Lx": (0, 10000), "Ly": (0, 10000), "Lz": (0, 10000),
+                      "element_size": (0, 1000), "E0": (0, 1e7), "nu": (-.99, .499), "volfrac": (0, 1)}
+            choices = {"dimension", "representation", "physics", "objective"}
+            if not isinstance(setup, dict) or set(setup) - (choices | limits.keys()):
+                raise ValueError("Blank setup must contain supported initial settings")
+            if setup.get("dimension") is not None and (type(setup["dimension"]) is not int or setup["dimension"] not in (2, 3)):
+                raise ValueError("Blank setup dimension must be 2, 3 or null")
+            if any(setup.get(key) is not None and not isinstance(setup[key], str) for key in choices - {"dimension"}):
+                raise ValueError("Blank setup choices must be names or null")
+            for key, (lower, upper) in limits.items():
+                if key in setup and (type(setup[key]) not in (int, float) or not math.isfinite(setup[key]) or not lower <= setup[key] <= upper):
+                    raise ValueError(f"Blank setup {key} is outside its supported range")
         if not isinstance(study.get("mode", "Run One"), str) or any(not isinstance(v, dict) for k, v in study.items() if k != "mode"):
             raise ValueError("Study groups must be dictionaries and mode must be text")
         positions = view.get("method_positions", {})

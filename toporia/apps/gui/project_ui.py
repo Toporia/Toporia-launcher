@@ -197,7 +197,49 @@ class ProjectActions:
         self._clean_geometry = self.project.objects
         self.root_pages.setCurrentIndex(1)
         self.go_to_step(0)
+        self._show_blank_setup()
         self._update_project_title()
+
+    def _blank_pending(self):
+        """Only new custom drafts use onboarding; existing documents open directly."""
+        return hasattr(self, "project") and "blank_setup" in self.project.view
+
+    def _remember_blank_setup(self, state):
+        if self._blank_pending() and not getattr(self, "_loading_blank", False):
+            self.project.view["blank_setup"] = state
+
+    def _show_blank_setup(self):
+        pending = self._blank_pending()
+        self.sidebar.setVisible(not pending)
+        for index, button in enumerate(self._step_buttons.buttons()):
+            button.setEnabled(not pending or index == 0)
+        self._show_run_label()
+        if pending:
+            self._loading_blank = True
+            try:
+                self.blank_setup.load(self.project.view["blank_setup"])
+            finally:
+                self._loading_blank = False
+            self.workspace_views.setCurrentWidget(self.blank_setup)
+
+    def _complete_blank_setup(self, state):
+        """Create the physical definition only after every initial choice is explicit."""
+        if not self._blank_pending() or not self.blank_setup.create.isEnabled():
+            return
+        from toporia.framework.problem.solver import Solver
+        scenario = Scenario(Lx=state["Lx"], Ly=state["Ly"], Lz=state["Lz"] if state["dimension"] == 3 else 0,
+                            E0=state["E0"], nu=state["nu"], volfrac=state["volfrac"],
+                            objective={"type": state["objective"]}, regions=[])
+        solver = Solver(method=self.blank_setup.method_name(), m=1 / state["element_size"],
+                        representation={"type": state["representation"]},
+                        method_params={"move": .02} if state["representation"] == "mmc" else {})
+        saved = self._saved_state
+        view = {k: v for k, v in self.project.view.items() if k != "blank_setup"}
+        project = replace(self._capture_project(), run=Run(scenario=scenario, solver=solver), objects=[], view=view)
+        self._activate_project(project)
+        self._saved_state = saved  # Creating a domain is an unsaved physical edit.
+        self._update_project_title()
+        self.statusBar().showMessage("Design space created. Add supports and loads, then review Method.", 10000)
 
     def _apply_problem_lock(self):
         """Protect reference problems while allowing solver and resolution experiments."""
@@ -223,11 +265,12 @@ class ProjectActions:
     def new_blank(self):
         """Start an explicit empty scene rather than the solver's legacy cantilever fallback."""
         if self._maybe_discard():
-            self._activate_project(Project("Untitled", Run(scenario=Scenario(regions=[])), objects=[]))
+            self._activate_project(Project("Untitled", Run(scenario=Scenario(regions=[])), objects=[],
+                                           view={"blank_setup": {}}))
 
     def copy_to_custom(self):
         """Detach the physical definition from its reference without losing method settings."""
-        if not self._running:
+        if not self._running and not self._blank_pending():
             self.project = replace(self._capture_project(), name=self.project.name + " copy", benchmark=None, path=None)
             if self.project.objects is None:
                 from .geometry import objects_from_scenario
@@ -293,6 +336,9 @@ class ProjectActions:
 
     def export_problem(self, path=None):
         """Export only the physical definition, excluding the method and results."""
+        if self._blank_pending():
+            QMessageBox.information(self, "Finish problem setup", "Create the design space before exporting a problem. You can save the unfinished project instead.")
+            return False
         if path is None:
             path, _ = QFileDialog.getSaveFileName(self, "Export problem", f"{self.project.name}.pro", "Toporia problem (*.pro)")
         if not path:

@@ -30,6 +30,7 @@ from PySide6.QtWidgets import (
     QWidget,
 )
 
+from .blank_setup import BlankSetup
 from .canvas import LiveCanvas
 from .editor import ProblemEditor
 from .execution import ExecutionActions
@@ -256,6 +257,7 @@ class MainWindow(ProjectActions, ExecutionActions, QMainWindow):
     def _build_sidebar(self):
         """One scrollable page per step, and Back / Next under it."""
         side = QWidget()
+        self.sidebar = side
         side.setMinimumWidth(300)
         side.setMaximumWidth(560)
         layout = QVBoxLayout(side)
@@ -414,6 +416,10 @@ class MainWindow(ProjectActions, ExecutionActions, QMainWindow):
         self.workspace_views.addWidget(runner_page)
         self.post_canvas = LiveCanvas()
         self.workspace_views.addWidget(self.post_canvas)
+        self.blank_setup = BlankSetup()
+        self.blank_setup.changed.connect(self._remember_blank_setup)
+        self.blank_setup.completed.connect(self._complete_blank_setup)
+        self.workspace_views.addWidget(self.blank_setup)
         self.pipeline.setParent(self)
         self.pipeline.hide()
         return self.workspace_views
@@ -539,6 +545,8 @@ class MainWindow(ProjectActions, ExecutionActions, QMainWindow):
         """Draw the problem as currently set up, unless a run is drawing (slicer-style preview)."""
         if self._running:
             return
+        if self._blank_pending():
+            return
         from .config import build_config
 
         try:
@@ -571,12 +579,16 @@ class MainWindow(ProjectActions, ExecutionActions, QMainWindow):
             return
         if not 0 <= index < len(STEPS):
             return
+        if self._blank_pending() and index != 0:
+            return
         if hasattr(self, "root_pages"):
             self.root_pages.setCurrentIndex(1)
         if index != 1:
             self._restore_inspector()
         self._pages.setCurrentIndex(index)
         self.workspace_views.setCurrentIndex(index)
+        if self._blank_pending():
+            self.workspace_views.setCurrentWidget(self.blank_setup)
         if index == 1:
             QTimer.singleShot(0, self.method_view.fit)
         self._step_buttons.button(index).setChecked(True)
@@ -599,6 +611,7 @@ class MainWindow(ProjectActions, ExecutionActions, QMainWindow):
         """'▶  Run', naming the mode when it is not a single run."""
         mode = self.mode.currentText()
         self.run_btn.setText("▶  Run" if mode == "Run One" else f"▶  Run: {mode}")
+        self.run_btn.setEnabled(not self._blank_pending())
 
     def _report_plugin_errors(self):
         """Log every plugin that failed to load; the others are all usable."""
@@ -625,6 +638,7 @@ class MainWindow(ProjectActions, ExecutionActions, QMainWindow):
             self.notes.clear()
             self._saved_state = self._capture_project().payload()
             self._clean_geometry = self.project.objects
+            self._show_blank_setup()
 
     def _on_method_changed(self, name):
         """Adapt the panels to what the selected method can do."""

@@ -68,3 +68,17 @@ def test_worker_runs_h8_with_a_true_spatial_point_force(tmp_path):
     assert result.returncode == 0, result.stdout + result.stderr
     density = np.load(tmp_path / "design.npy")
     assert density.shape == (2, 2, 5) and np.isfinite(density).all()
+
+
+def test_worker_refuses_an_unfinished_blank_project_even_with_runnable_hidden_defaults(tmp_path):
+    path = snapshot(tmp_path)
+    project = Project.load(path)
+    project.view["blank_setup"] = {"dimension": 2}
+    project.save()
+    result = subprocess.run([sys.executable, "-m", "toporia.apps.gui_worker", str(path)],
+                            capture_output=True, text=True, timeout=60)
+    assert result.returncode == 1
+    status = json.loads((tmp_path / "session.json").read_text())
+    assert status["status"] == "error"
+    assert "initial setup" in status["error"]
+    assert not (tmp_path / "design.npy").exists()
