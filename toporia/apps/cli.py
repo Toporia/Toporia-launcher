@@ -58,7 +58,7 @@ def _parse_override(text):
 
 
 def _build_run(scenario_arg, solver_arg=None, overrides=(), out=None):
-    from toporia.framework import Run, apply_param
+    from toporia.framework import Run, apply_param, read_param
     from toporia.framework.problem.files import load
     from toporia.plugins.problems import get_run, problem_names
 
@@ -72,7 +72,25 @@ def _build_run(scenario_arg, solver_arg=None, overrides=(), out=None):
     if solver_arg:
         run = replace(run, solver=load(solver_arg, "solver"))
     for item in overrides:
-        run = apply_param(run, *_parse_override(item))
+        path, value = _parse_override(item)
+        try:
+            current = read_param(run, path)
+            # Native Windows shells can strip JSON quotes before Python sees
+            # argv. Fail at this boundary, before a string reaches spec.get().
+            if isinstance(current, (dict, list)) and not isinstance(value, type(current)):
+                expected = "object" if isinstance(current, dict) else "array"
+                hint = (" Use field paths such as --set representation.type=neural, "
+                        "or edit exported scenario/solver JSON files.")
+                raise SystemExit(f"--set {path} requires a JSON {expected}; received {value!r}. "
+                                 "Check JSON syntax and shell quoting."+hint)
+            if path in ("filter_specs", "schedules", "constraints", "postprocess"):
+                for index, spec in enumerate(value):
+                    if not isinstance(spec, dict):
+                        raise SystemExit(f"--set {path}[{index}] requires a JSON object; "
+                                         "the array must contain objects, not names or scalars.")
+            run = apply_param(run, path, value)
+        except (KeyError, IndexError, TypeError, ValueError) as error:
+            raise SystemExit(f"Invalid --set {path}: {error}") from None
     if out:
         run = run.with_output_dir(out)
     return run

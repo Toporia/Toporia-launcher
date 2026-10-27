@@ -47,6 +47,37 @@ def test_run_a_preset_with_overrides(tmp_path):
     assert solver["interpolation"] == {"type": "simp", "penal": 4}
 
 
+@pytest.mark.parametrize("override", [
+    "representation={type:neural}", "representation=neural", "representation=null",
+    "interpolation={type:simp}", "variants={path:filters[1].eta}",
+    "objective={type:compliance}", "method_params={move:0.05}",
+    "filter_specs=[{type:density}]", "schedules=[{type:geometric}]",
+    "constraints=stress", "postprocess=threshold", "load_cases={Fmag:1}",
+    'filter_specs=["density"]', "schedules=[0]", "constraints=[null]", "postprocess=[true]",
+])
+def test_structured_override_errors_are_clear_before_any_run(override, tmp_path, monkeypatch):
+    def unexpected_run(*args, **kwargs):
+        pytest.fail("Malformed structured arguments must be rejected before computing")
+    monkeypatch.setattr("toporia.engine.loop.run_single_with_store", unexpected_run)
+    out = tmp_path / "must-not-be-created"
+    with pytest.raises(SystemExit, match="requires a JSON (object|array)"):
+        main(["run", "MBB Beam", "--out", str(out), "--set", override])
+    assert not out.exists()
+
+
+@pytest.mark.parametrize("overrides", [
+    ['representation={"type":"neural","width":4}'],
+    ["representation.type=neural", "representation.width=4"],
+])
+def test_valid_structured_and_field_path_overrides_run(overrides, tmp_path):
+    args = ["run", "MBB Beam", "--out", str(tmp_path), *SMALL, "--set", "method=q4+mma"]
+    for override in overrides:
+        args.extend(["--set", override])
+    assert main(args) == 0
+    solver = json.loads((tmp_path / "run.json").read_text())["solver"]["definition"]
+    assert solver["representation"] == {"type": "neural", "width": 4}
+
+
 def test_compare_two_solvers_on_one_scenario(tmp_path):
     oc = save(Solver(method="density"), tmp_path / "oc.solver.json")
     mma = save(Solver(method="density_mma"), tmp_path / "mma.solver.json")

@@ -344,3 +344,15 @@ obj. Positive compliance and negative frequency-objective histories are checked
 end to end, including the first printed value. Recording, objective mathematics
 and optimization updates are unchanged.
 All 12 analysis-mode tests pass, including both console cases; Ruff passes.
+
+## Structured CLI arguments — 27 October 2026
+
+CLI overrides now reject a string/scalar where the selected field requires a
+JSON object or array, and reject non-object plugin-spec array entries. Errors
+identify --set and the field, explain JSON/shell quoting, and suggest field paths
+or exported JSON files before any physics or output-directory creation. Unknown
+or invalid indexed paths also give a concise CLI error. Sixteen malformed cases
+and valid JSON/field-path neural runs exercise the actual CLI; plain method names
+and existing scalar overrides remain supported. The quick start has PowerShell-
+safe examples. No parser attempts to guess missing JSON quotes.
+All 26 CLI tests, Ruff and whitespace checks pass.

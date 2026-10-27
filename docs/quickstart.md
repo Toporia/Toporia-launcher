@@ -32,6 +32,28 @@ pytest
 
 The whole test suite. It takes several minutes; `pytest tests/plugins -k oc` runs a part of it.
 
+### Command-line values in PowerShell
+
+Set individual fields to avoid JSON quoting differences between shells:
+
+```powershell
+toporia run "MBB Beam" --set method=q4+mma --set representation.type=neural --set representation.width=20
+```
+
+Whole representations, material laws, objectives and variants require JSON
+objects; filters, constraints, schedules and post-processors require arrays of
+objects. A malformed value now stops with a clear `--set` error before computing.
+Some Windows shells remove embedded quotes when passing arguments to Python.
+For larger changes, export a preset, edit the JSON files, and pass them directly:
+
+```powershell
+toporia export "MBB Beam" .\config
+toporia run .\config\mbb_beam.scenario.json .\config\mbb_beam.solver.json
+```
+
+Edit the exported files between those two commands. Valid JSON object overrides
+remain supported when the shell preserves their quotes.
+
 ## 2. Where your change goes
 
 Almost every change from a paper is **one new file in one folder of
