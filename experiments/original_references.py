@@ -4,6 +4,7 @@ Default: python -m experiments.original_references
 Optional original rerun: --matlab --source-dir PATH [--matlab-exe PATH]
 Read-only runtime/helper audit: --audit-matlab [--matlab-exe PATH]
 Optional mmapy comparison against the captured native optimizer: --mma
+Additional captured Challis/top3D125 finite-element checks: --additional-fe
 Download the two sources linked in tests/references/matlab.json into PATH.
 Their bytes must match the recorded hashes. No download, install, source
 patch, MATLAB path save or fixture update is performed by this recipe.
@@ -56,6 +57,49 @@ def validate_mma():
                   final_objective=float(np.sum(weights/x)), final_budget=float(x.sum()),
                   final_multiplier=float(result[3].item()))
     return report
+
+
+def validate_additional_fe(case):
+    """Re-evaluate captured author fields with exact native load/DOF conventions.
+
+    This compares finite elements, not equality of independent optimization
+    trajectories. The isolated reference layout overrides never alter presets.
+    """
+    from toporia.engine.loop import initialized_method
+
+    if case["name"] == "top3D125_density":
+        run = get_run("Cantilever").updated(method="h8+oc", Lx=12, Ly=4, Lz=2,
+                                             m=1, volfrac=.3, filter_specs=[])
+    else:
+        run = get_run("MBB Beam").updated(method="q4+mma", Lx=24, Ly=12, m=1,
+                                           Emin=1e-4, filter_specs=[],
+                                           interpolation={"type": "simp", "penal": 1})
+    method = initialized_method(run)
+    try:
+        model = method._model
+        layout = model.engine.layout
+        force = np.zeros(layout.ndof)
+        if case["name"] == "top3D125_density":
+            # Paper's front-face sine-distributed z force: no depth spreading.
+            force[3*layout.node_ids[0, :, -1]+2] = -np.sin(np.arange(5)/4*np.pi)
+            layout.forces = [(1., force)]
+            initial = model.evaluate(np.full(method.x.shape, .3), gradients=False)
+            return {"first_compliance": float(initial.objective)}
+        # Challis: both DOFs fixed at the two last-row end nodes, and a
+        # vertical unit force at the last-row centre node (column-major IDs).
+        nely, nelx = method.x.shape
+        nn = layout.ndof//2
+        layout.fixed_dofs = np.array([2*nely, 2*nely+1, 2*(nn-1), 2*(nn-1)+1])
+        layout.free_dofs = np.setdiff1d(np.arange(layout.ndof), layout.fixed_dofs)
+        force[2*(nelx//2+1)*(nely+1)-1] = 1.
+        layout.forces = [(1., force)]
+        initial = model.evaluate(np.ones(method.x.shape), gradients=False)
+        density = np.array([[int(value) for value in row] for row in case["final_density_rows"]], dtype=float)
+        final = model.evaluate(density, gradients=False)
+        return {"first_compliance": float(initial.objective), "final_compliance": float(final.objective),
+                "final_mean_density": float(density.mean())}
+    finally:
+        method.close()
 
 
 def validate(case):
@@ -130,8 +174,10 @@ def audit_matlab(executable):
     with tempfile.TemporaryDirectory(prefix="toporia-matlab-audit-") as temporary:
         scratch = Path(temporary)
         script = """report.runtime=version;
+report.preferences=prefdir;
 report.optimization_toolbox_licensed=logical(license('test','Optimization_Toolbox'));
-names={'fsparse','mmasub','subsolv','MMC188','top_levelset','levelset88','intlinprog'};
+report.image_toolbox_licensed=logical(license('test','image_toolbox'));
+names={'fsparse','mmasub','subsolv','MMC188','top_levelset','levelset88','intlinprog','imfilter','bwdist','padarray'};
 for i=1:numel(names), report.helpers.(names{i})=which(names{i}); end
 try
   selected=mex.getCompilerConfigurations('C','Selected');
@@ -157,11 +203,15 @@ def main():
     mode.add_argument("--matlab", action="store_true")
     mode.add_argument("--audit-matlab", action="store_true")
     mode.add_argument("--mma", action="store_true")
+    mode.add_argument("--additional-fe", action="store_true")
     parser.add_argument("--source-dir", type=Path)
     parser.add_argument("--matlab-exe", default=shutil.which("matlab"))
     args = parser.parse_args()
     reference = json.loads(REFERENCES.read_text(encoding="utf-8"))
-    if args.mma:
+    if args.additional_fe:
+        results = {name: validate_additional_fe(reference["additional_native_runs"][name])
+                   for name in ("top3D125_density", "Challis")}
+    elif args.mma:
         results = validate_mma()
     elif args.audit_matlab:
         if not args.matlab_exe:

@@ -4,7 +4,13 @@ import json
 
 import pytest
 
-from experiments.original_references import REFERENCES, rerun_matlab, validate, validate_mma
+from experiments.original_references import (
+    REFERENCES,
+    rerun_matlab,
+    validate,
+    validate_additional_fe,
+    validate_mma,
+)
 
 DATA = json.loads(REFERENCES.read_text(encoding="utf-8"))
 
@@ -39,3 +45,16 @@ def test_mmapy_matches_captured_matlab_mma_and_the_analytic_optimum():
         assert result[key] == pytest.approx(expected[key], rel=0, abs=1e-10)
     assert result["final_budget"] <= 2.4
     assert result["final_objective"] == pytest.approx(expected["analytic_objective"], rel=2e-9)
+
+
+@pytest.mark.parametrize("name", ["top3D125_density", "Challis"])
+def test_additional_original_finite_elements_match_printed_precision(name):
+    case = DATA["additional_native_runs"][name]
+    result = validate_additional_fe(case)
+    # top3D125 prints %6.5e; at 4.08e4 the last printed digit is 0.1.
+    tolerance = 0.0501 if name == "top3D125_density" else 5.01e-5
+    assert result["first_compliance"] == pytest.approx(case["first_reported_compliance"], rel=0, abs=tolerance)
+    if name == "Challis":
+        assert case["iterations"] < 200  # returned before updating, so this field matches the printed C.
+        assert result["final_compliance"] == pytest.approx(case["last_reported_compliance"], rel=0, abs=tolerance)
+        assert result["final_mean_density"] == case["final_mean_density"]

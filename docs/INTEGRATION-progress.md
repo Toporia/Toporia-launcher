@@ -356,3 +356,23 @@ and valid JSON/field-path neural runs exercise the actual CLI; plain method name
 and existing scalar overrides remain supported. The quick start has PowerShell-
 safe examples. No parser attempts to guess missing JSON quotes.
 All 26 CLI tests, Ruff and whitespace checks pass.
+
+## Newly unblocked original runs — 27 October 2026
+
+The owner installed Image Processing Toolbox personally. Read-only verification
+confirms R2026a Update 5, imfilter/bwdist/padarray available, no normal selected
+compiler and no fsparse/MMA helpers on the saved path. Four unchanged author
+cases complete: two 20-step top99neo cases, 20-step top3D125 and Challis returning
+at 55 iterations with C=8.1996 and volume 0.5. Captured field data and hashes
+are in the external-reference fixture, separate from internal goldens.
+
+Strict additional FE checks match the Challis initial/final field to four printed
+decimals and top3D125's initial sine-front-face z load at its six-significant-digit
+precision. These are FE checks, not optimizer-trajectory equality claims.
+The native neo runs remain bounded observations; beta=8 top99neo oscillates,
+and top3D125's reported physical volume is 0.309 against 0.3.
+The separately hashed TOBS modern-options copy reaches its 200-step safety cap
+with C=1.558315e10 and change 0.037 and is rejected. The unchanged source still
+cannot run with removed legacy intlinprog options. MMC188 and RD remain
+original-source gaps. All seven reference tests, Ruff and whitespace pass.
+No original Q4/H8 source, golden baseline or production TOBS formula changed.

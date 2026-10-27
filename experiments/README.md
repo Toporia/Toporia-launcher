@@ -125,14 +125,14 @@ selects a compiler, saves a MATLAB path or changes persistent settings.
 
 | Remaining original | Latest evidence (27 October) | Next requirement |
 | :-- | :-- | :-- |
-| top99neo / top3D125 | Unchanged author sources hashed; fsparse built and checked in isolated tools; installed MATLAB lacks imfilter | Owner is installing the licensed Image Processing Toolbox personally |
+| top99neo / top3D125 | Unchanged author sources run; bounded trajectories recorded; top3D125 initial H8 FE agrees at printed precision | Complete for these scopes; not equality of optimizer trajectories |
 | MMC188 | Published appendix found; identified GPL MMA helper with embedded subsolv now available outside repo; byte-identifiable runnable MMC source still absent | Obtain identifiable original MMC source; no claim of original-code equality |
-| TOBS101 | Unmodified source errors on removed intlinprog `CutGeneration` option | An explicitly labelled compatibility adaptation or compatible older runtime; ask before runtime changes |
-| Challis HJ/TD | Main publisher source recovered and hashed; author bwdist helper still returns HTML; installed toolbox lacks bwdist/padarray | Owner's licensed toolbox installation supplies the missing functions |
+| TOBS101 | Unmodified source errors on removed intlinprog `CutGeneration`; modern-options copy reaches cap with very poor C | Compatibility attempt rejected; original-runtime validation remains blocked |
+| Challis HJ/TD | Unchanged publisher source converges in 55 steps; initial/final-field Q4 FE agree | Complete for native run and FE check; not HJ trajectory equality |
 | Otomori reaction-diffusion | Author code host remains inaccessible | Obtain identifiable original source |
 
-These are unresolved numerical comparisons, not passed reference checks. The
-portable compiler/helper setup is now approved and completed under
+Numerical agreement is limited to the explicitly stated scopes below. The
+approved portable compiler/helper setup is completed under
 `C:\Users\johan\AppData\Local\ToporiaValidation`. GCC 14.2's archive matches
 its publisher checksum. Unmodified fsparse builds with the separate-complex API
 and passes three seeded random duplicate-index assemblies and an exact fixture
@@ -142,11 +142,11 @@ normal default compiler were not changed. Source/binary hashes are in the fixtur
 The compiler download archive was removed after extraction; reusable tools,
 original author sources and licences remain outside the repository.
 
-The owner approved adding only Image Processing Toolbox at R2026a Update 5.
-The signed MathWorks installer was pinned to `R2026aU5`; Windows refused elevated
-launch and direct write access to Program Files. No toolbox was installed by
-the agent. The owner prefers to install it personally; dependent checks await
-their confirmation. No MATLAB upgrade is requested.
+The owner personally installed the licensed Image Processing Toolbox after the
+agent's signed, R2026aU5-pinned installer was refused Windows elevation/write access.
+Read-only verification confirms unchanged R2026a Update 5, available imfilter,
+bwdist and padarray, and no compiler selected in normal MATLAB preferences.
+The external fsparse/MMA helpers are absent from the saved global path.
 
 ### Captured native MMA reference
 
@@ -166,8 +166,9 @@ reruns the three FE references; it does not replay this standalone optimizer cap
 Unmodified author-distributed functions were run with MATLAB R2026a Update 5
 on 27 October 2026. [`tests/references/matlab.json`](../tests/references/matlab.json)
 records commands, source SHA-256 hashes, runtime and observations. The original
-sources are not bundled; downloaded code, traces, figures and intermediate fields
-are removed after validation. Existing internal golden baselines are unchanged.
+sources are not bundled. Reusable author sources remain in the isolated external
+validation folder; scratch traces, figures and fields are removed after validation.
+Existing internal golden baselines are unchanged.
 
 | Original command | Iterations | First printed C | Last printed C | Printed volume |
 | :-- | --: | --: | --: | --: |
@@ -202,19 +203,51 @@ finite level-set values and became empty; that attempt is rejected, not accepted
 as a successful reference. Only documentation/citation was corrected in the
 existing Python RBF method; no algorithm or golden baseline was changed.
 
+### Newly unblocked native cases
+
+| Original / command settings | Steps | First printed C | Last printed C | Last volume |
+| :-- | --: | --: | --: | --: |
+| top99neo, 24x8, vf=.5, density, zero-padding, 20-step cap | 20 | 975.8323 | 316.1767 | 0.497 |
+| top99neo, same grid, volume-preserving projection beta=8 | 20 | 975.8323 | 5121.8397 | 0.500 |
+| top3D125, 12x4x2, vf=.3, density, zero-padding, 20-step cap | 20 | 40809.0 | 12683.4 | 0.309 |
+| Challis `top_levelset(24,12,.5,2,10,2)` | 55 | 5.8464 | 8.1996 | 0.500 |
+
+Exact commands and source hashes are in the fixture. The neo cases are bounded
+observations, not converged or paper-performance reproductions. High-beta top99neo
+still oscillates (change 0.423), and top3D125 exceeds its 0.3 physical budget.
+Toporia's 20-step density/OC case gives C=311.76497 and volume=0.499918;
+different OC bisections and design-versus-physical budget conventions prevent
+treating the neo trajectory as a strict equality oracle.
+
+`python -m experiments.original_references --additional-fe` checks the additional
+finite-element scopes. Top3D125's initial response uses the author's exact
+front-face sine z forces, not a distributed-depth load. Toporia gives 40808.98084,
+matching the original `%6.5e` precision (0.1 at this magnitude). Challis uses
+both constrained DOFs at its two endpoint nodes and the exact centre-node force;
+Toporia gives initial/final-field C=5.84641029 / 8.19962980 and volume 0.5.
+The final field is captured before the converged return, so the printed C applies
+to that exact stored binary field. These verify FE responses, not equality of
+Toporia's independent level-set optimization trajectory.
+
+The separate TOBS compatibility copy only renames the function, drops unsupported
+intlinprog options while retaining MaxNodes=1e5/Display=off, adds a 200-step cap
+and normalizes newlines. At the cap it reports C=1.558315e10, volume=0.5 and
+change=0.037. This very poor, unconverged result is rejected; no source or solver
+change is hidden behind an original-code agreement claim. The unchanged source
+and compatibility hashes are recorded separately. No production TOBS math changed.
+
 Remaining original-reference gaps are explicit:
 
-- top99neo/top3D125 need the absent `fsparse`; no MATLAB C compiler is selected.
-- MMC188 needs absent `mmasub`/`subsolv`; no reference result is fabricated.
+- MMC188 still lacks an identifiable runnable author file; a published appendix
+  is available and the external MMA helper is now available. No result is fabricated.
 - Original TOBS101 reaches an R2026a error: `Option "CutGeneration" for intlinprog has been removed.`
-  The original was kept unchanged. A legacy-option compatibility run would be a
-  separate, labelled result, not this unmodified-source oracle.
-- Challis' source download returned a challenge page, and the reaction-diffusion
-  author's source host was unavailable. Local original files can unblock these.
+  Its separately labelled compatibility run above fails the quality/stability check.
+- The reaction-diffusion author's source host remains unavailable; no byte-identifiable
+  original file was recovered. Published-code transcriptions are not called unchanged originals.
 
 No runtime/compiler/toolbox is installed or reconfigured without the owner's
-approval. Original-code numerical agreement is established only for the three
-cases above; method variants are not claimed to reproduce all reference papers.
+approval. All seven reference regression checks pass within their stated scopes;
+method variants are not claimed to reproduce all reference papers.
 
 ## Hashin-Shtrikman upper envelope
 
