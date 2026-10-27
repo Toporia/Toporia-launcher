@@ -68,7 +68,7 @@ any doubt about what this repository actually does today:
 | [Updaters](toporia/plugins/updaters/README.md) — optimisers | OC, MMA, GCMMA, SiMPL, BESO, SLSQP, trust-constr, NLopt (MMA, CCSAQ, SLSQP, AUGLAG), mmapy (MMA, GCMMA), null-space, TOBS, CONLIN, multi-constraint OC, Adam, PTO, hard-kill BESO, augmented Lagrangian, floating projection | 4 | 0 |
 | [Problems](toporia/plugins/problems/README.md) — benchmarks | MBB, robust MBB, cantilever, 3-D cantilever, Michell cantilever, L-bracket, L-bracket (local stress), heat sink, vibrating beam, column buckling, non-linear cantilever, force inverter, 3-point bending, bar, 3× drone arm | 6 | 0 |
 
-**115 implementations: 88 selectable plugins, 9 physics engines and 18 presets.
+**117 implementations: 88 selectable plugins, 9 physics engines and 20 presets.
 54 catalogue entries have open code elsewhere; 26 are paper-only.**
 Plugin counts follow the registries; composed pairings and parameter options are
 not counted again as additional implementations.
@@ -105,3 +105,12 @@ An algorithm, filter or response from a paper is one small file and one passing 
 one installed package without touching this repository. Start with
 [`docs/quickstart.md`](docs/quickstart.md); every kind of part, with a worked example, is in
 [`docs/writing-plugins.md`](docs/writing-plugins.md).
+
+### Research figures and mathematical explanations
+
+The [research guide](docs/research/README.md) maps numerical functions to paper
+targets, explains the core computation with diagrams and rendered equations, and
+tracks reproduction evidence separately from pending work. The first two
+research presets target Andreassen et al. Figure 3(a); their preset **?** opens
+the setup and mathematical description. See the [Batch 1 report](docs/research/batch-1.md)
+for author-code comparisons, paper-review scope and rerun commands.

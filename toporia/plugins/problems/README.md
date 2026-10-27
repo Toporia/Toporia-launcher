@@ -5,7 +5,7 @@ material, volume target — plus the solver settings recommended for it. Two run
 a scenario and differ only in their solver are a benchmark, and that comparison is what
 Toporia exists to make.
 
-**Status: 18 in Toporia · 6 open datasets or suites · 0 paper only**
+**Status: 20 in Toporia · 6 open datasets or suites · 0 paper only**
 
 | Label | Meaning |
 | :-- | :-- |
@@ -18,6 +18,8 @@ Toporia exists to make.
 | Problem | File | Menu name |
 | :-- | :-- | :-- |
 | ✅ MBB beam | [`mbb_beam.py`](mbb_beam.py) | `MBB Beam` |
+| ✅ top88 Figure 3(a), density | [`paper_top88_density.py`](paper_top88_density.py) | `Paper: top88 Fig. 3(a) - Density` |
+| ✅ top88 Figure 3(a), sensitivity | [`paper_top88_sensitivity.py`](paper_top88_sensitivity.py) | `Paper: top88 Fig. 3(a) - Sensitivity` |
 | ✅ Cantilever | [`cantilever.py`](cantilever.py) | `Cantilever` |
 | ✅ Nonlinear cantilever | [`nonlinear_cantilever.py`](nonlinear_cantilever.py) | `Nonlinear Cantilever` |
 | ✅ Cantilever 3D | [`cantilever_3d.py`](cantilever_3d.py) | `Cantilever 3D` |
@@ -41,6 +43,15 @@ thermal compliance, eigenfrequency, or nonlinear end compliance. Column Buckling
 adds a buckling limit to its compliance objective. Run a preset with `toporia run "<menu name>"`;
 `toporia list` shows the names, `--out DIR` chooses the output folder and
 `--set PATH=VALUE` overrides a parameter, e.g. `toporia run "L-bracket" --set m=1`.
+
+The two **Paper: top88 Fig. 3(a)** recipes use the paper's 60 by 20 mesh and
+radius 2.4, retaining the general MBB preset's settings separately. Their preset
+**?** opens a full description with rendered mathematics. See the
+[research report](../../../docs/research/batch-1.md) for quantitative comparisons
+against unchanged author code, the separate qualitative paper-panel review,
+and explicit numerical tolerances. `python -m experiments.research_figures`
+repeats both comparisons. Add future figure descriptions using the
+[research conventions](../../../docs/research/conventions.md).
 
 The **Michell cantilever** carries a point load to a clamped circular support. Its optimal
 layout is known analytically (Michell 1904: orthogonal spirals leaving the circle at 45°),

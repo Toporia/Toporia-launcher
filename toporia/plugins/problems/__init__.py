@@ -60,9 +60,18 @@ def problem_info(name):
     return getattr(module, "ABOUT", ""), getattr(module, "REFERENCE", "")
 
 
+def problem_description(name):
+    """Optional structured research explanation, without importing GUI or plotting code.
+
+    ABOUT/REFERENCE and problem_info remain the short, backwards-compatible API.
+    New figure presets declare DESCRIPTION alongside the runnable setup.
+    """
+    return getattr(_modules()[name], "DESCRIPTION", None)
+
+
 def get_default_run():
     """Return the default startup problem (the MBB beam) as a Run."""
     return get_run(DEFAULT_PROBLEM)
 
 
-__all__ = ["DEFAULT_PROBLEM", "get_default_run", "get_run", "problem_info", "problem_names"]
+__all__ = ["DEFAULT_PROBLEM", "get_default_run", "get_run", "problem_info", "problem_names", "problem_description"]

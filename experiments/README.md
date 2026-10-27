@@ -3,6 +3,16 @@
 These are reproducible research evaluations, outside Toporia's plugin discovery
 and GUI. Failed performance gates are recorded rather than weakened.
 
+## Paper figure presets and core guide
+
+`python -m experiments.research_figures` runs the two selectable top88 Figure
+3(a) presets against captured unchanged author fields and histories. Each preset
+carries an explanation with mathematics in its GUI help. Results, independent
+paper-visual review, coverage and contribution conventions are in the
+[research guide](../docs/research/README.md). `research_inventory` rebuilds the
+function census; `research_docs` builds the mathematical HTML guide;
+`research_preview` captures the preset help for offscreen visual QA.
+
 ## Fixed projection without beta continuation
 
 `python -m experiments.fixed_projection --iterations 600 --mesh 1` runs the

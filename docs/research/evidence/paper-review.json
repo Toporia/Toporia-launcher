@@ -1,0 +1,10 @@
+{
+  "source_url": "https://www.topopt.mek.dtu.dk/-/media/subsites/topopt/apps/dokumenter-og-filer-til-apps/topopt88.pdf",
+  "source_sha256": "21f2f864bd0e53791fdef7c996ba9b8846e6ef59b555c5dbcd8ae087956181d9",
+  "source_version": "author-hosted uncorrected manuscript",
+  "page": 7,
+  "figure": "3(a), sensitivity top and density bottom",
+  "review": "visual match of the generated 60x20 fields to the identified manuscript panels; no pixel-equality or published-compliance claim",
+  "reviewed_on": "2026-10-27",
+  "paper_numerical_match": "not assessed; the inspected manuscript panel has no compliance annotation"
+}

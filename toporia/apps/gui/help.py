@@ -124,10 +124,15 @@ def plugin_topic(cls, kind=""):
 
 def problem_topic(name):
     """A topic for a preset problem."""
-    from toporia.plugins.problems import problem_info
+    from toporia.plugins.problems import problem_description, problem_info
 
     about, reference = problem_info(name)
-    return text_topic(f"Preset: {name}", about or UNSTATED, reference or UNSTATED)
+    topic = text_topic(f"Preset: {name}", about or UNSTATED, reference or UNSTATED)
+    description = problem_description(name)
+    if description is not None:
+        from .research_help import ResearchHelpTopic
+        return ResearchHelpTopic(topic, description)
+    return topic
 
 
 # ── Window and button ─────────────────────────────────────────────────────────

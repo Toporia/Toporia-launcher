@@ -1,0 +1,40 @@
+# GUI handoff and file ownership
+
+Research work lives in `toporia-integration`, branch
+`feature/research-presets-v022`. The colleague's `toporia-gui` checkout has only
+been inspected. The GUI framework, nested network, library widgets and
+navigation remain with that effort.
+
+## Integration surface delivered here
+
+- `plugins/problems/_research.py`: plain immutable explanation data.
+- Presets declare `DESCRIPTION`; no GUI imports in numerical/preset code.
+- `plugins/problems.problem_description(name)`: description or None.
+- `apps/research_render.description_html(description)`: escaped content and
+  local embedded MathText PNGs, usable in a QTextBrowser.
+- `apps/gui/research_help.ResearchHelpTopic`: existing topic title/sections
+  plus rendered scientific description.
+- `apps/gui/help.py`: only the preset-topic hook. Merge this small function
+  change carefully if the colleague edits help.py later.
+- `problem_info(name)` and short ABOUT/REFERENCE text are unchanged.
+
+## GUI follow-ups after this batch
+
+1. Add a Description / Math action to research benchmark cards, calling the
+   existing help topic so there is a single content source.
+2. Link Function Explorer entries to presets using `description.functions`.
+3. Show the target paper/panel and separately sourced reproduction statuses.
+   DESCRIPTION describes the intended comparison; a report supplies its result.
+4. Link comparison images and make pending/to-fix states visibly distinct.
+5. Check image scaling, scrolling, narrow windows and both GUI themes after merge.
+6. Connect the same description data to future nested functions without
+   changing numerical ownership or inventing a new computational contract here.
+
+Existing test-isolation note: selective reruns of the post-processing and method
+sweep tests can inherit a 3-D `_base_cfg` from a shared MainWindow fixture while
+its preset combo still says MBB. Fresh-process runs pass. Keep explicit fixture
+resetting in mind when restructuring GUI tests; this batch leaves those files alone.
+
+The research renderer requires no network or TeX installation. Existing presets
+without DESCRIPTION keep ordinary help; their fuller mathematical descriptions
+are added when their figure examples are developed in subsequent batches.
