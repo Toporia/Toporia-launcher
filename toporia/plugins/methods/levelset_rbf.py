@@ -21,8 +21,9 @@
 #     3. Update α in the direction that reduces compliance, subject to a
 #        volume constraint enforced by a Lagrange multiplier (lag)
 #
-#   The method is faithful to TOPRBF.m (Luo et al.) and intentionally uses
-#   dense matrix operations to match the MATLAB reference.  This means it is
+#   This is a numerical variant of TOPRBF.m (Wei et al. 2018), with mean
+#   rather than median energy normalisation and guards on field rescaling.
+#   Dense matrix operations retain the original RBF formulation. It is
 #   SLOW for large meshes — use density method for m > 1.
 
 import numpy as np
@@ -33,13 +34,14 @@ from toporia.plugins.physics.q4_plane_stress import solve_fea
 
 
 class LevelSetRBFMethod(OptimizationMethod):
-    """RBF level-set topology optimisation (Wang & Wang 2006; TOPRBF.m by Luo et al.), a whole method."""
+    """RBF level-set topology optimisation, a numerical variant of Wei et al.'s TOPRBF."""
 
     name = "levelset"
     label = "RBF level set"
     reference = (
-        'A port of TOPRBF.m (Luo et al.); radial-basis-function level sets after Wang & Wang, CMAME'
-        ' 2006.'
+        'A numerical variant of TOPRBF.m by P. Wei, Z. Li, X. Li and M. Y. Wang, SMO 58 '
+        '(2018) 831-849; mean rather than median energy normalisation, guarded rescaling '
+        'and clipped level-set field. Related RBF level sets: Wang & Wang (2006).'
         ' Papers: https://doi.org/10.1002/nme.1536 https://doi.org/10.1007/s00158-018-1904-8'
     )
     order = 30

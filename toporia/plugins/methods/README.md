@@ -30,7 +30,7 @@ a buckling limit. Pairings with no compatible objective are rejected before solv
 
 | Method | File | Name | Reference |
 | :-- | :-- | :-- | :-- |
-| ✅ RBF level set | [`levelset_rbf.py`](levelset_rbf.py) | `levelset` | Wang & Wang, *CMAME* 2006 |
+| ✅ RBF level set | [`levelset_rbf.py`](levelset_rbf.py) | `levelset` | Numerical variant of Wei et al., *SMO* 2018; related Wang & Wang 2006 |
 | ✅ Reaction-diffusion level set | [`levelset_reaction_diffusion.py`](levelset_reaction_diffusion.py) | `levelset_reaction_diffusion` | Otomori et al., *SMO* 2015; independent finite-volume variant |
 | ✅ Hamilton-Jacobi level set with circular TD | [`levelset_hamilton_jacobi.py`](levelset_hamilton_jacobi.py) | `levelset_hamilton_jacobi` | Challis, *SMO* 2010; independent HJ/TD variant |
 

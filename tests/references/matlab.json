@@ -1,0 +1,68 @@
+{
+  "runtime": "26.1.0.3346908 (R2026a) Update 5",
+  "captured_on": "2026-10-27",
+  "protocol": "Unmodified downloaded functions, invisible figures, default stopping rules. Objectives are pre-update values printed to four decimals, not fresh final-design solves.",
+  "sources": {
+    "top88.m": {
+      "url": "https://www.topopt.mek.dtu.dk/-/media/subsites/topopt/apps/dokumenter-og-filer-til-apps/top88.m",
+      "sha256": "2ae6c7a9308f9da0a602d372c799cd6e43ad61c2ac034f6b54d34ead1c5477a2"
+    },
+    "top3d.m": {
+      "url": "https://raw.githubusercontent.com/kliu99/Top3d/master/top3d.m",
+      "sha256": "5b52f5d6aab2fb89c251ee6703a3a9d0df7be61aa1f747c12263da71e32316c3"
+    }
+  },
+  "additional_observations": {
+    "TOPRBF": {
+      "url": "https://media.springernature.com/original/springer-static/esm/art%3A10.1007%2Fs00158-018-1904-8/MediaObjects/158_2018_1904_MOESM1_ESM.m",
+      "sha256": "2943829d1229b172857e13e839f8052df89a7ec86871bee5d23ad588afeee384",
+      "command": "TOPRBF(40,20,0.5)",
+      "iterations": 88,
+      "first_reported_compliance": 585921.079450,
+      "first_reported_volume": 0.835408,
+      "last_reported_compliance": 594277.942780,
+      "last_reported_volume": 0.499728,
+      "comparison_scope": "Standalone original reference, not an equality oracle for Toporia's mean-normalised, guarded variant. A 24x8 attempt produced non-finite fields and an empty design and was rejected."
+    },
+    "TOBS101": {
+      "source_archive": "https://media.springernature.com/original/springer-static/esm/art%3A10.1007%2Fs00158-020-02719-9/MediaObjects/158_2020_2719_MOESM1_ESM.zip",
+      "source_file": "tobs101.m",
+      "sha256": "52f6e703bf7025d955b26ba6188957d90e54c057e661775fcaafed7268ab9716",
+      "command": "tobs101(24,8,0.5,0.02,0.1,1.5)",
+      "status": "blocked",
+      "message": "Option \"CutGeneration\" for intlinprog has been removed."
+    }
+  },
+  "cases": [
+    {
+      "name": "top88_sensitivity",
+      "command": "top88(24,8,0.5,3,1.5,1)",
+      "iterations": 39,
+      "first_reported_compliance": 975.8323,
+      "last_reported_compliance": 265.3387,
+      "reported_volume": 0.5,
+      "reported_change": 0.01,
+      "final_mean_density": 0.49984139235677222
+    },
+    {
+      "name": "top88_density",
+      "command": "top88(24,8,0.5,3,1.5,2)",
+      "iterations": 56,
+      "first_reported_compliance": 975.8323,
+      "last_reported_compliance": 274.4604,
+      "reported_volume": 0.5,
+      "reported_change": 0.01,
+      "final_mean_density": 0.49999021729118343
+    },
+    {
+      "name": "top3d_density",
+      "command": "top3d(12,4,2,0.3,3,1.5)",
+      "iterations": 39,
+      "first_reported_compliance": 18934.5908,
+      "last_reported_compliance": 7549.3805,
+      "reported_volume": 0.3,
+      "reported_change": 0.01,
+      "load_convention": "One unit downward force on every tip-bottom depth node; the Python reference recipe explicitly uses uniform node shares, not the production trapezoidal line-load quadrature."
+    }
+  ]
+}

@@ -1,0 +1,2 @@
+# Preserve PDF stream bytes and keep catalogue diffs readable in Git.
+*.pdf binary

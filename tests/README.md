@@ -22,3 +22,13 @@ not convergence benchmarks; the plugin tests provide the physical validation.
 
 Test output belongs in pytest's temporary directories. `results/`, `__pycache__/`
 and test/lint caches contain generated files and can be removed after a run.
+
+Independent MATLAB observations live in [`references/matlab.json`](references/matlab.json),
+separate from unchanged internal golden baselines. Three tests compare Toporia's
+iteration counts and first/last compliance against unmodified top88 and top3d
+to their four-decimal printed precision. Top3d's equal nodal depth forces are
+matched explicitly in the reference recipe; production trapezoidal line-load
+quadrature is unchanged. The fixture records original commands, hashes, runtime
+and capture date. No MATLAB executable or source download is needed for these
+Python regressions. See `python -m experiments.original_references --help` for
+optional hash-checked original reruns using separately supplied sources.

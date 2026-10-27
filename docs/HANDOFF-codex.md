@@ -118,7 +118,7 @@ Files in that commit:
 | Simulated annealing | A deliberately weak gradient-free baseline. Cap the evaluations. It will probably fail the 10 %-of-OC benchmark: report that, don't register a failing part, and don't weaken the check. | topASA on GitHub |
 | Compliant mechanism + force inverter | A response that maximises output displacement u_out = lᵀu with springs at input and output, using the existing `adjoint()` / `mutual_energy()` of the STRESS feature. Springs need a scenario or physics addition (stiffness on the diagonal at the ports). Then the force-inverter preset. Use MMA (signed sensitivities). | Sigmund, *Mech. Struct. Mach.* 25 (1997), https://doi.org/10.1080/08905459708945415 |
 | pyMOTO mechanism module | Optional cross-check for the compliant mechanism, as `pymoto_heat` and `pymoto_dynamic` do for theirs. | pyMOTO |
-| Reference results from the original MATLAB codes | Optional. The owner chose gradient checks only for now. If wanted later: run top88, top99neo, top3d, TOBS, MMC and the level-set codes once in GNU Octave, and store the numbers as test references. Ask the owner first: installing Octave needs approval. | see `toporia/plugins/SURVEY.md` |
+| Reference results from the original MATLAB codes | Historical scope was gradients only. The later GO authorises available-runtime references: top88 and top3d now have external fixtures. See `INTEGRATION-progress.md` for current results and remaining source/dependency gaps. Ask before installing or changing runtimes. | see `toporia/plugins/SURVEY.md` |
 
 ## 6. Still to add: medium (new physics or a whole method)
 

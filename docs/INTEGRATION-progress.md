@@ -36,6 +36,7 @@ a current-round update containing additions, validation and limitations.
 | `d74d056` | Nested 2-D Q4 multiresolution, exact subcell integration and independent fine referee. |
 | `5700fc5` | NumPy smooth TOuNN-style coordinate field with explicit 2-D/3-D backpropagation. |
 | `819a111` | Basic shared-density SINH, effective-volume budget/adjoints and separate reporting. |
+| `124b902` | Scenario-bound fixed-nu Hashin-Shtrikman upper envelope, 2-D/3-D and thermal preflight. |
 
 Heat conduction, thermal/dynamic pyMOTO models, eigenfrequency, harmonic response,
 local-stress augmented Lagrangian and nonlinear elasticity are already present.
@@ -187,10 +188,41 @@ The combined HS/SINH/schema/variants/study group passes 504 tests and 53 selecte
 GUI form/reachability cases pass. Ruff, whitespace and all 510 local Markdown
 file links pass. The PDF has 19 pages and 294 links with original navigation intact.
 
+## Original MATLAB references — 27 October 2026
+
+MATLAB R2026a Update 5 is installed and licensed; the direct batch route works
+without a Python Engine install. Unmodified top88 and top3d were downloaded
+from author sources and hashed. Three cases match Toporia's stopping iteration
+and first/last printed objectives to four-decimal precision. Both top88 mean
+densities also agree within 1e-10. The top3d reference recipe explicitly uses
+the original equal nodal depth forces; production line-load quadrature is unchanged.
+Native observations and hashes are stored separately from unchanged golden
+baselines in `tests/references/matlab.json`. A reusable optional driver verifies
+supplied source hashes, uses isolated temporary files and changes no MATLAB path.
+
+Original TOPRBF(40,20,0.5) completes in 88 steps with C=594277.942780 and volume
+0.499728; the 24x8 attempt produced non-finite fields and is rejected. The native
+RBF result is a standalone reference, not a strict oracle for Toporia's mean-
+normalised and guarded variant. An inaccurate port/authorship description was
+corrected; the existing RBF algorithm and baselines are unchanged.
+
+Other originals remain unresolved: fsparse is absent and no C compiler is
+selected; MMC needs absent mmasub/subsolv; original TOBS101 errors on its removed
+intlinprog CutGeneration option; Challis' source returns a challenge page and
+the reaction-diffusion source host is unavailable. The owner was asked for any
+existing local original/helper files. No compiler, toolbox or runtime is installed
+or reconfigured. These gaps do not invalidate the three matching reference cases.
+All four external-fixture tests pass, including source-hash refusal before MATLAB
+launch. The optional native rerun driver also reproduces all three original cases.
+Ruff, whitespace and 513 local Markdown file links pass. The PDF has 20 pages
+and 296 links; its original internal links, outlines and catalogue are preserved.
+Downloaded sources, traces, intermediate fields and PDF builders are removed.
+
 ## Remaining sequence
 
-1. Original MATLAB/Octave reference runs if a suitable runtime is available;
-   ask before installing or changing runtimes.
+1. Unblock the remaining original-reference cases with local sources and suitable
+   dependencies/runtime compatibility; ask before installing or changing runtimes.
+2. Complete final regression verification and remove generated run/scratch files.
 
 Work stays sequential: finish verification, documentation and one commit per
 addition before starting the next. No generated runs or scratch papers are retained.

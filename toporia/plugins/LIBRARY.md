@@ -203,7 +203,7 @@ Listed from least to most effort. "Code" means open code exists (port it, or che
 
 | What | Kind | Source | Notes |
 | :-- | :-- | :-- | :-- |
-| Reference results from the original MATLAB codes (top88, top99neo, top3d, TOBS, MMC, the level-set codes) | tests | Code: run once in GNU Octave or MATLAB · papers [1](https://doi.org/10.1007/s00158-010-0594-7) [2](https://doi.org/10.1007/s00158-020-02629-w) [3](https://doi.org/10.1007/s00158-014-1107-x) [4](https://doi.org/10.1007/s00158-020-02719-9) [5](https://doi.org/10.1007/s00158-015-1372-3) [6](https://doi.org/10.1007/s00158-018-1904-8) [7](https://doi.org/10.1007/s00158-014-1190-z) | proves the Python versions give the same answers |
+| Original MATLAB references: partially validated | tests | Three strict matching top88/top3d cases and a standalone original RBF run; other original codes have source, dependency or runtime-compatibility gaps. [Results and limits](../../experiments/README.md#original-matlab-references) · papers [1](https://doi.org/10.1007/s00158-010-0594-7) [2](https://doi.org/10.1007/s00158-020-02629-w) [3](https://doi.org/10.1007/s00158-014-1107-x) [4](https://doi.org/10.1007/s00158-020-02719-9) [5](https://doi.org/10.1007/s00158-015-1372-3) [6](https://doi.org/10.1007/s00158-018-1904-8) [7](https://doi.org/10.1007/s00158-014-1190-z) | Agreement applies to the three recorded cases; numerical variants are not exact ports |
 
 ### Large: the framework has to change first
 

@@ -66,6 +66,61 @@ respectively; they are not budget-matched performance comparisons. No binary
 result is labelled feasible or printable. The [filter documentation](../toporia/plugins/filters/README.md#gaynorguest-self-support-projection)
 describes the cell discretisation, boundary truncation and grid-dependent threshold.
 
+## Original MATLAB references
+
+Unmodified author-distributed functions were run with MATLAB R2026a Update 5
+on 27 October 2026. [`tests/references/matlab.json`](../tests/references/matlab.json)
+records commands, source SHA-256 hashes, runtime and observations. The original
+sources are not bundled; downloaded code, traces, figures and intermediate fields
+are removed after validation. Existing internal golden baselines are unchanged.
+
+| Original command | Iterations | First printed C | Last printed C | Printed volume |
+| :-- | --: | --: | --: | --: |
+| `top88(24,8,0.5,3,1.5,1)` | 39 | 975.8323 | 265.3387 | 0.500 |
+| `top88(24,8,0.5,3,1.5,2)` | 56 | 975.8323 | 274.4604 | 0.500 |
+| `top3d(12,4,2,0.3,3,1.5)` | 39 | 18934.5908 | 7549.3805 | 0.300 |
+
+Toporia matches these iteration counts and first/last objectives within half a
+printed four-decimal unit. Both top88 final mean densities also match within
+1e-10. These objectives precede the last update; they must not be labelled fresh
+final-design compliances. Top3d applies a unit force at every tip-bottom depth
+node. The Python reference recipe explicitly sets equal nodal shares and total
+force 3, rather than changing production trapezoidal line-load integration.
+
+Run `python -m experiments.original_references` for the Python comparison.
+To repeat the actual originals, download `top88.m` and `top3d.m` from the fixture's
+source URLs into a separate folder, then run
+`python -m experiments.original_references --matlab --source-dir PATH`.
+Use `--matlab-exe PATH` if MATLAB is not on PATH. The recipe verifies hashes,
+copies the two files to an automatically removed temporary directory, disables
+figure visibility, and prints observations. It installs nothing, changes no
+MATLAB saved path, and never regenerates fixtures automatically.
+
+The publisher's unmodified [TOPRBF supplement](https://doi.org/10.1007/s00158-018-1904-8)
+also completed `TOPRBF(40,20,0.5)`: 88 iterations, C=594277.942780,
+volume=0.499728. Its initial C=585921.079450 and volume=0.835408 use a -100 tip
+force. This is a standalone reference, not a strict oracle for Toporia's numerical
+variant: mean energy normalisation, guarded rescaling, field clipping and sampling
+details differ. Toporia's corresponding initial C=585978.138686 and fraction
+0.835374 already show a small sampling difference. An original 24x8 attempt lost
+finite level-set values and became empty; that attempt is rejected, not accepted
+as a successful reference. Only documentation/citation was corrected in the
+existing Python RBF method; no algorithm or golden baseline was changed.
+
+Remaining original-reference gaps are explicit:
+
+- top99neo/top3D125 need the absent `fsparse`; no MATLAB C compiler is selected.
+- MMC188 needs absent `mmasub`/`subsolv`; no reference result is fabricated.
+- Original TOBS101 reaches an R2026a error: `Option "CutGeneration" for intlinprog has been removed.`
+  The original was kept unchanged. A legacy-option compatibility run would be a
+  separate, labelled result, not this unmodified-source oracle.
+- Challis' source download returned a challenge page, and the reaction-diffusion
+  author's source host was unavailable. Local original files can unblock these.
+
+No runtime/compiler/toolbox is installed or reconfigured without the owner's
+approval. Original-code numerical agreement is established only for the three
+cases above; method variants are not claimed to reproduce all reference papers.
+
 ## Hashin-Shtrikman upper envelope
 
 Run `python -m experiments.material_laws --law hashin_shtrikman --iterations 300 --mesh 1`.
