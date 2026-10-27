@@ -11,6 +11,7 @@ Configs are tiny on purpose: several of these modes run four or more full
 optimisations each.
 """
 
+import re
 from pathlib import Path
 
 import matplotlib
@@ -47,6 +48,17 @@ def test_run_one(cfg):
     assert density.shape == (5, 15)
     _assert_output(Path(cfg.output.dir) / "final_density.png")
     _assert_output(Path(cfg.output.dir) / "final_density.csv")
+
+
+@pytest.mark.parametrize("preset", ["MBB Beam", "Vibrating Beam"])
+def test_console_objectives_match_recorded_values_including_the_first(preset, tmp_path, capsys):
+    run = get_run(preset).updated(m=0.2, max_iter=3, tol=0, save_every=0).with_output_dir(tmp_path)
+    store, _ = run_one(run)
+    shown = [float(value) for value in re.findall(r"it=\d+\s+obj=(\S+)", capsys.readouterr().out)]
+    assert shown == pytest.approx(store.objectives, rel=5.1e-5)
+    assert shown[0] != 0  # Reporting a delta would hide the entire first objective.
+    if preset == "Vibrating Beam":
+        assert shown[0] < 0  # Maximizing frequency is represented by a negative objective.
 
 
 def test_run_one_fires_iteration_callback(cfg):

@@ -135,7 +135,6 @@ def _loop(run, method, store, on_iteration):
     schedules = make_schedules(run)
     scheduled = {}           # the value each schedule last set
     held = False             # the tolerance was met while something was still moving
-    obj0 = None
     iteration = 0
     stop_reason = f"iteration limit ({solver.max_iter})"
     for iteration in range(1, solver.max_iter + 1):
@@ -156,14 +155,12 @@ def _loop(run, method, store, on_iteration):
         change = method.get_change()
         for _, schedule in schedules:
             schedule.observe(iteration, change)     # optional: lets a schedule wait for the design to settle
-        if obj0 is None:
-            obj0 = objective
 
         store.record(iteration=iteration, objective=objective,
                      volume=float(density.mean()), density=density,
                      save_every=run.output.save_every, responses=responses)
         solves = f"  solves={responses['solves']:d}" if "solves" in responses else ""
-        print(f"  it={iteration:03d}  obj={objective - obj0:+.4e}  vol={density.mean():.3f}"
+        print(f"  it={iteration:03d}  obj={objective:.4e}  vol={density.mean():.3f}"
               f"{solves}  t={time.perf_counter() - t0:.2f}s")
         if on_iteration:
             on_iteration(density, store.objectives, iteration)

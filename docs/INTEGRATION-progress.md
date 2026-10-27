@@ -335,3 +335,12 @@ both residuals remain +13.87811; the independent feasible flag is false and
 the CLI exits nonzero. Thresholding uniform gray to empty also shows that
 geometric proxies alone do not ensure load-bearing capability. All 21 tests,
 Ruff and whitespace checks pass. No response formula or tolerance was weakened.
+
+## Console objective reporting — 27 October 2026
+
+The iteration console now prints the actual reported objective, matching the
+stored response/history, instead of labelling a delta from the first value as
+obj. Positive compliance and negative frequency-objective histories are checked
+end to end, including the first printed value. Recording, objective mathematics
+and optimization updates are unchanged.
+All 12 analysis-mode tests pass, including both console cases; Ruff passes.

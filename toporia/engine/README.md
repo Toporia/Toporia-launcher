@@ -11,6 +11,10 @@ The engine knows methods only through
 method is OC, BESO, SciPy's SLSQP or the level set; that is what keeps a cross-method
 comparison fair.
 
+The console's `obj=` is the method's reported objective for that iteration,
+matching the stored history, including its sign and its nonzero first value.
+It is not a difference from the initial objective.
+
 ```
 engine/
 ├── loop.py         the one optimisation loop
