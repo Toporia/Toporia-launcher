@@ -125,16 +125,43 @@ selects a compiler, saves a MATLAB path or changes persistent settings.
 
 | Remaining original | Latest evidence (27 October) | Next requirement |
 | :-- | :-- | :-- |
-| top99neo / top3D125 | Author page requires fsparse; helper absent; no selected C compiler; author repository has no binary releases | Owner approval before compiler/helper installation |
-| MMC188 | Published appendix found; original runnable source and mmasub/subsolv absent locally | Obtain identifiable original source and matching MMA helpers; no claim of original-code equality |
+| top99neo / top3D125 | Unchanged author sources hashed; fsparse built and checked in isolated tools; installed MATLAB lacks imfilter | Owner is installing the licensed Image Processing Toolbox personally |
+| MMC188 | Published appendix found; identified GPL MMA helper with embedded subsolv now available outside repo; byte-identifiable runnable MMC source still absent | Obtain identifiable original MMC source; no claim of original-code equality |
 | TOBS101 | Unmodified source errors on removed intlinprog `CutGeneration` option | An explicitly labelled compatibility adaptation or compatible older runtime; ask before runtime changes |
-| Challis HJ/TD | Main publisher source recovered and hashed; author bwdist helper still returns HTML; installed toolbox lacks bwdist/padarray | Obtain working author helpers or approval for toolbox installation |
+| Challis HJ/TD | Main publisher source recovered and hashed; author bwdist helper still returns HTML; installed toolbox lacks bwdist/padarray | Owner's licensed toolbox installation supplies the missing functions |
 | Otomori reaction-diffusion | Author code host remains inaccessible | Obtain identifiable original source |
 
 These are unresolved numerical comparisons, not passed reference checks. The
-compiler decision is pending; no dependencies or MATLAB settings have changed.
-The source checks and read-only runtime audit are complete. Temporary downloads
-are deleted; only provenance/hashes and the reusable audit are retained.
+portable compiler/helper setup is now approved and completed under
+`C:\Users\johan\AppData\Local\ToporiaValidation`. GCC 14.2's archive matches
+its publisher checksum. Unmodified fsparse builds with the separate-complex API
+and passes three seeded random duplicate-index assemblies and an exact fixture
+against native `sparse`. Setup used a separate R2026a preferences directory and
+process-local `MW_MINGW64_LOC`/`MATLAB_PREFDIR`. Global PATH, saved MATLAB path and
+normal default compiler were not changed. Source/binary hashes are in the fixture.
+The compiler download archive was removed after extraction; reusable tools,
+original author sources and licences remain outside the repository.
+
+The owner approved adding only Image Processing Toolbox at R2026a Update 5.
+The signed MathWorks installer was pinned to `R2026aU5`; Windows refused elevated
+launch and direct write access to Program Files. No toolbox was installed by
+the agent. The owner prefers to install it personally; dependent checks await
+their confirmation. No MATLAB upgrade is requested.
+
+### Captured native MMA reference
+
+`python -m experiments.original_references --mma` repeats the optional mmapy
+port on a convex six-variable reciprocal objective against a captured MATLAB
+run. The GPL source is an identified distribution copy with preserved Svanberg
+copyright and embedded `subsolv`, not a direct author-site download. No source
+is bundled here. Both first and 30th designs, objective, multiplier and budget
+agree within 1e-10. Fresh final objective is **63.4965945463**, budget
+**2.39999999648** against 2.4; analytic optimum is **63.4965944531**.
+The initial design is over budget, so its lower objective is not a feasible
+performance comparison. The fixture records the full problem, source revision
+and SHA-256 hash. This validates mmapy's port, not equality of Toporia's own
+distinct one-budget MMA approximation. The existing `--matlab` driver still
+reruns the three FE references; it does not replay this standalone optimizer capture.
 
 Unmodified author-distributed functions were run with MATLAB R2026a Update 5
 on 27 October 2026. [`tests/references/matlab.json`](../tests/references/matlab.json)

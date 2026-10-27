@@ -9,6 +9,34 @@
     "scope": "Read-only batch audit; no installation, compiler selection, path save or MATLAB configuration change."
   },
   "protocol": "Unmodified downloaded functions, invisible figures, default stopping rules. Objectives are pre-update values printed to four decimals, not fresh final-design solves.",
+  "isolated_validation_tools": {
+    "root": "C:\\Users\\johan\\AppData\\Local\\ToporiaValidation",
+    "compiler": "WinLibs GCC 14.2.0 x86_64 POSIX SEH UCRT, release 3",
+    "compiler_archive_url": "https://github.com/brechtsanders/winlibs_mingw/releases/download/14.2.0posix-12.0.0-ucrt-r3/winlibs-x86_64-posix-seh-gcc-14.2.0-mingw-w64ucrt-12.0.0-r3.zip",
+    "compiler_archive_sha256": "88868d745b807f083a117ff69348d8bc021ad7389aa503379dbed1866efcaeb9",
+    "fsparse_source_url": "https://raw.githubusercontent.com/stefanengblom/stenglib/4e0183b0b3e6150d4d810c44e7a7151b66410f56/Fast/source/fsparse.c",
+    "fsparse_source_sha256": "1813cad96da748af71268d88932576d98018e42d24fc6592d30913b5960f5c96",
+    "fsparse_mex_sha256": "a32ecf402eb8176487907a4d81bca82fac891d1c2e4d1ced73e0042a5b9f3a18",
+    "build": "mex('-R2017b','CFLAGS=$CFLAGS -std=c99','-outdir',helper,fullfile(helper,'fsparse.c'))",
+    "isolation": "MW_MINGW64_LOC and MATLAB_PREFDIR set only in child process; preferences under matlab-prefs-R2026a; no global PATH, saved MATLAB path or normal compiler setup changed.",
+    "assembly_checks": "Three seeded random duplicate-index matrices and one exact fixture agree with MATLAB sparse to 1e-12.",
+    "image_toolbox": "Licensed but absent. Owner approved toolbox-only R2026aU5 addition, then chose to install it personally after Windows elevation/write-access failure. Waiting for owner; no toolbox installed by this agent."
+  },
+  "optimizer_reference": {
+    "captured_on": "2026-10-27",
+    "source_url": "https://raw.githubusercontent.com/gistmeto/EduTO/38769ee2524af83bea934294a485522a1c7a34af/mmasub.m",
+    "source_sha256": "f979645e041a4b49ff4f11a0abdae3d4bd75c26b1c6268e4fdac6c33b6912030",
+    "provenance": "Identified GPL distribution copy of Svanberg's September 2007/August 2008 MMA with embedded subsolv, run unchanged in MATLAB; not a direct download from the now-unavailable author site. Source and COPYING retained outside this repository.",
+    "protocol": "Minimize sum(w./x), w=[1,2,3,5,7,11], sum(x)<=2.4, bounds [0.05,1], x0=linspace(0.25,0.75,6), 30 outer mmasub calls with all native defaults, a0=1,a=0,c=1000,d=0; old1=old2=x0, low=xmin, upp=xmax. Fresh final objective. This checks mmapy's port, not equality of Toporia's distinct one-budget MMA variant.",
+    "initial_objective": 50.907758907758904,
+    "first_design": [0.11915881393685672,0.22137121499099774,0.31078881683565918,0.42272346526175653,0.52298319694723094,0.64139697461592493],
+    "iterations": 30,
+    "final_design": [0.19441528389570778,0.274944731183041,0.33673714982854591,0.434725790621261,0.51437449195291263,0.64480254899507239],
+    "final_objective": 63.496594546302667,
+    "final_budget": 2.3999999964765406,
+    "final_multiplier": 63.49659460191171,
+    "analytic_objective": 63.496594453082828
+  },
   "sources": {
     "top88.m": {
       "url": "https://www.topopt.mek.dtu.dk/-/media/subsites/topopt/apps/dokumenter-og-filer-til-apps/top88.m",

@@ -3,6 +3,7 @@
 Default: python -m experiments.original_references
 Optional original rerun: --matlab --source-dir PATH [--matlab-exe PATH]
 Read-only runtime/helper audit: --audit-matlab [--matlab-exe PATH]
+Optional mmapy comparison against the captured native optimizer: --mma
 Download the two sources linked in tests/references/matlab.json into PATH.
 Their bytes must match the recorded hashes. No download, install, source
 patch, MATLAB path save or fixture update is performed by this recipe.
@@ -24,6 +25,37 @@ from toporia.plugins.methods import method_class
 from toporia.plugins.problems import get_run
 
 REFERENCES = Path(__file__).resolve().parents[1] / "tests" / "references" / "matlab.json"
+
+
+def validate_mma():
+    """Compare the optional mmapy port on the captured convex reciprocal problem.
+
+    Minimize sum(w/x) subject to sum(x)<=2.4, 0.05<=x<=1. The unconstrained
+    initial design is deliberately over budget. The interior optimum is
+    x=2.4*sqrt(w)/sum(sqrt(w)); all native MMA defaults are retained.
+    """
+    from mmapy.mma import mmasub
+
+    n = 6
+    weights = np.array([1., 2., 3., 5., 7., 11.]).reshape(-1, 1)
+    target = 2.4
+    x = np.linspace(.25, .75, n).reshape(-1, 1)
+    xmin, xmax = np.full_like(x, .05), np.ones_like(x)
+    old1, old2, low, upp = x.copy(), x.copy(), xmin.copy(), xmax.copy()
+    report = {"initial_objective": float(np.sum(weights/x))}
+    for iteration in range(1, 31):
+        result = mmasub(1, n, iteration, x, xmin, xmax, old1, old2,
+                        float(np.sum(weights/x)), -weights/x**2,
+                        np.array([[x.sum()/target-1]]), np.ones((1, n))/target,
+                        low, upp, 1., np.zeros((1, 1)), np.full((1, 1), 1000.), np.zeros((1, 1)))
+        old2, old1, x = old1, x.copy(), result[0]
+        low, upp = result[-2:]
+        if iteration == 1:
+            report["first_design"] = x.ravel().tolist()
+    report.update(iterations=iteration, final_design=x.ravel().tolist(),
+                  final_objective=float(np.sum(weights/x)), final_budget=float(x.sum()),
+                  final_multiplier=float(result[3].item()))
+    return report
 
 
 def validate(case):
@@ -124,11 +156,14 @@ def main():
     mode = parser.add_mutually_exclusive_group()
     mode.add_argument("--matlab", action="store_true")
     mode.add_argument("--audit-matlab", action="store_true")
+    mode.add_argument("--mma", action="store_true")
     parser.add_argument("--source-dir", type=Path)
     parser.add_argument("--matlab-exe", default=shutil.which("matlab"))
     args = parser.parse_args()
     reference = json.loads(REFERENCES.read_text(encoding="utf-8"))
-    if args.audit_matlab:
+    if args.mma:
+        results = validate_mma()
+    elif args.audit_matlab:
         if not args.matlab_exe:
             parser.error("The runtime audit needs an available --matlab-exe")
         results = audit_matlab(args.matlab_exe)

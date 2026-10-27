@@ -278,3 +278,25 @@ The owner has now approved an isolated compiler/helper setup under
 startup/default-compiler changes. Broader changes still require approval.
 Return to the original-reference checks after this validation commit, then
 continue neural/minimum-length validation and the remaining small fixes.
+
+## Isolated reference tools and native MMA — 27 October 2026
+
+Approved portable GCC 14.2 and author fsparse are installed only under
+`C:\Users\johan\AppData\Local\ToporiaValidation`. Compiler archive checksum,
+author source revision/hash and compiled MEX hash are recorded in the external
+fixture. Build setup asserted an isolated MATLAB_PREFDIR before selecting the
+compiler; MW_MINGW64_LOC was process-local. No global PATH, saved MATLAB path
+or normal default compiler changed. Four sparse-assembly checks pass.
+An identified GPL Svanberg MMA distribution copy with embedded subsolv was
+run unchanged on a six-variable convex reciprocal problem. mmapy's first/final
+designs, fresh objective, multiplier and volume agree within 1e-10; its objective
+also agrees with the analytic optimum to 2e-9 relative tolerance. The source
+copyright/COPYING stay in the external tool folder; no third-party code is bundled.
+`experiments.original_references --mma` and a regression test reproduce Python.
+
+The licensed Image Processing Toolbox is absent, blocking imfilter and the
+Challis helpers. The owner approved a toolbox-only R2026aU5 addition, then chose
+to install it personally after Windows refused elevation/write access. The
+agent's installer exited unsuccessfully; it did not add the toolbox or upgrade
+MATLAB. Await owner confirmation before dependent native checks. The existing
+MATLAB source and original golden baselines remain unchanged.
