@@ -16,6 +16,12 @@
 # console line, the GUI's Pipeline box, run.json's record of every part and
 # the Check Parts mode all start from it.  A part that comes from another
 # installed package is shown with that package's name and version.
+#
+# solver_problems() is the preflight: every reason the chosen parts cannot work
+# together, collected from what each part declares (an element-only updater, one
+# that filters itself or needs a material law, a filter that refuses the
+# updater, a schedule that drives nothing).  The loop, Compare Methods and the
+# help's "Works with" lines all ask it, so they refuse the same pairings.
 
 from dataclasses import dataclass, field
 

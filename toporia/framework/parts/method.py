@@ -48,6 +48,8 @@ class Capabilities:
     needs_constraint: objectives that are only meaningful with a further constraint
                       (minimising volume alone gives an empty design), so a method
                       that can enforce none does not offer them
+    updater_only    : (response, updaters) pairs: a response that only those updaters
+                      understand (local stress's augmented-Lagrangian penalty)
     """
     variable_kind: str = "density"
     accepts_filters: bool = False
@@ -58,6 +60,7 @@ class Capabilities:
     constraints: tuple = ()
     max_constraints: int | None = 0
     needs_constraint: tuple = ()
+    updater_only: tuple = ()
     #: Whether density-independent point springs enter the state and adjoint systems.
     supports_springs: bool = False
 

@@ -51,7 +51,7 @@ flowchart TB
 | [`loop.py`](loop.py) | **The one optimisation loop.** `initialized_method(run)` looks the method up by name, refuses it before anything is computed if a package it needs is missing or it cannot do what the scenario asks (naming the methods that can), prints the pipeline, meshes the problem and initialises the method. `run_single_with_store(run, on_iteration)` steps it, records every iteration, calls the live callback (the GUI's canvas and Stop button), applies the stopping rule, always calls `method.close()`, checks the limits, and writes the results and `run.json`. `run_single(run)` returns just the final density. |
 | [`postprocess.py`](postprocess.py) | **After the run.** `run_postprocessors` applies `run.output.postprocess` to the final design in order; files go to `<run>/post/` and the numbers into `run.json` under `"postprocess"`. One that fails is reported and the others still run. `check_postprocess` refuses an unknown or misconfigured one before the run starts. `postprocess_folder` does the same for a saved run (`toporia post`), from its `run.json`, `final_density.csv` and, for explicit geometry, `final_geometry.json`. `table_metrics` gives the numbers Compare Methods adds as columns. |
 | [`records.py`](records.py) | **What a run leaves behind.** `ResultStore` keeps the per-iteration history (objective, volume, every reported response), writes density snapshots, `final_density.png`, `final_density.csv` and an optional `history.png`; a 3-D design is drawn and tabulated as its depth average and saved whole as `final_density.npy`. `check_limits` judges the final design against the volume budget and every constraint (on the exact value when there is one, e.g. the true peak stress) and `describe_violations` turns broken ones into `WARNING:` lines. `run_record` builds `run.json`: scenario and solver with fingerprints, software versions and git commit, how the run ended, every limit, the final responses, and an outside optimiser's own verdict. |
-| [`pipeline.py`](pipeline.py) | Names what a run is made of: design → filters → physics → objective, constraints → what the optimiser sees → updater, and why any part is unavailable. The console line at the start of every run and the GUI's **Pipeline** panel both come from here. |
+| [`pipeline.py`](pipeline.py) | Names what a run is made of: design → filters → physics → objective, constraints → what the optimiser sees → updater, and why any part is unavailable. The console line at the start of every run and the GUI's **Pipeline** panel both come from here. `solver_problems(method, run)` is the one preflight: it collects every reason the chosen parts cannot work together (an element-only updater on another representation, an updater that filters itself or needs a material law, a filter that refuses the updater, a schedule that drives nothing), so the loop, Compare Methods and the help all refuse the same pairings before anything is computed. |
 
 ### The analysis modes
 
@@ -108,6 +108,9 @@ comparable: stop when the design change reported by the method falls below `solv
 or at `solver.max_iter`. A method may add its own criterion (`is_converged()`, e.g. BESO's
 objective-based test, or an outside library that has finished), and the reason is then
 recorded instead of a generic message. Whatever ended the run is written to `run.json`.
+A non-finite design or objective stops the run at once with a `FloatingPointError`
+naming the iteration: a NaN never passes `change < tol`, so the run would otherwise go on
+to its cap and report NaN fields.
 
 **Continuation holds the stop.** Before each iteration the loop applies every schedule in
 `solver.schedules` (`method.set_parameter(path, value)`) and records the values with the
@@ -115,7 +118,9 @@ history. Neither the tolerance nor a method's own criterion ends the run while a
 has not reached its end, or while a part's own continuation is still moving
 (`method.continuing()`, e.g. the Heaviside β doubling). A design that has settled at p = 1
 is not the answer at p = 3. A run that hits `max_iter` first names the unfinished schedules
-in its stop reason.
+in its stop reason. A schedule that waits for the design to settle (`settled`) watches the
+change of the *physical* density (`method.get_physical_change()`): under a sharp projection
+the design variables keep drifting where the projection is flat, while the part does not.
 
 **Every run writes**, in its output folder:
 

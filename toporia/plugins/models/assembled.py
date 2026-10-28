@@ -48,7 +48,10 @@ def _capabilities(physics):
                         objectives=tuple(cls.name for cls in objectives),
                         constraints=tuple(cls.name for cls in computable(CONSTRAINT_ROLE)),
                         max_constraints=None,
-                        needs_constraint=tuple(cls.name for cls in objectives if cls.needs_constraint))
+                        needs_constraint=tuple(cls.name for cls in objectives if cls.needs_constraint),
+                        updater_only=tuple((cls.name, tuple(cls.only_with_updaters))
+                                           for cls in responses_for(CONSTRAINT_ROLE) + responses_for(OBJECTIVE_ROLE)
+                                           if getattr(cls, "only_with_updaters", ())))
 
 
 def material_law(solver):

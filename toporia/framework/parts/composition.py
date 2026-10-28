@@ -38,10 +38,10 @@ def _subset(settings, params):
 
 def _combine(model_capabilities, updater):
     """A composed method can do what its model computes AND its updater handles."""
-    from toporia.plugins.responses import RESPONSES
+    only = dict(model_capabilities.updater_only)
 
     def allowed(name):
-        required = getattr(RESPONSES.get(name), "only_with_updaters", ())
+        required = only.get(name, ())
         return not required or updater.name in required
 
     objectives = tuple(o for o in model_capabilities.objectives if allowed(o))
