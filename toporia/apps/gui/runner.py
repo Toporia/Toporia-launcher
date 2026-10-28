@@ -54,6 +54,10 @@ class _LogStream:
             self._fn(self._buf)
             self._buf = ""
 
+    def isatty(self):
+        """Not a terminal: libraries that colour their output (nullspace_optimizer via `colored`) ask."""
+        return False
+
 
 def run_check(config, log_fn):
     """The Check Parts mode; returns True when every part conforms."""
