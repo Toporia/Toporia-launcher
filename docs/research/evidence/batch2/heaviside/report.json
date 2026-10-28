@@ -13,6 +13,7 @@
   "checks": {
     "directional_adjoint_error": 1.923407211279482e-09,
     "adjoint_tolerance": 2e-05,
+    "adjoint_scope": "ordinary backward on a separate smooth 0.2-to-0.8 field; not a certificate at binary switches or for backward_volume overrides",
     "adjoint_pass": true,
     "equivalent_logistic_error": 3.3306690738754696e-16,
     "equation_tolerance": 1e-12,
@@ -27,6 +28,6 @@
   },
   "next_check": "Obtain the Figure 5 source bitmap and exact filtering settings; do not substitute the diagnostic ramp for the paper pattern.",
   "quarantined_reason": "",
-  "generated_at": "2026-10-27T22:28:42.147707+00:00",
+  "generated_at": "2026-10-28T11:39:41.196483+00:00",
   "reproduce": "python -m experiments.research_batch2 --case heaviside"
 }

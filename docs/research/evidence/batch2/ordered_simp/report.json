@@ -40,7 +40,7 @@
   },
   "next_check": "Current attribution is corrected to the 2022 modified law. Reproducing the distinct original 2017 formula would need a separately declared variant, not an undocumented algorithm change.",
   "quarantined_reason": "",
-  "generated_at": "2026-10-27T22:28:47.572846+00:00",
+  "generated_at": "2026-10-28T11:39:51.649039+00:00",
   "reproduce": "python -m experiments.research_batch2 --case ordered_simp",
   "primary_source_review": {
     "source_url": "https://www.researchgate.net/profile/Lucas-Palma-2/publication/363358729_Some_considerations_on_multi-material_topology_optimization_using_ordered_SIMP/links/631cee6b0a70852150e32b04/Some-considerations-on-multi-material-topology-optimization-using-ordered-SIMP.pdf",

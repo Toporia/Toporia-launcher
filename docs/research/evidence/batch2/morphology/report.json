@@ -21,21 +21,25 @@
       {
         "directional_adjoint_error": 1.1873982908028324e-09,
         "adjoint_tolerance": 2e-05,
+        "adjoint_scope": "ordinary backward on a separate smooth 0.2-to-0.8 field; not a certificate at binary switches or for backward_volume overrides",
         "adjoint_pass": true
       },
       {
         "directional_adjoint_error": 3.4423409957909475e-09,
         "adjoint_tolerance": 2e-05,
+        "adjoint_scope": "ordinary backward on a separate smooth 0.2-to-0.8 field; not a certificate at binary switches or for backward_volume overrides",
         "adjoint_pass": true
       },
       {
         "directional_adjoint_error": 2.214475269823879e-09,
         "adjoint_tolerance": 2e-05,
+        "adjoint_scope": "ordinary backward on a separate smooth 0.2-to-0.8 field; not a certificate at binary switches or for backward_volume overrides",
         "adjoint_pass": true
       },
       {
         "directional_adjoint_error": 4.339751377025895e-09,
         "adjoint_tolerance": 2e-05,
+        "adjoint_scope": "ordinary backward on a separate smooth 0.2-to-0.8 field; not a certificate at binary switches or for backward_volume overrides",
         "adjoint_pass": true
       }
     ],
@@ -55,6 +59,6 @@
   },
   "next_check": "Recover Figure 3's bitmap and five-cell structuring element; compare the uniform-weight hard limit separately from finite-beta cone weighting.",
   "quarantined_reason": "",
-  "generated_at": "2026-10-27T22:28:43.220447+00:00",
+  "generated_at": "2026-10-28T11:39:43.687982+00:00",
   "reproduce": "python -m experiments.research_batch2 --case morphology"
 }

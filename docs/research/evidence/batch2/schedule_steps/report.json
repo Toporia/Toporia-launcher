@@ -16,13 +16,13 @@
     "checks_passed": true,
     "event_signal": "own exponential change signal; not a paper iteration history",
     "companion": {
-      "iterations": 200,
-      "stop_reason": "iteration limit (200)",
-      "last_pre_update_compliance": 240.04632438744636,
-      "physical_fraction": 0.49997866500343996,
+      "iterations": 211,
+      "stop_reason": "design change 0.00802 < tol 0.01",
+      "last_pre_update_compliance": 239.98354658342848,
+      "physical_fraction": 0.49998052757071604,
       "parameter_path": "interpolation.penal",
       "last_parameter": 3.0,
-      "converged": false
+      "converged": true
     }
   },
   "limitations": "The increment and interval are Toporia demonstration settings, not a reproduced research trajectory.",
@@ -35,6 +35,6 @@
   },
   "next_check": "Recover a paper iteration history and exact continuation settings; the own fixed-step clock is not such a history.",
   "quarantined_reason": "",
-  "generated_at": "2026-10-27T22:28:54.167050+00:00",
+  "generated_at": "2026-10-28T11:40:02.675358+00:00",
   "reproduce": "python -m experiments.research_batch2 --case schedule_steps"
 }

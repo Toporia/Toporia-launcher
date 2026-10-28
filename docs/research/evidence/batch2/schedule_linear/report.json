@@ -16,13 +16,13 @@
     "checks_passed": true,
     "event_signal": "own exponential change signal; not a paper iteration history",
     "companion": {
-      "iterations": 200,
-      "stop_reason": "iteration limit (200)",
-      "last_pre_update_compliance": 240.03950116961394,
-      "physical_fraction": 0.49997440133486415,
+      "iterations": 258,
+      "stop_reason": "design change 0.00984 < tol 0.01",
+      "last_pre_update_compliance": 239.77455138999954,
+      "physical_fraction": 0.5000012854645279,
       "parameter_path": "interpolation.penal",
       "last_parameter": 3.0,
-      "converged": false
+      "converged": true
     }
   },
   "limitations": "This function has no claimed originating paper. A parameter-history demonstration is not a research-figure reproduction.",
@@ -35,6 +35,6 @@
   },
   "next_check": "Select a defensible research application or retain this as an explicitly original engineering ramp; no originating paper is claimed.",
   "quarantined_reason": "",
-  "generated_at": "2026-10-27T22:29:09.384367+00:00",
+  "generated_at": "2026-10-28T11:40:25.135241+00:00",
   "reproduce": "python -m experiments.research_batch2 --case schedule_linear"
 }

@@ -7,8 +7,9 @@ No algorithm, objective contract or GUI execution model is added here.
 
 from dataclasses import replace
 
-from . import mbb_beam
+from . import cantilever, cantilever_3d, mbb_beam
 from ._research import Equation, ResearchDescription
+from ._research_defaults import _settings, readable_setup, showcase_about
 
 TOP88 = "https://doi.org/10.1007/s00158-010-0594-7"
 WANG = "https://doi.org/10.1007/s00158-010-0602-y"
@@ -286,11 +287,37 @@ SYMBOLS = {
 }
 
 
-def recipe(case_id):
+def _long_cantilever():
+    base = cantilever.scenario()
+    return replace(base, Lx=120., Ly=20., point_loads=[replace(base.point_loads[0], x=120., y=10.)])
+
+
+_MMA = {"method": "q4+mma", "method_params": {"move": .1}}
+_PROJECTION = [{"type": "heaviside", "beta": 1., "beta_max": 32.}]
+_BETA_RAMP = [{"path": "filters[2].beta", "type": "geometric", "start": 1., "end": 32., "factor": 2., "every": 40}]
+#: GUI-run settings where a function needs its own problem to show what it is for; the transfer-curve
+#: figures keep CASES' settings. A sharp projection runs on MMA (move 0.1): OC at move 0.2 lets members flip.
+SHOWCASE = {
+    "heaviside": dict(solver=_MMA),
+    "heaviside_volume": dict(solver=_MMA),
+    # Mirroring the half-MBB contradicts its supports; a cantilever whose load may act up or down is symmetric.
+    "symmetry": dict(scenario=cantilever.scenario, filters=[{"type": "symmetry", "axis": "bottom_top"}], solver=_MMA),
+    # Four identical bays along a long cantilever.
+    "pattern": dict(scenario=_long_cantilever, filters=[{"type": "pattern", "nx": 4, "ny": 1}], solver=_MMA),
+    # Extrusion is a 3-D rule: a profile constant through the depth (2.5-D parts).
+    "extrusion": dict(scenario=cantilever_3d.scenario, filters=[{"type": "extrusion", "axis": "z"}],
+                      solver={"method": "h8+mma", "method_params": {"move": .1}, "m": .5}),
+    # The running minimum makes plateaus that can sit at any level; a projection makes the cast part crisp.
+    "casting": dict(filters=[{"type": "casting", "direction": "+y"}] + _PROJECTION, schedules=_BETA_RAMP,
+                    solver={**_MMA, "max_iter": 400}),
+}
+
+
+def recipe(case_id, showcase=True):
     """Existing numerical parts only; the transfer-figure command is in help."""
     case = CASES[case_id]
     scenario = replace(mbb_beam.scenario(), **({"nu": 1/3} if case_id == "hashin_shtrikman" else {}))
-    solver = replace(mbb_beam.solver(), method="q4+oc", max_iter=200,
+    solver = replace(mbb_beam.solver(), method="q4+oc", max_iter=300,
                      filter_specs=[{"type": "density", "rmin": 2.4}])
     if case["kind"] == "filter":
         specs = [dict(case["spec"])] if case_id in {"pde", "pde_anisotropic"} else [
@@ -306,7 +333,14 @@ def recipe(case_id):
     for name, value in case["overrides"].items():
         if name != "nu":
             solver = replace(solver, **{name: dict(value) if isinstance(value, dict) else value})
-    return scenario, solver
+    show = SHOWCASE.get(case_id, {}) if showcase else {}
+    if "scenario" in show:
+        scenario = show["scenario"]()
+    if "filters" in show:
+        solver = replace(solver, filter_specs=[{"type": "density", "rmin": 2.4}] + [dict(f) for f in show["filters"]])
+    if "schedules" in show:
+        solver = replace(solver, schedules=[dict(s) for s in show["schedules"]])
+    return scenario, replace(solver, **{k: dict(v) if isinstance(v, dict) else v for k, v in show.get("solver", {}).items()})
 
 
 def description(case_id):
@@ -314,11 +348,11 @@ def description(case_id):
     scenario, solver = recipe(case_id)
     return ResearchDescription(
         question="What does " + case["label"] + " compute, and which part of its research claim can be reproduced?",
-        setup=("QUARANTINED: " + QUARANTINED[case_id] + " " if case_id in QUARANTINED else "") +
-              "Figure settings: " + str(case["spec"]) + ". The diagnostic field/curve and all parameters are saved "
-              "by the reproduction command. GUI Run is an optimization companion on the half-MBB beam "
-              f"(60 by 20 domain; mesh resolution {solver.m}; maximum {solver.max_iter} steps; "
-              f"volume budget {scenario.volfrac}); it does not launch the transfer-curve experiment.",
+        setup=("QUARANTINED: " + QUARANTINED[case_id] + "\n" if case_id in QUARANTINED else "") +
+              readable_setup(scenario, solver) + "\n"
+              "GUI Run is an optimization companion with the setup above; it does not launch the transfer-curve "
+              "experiment. Figure settings: " + _settings(case["spec"]) + "; the reproduction command saves the "
+              "diagnostic field or curve with all parameters.",
         computes=case["computes"], equations=case["equations"],
         symbols=SYMBOLS[case_id] + " Superscript T denotes transpose where used.",
         source_url=case["source"], figure=case["target"],
@@ -331,6 +365,6 @@ def description(case_id):
 
 def metadata(case_id):
     case = CASES[case_id]
-    return ("Research: " + case["label"], "Demonstrate " + case["label"] + "; see preset help for mathematics and evidence scope.",
+    return ("Research: " + case["label"], showcase_about((case["function"],)),
             "Research demonstration. Papers: " + case["source"] if case["source"] else
             "Toporia engineering demonstration; no originating research figure claimed.", description(case_id))

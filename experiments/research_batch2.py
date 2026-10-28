@@ -115,7 +115,7 @@ def pattern(shape):
 
 def field_figure(case_id, folder):
     case = CASES[case_id]
-    scenario, solver = recipe(case_id)
+    scenario, solver = recipe(case_id, showcase=False)
     problem = make_problem(scenario, 1.)
     x = pattern(problem.shape)
     report = {"input_origin": "own controlled bitmap, row 0 at physical y=0",
@@ -199,7 +199,7 @@ def field_figure(case_id, folder):
 
 def projection_figure(case_id, folder):
     case = CASES[case_id]
-    scenario, solver = recipe(case_id)
+    scenario, solver = recipe(case_id, showcase=False)
     problem = make_problem(scenario, 1.)
     x = np.linspace(0, 1, 201).reshape(1, -1)
     figure, axes = _figure(1, 2, height=4.3)
@@ -281,7 +281,7 @@ def projection_figure(case_id, folder):
 
 def material_figure(case_id, folder):
     case = CASES[case_id]
-    scenario, solver = recipe(case_id)
+    scenario, solver = recipe(case_id, showcase=False)
     problem = make_problem(scenario, 1.)
     rho = np.linspace(0, 1, 501)
     cls = INTERPOLATIONS.get(case["spec"]["type"])

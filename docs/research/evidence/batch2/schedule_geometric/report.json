@@ -35,6 +35,6 @@
   },
   "next_check": "Match the paper's optimizer and early-convergence trigger as well as its 50-step clock; the bounded OC companion is not converged.",
   "quarantined_reason": "",
-  "generated_at": "2026-10-28T03:14:53.590960+00:00",
+  "generated_at": "2026-10-28T11:40:15.072444+00:00",
   "reproduce": "python -m experiments.research_batch2 --case schedule_geometric"
 }

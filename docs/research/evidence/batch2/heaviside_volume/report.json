@@ -37,6 +37,6 @@
   },
   "next_check": "The 0/1-design limit is settled (identity when uniform, explicit error when mixed). Align a numbered top99neo source figure and compare its threshold history.",
   "quarantined_reason": "",
-  "generated_at": "2026-10-28T02:40:40.708523+00:00",
+  "generated_at": "2026-10-28T11:39:41.870063+00:00",
   "reproduce": "python -m experiments.research_batch2 --case heaviside_volume"
 }

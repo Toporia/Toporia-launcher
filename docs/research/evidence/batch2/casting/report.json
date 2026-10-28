@@ -21,6 +21,7 @@
     "monotonicity_tolerance": 0.0005000001,
     "directional_adjoint_error": 1.8103573085070934e-09,
     "adjoint_tolerance": 2e-05,
+    "adjoint_scope": "ordinary backward on a separate smooth 0.2-to-0.8 field; not a certificate at binary switches or for backward_volume overrides",
     "adjoint_pass": true,
     "checks_passed": true,
     "output_mean": 0.19043779211785908,
@@ -36,6 +37,6 @@
   },
   "next_check": "Resolve the formulation difference: source Heaviside casting parameterization versus the current smooth cumulative minimum.",
   "quarantined_reason": "",
-  "generated_at": "2026-10-27T22:28:45.765285+00:00",
+  "generated_at": "2026-10-28T11:39:48.219186+00:00",
   "reproduce": "python -m experiments.research_batch2 --case casting"
 }

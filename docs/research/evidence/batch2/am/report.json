@@ -19,6 +19,7 @@
     "input_mean": 0.38666666666666666,
     "directional_adjoint_error": 8.334510859242528e-11,
     "adjoint_tolerance": 2e-05,
+    "adjoint_scope": "ordinary backward on a separate smooth 0.2-to-0.8 field; not a certificate at binary switches or for backward_volume overrides",
     "adjoint_pass": true,
     "checks_passed": true,
     "output_mean": 0.19935060516674297,
@@ -35,6 +36,6 @@
   },
   "next_check": "Align an identified Langelaar source panel and input geometry with the build direction and tiny shift/backshift conventions.",
   "quarantined_reason": "",
-  "generated_at": "2026-10-27T22:28:43.654917+00:00",
+  "generated_at": "2026-10-28T11:39:44.615414+00:00",
   "reproduce": "python -m experiments.research_batch2 --case am"
 }

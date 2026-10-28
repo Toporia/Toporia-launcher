@@ -19,6 +19,7 @@
     "input_mean": 0.38666666666666666,
     "directional_adjoint_error": 1.906010349550513e-09,
     "adjoint_tolerance": 2e-05,
+    "adjoint_scope": "ordinary backward on a separate smooth 0.2-to-0.8 field; not a certificate at binary switches or for backward_volume overrides",
     "adjoint_pass": true,
     "checks_passed": true,
     "output_mean": 0.6023832384160596,
@@ -38,6 +39,6 @@
   },
   "next_check": "Use the paper's exact example and boundary conventions; separate Cartesian ideal-tool agreement from finite cutter/holder claims.",
   "quarantined_reason": "",
-  "generated_at": "2026-10-27T22:28:46.150249+00:00",
+  "generated_at": "2026-10-28T11:39:49.112427+00:00",
   "reproduce": "python -m experiments.research_batch2 --case machining"
 }
