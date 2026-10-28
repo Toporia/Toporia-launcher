@@ -45,7 +45,7 @@ Nothing is ever labelled ✅ until it is registered, tested, and reachable from 
 The implementation total is **88 registered selectable parts + 9 physics engines +
 40 presets**. Counts follow registry classes: parameter options such as variable
 MMC thickness or volume-preserving Heaviside do not add another plugin. The 12
-models and 23 updaters form 276 named pairings; a pairing must support the chosen
+models and 24 updaters form 288 named pairings; a pairing must support the chosen
 scenario. These compositions are not counted again as separate implementations.
 
 ## The choices

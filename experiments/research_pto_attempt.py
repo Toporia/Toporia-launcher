@@ -1,4 +1,7 @@
-"""Attempt the PTOc Figure 3 MBB example with Toporia's distinct PTO variant.
+"""Attempt the PTOc Figure 3 MBB example with Toporia's distinct PTO variant, and reproduce it with PTOc.
+
+The sensitivity-proxy `pto` variant is compared and its mismatch kept; the original
+`ptoc` updater must match the captured author run (native_code_match).
 
 python -m experiments.research_pto_attempt
 Optional fresh native capture:
@@ -141,6 +144,61 @@ def attempt(reference, output):
     return report
 
 
+def reproduce_ptoc(reference, output):
+    """Run the original PTOc preset and compare it with the captured author run, step by step."""
+    from toporia.plugins.problems import get_run
+    output.mkdir(parents=True, exist_ok=True)
+    run = get_run("Paper: PTOc Fig. 3 (MBB)").with_output_dir(output / "run")
+    with (output / "execution.log").open("w", encoding="utf-8") as log, contextlib.redirect_stdout(log):
+        method = initialized_method(run)
+        store = ResultStore(run.output.dir)
+        try:
+            iterations, stop = _loop(run, method, store, None)
+        finally:
+            method.close()
+        actual = method.get_density().copy()
+    expected = np.flipud(np.array(reference["density"]))
+    printed = np.array([row[2] for row in reference["history"]], dtype=float)
+    ours = np.array(store.objectives)
+    n = min(len(ours), len(printed))
+    print_errors = np.abs(np.round(ours[:n], 2) - printed[:n])
+    field_error = float(np.max(abs(actual - expected)))
+    match = bool(iterations == reference["iterations"] - 1 and np.all(print_errors <= .0051) and field_error < 1e-6)
+    report = dict(schema=1, case_id="ptoc", functions=["updater:ptoc"], source_sha256=SOURCE_HASH,
+                  source_url=SOURCE_URL, target=reference["target"],
+                  paper_status="native_code_match" if match else "paper_reproduction_to_fix",
+                  paper_visual_status="not_assessed", stop_reason=stop, iterations=iterations,
+                  author_printed_lines=reference["iterations"],
+                  checks=dict(checks_passed=match, printed_compliance_mismatches=int(np.sum(print_errors > .0051)),
+                              compared_iterations=n, density_max_error=field_error,
+                              tolerances=dict(printed_compliance=.0051, density_max_abs=1e-6)),
+                  final_compliance=float(ours[-1]), physical_fraction=float(actual.mean()),
+                  scope="Unchanged author PTOc_mbb.m captured in MATLAB R2026a against Toporia's ptoc updater on the "
+                        "same 120x40 setup. The author prints one more line because termination is tested before "
+                        "the update; the returned fields are compared.")
+    dump(output / "report.json", report)
+    np.savetxt(output / "toporia-density.csv", actual, delimiter=",")
+    from matplotlib.backends.backend_agg import FigureCanvasAgg
+    from matplotlib.figure import Figure
+    fig = Figure(figsize=(11, 7), dpi=150, facecolor="white")
+    FigureCanvasAgg(fig)
+    axes = fig.subplots(2, 2)
+    for ax, field, label in ((axes[0, 0], expected, "Unchanged author PTOc"), (axes[0, 1], actual, "Toporia ptoc")):
+        ax.imshow(field, origin="lower", cmap="gray_r", vmin=0, vmax=1, extent=(0, 120, 0, 40))
+        ax.set(title=label, xlabel="x (unit cells)", ylabel="y")
+    axes[1, 0].semilogy(np.arange(1, len(ours)+1), ours, label="Toporia ptoc")
+    axes[1, 0].semilogy(np.arange(1, len(printed)+1), printed, "--", label="Author printed")
+    axes[1, 0].set(xlabel="Iteration", ylabel="Compliance")
+    axes[1, 0].legend()
+    im = axes[1, 1].imshow(abs(actual-expected), origin="lower", cmap="magma", extent=(0, 120, 0, 40))
+    axes[1, 1].set(title=f"Density difference; max {field_error:.1e}", xlabel="x (unit cells)", ylabel="y")
+    fig.colorbar(im, ax=axes[1, 1], orientation="horizontal", fraction=.1, pad=.3)
+    fig.suptitle("PTOc Figure 3 MBB — native-code reproduction", x=.05, ha="left")
+    fig.tight_layout(rect=(0, 0, 1, .94))
+    fig.savefig(output / "figure.png")
+    return report
+
+
 def main():
     parser = argparse.ArgumentParser(description=__doc__)
     parser.add_argument("--capture", action="store_true")
@@ -158,7 +216,10 @@ def main():
         reference = json.loads(REFERENCE.read_text(encoding="utf-8"))
     report = attempt(reference, args.output)
     print(json.dumps(report, indent=2))
-    if not report["native_code_match"]:
+    reproduction = reproduce_ptoc(reference, args.output / "ptoc")
+    print(json.dumps(reproduction, indent=2))
+    # The variant's mismatch is expected and recorded; only the original PTOc must match.
+    if reproduction["paper_status"] != "native_code_match":
         raise SystemExit(1)
 
 

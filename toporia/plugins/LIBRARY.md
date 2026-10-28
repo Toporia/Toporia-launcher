@@ -24,7 +24,7 @@ A test (`tests/apps/test_gui.py`) fails if a part ever stops being reachable fro
 | **Wraps** | Calls an outside Python package. That package is installed separately. Parts whose package is missing are greyed out in the app, with the install command. |
 | **Own** | Toporia's own idea or standard practice. |
 
-## In the library today: 88 selectable parts and 40 benchmark/research presets
+## In the library today: 89 selectable parts and 92 benchmark/research presets
 
 The selectable parts include models and whole methods; their nine underlying
 physics engines are counted separately in the [catalogue totals](README.md).
@@ -119,7 +119,8 @@ physics engines are counted separately in the [catalogue totals](README.md).
 | TOBS (integer LP) | `tobs` | [tobs.py](updaters/tobs.py) | Paper | Sivapuram & Picelli 2018; the 101-line code of Picelli et al. 2021; solved with HiGHS (SciPy) · papers [1](https://doi.org/10.1016/j.finel.2017.10.006) [2](https://doi.org/10.1007/s00158-020-02719-9) |
 | Augmented Lagrangian (local constraints) | `augmented_lagrangian` | [augmented_lagrangian.py](updaters/augmented_lagrangian.py) | Paper | PolyStress outer loop (Giraldo-Londoño & Paulino 2021) with MMA inner steps · papers [1](https://doi.org/10.1007/s00158-020-02760-8) [2](https://doi.org/10.1007/s00158-010-0594-7) |
 | Adam (augmented Lagrangian) | `adam` | [adam.py](updaters/adam.py) | Paper | Kingma & Ba 2015; the volume penalty of TOuNN (Chandrasekhar & Suresh 2021) · papers [1](https://arxiv.org/abs/1412.6980) [2](https://doi.org/10.1007/s00158-020-02748-4) |
-| Proportional topology optimisation | `pto` | [pto.py](updaters/pto.py) | Paper | Biyikli & To, *PLoS ONE* 2015 · [paper](https://doi.org/10.1371/journal.pone.0145041) |
+| Proportional topology optimisation | `pto` | [pto.py](updaters/pto.py) | Paper | Sensitivity-proxy variant of Biyikli & To, *PLoS ONE* 2015 · [paper](https://doi.org/10.1371/journal.pone.0145041) |
+| PTOc (original proportional TO) | `ptoc` | [ptoc.py](updaters/ptoc.py) | Port | Biyikli & To, *PLoS ONE* 2015; matches the authors' PTOc_mbb.m to 1e-8 · [paper](https://doi.org/10.1371/journal.pone.0145041) |
 | MMA (pyMOTO), GCMMA (pyMOTO) | `pymoto_mma`, `pymoto_gcmma` | [pymoto_optimizers.py](updaters/pymoto_optimizers.py) | Wraps | [pyMOTO](https://github.com/aatmdelissen/pyMOTO) (MIT) · papers [1](https://doi.org/10.1002/nme.1620240207) [2](https://doi.org/10.1137/S1052623499362822) |
 | MMA (mmapy), GCMMA (mmapy) | `mmapy_mma`, `mmapy_gcmma` | [mmapy_optimizers.py](updaters/mmapy_optimizers.py) | Wraps | [mmapy](https://github.com/arjendeetman/GCMMA-MMA-Python), Svanberg's reference code in Python (**GPL-3**, optional), `pip install mmapy` · papers [1](https://doi.org/10.1002/nme.1620240207) [2](https://doi.org/10.1137/S1052623499362822) |
 | SLSQP (SciPy) | `scipy_slsqp` | [scipy_slsqp.py](updaters/scipy_slsqp.py) | Wraps | SciPy (BSD), Kraft 1988 |
@@ -238,4 +239,4 @@ Thirty-one further presets document 30 existing updater, representation and stan
 
 ### Batch 4 research companions
 
-Nineteen further presets and 25 demonstrations cover the remaining 39 physics/response/post-processing functions. [Report](../../docs/research/batch-4.md), [gallery](../../docs/research/evidence/batch4/index.html), [framework assessment](../../docs/research/framework-assessment.html). All 97 functions now have an example/engineering record; unresolved source matching stays explicit. There are 91 presets (the volume-preserving projection companion was registered after its 0/1-design limit was settled). The dynamic-compliance reference now distinguishes this own undamped frequency response from related transient PolyDyna. Numerical algorithms are unchanged.
+Nineteen further presets and 25 demonstrations cover the remaining 39 physics/response/post-processing functions. [Report](../../docs/research/batch-4.md), [gallery](../../docs/research/evidence/batch4/index.html), [framework assessment](../../docs/research/framework-assessment.html). All 97 functions now have an example/engineering record; unresolved source matching stays explicit. There are 92 presets (the volume-preserving projection companion was registered after its 0/1-design limit was settled, and the PTOc Figure 3 reproduction was added). The dynamic-compliance reference now distinguishes this own undamped frequency response from related transient PolyDyna. Numerical algorithms are unchanged.

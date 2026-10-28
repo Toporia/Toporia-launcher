@@ -64,8 +64,8 @@ See [conventions](conventions.md), the [preset template](templates/preset.md),
 the [researcher contribution template](templates/research-note.md) and the
 [`to-fix` queue](to-fix/README.md).
 
-The inventory separates **97 selectable functions/engines** from **91 presets**
-(18 original and 73 registered research recipes). The volume-preserving
+The inventory separates **98 selectable functions/engines** from **92 presets**
+(18 original and 74 registered research recipes). The volume-preserving
 projection companion was quarantined until its 0/1-design limit was settled;
 it is registered again. One example can demonstrate several
 functions. Metadata citations are starting points; pending rows are not claims

@@ -2607,6 +2607,35 @@
       ]
     },
     {
+      "id": "updater:ptoc",
+      "kind": "updater",
+      "label": "PTOc (original proportional TO)",
+      "source_file": "toporia/plugins/updaters/ptoc.py",
+      "reference_declaration": "E. Biyikli, A. C. To, \"Proportional topology optimization: a new non-sensitivity method for solving stress constrained and minimum compliance problems and its implementation in MATLAB\", PLoS ONE 10 (2015) e0145041; checked against the authors' PTOc_mbb.m (PLOS S2). Papers: https://doi.org/10.1371/journal.pone.0145041",
+      "source_urls": [
+        "https://doi.org/10.1371/journal.pone.0145041"
+      ],
+      "citation_review": "See per-case primary sources and explicit comparison scope; other citations remain unreviewed.",
+      "target_figure": "ptoc",
+      "target_type": "convergence curve and feasible final design",
+      "batch": 3,
+      "status": "research_example_verified",
+      "evidence": [
+        "evidence/batch3/ptoc/report.json"
+      ],
+      "notes": "",
+      "research_cases": [
+        {
+          "case_id": "ptoc",
+          "paper_status": "native_code_match",
+          "target": "Biyikli-To (2015) Figure 3, half-MBB PTOc density and compliance panels",
+          "source_url": "https://journals.plos.org/plosone/article/file?type=supplementary&id=10.1371/journal.pone.0145041.s002",
+          "checks_passed": true,
+          "evidence": "evidence/batch3/ptoc/report.json"
+        }
+      ]
+    },
+    {
       "id": "updater:pymoto_gcmma",
       "kind": "updater",
       "label": "GCMMA (pyMOTO)",
@@ -3046,6 +3075,22 @@
         "interpolation:simp",
         "response:end_compliance",
         "filter:density"
+      ]
+    },
+    {
+      "name": "Paper: PTOc Fig. 3 (MBB)",
+      "source_file": "toporia/plugins/problems/paper_ptoc_mbb.py",
+      "about": "The 120 x 40 half-MBB beam of Biyikli & To (2015) Figure 3, optimised with the original proportional topology optimisation (PTOc): no sensitivities, material handed out in proportion to element compliance.",
+      "reference": "E. Biyikli, A. C. To, \"Proportional topology optimization: a new non-sensitivity method for solving stress constrained and minimum compliance problems and its implementation in MATLAB\", PLoS ONE 10 (2015) e0145041. Papers: https://doi.org/10.1371/journal.pone.0145041",
+      "research_description": true,
+      "target_figure": "Biyikli & To (2015), Figure 3, half-MBB PTOc design and compliance history.",
+      "functions": [
+        "updater:ptoc",
+        "model:q4",
+        "physics:q4_plane_stress",
+        "representation:element_density",
+        "interpolation:simp",
+        "response:compliance"
       ]
     },
     {
@@ -5173,6 +5218,13 @@
       "source_summary": "nonlinear_cantilever.py — a cantilever whose tip load is large enough to bend it visibly.  The geometry of the Cantilever preset (clamped left edge, point load at mid-height of the free end, 60 × 30, 40 % material) but with the load chosen for the material (E0 = 1) so that the uniform beam's tip moves by a good fraction of the beam depth and the lever arm shortens as it bends.  The linear theory ignores that; the non-linear solve (q4_nonlinear) follows it and designs for the stiffness the struct"
     },
     {
+      "source_file": "toporia/plugins/problems/paper_ptoc_mbb.py",
+      "defines_functions": [],
+      "is_preset": true,
+      "classification": "preset recipe",
+      "source_summary": "Biyikli & To (2015) Figure 3: the half-MBB beam with the original PTOc, reproduced exactly."
+    },
+    {
       "source_file": "toporia/plugins/problems/paper_top88_density.py",
       "defines_functions": [],
       "is_preset": true,
@@ -6065,6 +6117,15 @@
       "is_preset": false,
       "classification": "numerical function implementation",
       "source_summary": "plugins/updaters/pto.py — independent sensitivity-proxy PTO variant.  Connects to the framework as an Updater.  PTO is the \"no optimiser at all\" baseline: each iteration the whole volume budget is simply handed out to the elements using a negative-sensitivity proxy. This is not the paper's element-compliance allocation or filtered redistribution algorithm.  target_i  ∝  e_i^q            (e_i = max(0, -dC/dx_i), q = exponent)"
+    },
+    {
+      "source_file": "toporia/plugins/updaters/ptoc.py",
+      "defines_functions": [
+        "updater:ptoc"
+      ],
+      "is_preset": false,
+      "classification": "numerical function implementation",
+      "source_summary": "plugins/updaters/ptoc.py — proportional topology optimisation, the original PTOc algorithm.  Connects to the framework as an Updater.  Each iteration hands the whole material budget out again, in proportion to each element's compliance, and blends the result with the previous design.  No gradient-based step at all:  c_e     = E(x_e) u_eᵀ k₀ u_e                     element compliance RM      = V*, x_opt = 0                           remaining material"
     },
     {
       "source_file": "toporia/plugins/updaters/pymoto_optimizers.py",

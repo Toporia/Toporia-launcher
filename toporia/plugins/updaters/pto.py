@@ -55,8 +55,9 @@ class PTOUpdater(Updater):
     )
     label = "Proportional topology optimisation"
     use_when = (
-        "For comparing with proportional topology optimisation. This is a variant, not the original PTOc "
-        "(its designs differ by about 20% in compliance on the MBB beam)."
+        "A damped, sensitivity-based relative of proportional TO that works with any filter chain. For the "
+        "published algorithm use PTOc (ptoc), which reproduces the authors' code; this variant's designs differ "
+        "from it by about 20% in compliance on the MBB beam."
     )
     order = 80
     params = (

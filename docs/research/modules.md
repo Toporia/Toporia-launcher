@@ -166,6 +166,7 @@ Generated from every Python module under `toporia/`. A supporting module defines
 | [toporia/plugins/problems/mbb_beam_robust.py](../../toporia/plugins/problems/mbb_beam_robust.py) | preset recipe | - |
 | [toporia/plugins/problems/michell_cantilever.py](../../toporia/plugins/problems/michell_cantilever.py) | preset recipe | - |
 | [toporia/plugins/problems/nonlinear_cantilever.py](../../toporia/plugins/problems/nonlinear_cantilever.py) | preset recipe | - |
+| [toporia/plugins/problems/paper_ptoc_mbb.py](../../toporia/plugins/problems/paper_ptoc_mbb.py) | preset recipe | - |
 | [toporia/plugins/problems/paper_top88_density.py](../../toporia/plugins/problems/paper_top88_density.py) | preset recipe | - |
 | [toporia/plugins/problems/paper_top88_sensitivity.py](../../toporia/plugins/problems/paper_top88_sensitivity.py) | preset recipe | - |
 | [toporia/plugins/problems/research_am.py](../../toporia/plugins/problems/research_am.py) | preset recipe | - |
@@ -283,6 +284,7 @@ Generated from every Python module under `toporia/`. A supporting module defines
 | [toporia/plugins/updaters/oc.py](../../toporia/plugins/updaters/oc.py) | numerical function implementation | updater:oc |
 | [toporia/plugins/updaters/oc_multi.py](../../toporia/plugins/updaters/oc_multi.py) | numerical function implementation | updater:oc_multi |
 | [toporia/plugins/updaters/pto.py](../../toporia/plugins/updaters/pto.py) | numerical function implementation | updater:pto |
+| [toporia/plugins/updaters/ptoc.py](../../toporia/plugins/updaters/ptoc.py) | numerical function implementation | updater:ptoc |
 | [toporia/plugins/updaters/pymoto_optimizers.py](../../toporia/plugins/updaters/pymoto_optimizers.py) | numerical function implementation | updater:pymoto_mma, updater:pymoto_gcmma |
 | [toporia/plugins/updaters/scipy_minimize.py](../../toporia/plugins/updaters/scipy_minimize.py) | numerical function implementation | updater:scipy_trust_constr |
 | [toporia/plugins/updaters/scipy_slsqp.py](../../toporia/plugins/updaters/scipy_slsqp.py) | numerical function implementation | updater:scipy_slsqp |

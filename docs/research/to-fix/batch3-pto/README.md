@@ -6,7 +6,7 @@ Difference/gap: The published PTOc uses element compliance allocation; a negativ
 
 Recorded execution: 120 steps; iteration limit (120). Fresh final compliance 254.31329; physical fraction 0.5; budget 0.5; within budget +1e-4: True. Extra constraints within +1e-4: True. Finite/bounded execution does not establish feasibility, convergence or paper agreement.
 
-Next: Inspect the native 120x40 Figure 3 attempt. An exact PTOc reproduction would need a separately declared element-compliance allocation and filtered redistribution variant, not retuning this sensitivity proxy.
+Next: none for the algorithm. **Resolved 28 October 2026:** the original algorithm is now its own updater, `ptoc`, and reproduces the captured author run exactly (169 printed compliances, final density to 1e-8; [evidence](../../evidence/batch3/ptoc/report.json)). This `pto` variant stays a declared, different method; its comparison below is kept as a record of that difference.
 
 [Figure](../../evidence/batch3/pto/figure.png) · [Numerical report](../../evidence/batch3/pto/report.json) · [Description and math](../../evidence/batch3/pto/description.html)
 

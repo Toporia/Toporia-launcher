@@ -5,7 +5,7 @@ design. It knows nothing about the physics that produced the numbers. Pairings
 still need compatible objectives, constraints and design variables — see
 [`framework/parts/composition.py`](../../framework/parts/composition.py).
 
-**Status: 23 in Toporia · 4 with open code · 0 paper only**
+**Status: 24 in Toporia · 4 with open code · 0 paper only**
 
 | Label | Meaning |
 | :-- | :-- |
@@ -26,6 +26,7 @@ still need compatible objectives, constraints and design variables — see
 | ✅ Augmented Lagrangian (local constraints) | [`augmented_lagrangian.py`](augmented_lagrangian.py) | `augmented_lagrangian` | any number (local) | MMA steps on the objective plus the augmented-Lagrangian penalty of per-element constraints, multipliers updated every few iterations. For [`local_stress`](../responses/README.md#local-von-mises-stress--local_stress). |
 | ✅ Adam (augmented Lagrangian) | [`adam.py`](adam.py) | `adam` | volume only | Adam (Kingma & Ba 2015) on the design variables, the budget an augmented-Lagrangian term, bounds by clipping. The updater neural reparameterisations need. See [its section](#adam--adam). |
 | ✅ Proportional topology optimisation | [`pto.py`](pto.py) | `pto` | volume only | Budget handed out in proportion to element energy^q, no multiplier or linearisation. A baseline. See [its section](#proportional-topology-optimisation--pto). |
+| ✅ PTOc (original proportional TO) | [`ptoc.py`](ptoc.py) | `ptoc` | volume only | The published algorithm: allocation by element compliance, its own filter on each increment, history blend. Reproduces the authors' code exactly. See [its section](#ptoc--the-original-proportional-topology-optimisation). |
 | ✅ TOBS (integer LP) | [`tobs.py`](tobs.py) | `tobs` | volume only | Binary designs by sequential integer linear programming: linearise, then flip elements optimally with HiGHS (`scipy.optimize.milp`). Own convergence test, like BESO. |
 | ✅ CONLIN | [`conlin.py`](conlin.py) | `conlin` | any number | Convex linearisation in `x` or `1/x`, MMA without the moving asymptotes; the dual (any number of multipliers) is maximised with L-BFGS-B. See [its section](#conlin--convex-linearisation). Within 0.1 % of OC on the MBB benchmark. |
 | ✅ Optimality criteria, several constraints | [`oc_multi.py`](oc_multi.py) | `oc_multi` | any number | OC with a multiplier per constraint, found by cyclic bisection. Compliance only, element densities only; handles a stress limit with a safeguard, see [its section](#oc_multi--optimality-criteria-with-several-constraints). The only one of Toporia's own OC/MMA-family updaters (besides CONLIN) that enforces a second constraint. |
@@ -357,6 +358,29 @@ toporia check updater:pto
 GUI: **Proportional topology optimisation** in the Updater picker; parameters move limit, exponent q, retained material.
 
 **Links.** Biyikli & To, *PLoS ONE* 10 (2015) e0145041; [ptomethod.org](http://www.ptomethod.org).
+`pto` is a sensitivity-proxy variant; the published algorithm is `ptoc`, below.
+
+## PTOc — the original proportional topology optimisation
+
+**What it does.** Each iteration the whole budget is handed out again in proportion to element compliance
+`c_e = E(x_e) u_eᵀk₀u_e` raised to *q*. Each allocated increment passes PTOc's own linear-cone filter and the
+result is capped at 1; whatever could not be placed is handed out again until less than 0.001 remains. The new
+design is `alpha·x + (1 − alpha)·x_opt`. The element compliance is read exactly from the compliance gradient
+through the material law, so the run takes no filter chain (the updater refuses one).
+
+**Checked against the authors' code.** The unchanged `PTOc_mbb.m` (PLOS S2) was captured in MATLAB on the
+120 x 40 half-MBB of Figure 3. Toporia stops after the same 169 updates, all printed compliances agree to their
+two decimals, and the final density agrees to 1e-8 ([test](../../../tests/plugins/test_ptoc.py),
+[evidence](../../../docs/research/evidence/batch3/ptoc/report.json)).
+
+**When to use it.** To reproduce or compare with published PTO. It is a heuristic fixed-point method with no
+convergence theory: the Figure 3 design reaches compliance 266.6.
+
+**How to use it.** The preset **Paper: PTOc Fig. 3 (MBB)**, or `q4+ptoc` with `filter_specs=[]`.
+
+```
+toporia run "Paper: PTOc Fig. 3 (MBB)"
+```
 
 ## Writing one for an outside optimiser
 

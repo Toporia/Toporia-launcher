@@ -69,7 +69,7 @@ any doubt about what this repository actually does today:
 | [Updaters](toporia/plugins/updaters/README.md) — optimisers | OC, MMA, GCMMA, SiMPL, BESO, SLSQP, trust-constr, NLopt (MMA, CCSAQ, SLSQP, AUGLAG), mmapy (MMA, GCMMA), null-space, TOBS, CONLIN, multi-constraint OC, Adam, PTO, hard-kill BESO, augmented Lagrangian, floating projection | 4 | 0 |
 | [Problems](toporia/plugins/problems/README.md) — benchmarks | MBB, robust MBB, cantilever, 3-D cantilever, Michell cantilever, L-bracket, L-bracket (local stress), heat sink, vibrating beam, column buckling, non-linear cantilever, force inverter, 3-point bending, bar, 3× drone arm | 6 | 0 |
 
-**188 implementations: 88 selectable plugins, 9 physics engines and 91 presets.
+**190 implementations: 89 selectable plugins, 9 physics engines and 92 presets.
 54 catalogue entries have open code elsewhere; 26 are paper-only.**
 Plugin counts follow the registries; composed pairings and parameter options are
 not counted again as additional implementations.
@@ -77,7 +77,7 @@ not counted again as additional implementations.
 Toporia solves structural elasticity and steady heat conduction on structured
 2-D and 3-D grids, with additional 2-D vibration, harmonic response, large deformation
 and linearised buckling. It covers density/SIMP, parameterised level set,
-discrete evolutionary and moving morphable component designs, with 23 updaters,
+discrete evolutionary and moving morphable component designs, with 24 updaters,
 continuation, robust design and post-processing.
 The lists above are the honest map of everything it does not cover yet.
 

@@ -1,0 +1,28 @@
+{
+  "schema": 1,
+  "case_id": "ptoc",
+  "functions": [
+    "updater:ptoc"
+  ],
+  "source_sha256": "658169ac413d17cf62471c84bf63cab0611d39f6be00c12f645b46525980a88d",
+  "source_url": "https://journals.plos.org/plosone/article/file?type=supplementary&id=10.1371/journal.pone.0145041.s002",
+  "target": "Biyikli-To (2015) Figure 3, half-MBB PTOc density and compliance panels",
+  "paper_status": "native_code_match",
+  "paper_visual_status": "not_assessed",
+  "stop_reason": "design change 0.00993 < tol 0.01",
+  "iterations": 169,
+  "author_printed_lines": 170,
+  "checks": {
+    "checks_passed": true,
+    "printed_compliance_mismatches": 0,
+    "compared_iterations": 169,
+    "density_max_error": 8.554708719188397e-09,
+    "tolerances": {
+      "printed_compliance": 0.0051,
+      "density_max_abs": 1e-06
+    }
+  },
+  "final_compliance": 266.60879615745074,
+  "physical_fraction": 0.34999980500536004,
+  "scope": "Unchanged author PTOc_mbb.m captured in MATLAB R2026a against Toporia's ptoc updater on the same 120x40 setup. The author prints one more line because termination is tested before the update; the returned fields are compared."
+}
