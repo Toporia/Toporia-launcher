@@ -250,6 +250,12 @@ filter radius is scaled in cells to preserve the physical radius on that grid.
 
 ## Writing one
 
+[Batch 3 research companions](../../../docs/research/batch-3.md) show bounded
+geometry/field runs, typeset equations and independent Jacobian checks. Their
+paper comparisons remain unresolved; the [case index](../../../docs/research/batch-3-cases.md)
+records the particular source/formulation gaps. OC and element densities reuse
+the verified Batch 1 example.
+
 Subclass `Representation` and give it `name`, `label` and `params` (the constructor takes
 each one as a keyword). Then implement:
 

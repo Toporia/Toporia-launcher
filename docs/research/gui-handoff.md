@@ -51,3 +51,17 @@ targets separate when displaying status. The volume-preserving-projection recipe
 is quarantined: its saturated-input adjoint can become undefined. Do not expose
 that companion as ready until the numerical/compatibility issue is resolved.
 The existing underlying mode remains unchanged by this documentation batch.
+
+## Batch 3 additions
+
+Thirty-one more presets provide mathematical descriptions for 30 functions:
+22 remaining updaters, five further representations (MMC also has a separate
+variable-thickness example), and three standalone level sets. OC and element
+densities reuse Batch 1. All new paper reproductions are unresolved; the
+[gallery](evidence/batch3/index.html) and structured reports record this explicitly.
+
+Later GUI cards should display execution, feasibility, convergence, source
+review and paper matching as separate facts. A finite run or a library success
+flag is not a paper match or feasibility certificate. Local stress and
+multi-constraint OC companions retain failed stress limits in their evidence.
+The numerical framework, library/canvas and colleague checkout are unchanged.

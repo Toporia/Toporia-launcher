@@ -1,0 +1,190 @@
+{
+  "simpl": {
+    "status": "primary_text_and_schematic_reviewed",
+    "url": "https://arxiv.org/html/2411.19421v2",
+    "scope": "Figure 1 on PDF page 6 and equations 14-16 reviewed. Own numerical coordinates; source schematic has no declared point values. No digitization or SiMPL-A/B history match claimed.",
+    "visual_status": "source_reviewed_not_matched",
+    "source_sha256": "073261e2941f0cc3ab39154998a215911f8b2bbbf6b60809fd4e956cd94cc43e"
+  },
+  "mmc": {
+    "status": "primary_text_and_schematic_reviewed",
+    "url": "https://arxiv.org/pdf/1404.4820",
+    "scope": "Figure 8 on PDF page 27 reviewed: one inclined component and a level-set surface. Geometry parameters/vertical normalization not specified in the figure; no optimized topology match claimed.",
+    "visual_status": "source_reviewed_not_matched",
+    "source_sha256": "f3a1337f7c210ee6269671ac685811843f55adf80c5ee6d66211591758149793"
+  },
+  "geometry_projection": {
+    "status": "primary_full_text_equations_reviewed",
+    "url": "https://link.springer.com/article/10.1007/s00158-020-02552-0",
+    "scope": "Figure 1 caption and equations 1-8 reviewed in publisher HTML. Local disk/sphere cap integration checked independently. HTML equation/sign conventions are inconsistent if read literally; no image comparison or GPTO optimized example match claimed.",
+    "visual_status": "not_assessed"
+  },
+  "pto": {
+    "status": "primary_full_text_and_author_code_reviewed",
+    "url": "https://journals.plos.org/plosone/article?id=10.1371/journal.pone.0145041",
+    "scope": "Sections 3.6-3.7 and 4.1 identify Figure 3 MBB, Table 5 and the source settings. S2 code inspected: element-compliance allocation, inner filtered redistribution and history blend. Native capture/failed comparison in paper-attempt/. No paper-image pixel match claimed.",
+    "visual_status": "not_assessed"
+  },
+  "adam": {
+    "status": "primary_algorithm_target_identified",
+    "url": "https://arxiv.org/abs/1412.6980",
+    "scope": "Original algorithm recurrence checked on a deterministic gradient stream. Machine-learning Figure 1 task/data were not reproduced; no visual review claim.",
+    "visual_status": "not_assessed"
+  },
+  "bspline": {
+    "status": "publisher_abstract_reviewed",
+    "url": "https://www.sciencedirect.com/science/article/pii/S0045782513001539",
+    "scope": "Publisher abstract supports B-spline density representation; original numbered examples and knot inputs were not recovered. Cox-de Boor recursion is an independent engineering check.",
+    "visual_status": "not_assessed"
+  },
+  "neural": {
+    "status": "publisher_abstract_and_author_repository_reviewed",
+    "url": "https://github.com/UW-ERSL/TOuNN",
+    "scope": "Publisher abstract reviewed and author repository linked for architecture alignment. Toporia source already declares tanh/sigmoid and Adam-AL differences; no numbered paper-panel reproduction claimed.",
+    "visual_status": "not_assessed"
+  },
+  "levelset_reaction_diffusion": {
+    "status": "publisher_preview_reviewed",
+    "url": "https://link.springer.com/article/10.1007/s00158-014-1190-z",
+    "scope": "Publisher preview confirms reaction-diffusion evolution and source-code link. Full numerical setup/numbered optimized panel not recovered; appendix alone does not establish a figure match.",
+    "visual_status": "not_assessed"
+  },
+  "mma": {
+    "status": "publisher_abstract_reviewed",
+    "url": "https://onlinelibrary.wiley.com/doi/10.1002/nme.1620240207",
+    "scope": "Publisher abstract confirms moving-asymptote convex subproblems; original numerical example inputs/figure unavailable in the accessed text.",
+    "visual_status": "not_assessed"
+  },
+  "pymoto_mma": {
+    "status": "official_library_documentation_reviewed",
+    "url": "https://github.com/aatmdelissen/pyMOTO",
+    "scope": "Official project and installed adapter reviewed. Actual configured versions are MMA2007 and GCMMA; common MBB results are not original Svanberg figures.",
+    "visual_status": "not_assessed"
+  },
+  "pymoto_gcmma": {
+    "status": "official_library_documentation_reviewed",
+    "url": "https://github.com/aatmdelissen/pyMOTO",
+    "scope": "Official project and installed adapter reviewed. Actual configured versions are MMA2007 and GCMMA; common MBB results are not original Svanberg figures.",
+    "visual_status": "not_assessed"
+  },
+  "mmapy_mma": {
+    "status": "official_library_documentation_reviewed",
+    "url": "https://github.com/arjendeetman/GCMMA-MMA-Python",
+    "scope": "Official Python-port repository reviewed; installed optional package exercised. No source paper numerical example reconstructed.",
+    "visual_status": "not_assessed"
+  },
+  "mmapy_gcmma": {
+    "status": "official_library_documentation_reviewed",
+    "url": "https://github.com/arjendeetman/GCMMA-MMA-Python",
+    "scope": "Official Python-port repository reviewed; installed optional package exercised. No source paper numerical example reconstructed.",
+    "visual_status": "not_assessed"
+  },
+  "nlopt_mma": {
+    "status": "official_library_documentation_reviewed",
+    "url": "https://nlopt.readthedocs.io/en/latest/NLopt_Algorithms/",
+    "scope": "Official algorithm descriptions reviewed; adapter calls installed NLopt. Library algorithms/callbacks do not supply a paper figure reference.",
+    "visual_status": "not_assessed"
+  },
+  "nlopt_ccsaq": {
+    "status": "official_library_documentation_reviewed",
+    "url": "https://nlopt.readthedocs.io/en/latest/NLopt_Algorithms/",
+    "scope": "Official algorithm descriptions reviewed; adapter calls installed NLopt. Library algorithms/callbacks do not supply a paper figure reference.",
+    "visual_status": "not_assessed"
+  },
+  "nlopt_slsqp": {
+    "status": "official_library_documentation_reviewed",
+    "url": "https://nlopt.readthedocs.io/en/latest/NLopt_Algorithms/",
+    "scope": "Official algorithm descriptions reviewed; adapter calls installed NLopt. Library algorithms/callbacks do not supply a paper figure reference.",
+    "visual_status": "not_assessed"
+  },
+  "nlopt_auglag": {
+    "status": "official_library_documentation_reviewed",
+    "url": "https://nlopt.readthedocs.io/en/latest/NLopt_Algorithms/",
+    "scope": "Official algorithm descriptions reviewed; adapter calls installed NLopt. Library algorithms/callbacks do not supply a paper figure reference.",
+    "visual_status": "not_assessed"
+  },
+  "scipy_slsqp": {
+    "status": "official_library_documentation_target",
+    "url": "https://docs.scipy.org/doc/scipy/reference/optimize.minimize-slsqp.html",
+    "scope": "Exact derivative/bound adapter inspected; no Kraft source numerical figure recovered.",
+    "visual_status": "not_assessed"
+  },
+  "scipy_trust_constr": {
+    "status": "official_library_documentation_target",
+    "url": "https://docs.scipy.org/doc/scipy/reference/optimize.minimize-trustconstr.html",
+    "scope": "SR1/trust-region adapter inspected; original numerical figure not selected.",
+    "visual_status": "not_assessed"
+  },
+  "conlin": {
+    "status": "source_access_or_setup_incomplete",
+    "url": "https://doi.org/10.1002/nme.1620230307",
+    "visual_status": "not_assessed",
+    "scope": "Implementation/reference metadata inspected. Full numbered source example not recovered; target remains unresolved."
+  },
+  "oc_multi": {
+    "status": "source_access_or_setup_incomplete",
+    "url": "https://doi.org/10.1016/0045-7825%2891%2990046-9",
+    "visual_status": "not_assessed",
+    "scope": "Implementation/reference metadata inspected. Full numbered source example not recovered; target remains unresolved."
+  },
+  "beso": {
+    "status": "source_access_or_setup_incomplete",
+    "url": "https://doi.org/10.1016/j.finel.2007.06.006",
+    "visual_status": "not_assessed",
+    "scope": "Implementation/reference metadata inspected. Full numbered source example not recovered; target remains unresolved."
+  },
+  "beso_hard": {
+    "status": "source_access_or_setup_incomplete",
+    "url": "https://doi.org/10.1016/j.finel.2007.06.006",
+    "visual_status": "not_assessed",
+    "scope": "Implementation/reference metadata inspected. Full numbered source example not recovered; target remains unresolved."
+  },
+  "floating_projection": {
+    "status": "source_access_or_setup_incomplete",
+    "url": "https://arxiv.org/abs/2006.04306",
+    "visual_status": "not_assessed",
+    "scope": "Implementation/reference metadata inspected. Full numbered source example not recovered; target remains unresolved."
+  },
+  "tobs": {
+    "status": "source_access_or_setup_incomplete",
+    "url": "https://doi.org/10.1007/s00158-020-02719-9",
+    "visual_status": "not_assessed",
+    "scope": "Implementation/reference metadata inspected. Full numbered source example not recovered; target remains unresolved."
+  },
+  "augmented_lagrangian": {
+    "status": "source_access_or_setup_incomplete",
+    "url": "https://doi.org/10.1007/s00158-020-02760-8",
+    "visual_status": "not_assessed",
+    "scope": "Implementation/reference metadata inspected. Full numbered source example not recovered; target remains unresolved."
+  },
+  "nullspace": {
+    "status": "source_access_or_setup_incomplete",
+    "url": "https://doi.org/10.1051/cocv/2020015",
+    "visual_status": "not_assessed",
+    "scope": "Implementation/reference metadata inspected. Full numbered source example not recovered; target remains unresolved."
+  },
+  "mmc_variable": {
+    "status": "source_access_or_setup_incomplete",
+    "url": "https://doi.org/10.1007/s00158-015-1372-3",
+    "visual_status": "not_assessed",
+    "scope": "Implementation/reference metadata inspected. Full numbered source example not recovered; target remains unresolved."
+  },
+  "mmv": {
+    "status": "source_access_or_setup_incomplete",
+    "url": "https://doi.org/10.1016/j.cma.2017.05.002",
+    "visual_status": "not_assessed",
+    "scope": "Implementation/reference metadata inspected. Full numbered source example not recovered; target remains unresolved."
+  },
+  "levelset": {
+    "status": "source_access_or_setup_incomplete",
+    "url": "https://doi.org/10.1007/s00158-018-1904-8",
+    "visual_status": "not_assessed",
+    "scope": "Implementation/reference metadata inspected. Full numbered source example not recovered; target remains unresolved."
+  },
+  "levelset_hamilton_jacobi": {
+    "status": "source_access_or_setup_incomplete",
+    "url": "https://doi.org/10.1007/s00158-009-0430-0",
+    "visual_status": "not_assessed",
+    "scope": "Implementation/reference metadata inspected. Full numbered source example not recovered; target remains unresolved."
+  }
+}

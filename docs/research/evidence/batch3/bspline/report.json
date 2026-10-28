@@ -1,0 +1,140 @@
+{
+  "schema": 1,
+  "case_id": "bspline",
+  "functions": [
+    "representation:bspline"
+  ],
+  "source_url": "https://doi.org/10.1016/j.cma.2013.06.001",
+  "target": "Qian (2013) B-spline density-space examples: numbered panel and original knots pending.",
+  "limitations": "A controlled coefficient field and independent basis check do not reproduce an optimized paper topology or its knot refinement study.",
+  "paper_status": "paper_reproduction_to_fix",
+  "paper_visual_status": "not_assessed",
+  "checks": {
+    "directional_adjoint_errors": [
+      1.3797374354140857e-10,
+      6.834318666548711e-10,
+      1.228337269046803e-10,
+      5.756911614085425e-10,
+      1.4815490776559435e-10
+    ],
+    "adjoint_tolerance": 2e-05,
+    "checks_passed": true,
+    "scope": "Five smooth-field directions; no certification at topology switches or bounds.",
+    "independent_cox_de_boor_max_error": 2.220446049250313e-16,
+    "partition_of_unity_max_error": 2.220446049250313e-16,
+    "finite_execution": true,
+    "bounded_density": true
+  },
+  "iterations": 120,
+  "stop_reason": "iteration limit (120)",
+  "optimizer": null,
+  "fresh_final_compliance": 444.1379268715293,
+  "last_recorded_objective": 444.10096106890717,
+  "physical_volume_fraction": 0.4999668539048861,
+  "volume_excess": -3.314609511390065e-05,
+  "feasible_volume_1e_4": true,
+  "grayness": 0.8843746655770591,
+  "engine_physics_evaluations_before_final_check": 120,
+  "final_check_extra_model_evaluations": 1,
+  "runtime_seconds": 1.0897185999783687,
+  "captured_at": "2026-10-28T00:06:22.145129+00:00",
+  "versions": {
+    "python": "3.14.3",
+    "numpy": "2.4.2",
+    "scipy": "1.17.1",
+    "matplotlib": "3.10.8",
+    "pymoto": "2.0.1",
+    "mmapy": "0.3.1",
+    "nlopt": "2.11.0",
+    "nullspace_optimizer": "1.3.0"
+  },
+  "protocol": "Unmodified recipe and existing engine _loop; final re-evaluation after optimizer close. Density rows start at physical y=0. Objective histories may be pre-update; volume is displayed post-update. An execution pass does not mean feasibility, convergence or paper agreement.",
+  "iteration_override": null,
+  "next_check": "Recover Qian's numbered example with exact knot vector, coefficient grid, density constraints, FE mesh and stopping rule before comparing optimized shapes.",
+  "scenario": {
+    "Lx": 60.0,
+    "Ly": 20.0,
+    "Lz": 0.0,
+    "holes": [],
+    "enforced_areas": [],
+    "edge_constraints": [
+      {
+        "edge": "left",
+        "dof": "x"
+      }
+    ],
+    "point_constraints": [
+      {
+        "x": 60.0,
+        "y": 0.0,
+        "dof": "y"
+      }
+    ],
+    "point_loads": [
+      {
+        "x": 0.0,
+        "y": 20.0
+      }
+    ],
+    "load_cases": [
+      {
+        "Fmag": 1.0,
+        "Fa": 270.0,
+        "weight": 1.0,
+        "Fe": 0.0
+      }
+    ],
+    "volfrac": 0.5,
+    "objective": {
+      "type": "compliance"
+    },
+    "constraints": [],
+    "E0": 1.0,
+    "Emin": 1e-09,
+    "nu": 0.3,
+    "point_springs": []
+  },
+  "solver": {
+    "method": "q4+mma",
+    "method_params": {
+      "move": 0.02
+    },
+    "interpolation": {
+      "type": "simp"
+    },
+    "representation": {
+      "type": "bspline",
+      "n_x": 8,
+      "n_y": 4,
+      "degree": 3
+    },
+    "filter_specs": [
+      {
+        "type": "density",
+        "rmin": 1.5
+      }
+    ],
+    "schedules": [],
+    "variants": {},
+    "m": 0.5,
+    "max_iter": 120,
+    "tol": 0.0
+  },
+  "resolved_method_params": {
+    "move": 0.02,
+    "mma_tol": 0.0001,
+    "asyinit": 0.5,
+    "asyincr": 1.2,
+    "asydecr": 0.7,
+    "c": 1000.0
+  },
+  "fresh_reported": {},
+  "fresh_constraints": [],
+  "primary_source_review": {
+    "status": "publisher_abstract_reviewed",
+    "url": "https://www.sciencedirect.com/science/article/pii/S0045782513001539",
+    "scope": "Publisher abstract supports B-spline density representation; original numbered examples and knot inputs were not recovered. Cox-de Boor recursion is an independent engineering check.",
+    "visual_status": "not_assessed"
+  },
+  "fresh_constraints_feasible_1e_4": true
+}

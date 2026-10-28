@@ -1,0 +1,39 @@
+# Batch 3 cases
+
+All 31 cases have unresolved paper comparisons. Numerical checks and finite execution are separate from feasibility and convergence.
+
+OC and element densities reuse the verified [Batch 1](batch-1.md) example; they are not recomputed or counted here.
+
+| Function / variant | Steps | Fresh C | Fraction | Stop | Evidence |
+| :-- | --: | --: | --: | :-- | :-- |
+| MMA: local one-budget variant | 76 | 248.73 | 0.500000 | Q4Model_MMAUpdater reported its own convergence criterion | [figure](evidence/batch3/mma/figure.png), [math](evidence/batch3/mma/description.html), [report](evidence/batch3/mma/report.json) |
+| MMA through pyMOTO | 120 | 248.73 | 0.500000 | iteration limit (120) | [figure](evidence/batch3/pymoto_mma/figure.png), [math](evidence/batch3/pymoto_mma/description.html), [report](evidence/batch3/pymoto_mma/report.json) |
+| GCMMA through pyMOTO | 120 | 248.73 | 0.500000 | iteration limit (120) | [figure](evidence/batch3/pymoto_gcmma/figure.png), [math](evidence/batch3/pymoto_gcmma/description.html), [report](evidence/batch3/pymoto_gcmma/report.json) |
+| MMA through mmapy | 120 | 248.74 | 0.500000 | iteration limit (120) | [figure](evidence/batch3/mmapy_mma/figure.png), [math](evidence/batch3/mmapy_mma/description.html), [report](evidence/batch3/mmapy_mma/report.json) |
+| GCMMA through mmapy | 120 | 248.74 | 0.500000 | iteration limit (120) | [figure](evidence/batch3/mmapy_gcmma/figure.png), [math](evidence/batch3/mmapy_gcmma/description.html), [report](evidence/batch3/mmapy_gcmma/report.json) |
+| MMA through NLopt | 54 | 248.73 | 0.500000 | MMA (NLopt) finished: FTOL_REACHED | [figure](evidence/batch3/nlopt_mma/figure.png), [math](evidence/batch3/nlopt_mma/description.html), [report](evidence/batch3/nlopt_mma/report.json) |
+| CONLIN mixed variables | 120 | 248.74 | 0.500000 | iteration limit (120) | [figure](evidence/batch3/conlin/figure.png), [math](evidence/batch3/conlin/description.html), [report](evidence/batch3/conlin/report.json) |
+| OC with several multipliers | 120 | 357.06 | 0.499977 | iteration limit (120) | [figure](evidence/batch3/oc_multi/figure.png), [math](evidence/batch3/oc_multi/description.html), [report](evidence/batch3/oc_multi/report.json) |
+| BESO soft kill | 46 | 268.61 | 0.499761 | Q4Model_BESOUpdater reported its own convergence criterion | [figure](evidence/batch3/beso/figure.png), [math](evidence/batch3/beso/description.html), [report](evidence/batch3/beso/report.json) |
+| BESO hard kill | 59 | 259.15 | 0.499013 | Q4Model_HardKillBESOUpdater reported its own convergence criterion | [figure](evidence/batch3/beso_hard/figure.png), [math](evidence/batch3/beso_hard/description.html), [report](evidence/batch3/beso_hard/report.json) |
+| Floating projection update | 120 | 251.81 | 0.500000 | iteration limit (120) | [figure](evidence/batch3/floating_projection/figure.png), [math](evidence/batch3/floating_projection/description.html), [report](evidence/batch3/floating_projection/report.json) |
+| SiMPL primal and latent steps | 120 | 248.74 | 0.500000 | iteration limit (120) | [figure](evidence/batch3/simpl/figure.png), [math](evidence/batch3/simpl/description.html), [report](evidence/batch3/simpl/report.json) |
+| Adam moments and volume penalty | 120 | 337.28 | 0.506884 | iteration limit (120) | [figure](evidence/batch3/adam/figure.png), [math](evidence/batch3/adam/description.html), [report](evidence/batch3/adam/report.json) |
+| PTO sensitivity-proxy variant | 120 | 254.31 | 0.500000 | iteration limit (120) | [figure](evidence/batch3/pto/figure.png), [math](evidence/batch3/pto/description.html), [report](evidence/batch3/pto/report.json) |
+| TOBS integer design steps | 36 | 257.22 | 0.498890 | Q4Model_TOBSUpdater reported its own convergence criterion | [figure](evidence/batch3/tobs/figure.png), [math](evidence/batch3/tobs/description.html), [report](evidence/batch3/tobs/report.json) |
+| Local-stress augmented Lagrangian | 120 | 241.55 | 0.511866 | iteration limit (120) | [figure](evidence/batch3/augmented_lagrangian/figure.png), [math](evidence/batch3/augmented_lagrangian/description.html), [report](evidence/batch3/augmented_lagrangian/report.json) |
+| SLSQP through SciPy | 120 | 249.62 | 0.500000 | iteration limit (120) | [figure](evidence/batch3/scipy_slsqp/figure.png), [math](evidence/batch3/scipy_slsqp/description.html), [report](evidence/batch3/scipy_slsqp/report.json) |
+| SLSQP through NLopt | 120 | 248.97 | 0.500000 | iteration limit (120) | [figure](evidence/batch3/nlopt_slsqp/figure.png), [math](evidence/batch3/nlopt_slsqp/description.html), [report](evidence/batch3/nlopt_slsqp/report.json) |
+| Trust-constr through SciPy | 80 | 330 | 0.499997 | iteration limit (80) | [figure](evidence/batch3/scipy_trust_constr/figure.png), [math](evidence/batch3/scipy_trust_constr/description.html), [report](evidence/batch3/scipy_trust_constr/report.json) |
+| CCSAQ through NLopt | 116 | 248.73 | 0.500000 | CCSAQ (NLopt) finished: FTOL_REACHED | [figure](evidence/batch3/nlopt_ccsaq/figure.png), [math](evidence/batch3/nlopt_ccsaq/description.html), [report](evidence/batch3/nlopt_ccsaq/report.json) |
+| Augmented Lagrangian through NLopt | 101 | 254.54 | 0.500000 | Augmented Lagrangian + L-BFGS (NLopt) finished: FTOL_REACHED | [figure](evidence/batch3/nlopt_auglag/figure.png), [math](evidence/batch3/nlopt_auglag/description.html), [report](evidence/batch3/nlopt_auglag/report.json) |
+| Null-space gradient flow | 80 | 329 | 0.499838 | iteration limit (80) | [figure](evidence/batch3/nullspace/figure.png), [math](evidence/batch3/nullspace/description.html), [report](evidence/batch3/nullspace/report.json) |
+| MMC constant-thickness bars | 120 | 282.25 | 0.500535 | iteration limit (120) | [figure](evidence/batch3/mmc/figure.png), [math](evidence/batch3/mmc/description.html), [report](evidence/batch3/mmc/report.json) |
+| MMC variable-thickness bars | 120 | 282.76 | 0.502952 | iteration limit (120) | [figure](evidence/batch3/mmc_variable/figure.png), [math](evidence/batch3/mmc_variable/description.html), [report](evidence/batch3/mmc_variable/report.json) |
+| MMV superelliptical holes | 120 | 388.07 | 0.500233 | iteration limit (120) | [figure](evidence/batch3/mmv/figure.png), [math](evidence/batch3/mmv/description.html), [report](evidence/batch3/mmv/report.json) |
+| B-spline density coefficients | 120 | 444.14 | 0.499967 | iteration limit (120) | [figure](evidence/batch3/bspline/figure.png), [math](evidence/batch3/bspline/description.html), [report](evidence/batch3/bspline/report.json) |
+| Geometry projection capsule bars | 120 | 250.94 | 0.500029 | iteration limit (120) | [figure](evidence/batch3/geometry_projection/figure.png), [math](evidence/batch3/geometry_projection/description.html), [report](evidence/batch3/geometry_projection/report.json) |
+| Neural coordinate density | 300 | 429.6 | 0.499913 | iteration limit (300) | [figure](evidence/batch3/neural/figure.png), [math](evidence/batch3/neural/description.html), [report](evidence/batch3/neural/report.json) |
+| RBF level-set evolution | 121 | 183.06 | 0.500106 | LevelSetRBFMethod reported its own convergence criterion | [figure](evidence/batch3/levelset/figure.png), [math](evidence/batch3/levelset/description.html), [report](evidence/batch3/levelset/report.json) |
+| Hamilton-Jacobi level-set evolution | 86 | 246.11 | 0.500000 | feasible volume settled and compliance stable against five previous iterations | [figure](evidence/batch3/levelset_hamilton_jacobi/figure.png), [math](evidence/batch3/levelset_hamilton_jacobi/description.html), [report](evidence/batch3/levelset_hamilton_jacobi/report.json) |
+| Reaction-diffusion level-set evolution | 160 | 230.29 | 0.500000 | iteration limit (160) | [figure](evidence/batch3/levelset_reaction_diffusion/figure.png), [math](evidence/batch3/levelset_reaction_diffusion/description.html), [report](evidence/batch3/levelset_reaction_diffusion/report.json) |

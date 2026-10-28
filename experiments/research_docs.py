@@ -49,6 +49,42 @@ def flow_diagram(destination):
     figure.savefig(destination, dpi=160)
 
 
+def optimization_diagram(destination):
+    """Variables may change shape; the evaluation/updater interface stays shared."""
+    from matplotlib.backends.backend_agg import FigureCanvasAgg
+    from matplotlib.figure import Figure
+    from matplotlib.patches import FancyArrowPatch, FancyBboxPatch
+
+    figure = Figure(figsize=(12, 3.6), dpi=160, facecolor="white")
+    FigureCanvasAgg(figure)
+    axis = figure.add_axes((.015, .04, .97, .92))
+    axis.set(xlim=(0, 12), ylim=(0, 3.6))
+    axis.axis("off")
+
+    def box(x, y, width, height, label):
+        axis.add_patch(FancyBboxPatch((x, y), width, height, boxstyle="round,pad=.04",
+                                     facecolor="#edf4f8", edgecolor="#648295"))
+        axis.text(x+width/2, y+height/2, label, ha="center", va="center", fontsize=9, color="#17384c")
+
+    def arrow(start, end):
+        axis.add_patch(FancyArrowPatch(start, end, arrowstyle="-|>", mutation_scale=12, color="#315f79"))
+
+    for y, label in ((.6, "Network weights"), (1.3, "Spline coefficients"), (2., "Bar geometry"), (2.7, "Element densities")):
+        box(.15, y, 1.8, .44, label)
+        arrow((2., y+.22), (2.6, 1.85))
+    for x, label in ((2.65, "Representation\nz to element field"), (4.8, "Model\nfilters + physics\nresponses + adjoints"),
+                     (6.95, "Evaluation\nvalues + gradients"), (9.1, "Updater\nnext variables")):
+        box(x, 1.28, 1.75, 1.15, label)
+        if x < 9.1:
+            arrow((x+1.8, 1.85), (x+2.1, 1.85))
+    arrow((10.9, 1.85), (11.85, 1.85))
+    axis.text(11.45, 2.1, "next z", ha="center", fontsize=10, color="#17384c")
+    arrow((10., 2.8), (3.5, 2.8))
+    axis.text(6.8, 3.05, "Repeat using the same variable definition", ha="center", fontsize=10, color="#426173")
+    axis.text(6.5, .5, "Gradients return through the filter and representation Jacobians", ha="center", fontsize=10, color="#9b5a20")
+    figure.savefig(destination, dpi=160)
+
+
 def render_guide(markdown):
     from markdown_it import MarkdownIt
     from PIL import Image
@@ -87,9 +123,11 @@ def main():
     folder = ROOT / "docs/research"
     (folder / "assets").mkdir(parents=True, exist_ok=True)
     flow_diagram(folder / "assets/core-flow.png")
-    source = folder / "core.md"
-    (folder / "core.html").write_text(render_guide(source.read_text(encoding="utf-8")), encoding="utf-8")
-    print(folder / "core.html")
+    optimization_diagram(folder / "assets/optimization-flow.png")
+    for name in ("core", "optimization"):
+        source = folder / (name + ".md")
+        (folder / (name + ".html")).write_text(render_guide(source.read_text(encoding="utf-8")), encoding="utf-8")
+        print(folder / (name + ".html"))
 
 
 if __name__ == "__main__":

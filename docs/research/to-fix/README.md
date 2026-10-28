@@ -9,6 +9,13 @@ ordered-SIMP target. The volume-preserving-projection companion also has a
 documented numerical failure and is quarantined outside preset discovery.
 See the [Batch 2 report](../batch-2.md) and [case index](../batch-2-cases.md).
 
+Batch 3 adds 31 unresolved comparisons for 30 functions, including both MMC
+thickness variants. Every case has an executed companion, saved fields,
+mathematical description and a specific next check. The PTO entry also retains
+an author-code comparison on the published MBB setup. See [Batch 3](../batch-3.md)
+and its [case index](../batch-3-cases.md). These records do not mean all original
+paper figures have been attempted with completely recovered settings.
+
 For each unresolved case create a folder containing:
 
 - `README.md`: function IDs, paper/panel, discrepancy and next useful check.

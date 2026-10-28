@@ -1,0 +1,25 @@
+{
+  "source_sha256": "658169ac413d17cf62471c84bf63cab0611d39f6be00c12f645b46525980a88d",
+  "target": "Biyikli-To (2015) Figure 3, half-MBB PTOc density and compliance panels",
+  "source_url": "https://journals.plos.org/plosone/article/file?type=supplementary&id=10.1371/journal.pone.0145041.s002",
+  "author_iterations": 170,
+  "toporia_iterations": 600,
+  "author_field_fresh_compliance": 266.6093741569648,
+  "toporia_fresh_compliance": 323.2973815776421,
+  "author_last_printed_compliance": 266.61,
+  "physics_print_tolerance": 0.0051,
+  "author_field_physics_match": true,
+  "density_max_error": 0.9984578965517049,
+  "relative_compliance_error": 0.21262570980457182,
+  "tolerances": {
+    "density_max_abs": 1e-06,
+    "relative_compliance": 1e-06
+  },
+  "native_code_match": false,
+  "physical_fraction": 0.34999999999699233,
+  "author_fraction": 0.3499998050053629,
+  "stop_reason": "iteration limit (600)",
+  "paper_status": "paper_reproduction_to_fix",
+  "settings": "120x40 unit cells, .35 volume, r=1.5, p=3, q=1, relax=.5, move=1, 600-step cap, change tol=.01; downward forces 1/3 at (0,40),(1,40),(2,40); vertical rollers (120,0),(120,1),(120,2); left horizontal symmetry.",
+  "reason": "Toporia allocates from negative filtered sensitivity and filters trial design for volume; PTOc allocates from physical element compliance with a filtered redistribution inner loop and history blend. Similar topology/compliance cannot erase the formulation difference."
+}

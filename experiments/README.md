@@ -485,3 +485,11 @@ References: S. Kirkpatrick, C. D. Gelatt Jr., M. P. Vecchi, *Science* 220 (1983)
 671–680, [DOI](https://doi.org/10.1126/science.220.4598.671). O. Sigmund,
 "On the usefulness of non-gradient approaches in topology optimization", *SMO*
 43 (2011) 589–596, [DOI](https://doi.org/10.1007/s00158-011-0638-7).
+
+## Batch 3 research figures
+
+`python -m experiments.research_batch3` runs 31 bounded recipes using the existing engine loop. It saves initial/final physical fields, variables, histories, independent operator checks and descriptions under ignored `results/research/batch3/generated`. `--render-only` reviews saved fields/reports without rerunning physics; `--strict-paper` fails for unresolved paper comparisons. `python -m experiments.research_publish3` promotes review artifacts, and `python -m experiments.research_inventory` refreshes coverage.
+
+`python -m experiments.research_pto_attempt` separately attempts PTOc Figure 3 on the paper's 120-by-40, fraction-0.35 setup against a hash-identified native fixture. It exits nonzero for the documented formulation mismatch. Fresh author capture needs an existing MATLAB installation and unchanged PLOS S2 source; see that module's help. No author code or papers are redistributed.
+
+[Batch 3 report](../docs/research/batch-3.md), [gallery](../docs/research/evidence/batch3/index.html) and [mathematical computation guide](../docs/research/optimization.html) distinguish finite execution, feasibility, convergence and source reproduction.

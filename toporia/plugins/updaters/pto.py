@@ -1,27 +1,27 @@
-# plugins/updaters/pto.py — proportional topology optimisation (PTO).
+# plugins/updaters/pto.py — independent sensitivity-proxy PTO variant.
 #
 # Connects to the framework as an Updater.  PTO is the "no optimiser at all"
 # baseline: each iteration the whole volume budget is simply handed out to the
-# elements in proportion to how hard each one works, with no Lagrange
-# multiplier, no linearisation and no step-size rule beyond a move limit.
+# elements using a negative-sensitivity proxy. This is not the paper's
+# element-compliance allocation or filtered redistribution algorithm.
 #
-#     target_i  ∝  e_i^q            (e_i = element strain energy, q = exponent)
-#     Σ_i target_i · V_i = V_limit  (the budget is spent exactly)
-#     x_new = clip( x + clip(target − x, ± move),  lower, upper )
+#     target_i  ∝  e_i^q            (e_i = max(0, -dC/dx_i), q = exponent)
+#     V(x_new) ≈ V_limit           (when reachable under the moving bounds)
+#     x_new = clip( x + clip(relax*(target − x), ± move), lower, upper )
 #
 # The proportionality constant is found by bisection (the same job as OC's
-# multiplier search).  Because it is a scale on e_i^q with the result clipped to
-# the element bounds, it reproduces the paper's "cap at solid and redistribute
-# the overflow to the others" loop in one pass.  The move limit plays the part of
-# the paper's retained material: an element keeps most of what it had.
+# multiplier search), measuring the model's actual physical volume. The paper
+# instead repeatedly filters its remaining material allocation, caps the field
+# and redistributes. A move cap and this implementation's relax parameter are
+# not equivalent to that loop or its subsequent history blend.
 #
 # Element energies.  The paper allocates by strain energy.  An Evaluation carries
 # no element energies, only gradients, so this updater uses the objective
 # gradient magnitude  e_i = −dC/dx_i  instead.  For compliance under SIMP
-# (C = Σ x^p uᵀKu, dC/dx = −p x^(p−1) uᵀKu) that is the strain energy divided
-# by x and times p — monotonically related to it, which is why the PTO papers
-# treat the two as interchangeable; with a filter chain it is the filtered
-# sensitivity.  No framework change was made for this.
+# (C = Σ x^p uᵀKu, dC/dx = −p x^(p−1) uᵀKu), ignoring Emin, this proxy is
+# element compliance times p/x. Since x varies between elements, the weights
+# and even their rankings can differ. A filter chain changes them further.
+# Batch 3 keeps a native Figure 3 comparison and this mismatch in to-fix.
 #
 # PTO is a baseline: it has no convergence theory and it is a fixed-point
 # iteration, so it is expected to land somewhat above OC.  Measured on the MBB
@@ -45,11 +45,11 @@ from toporia.plugins.shared_params import MOVE
 
 
 class PTOUpdater(Updater):
-    """Proportional topology optimisation: material allocated in proportion to element energy^q."""
+    """PTO-inspired allocation from negative sensitivity, not original PTOc."""
 
     name = "pto"
     reference = (
-        'E. Biyikli and A. C. To, "Proportional topology optimization: a new non-sensitivity '
+        'Independent sensitivity-proxy variant inspired by E. Biyikli and A. C. To, "Proportional topology optimization: a new non-sensitivity '
         'method for structural optimization", PLoS ONE 10 (2015) e0145041 (ptomethod.org).'
         ' Papers: https://doi.org/10.1371/journal.pone.0145041'
     )

@@ -10,6 +10,12 @@ supporting modules and preset recipes.
 [Figure gallery](evidence/batch2/index.html). Four new comparisons match identified
 source targets; unresolved cases and a numerical saturation failure are explicit.
 
+[Batch 3 report](batch-3.md) · [Case index](batch-3-cases.md) ·
+[Figure gallery](evidence/batch3/index.html) · [Optimization math](optimization.html).
+Thirty-one additional companions document updaters, representations and level
+sets. Their paper reproductions remain unresolved, with specific differences
+and failed feasibility recorded separately from passing execution checks.
+
 Every research preset pairs a runnable setup with a short explanation of the
 function, typeset equations, symbol definitions, source figure and comparison
 scope. Its existing preset **?** opens the explanation. The same content exports
@@ -48,8 +54,8 @@ See [conventions](conventions.md), the [preset template](templates/preset.md),
 the [researcher contribution template](templates/research-note.md) and the
 [`to-fix` queue](to-fix/README.md).
 
-The inventory separates **97 selectable functions/engines** from **40 presets**
-(18 original and 22 registered research recipes). A further volume-preserving
+The inventory separates **97 selectable functions/engines** from **71 presets**
+(18 original and 53 registered research recipes). A further volume-preserving
 projection companion is quarantined, with its description and failed probe in
 the to-fix queue; it is not counted as a selectable preset. One example can demonstrate several
 functions. Metadata citations are starting points; pending rows are not claims

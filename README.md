@@ -68,7 +68,7 @@ any doubt about what this repository actually does today:
 | [Updaters](toporia/plugins/updaters/README.md) — optimisers | OC, MMA, GCMMA, SiMPL, BESO, SLSQP, trust-constr, NLopt (MMA, CCSAQ, SLSQP, AUGLAG), mmapy (MMA, GCMMA), null-space, TOBS, CONLIN, multi-constraint OC, Adam, PTO, hard-kill BESO, augmented Lagrangian, floating projection | 4 | 0 |
 | [Problems](toporia/plugins/problems/README.md) — benchmarks | MBB, robust MBB, cantilever, 3-D cantilever, Michell cantilever, L-bracket, L-bracket (local stress), heat sink, vibrating beam, column buckling, non-linear cantilever, force inverter, 3-point bending, bar, 3× drone arm | 6 | 0 |
 
-**137 implementations: 88 selectable plugins, 9 physics engines and 40 presets.
+**168 implementations: 88 selectable plugins, 9 physics engines and 71 presets.
 54 catalogue entries have open code elsewhere; 26 are paper-only.**
 Plugin counts follow the registries; composed pairings and parameter options are
 not counted again as additional implementations.
@@ -119,3 +119,9 @@ for author-code comparisons, paper-review scope and rerun commands.
 figures with mathematical descriptions. Its [gallery](docs/research/evidence/batch2/index.html)
 separates matched research curves from unresolved demonstrations. A failed
 volume-preserving-projection companion is quarantined in the to-fix queue.
+
+[Batch 3](docs/research/batch-3.md) adds 31 optimizer, representation and level-set
+companions with mathematical help. Its [gallery](docs/research/evidence/batch3/index.html)
+records bounded runs and independent checks; full paper reproductions remain
+unresolved. The [optimization guide](docs/research/optimization.html) explains
+design-variable gradients, updater interfaces and final-result checks.

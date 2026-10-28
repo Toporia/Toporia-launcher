@@ -1,0 +1,116 @@
+{
+  "schema": 1,
+  "case_id": "levelset_reaction_diffusion",
+  "functions": [
+    "method:levelset_reaction_diffusion"
+  ],
+  "source_url": "https://doi.org/10.1007/s00158-014-1190-z",
+  "target": "Otomori et al. (2015) reaction-diffusion examples: numbered panel/inputs pending.",
+  "limitations": "Cell-centred backward Euler, cubic Heaviside and bisected volume differ from levelset88's augmented-Lagrangian feedback; source plane-stress tensor is not the circular-hole tensor.",
+  "paper_status": "paper_reproduction_to_fix",
+  "paper_visual_status": "not_assessed",
+  "checks": {
+    "checks_passed": true,
+    "scope": "Execution and final-field checks below; no independent updater-algorithm reference for this case.",
+    "finite_execution": true,
+    "bounded_density": true
+  },
+  "iterations": 160,
+  "stop_reason": "iteration limit (160)",
+  "optimizer": null,
+  "fresh_final_compliance": 230.29467916180081,
+  "last_recorded_objective": 230.29467916180081,
+  "physical_volume_fraction": 0.5,
+  "volume_excess": 0.0,
+  "feasible_volume_1e_4": true,
+  "grayness": 0.015129146240190737,
+  "engine_physics_evaluations_before_final_check": null,
+  "final_check_extra_model_evaluations": 1,
+  "runtime_seconds": 2.328042400011327,
+  "captured_at": "2026-10-28T00:06:41.668253+00:00",
+  "versions": {
+    "python": "3.14.3",
+    "numpy": "2.4.2",
+    "scipy": "1.17.1",
+    "matplotlib": "3.10.8",
+    "pymoto": "2.0.1",
+    "mmapy": "0.3.1",
+    "nlopt": "2.11.0",
+    "nullspace_optimizer": "1.3.0"
+  },
+  "protocol": "Unmodified recipe and existing engine _loop; final re-evaluation after optimizer close. Density rows start at physical y=0. Objective histories may be pre-update; volume is displayed post-update. An execution pass does not mean feasibility, convergence or paper agreement.",
+  "iteration_override": null,
+  "next_check": "Recover a levelset88 panel and align nodal discretization, Heaviside, reaction/diffusion scaling and original AL volume feedback rather than the current bisection.",
+  "scenario": {
+    "Lx": 60.0,
+    "Ly": 20.0,
+    "Lz": 0.0,
+    "holes": [],
+    "enforced_areas": [],
+    "edge_constraints": [
+      {
+        "edge": "left",
+        "dof": "x"
+      }
+    ],
+    "point_constraints": [
+      {
+        "x": 60.0,
+        "y": 0.0,
+        "dof": "y"
+      }
+    ],
+    "point_loads": [
+      {
+        "x": 0.0,
+        "y": 20.0
+      }
+    ],
+    "load_cases": [
+      {
+        "Fmag": 1.0,
+        "Fa": 270.0,
+        "weight": 1.0,
+        "Fe": 0.0
+      }
+    ],
+    "volfrac": 0.5,
+    "objective": {
+      "type": "compliance"
+    },
+    "constraints": [],
+    "E0": 1.0,
+    "Emin": 1e-09,
+    "nu": 0.3,
+    "point_springs": []
+  },
+  "solver": {
+    "method": "levelset_reaction_diffusion",
+    "method_params": {},
+    "interpolation": {
+      "type": "simp"
+    },
+    "representation": {
+      "type": "element_density"
+    },
+    "filter_specs": [],
+    "schedules": [],
+    "variants": {},
+    "m": 0.4,
+    "max_iter": 160,
+    "tol": 0.0
+  },
+  "resolved_method_params": {
+    "dt": 0.1,
+    "diffusion_length": 1.0,
+    "interface_width": 0.1,
+    "nrelax": 30
+  },
+  "primary_source_review": {
+    "status": "publisher_preview_reviewed",
+    "url": "https://link.springer.com/article/10.1007/s00158-014-1190-z",
+    "scope": "Publisher preview confirms reaction-diffusion evolution and source-code link. Full numerical setup/numbered optimized panel not recovered; appendix alone does not establish a figure match.",
+    "visual_status": "not_assessed"
+  },
+  "fresh_constraints_feasible_1e_4": true
+}

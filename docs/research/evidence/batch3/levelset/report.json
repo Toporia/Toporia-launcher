@@ -1,0 +1,123 @@
+{
+  "schema": 1,
+  "case_id": "levelset",
+  "functions": [
+    "method:levelset"
+  ],
+  "source_url": "https://doi.org/10.1007/s00158-018-1904-8",
+  "target": "Wei et al. (2018) TOPRBF cantilever: numbered panel/settings pending.",
+  "limitations": "Mean instead of median energy normalization, guarded rescaling and clipped field make this a numerical variant. Dense node matrices limit mesh size.",
+  "paper_status": "paper_reproduction_to_fix",
+  "paper_visual_status": "not_assessed",
+  "checks": {
+    "checks_passed": true,
+    "scope": "Execution and final-field checks below; no independent updater-algorithm reference for this case.",
+    "finite_execution": true,
+    "bounded_density": true
+  },
+  "iterations": 121,
+  "stop_reason": "LevelSetRBFMethod reported its own convergence criterion",
+  "optimizer": null,
+  "fresh_final_compliance": 183.06468192918146,
+  "last_recorded_objective": 183.06468192918146,
+  "physical_volume_fraction": 0.5001062925170068,
+  "volume_excess": 0.00010629251700677855,
+  "feasible_volume_1e_4": false,
+  "grayness": 0.25572056739047344,
+  "engine_physics_evaluations_before_final_check": null,
+  "final_check_extra_model_evaluations": 1,
+  "runtime_seconds": 2.2370554000372067,
+  "captured_at": "2026-10-28T00:06:33.970850+00:00",
+  "versions": {
+    "python": "3.14.3",
+    "numpy": "2.4.2",
+    "scipy": "1.17.1",
+    "matplotlib": "3.10.8",
+    "pymoto": "2.0.1",
+    "mmapy": "0.3.1",
+    "nlopt": "2.11.0",
+    "nullspace_optimizer": "1.3.0"
+  },
+  "protocol": "Unmodified recipe and existing engine _loop; final re-evaluation after optimizer close. Density rows start at physical y=0. Objective histories may be pre-update; volume is displayed post-update. An execution pass does not mean feasibility, convergence or paper agreement.",
+  "iteration_override": null,
+  "next_check": "Compare against a source TOPRBF panel with its median normalization and original rescaling; the mean-normalized clipped variant cannot be called an exact port.",
+  "scenario": {
+    "Lx": 60.0,
+    "Ly": 20.0,
+    "Lz": 0.0,
+    "holes": [],
+    "enforced_areas": [],
+    "edge_constraints": [
+      {
+        "edge": "left",
+        "dof": "x"
+      }
+    ],
+    "point_constraints": [
+      {
+        "x": 60.0,
+        "y": 0.0,
+        "dof": "y"
+      }
+    ],
+    "point_loads": [
+      {
+        "x": 0.0,
+        "y": 20.0
+      }
+    ],
+    "load_cases": [
+      {
+        "Fmag": 1.0,
+        "Fa": 270.0,
+        "weight": 1.0,
+        "Fe": 0.0
+      }
+    ],
+    "volfrac": 0.5,
+    "objective": {
+      "type": "compliance"
+    },
+    "constraints": [],
+    "E0": 1.0,
+    "Emin": 1e-09,
+    "nu": 0.3,
+    "point_springs": []
+  },
+  "solver": {
+    "method": "levelset",
+    "method_params": {},
+    "interpolation": {
+      "type": "simp"
+    },
+    "representation": {
+      "type": "element_density"
+    },
+    "filter_specs": [],
+    "schedules": [],
+    "variants": {},
+    "m": 0.4,
+    "max_iter": 160,
+    "tol": 0.0
+  },
+  "resolved_method_params": {
+    "dt": 0.5,
+    "nrelax": 30,
+    "delta": 10.0,
+    "mu": 20.0,
+    "gamma": 0.05,
+    "gamma_step": 0.05,
+    "gamma_max": 5.0,
+    "init_hole_radius": 0.1,
+    "rbf_c": 0.0001,
+    "sample_step": 0.1,
+    "max_nodes": 3000
+  },
+  "primary_source_review": {
+    "status": "source_access_or_setup_incomplete",
+    "url": "https://doi.org/10.1007/s00158-018-1904-8",
+    "visual_status": "not_assessed",
+    "scope": "Implementation/reference metadata inspected. Full numbered source example not recovered; target remains unresolved."
+  },
+  "fresh_constraints_feasible_1e_4": true
+}

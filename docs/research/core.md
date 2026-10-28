@@ -216,3 +216,7 @@ shapes, one scalar physical density, mesh-derived supports/loads, and response
 features tied to today's engines. Multiple fields, unstructured meshes and
 transient states need deliberate interface extensions and numerical validation.
 This batch introduces no replacement execution graph or new solver contracts.
+
+For the design-variable Jacobian, updater families, external-library handshake
+and final-versus-recorded metrics, see the [optimization guide](optimization.html)
+([editable source](optimization.md)).

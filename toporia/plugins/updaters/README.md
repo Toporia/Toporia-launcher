@@ -1,8 +1,9 @@
 # Updaters — how the design moves
 
 An updater turns a model's `Evaluation` (objective, volume, gradients) into the next
-design. It knows nothing about the physics that produced the numbers, so **every updater
-works with every model** — see [`framework/parts/composition.py`](../../framework/parts/composition.py).
+design. It knows nothing about the physics that produced the numbers. Pairings
+still need compatible objectives, constraints and design variables — see
+[`framework/parts/composition.py`](../../framework/parts/composition.py).
 
 **Status: 23 in Toporia · 4 with open code · 0 paper only**
 
@@ -493,3 +494,7 @@ the element-wise form implemented here.
 - L. F. N. Sivapuram, R. Picelli, "Topology optimization of binary structures using integer linear programming", *FEAD* 139 (2018) 49–61.
 - R. Picelli, S. Sivapuram, Y. M. Xie, "A 101-line MATLAB code for topology optimization using binary variables and integer programming", *SMO* 63 (2021) 935–954; [doi:10.1007/s00158-020-02719-9](https://doi.org/10.1007/s00158-020-02719-9).
 - O. Sigmund, "On the usefulness of non-gradient approaches in topology optimization", *SMO* 43 (2011) 589–596.
+
+## Research figure companions
+
+[Batch 3](../../../docs/research/batch-3.md) adds bounded companions and mathematical help for the remaining updaters; OC reuses Batch 1. Execution, constraint feasibility, stopping reason and paper matching are reported separately in the [case index](../../../docs/research/batch-3-cases.md). No new updater algorithm is introduced.

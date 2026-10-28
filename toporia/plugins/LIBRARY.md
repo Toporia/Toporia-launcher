@@ -231,3 +231,7 @@ Listed from least to most effort. "Code" means open code exists (port it, or che
 ### Batch 2 research companions
 
 Twenty additional registered recipes expose mathematical descriptions and runnable companions for filters, material laws and schedules. [Case index](../../docs/research/batch-2-cases.md) and [gallery](../../docs/research/evidence/batch2/index.html) distinguish four matched targets from unresolved comparisons. One further projection recipe is quarantined and excluded from the count.
+
+### Batch 3 research companions
+
+Thirty-one further presets document 30 existing updater, representation and standalone level-set functions. [Case index](../../docs/research/batch-3-cases.md), [gallery](../../docs/research/evidence/batch3/index.html) and [optimization guide](../../docs/research/optimization.html). All new full paper reproductions remain unresolved; independent equation/Jacobian checks are recorded separately. The library now has 71 presets; numerical algorithms are unchanged.

@@ -557,13 +557,25 @@
         "https://doi.org/10.1002/nme.1536",
         "https://doi.org/10.1007/s00158-018-1904-8"
       ],
-      "citation_review": "metadata only; primary-source figure selection pending",
-      "target_figure": "not selected",
+      "citation_review": "See per-case primary sources and explicit comparison scope; other citations remain unreviewed.",
+      "target_figure": "levelset",
       "target_type": "convergence curve and final design",
       "batch": 3,
-      "status": "pending",
-      "evidence": [],
-      "notes": ""
+      "status": "paper_reproduction_to_fix",
+      "evidence": [
+        "evidence/batch3/levelset/report.json"
+      ],
+      "notes": "",
+      "research_cases": [
+        {
+          "case_id": "levelset",
+          "paper_status": "paper_reproduction_to_fix",
+          "target": "Wei et al. (2018) TOPRBF cantilever: numbered panel/settings pending.",
+          "source_url": "https://doi.org/10.1007/s00158-018-1904-8",
+          "checks_passed": true,
+          "evidence": "evidence/batch3/levelset/report.json"
+        }
+      ]
     },
     {
       "id": "method:levelset_hamilton_jacobi",
@@ -574,13 +586,25 @@
       "source_urls": [
         "https://doi.org/10.1007/s00158-009-0430-0"
       ],
-      "citation_review": "metadata only; primary-source figure selection pending",
-      "target_figure": "not selected",
+      "citation_review": "See per-case primary sources and explicit comparison scope; other citations remain unreviewed.",
+      "target_figure": "levelset_hamilton_jacobi",
       "target_type": "convergence curve and final design",
       "batch": 3,
-      "status": "pending",
-      "evidence": [],
-      "notes": ""
+      "status": "paper_reproduction_to_fix",
+      "evidence": [
+        "evidence/batch3/levelset_hamilton_jacobi/report.json"
+      ],
+      "notes": "",
+      "research_cases": [
+        {
+          "case_id": "levelset_hamilton_jacobi",
+          "paper_status": "paper_reproduction_to_fix",
+          "target": "Challis (2010) HJ/topological-derivative examples: numbered panel/inputs pending.",
+          "source_url": "https://doi.org/10.1007/s00158-009-0430-0",
+          "checks_passed": true,
+          "evidence": "evidence/batch3/levelset_hamilton_jacobi/report.json"
+        }
+      ]
     },
     {
       "id": "method:levelset_reaction_diffusion",
@@ -591,13 +615,25 @@
       "source_urls": [
         "https://doi.org/10.1007/s00158-014-1190-z"
       ],
-      "citation_review": "metadata only; primary-source figure selection pending",
-      "target_figure": "not selected",
+      "citation_review": "See per-case primary sources and explicit comparison scope; other citations remain unreviewed.",
+      "target_figure": "levelset_reaction_diffusion",
       "target_type": "convergence curve and final design",
       "batch": 3,
-      "status": "pending",
-      "evidence": [],
-      "notes": ""
+      "status": "paper_reproduction_to_fix",
+      "evidence": [
+        "evidence/batch3/levelset_reaction_diffusion/report.json"
+      ],
+      "notes": "",
+      "research_cases": [
+        {
+          "case_id": "levelset_reaction_diffusion",
+          "paper_status": "paper_reproduction_to_fix",
+          "target": "Otomori et al. (2015) reaction-diffusion examples: numbered panel/inputs pending.",
+          "source_url": "https://doi.org/10.1007/s00158-014-1190-z",
+          "checks_passed": true,
+          "evidence": "evidence/batch3/levelset_reaction_diffusion/report.json"
+        }
+      ]
     },
     {
       "id": "model:h8",
@@ -1097,13 +1133,25 @@
       "source_urls": [
         "https://doi.org/10.1016/j.cma.2013.06.001"
       ],
-      "citation_review": "metadata only; primary-source figure selection pending",
-      "target_figure": "not selected",
+      "citation_review": "See per-case primary sources and explicit comparison scope; other citations remain unreviewed.",
+      "target_figure": "bspline",
       "target_type": "represented geometry and optimized design",
       "batch": 3,
-      "status": "pending",
-      "evidence": [],
-      "notes": ""
+      "status": "paper_reproduction_to_fix",
+      "evidence": [
+        "evidence/batch3/bspline/report.json"
+      ],
+      "notes": "",
+      "research_cases": [
+        {
+          "case_id": "bspline",
+          "paper_status": "paper_reproduction_to_fix",
+          "target": "Qian (2013) B-spline density-space examples: numbered panel and original knots pending.",
+          "source_url": "https://doi.org/10.1016/j.cma.2013.06.001",
+          "checks_passed": true,
+          "evidence": "evidence/batch3/bspline/report.json"
+        }
+      ]
     },
     {
       "id": "representation:element_density",
@@ -1136,13 +1184,25 @@
         "https://doi.org/10.1016/j.cma.2015.05.005",
         "https://doi.org/10.1007/s00158-020-02552-0"
       ],
-      "citation_review": "metadata only; primary-source figure selection pending",
-      "target_figure": "not selected",
+      "citation_review": "See per-case primary sources and explicit comparison scope; other citations remain unreviewed.",
+      "target_figure": "geometry_projection",
       "target_type": "represented geometry and optimized design",
       "batch": 3,
-      "status": "pending",
-      "evidence": [],
-      "notes": ""
+      "status": "paper_reproduction_to_fix",
+      "evidence": [
+        "evidence/batch3/geometry_projection/report.json"
+      ],
+      "notes": "",
+      "research_cases": [
+        {
+          "case_id": "geometry_projection",
+          "paper_status": "paper_reproduction_to_fix",
+          "target": "Smith-Norato (2020), Figure 1 geometry and equations 1-3: cap construction; optimized examples not reproduced.",
+          "source_url": "https://link.springer.com/article/10.1007/s00158-020-02552-0",
+          "checks_passed": true,
+          "evidence": "evidence/batch3/geometry_projection/report.json"
+        }
+      ]
     },
     {
       "id": "representation:mmc",
@@ -1154,13 +1214,34 @@
         "https://doi.org/10.1115/1.4027609",
         "https://doi.org/10.1007/s00158-015-1372-3"
       ],
-      "citation_review": "metadata only; primary-source figure selection pending",
-      "target_figure": "not selected",
+      "citation_review": "See per-case primary sources and explicit comparison scope; other citations remain unreviewed.",
+      "target_figure": "mmc, mmc_variable",
       "target_type": "represented geometry and optimized design",
       "batch": 3,
-      "status": "pending",
-      "evidence": [],
-      "notes": ""
+      "status": "paper_reproduction_to_fix",
+      "evidence": [
+        "evidence/batch3/mmc/report.json",
+        "evidence/batch3/mmc_variable/report.json"
+      ],
+      "notes": "",
+      "research_cases": [
+        {
+          "case_id": "mmc",
+          "paper_status": "paper_reproduction_to_fix",
+          "target": "Guo et al., arXiv:1404.4820, Figure 8 component and zero contour; own geometry parameters.",
+          "source_url": "https://arxiv.org/pdf/1404.4820",
+          "checks_passed": true,
+          "evidence": "evidence/batch3/mmc/report.json"
+        },
+        {
+          "case_id": "mmc_variable",
+          "paper_status": "paper_reproduction_to_fix",
+          "target": "Zhang et al. (2016) variable-thickness MMC: exact numbered component/optimized panel pending.",
+          "source_url": "https://doi.org/10.1007/s00158-015-1372-3",
+          "checks_passed": true,
+          "evidence": "evidence/batch3/mmc_variable/report.json"
+        }
+      ]
     },
     {
       "id": "representation:mmv",
@@ -1171,13 +1252,25 @@
       "source_urls": [
         "https://doi.org/10.1016/j.cma.2017.05.002"
       ],
-      "citation_review": "metadata only; primary-source figure selection pending",
-      "target_figure": "not selected",
+      "citation_review": "See per-case primary sources and explicit comparison scope; other citations remain unreviewed.",
+      "target_figure": "mmv",
       "target_type": "represented geometry and optimized design",
       "batch": 3,
-      "status": "pending",
-      "evidence": [],
-      "notes": ""
+      "status": "paper_reproduction_to_fix",
+      "evidence": [
+        "evidence/batch3/mmv/report.json"
+      ],
+      "notes": "",
+      "research_cases": [
+        {
+          "case_id": "mmv",
+          "paper_status": "paper_reproduction_to_fix",
+          "target": "Zhang et al. (2017) 3D MMV: source geometry/panel incompatible with this restricted 2D variant.",
+          "source_url": "https://doi.org/10.1016/j.cma.2017.05.002",
+          "checks_passed": true,
+          "evidence": "evidence/batch3/mmv/report.json"
+        }
+      ]
     },
     {
       "id": "representation:neural",
@@ -1188,13 +1281,25 @@
       "source_urls": [
         "https://doi.org/10.1007/s00158-020-02748-4"
       ],
-      "citation_review": "metadata only; primary-source figure selection pending",
-      "target_figure": "not selected",
+      "citation_review": "See per-case primary sources and explicit comparison scope; other citations remain unreviewed.",
+      "target_figure": "neural",
       "target_type": "represented geometry and optimized design",
       "batch": 3,
-      "status": "pending",
-      "evidence": [],
-      "notes": ""
+      "status": "paper_reproduction_to_fix",
+      "evidence": [
+        "evidence/batch3/neural/report.json"
+      ],
+      "notes": "",
+      "research_cases": [
+        {
+          "case_id": "neural",
+          "paper_status": "paper_reproduction_to_fix",
+          "target": "Chandrasekhar-Suresh TOuNN (2021): architecture/optimization figure alignment pending.",
+          "source_url": "https://doi.org/10.1007/s00158-020-02748-4",
+          "checks_passed": true,
+          "evidence": "evidence/batch3/neural/report.json"
+        }
+      ]
     },
     {
       "id": "response:buckling_load",
@@ -1550,13 +1655,25 @@
         "https://arxiv.org/abs/1412.6980",
         "https://doi.org/10.1007/s00158-020-02748-4"
       ],
-      "citation_review": "metadata only; primary-source figure selection pending",
-      "target_figure": "not selected",
+      "citation_review": "See per-case primary sources and explicit comparison scope; other citations remain unreviewed.",
+      "target_figure": "adam",
       "target_type": "convergence curve and feasible final design",
       "batch": 3,
-      "status": "pending",
-      "evidence": [],
-      "notes": ""
+      "status": "paper_reproduction_to_fix",
+      "evidence": [
+        "evidence/batch3/adam/report.json"
+      ],
+      "notes": "",
+      "research_cases": [
+        {
+          "case_id": "adam",
+          "paper_status": "paper_reproduction_to_fix",
+          "target": "Kingma-Ba Algorithm 1; Figure 1 learning curves require the original data/task and are not this MBB diagnostic.",
+          "source_url": "https://arxiv.org/abs/1412.6980",
+          "checks_passed": true,
+          "evidence": "evidence/batch3/adam/report.json"
+        }
+      ]
     },
     {
       "id": "updater:augmented_lagrangian",
@@ -1568,13 +1685,25 @@
         "https://doi.org/10.1007/s00158-020-02760-8",
         "https://doi.org/10.1007/s00158-010-0594-7"
       ],
-      "citation_review": "metadata only; primary-source figure selection pending",
-      "target_figure": "not selected",
+      "citation_review": "See per-case primary sources and explicit comparison scope; other citations remain unreviewed.",
+      "target_figure": "augmented_lagrangian",
       "target_type": "convergence curve and feasible final design",
       "batch": 3,
-      "status": "pending",
-      "evidence": [],
-      "notes": ""
+      "status": "paper_reproduction_to_fix",
+      "evidence": [
+        "evidence/batch3/augmented_lagrangian/report.json"
+      ],
+      "notes": "",
+      "research_cases": [
+        {
+          "case_id": "augmented_lagrangian",
+          "paper_status": "paper_reproduction_to_fix",
+          "target": "Giraldo-Londono-Paulino PolyStress examples: matching mesh, stress relaxation and numbered panel pending.",
+          "source_url": "https://doi.org/10.1007/s00158-020-02760-8",
+          "checks_passed": true,
+          "evidence": "evidence/batch3/augmented_lagrangian/report.json"
+        }
+      ]
     },
     {
       "id": "updater:beso",
@@ -1586,13 +1715,25 @@
         "https://doi.org/10.1016/j.finel.2007.06.006",
         "https://doi.org/10.1002/9780470689486"
       ],
-      "citation_review": "metadata only; primary-source figure selection pending",
-      "target_figure": "not selected",
+      "citation_review": "See per-case primary sources and explicit comparison scope; other citations remain unreviewed.",
+      "target_figure": "beso",
       "target_type": "convergence curve and feasible final design",
       "batch": 3,
-      "status": "pending",
-      "evidence": [],
-      "notes": ""
+      "status": "paper_reproduction_to_fix",
+      "evidence": [
+        "evidence/batch3/beso/report.json"
+      ],
+      "notes": "",
+      "research_cases": [
+        {
+          "case_id": "beso",
+          "paper_status": "paper_reproduction_to_fix",
+          "target": "Huang-Xie BESO beam examples: exact panel and history pending.",
+          "source_url": "https://doi.org/10.1016/j.finel.2007.06.006",
+          "checks_passed": true,
+          "evidence": "evidence/batch3/beso/report.json"
+        }
+      ]
     },
     {
       "id": "updater:beso_hard",
@@ -1604,13 +1745,25 @@
         "https://doi.org/10.1002/9780470689486",
         "https://doi.org/10.1007/s001580050170"
       ],
-      "citation_review": "metadata only; primary-source figure selection pending",
-      "target_figure": "not selected",
+      "citation_review": "See per-case primary sources and explicit comparison scope; other citations remain unreviewed.",
+      "target_figure": "beso_hard",
       "target_type": "convergence curve and feasible final design",
       "batch": 3,
-      "status": "pending",
-      "evidence": [],
-      "notes": ""
+      "status": "paper_reproduction_to_fix",
+      "evidence": [
+        "evidence/batch3/beso_hard/report.json"
+      ],
+      "notes": "",
+      "research_cases": [
+        {
+          "case_id": "beso_hard",
+          "paper_status": "paper_reproduction_to_fix",
+          "target": "Huang-Xie BESO beam examples: exact panel and history pending.",
+          "source_url": "https://doi.org/10.1016/j.finel.2007.06.006",
+          "checks_passed": true,
+          "evidence": "evidence/batch3/beso_hard/report.json"
+        }
+      ]
     },
     {
       "id": "updater:conlin",
@@ -1622,13 +1775,25 @@
         "https://doi.org/10.1002/nme.1620230307",
         "https://doi.org/10.1007/BF01743804"
       ],
-      "citation_review": "metadata only; primary-source figure selection pending",
-      "target_figure": "not selected",
+      "citation_review": "See per-case primary sources and explicit comparison scope; other citations remain unreviewed.",
+      "target_figure": "conlin",
       "target_type": "convergence curve and feasible final design",
       "batch": 3,
-      "status": "pending",
-      "evidence": [],
-      "notes": ""
+      "status": "paper_reproduction_to_fix",
+      "evidence": [
+        "evidence/batch3/conlin/report.json"
+      ],
+      "notes": "",
+      "research_cases": [
+        {
+          "case_id": "conlin",
+          "paper_status": "paper_reproduction_to_fix",
+          "target": "Fleury-Braibant (1986) numerical example: panel/inputs pending.",
+          "source_url": "https://doi.org/10.1002/nme.1620230307",
+          "checks_passed": true,
+          "evidence": "evidence/batch3/conlin/report.json"
+        }
+      ]
     },
     {
       "id": "updater:floating_projection",
@@ -1640,13 +1805,25 @@
         "https://doi.org/10.1016/j.engstruct.2020.110330",
         "https://doi.org/10.1016/j.advengsoft.2020.102942"
       ],
-      "citation_review": "metadata only; primary-source figure selection pending",
-      "target_figure": "not selected",
+      "citation_review": "See per-case primary sources and explicit comparison scope; other citations remain unreviewed.",
+      "target_figure": "floating_projection",
       "target_type": "convergence curve and feasible final design",
       "batch": 3,
-      "status": "pending",
-      "evidence": [],
-      "notes": ""
+      "status": "paper_reproduction_to_fix",
+      "evidence": [
+        "evidence/batch3/floating_projection/report.json"
+      ],
+      "notes": "",
+      "research_cases": [
+        {
+          "case_id": "floating_projection",
+          "paper_status": "paper_reproduction_to_fix",
+          "target": "Huang (2020 preprint), FPTO examples: optimization panel/settings pending.",
+          "source_url": "https://arxiv.org/abs/2006.04306",
+          "checks_passed": true,
+          "evidence": "evidence/batch3/floating_projection/report.json"
+        }
+      ]
     },
     {
       "id": "updater:mma",
@@ -1658,13 +1835,25 @@
         "https://doi.org/10.1002/nme.1620240207",
         "https://doi.org/10.1007/s00158-010-0594-7"
       ],
-      "citation_review": "metadata only; primary-source figure selection pending",
-      "target_figure": "not selected",
+      "citation_review": "See per-case primary sources and explicit comparison scope; other citations remain unreviewed.",
+      "target_figure": "mma",
       "target_type": "convergence curve and feasible final design",
       "batch": 3,
-      "status": "pending",
-      "evidence": [],
-      "notes": ""
+      "status": "paper_reproduction_to_fix",
+      "evidence": [
+        "evidence/batch3/mma/report.json"
+      ],
+      "notes": "",
+      "research_cases": [
+        {
+          "case_id": "mma",
+          "paper_status": "paper_reproduction_to_fix",
+          "target": "Svanberg MMA/GCMMA numerical examples: numbered panel and original problem inputs still to recover.",
+          "source_url": "https://doi.org/10.1002/nme.1620240207",
+          "checks_passed": true,
+          "evidence": "evidence/batch3/mma/report.json"
+        }
+      ]
     },
     {
       "id": "updater:mmapy_gcmma",
@@ -1675,13 +1864,25 @@
       "source_urls": [
         "https://doi.org/10.1137/S1052623499362822"
       ],
-      "citation_review": "metadata only; primary-source figure selection pending",
-      "target_figure": "not selected",
+      "citation_review": "See per-case primary sources and explicit comparison scope; other citations remain unreviewed.",
+      "target_figure": "mmapy_gcmma",
       "target_type": "convergence curve and feasible final design",
       "batch": 3,
-      "status": "pending",
-      "evidence": [],
-      "notes": ""
+      "status": "paper_reproduction_to_fix",
+      "evidence": [
+        "evidence/batch3/mmapy_gcmma/report.json"
+      ],
+      "notes": "",
+      "research_cases": [
+        {
+          "case_id": "mmapy_gcmma",
+          "paper_status": "paper_reproduction_to_fix",
+          "target": "Svanberg MMA/GCMMA numerical examples: numbered panel and original problem inputs still to recover.",
+          "source_url": "https://doi.org/10.1137/S1052623499362822",
+          "checks_passed": true,
+          "evidence": "evidence/batch3/mmapy_gcmma/report.json"
+        }
+      ]
     },
     {
       "id": "updater:mmapy_mma",
@@ -1692,13 +1893,25 @@
       "source_urls": [
         "https://doi.org/10.1002/nme.1620240207"
       ],
-      "citation_review": "metadata only; primary-source figure selection pending",
-      "target_figure": "not selected",
+      "citation_review": "See per-case primary sources and explicit comparison scope; other citations remain unreviewed.",
+      "target_figure": "mmapy_mma",
       "target_type": "convergence curve and feasible final design",
       "batch": 3,
-      "status": "pending",
-      "evidence": [],
-      "notes": ""
+      "status": "paper_reproduction_to_fix",
+      "evidence": [
+        "evidence/batch3/mmapy_mma/report.json"
+      ],
+      "notes": "",
+      "research_cases": [
+        {
+          "case_id": "mmapy_mma",
+          "paper_status": "paper_reproduction_to_fix",
+          "target": "Svanberg MMA/GCMMA numerical examples: numbered panel and original problem inputs still to recover.",
+          "source_url": "https://github.com/arjendeetman/GCMMA-MMA-Python",
+          "checks_passed": true,
+          "evidence": "evidence/batch3/mmapy_mma/report.json"
+        }
+      ]
     },
     {
       "id": "updater:nlopt_auglag",
@@ -1710,13 +1923,25 @@
         "https://doi.org/10.1137/0728030",
         "https://doi.org/10.1080/10556780701577730"
       ],
-      "citation_review": "metadata only; primary-source figure selection pending",
-      "target_figure": "not selected",
+      "citation_review": "See per-case primary sources and explicit comparison scope; other citations remain unreviewed.",
+      "target_figure": "nlopt_auglag",
       "target_type": "convergence curve and feasible final design",
       "batch": 3,
-      "status": "pending",
-      "evidence": [],
-      "notes": ""
+      "status": "paper_reproduction_to_fix",
+      "evidence": [
+        "evidence/batch3/nlopt_auglag/report.json"
+      ],
+      "notes": "",
+      "research_cases": [
+        {
+          "case_id": "nlopt_auglag",
+          "paper_status": "paper_reproduction_to_fix",
+          "target": "Original optimizer numerical example: identified figure and complete inputs pending; library documentation reviewed separately.",
+          "source_url": "https://nlopt.readthedocs.io/en/latest/NLopt_Algorithms/",
+          "checks_passed": true,
+          "evidence": "evidence/batch3/nlopt_auglag/report.json"
+        }
+      ]
     },
     {
       "id": "updater:nlopt_ccsaq",
@@ -1727,13 +1952,25 @@
       "source_urls": [
         "https://doi.org/10.1137/S1052623499362822"
       ],
-      "citation_review": "metadata only; primary-source figure selection pending",
-      "target_figure": "not selected",
+      "citation_review": "See per-case primary sources and explicit comparison scope; other citations remain unreviewed.",
+      "target_figure": "nlopt_ccsaq",
       "target_type": "convergence curve and feasible final design",
       "batch": 3,
-      "status": "pending",
-      "evidence": [],
-      "notes": ""
+      "status": "paper_reproduction_to_fix",
+      "evidence": [
+        "evidence/batch3/nlopt_ccsaq/report.json"
+      ],
+      "notes": "",
+      "research_cases": [
+        {
+          "case_id": "nlopt_ccsaq",
+          "paper_status": "paper_reproduction_to_fix",
+          "target": "Original optimizer numerical example: identified figure and complete inputs pending; library documentation reviewed separately.",
+          "source_url": "https://nlopt.readthedocs.io/en/latest/NLopt_Algorithms/",
+          "checks_passed": true,
+          "evidence": "evidence/batch3/nlopt_ccsaq/report.json"
+        }
+      ]
     },
     {
       "id": "updater:nlopt_mma",
@@ -1745,13 +1982,25 @@
         "https://doi.org/10.1002/nme.1620240207",
         "https://doi.org/10.1137/S1052623499362822"
       ],
-      "citation_review": "metadata only; primary-source figure selection pending",
-      "target_figure": "not selected",
+      "citation_review": "See per-case primary sources and explicit comparison scope; other citations remain unreviewed.",
+      "target_figure": "nlopt_mma",
       "target_type": "convergence curve and feasible final design",
       "batch": 3,
-      "status": "pending",
-      "evidence": [],
-      "notes": ""
+      "status": "paper_reproduction_to_fix",
+      "evidence": [
+        "evidence/batch3/nlopt_mma/report.json"
+      ],
+      "notes": "",
+      "research_cases": [
+        {
+          "case_id": "nlopt_mma",
+          "paper_status": "paper_reproduction_to_fix",
+          "target": "Svanberg MMA/GCMMA numerical examples: numbered panel and original problem inputs still to recover.",
+          "source_url": "https://nlopt.readthedocs.io/en/latest/NLopt_Algorithms/",
+          "checks_passed": true,
+          "evidence": "evidence/batch3/nlopt_mma/report.json"
+        }
+      ]
     },
     {
       "id": "updater:nlopt_slsqp",
@@ -1760,13 +2009,25 @@
       "source_file": "toporia/plugins/updaters/nlopt_optimizers.py",
       "reference_declaration": "NLopt LD_SLSQP (S. G. Johnson, github.com/stevengj/nlopt); D. Kraft, \"A software package for sequential quadratic programming\", DFVLR-FB 88-28, 1988.",
       "source_urls": [],
-      "citation_review": "metadata only; primary-source figure selection pending",
-      "target_figure": "not selected",
+      "citation_review": "See per-case primary sources and explicit comparison scope; other citations remain unreviewed.",
+      "target_figure": "nlopt_slsqp",
       "target_type": "convergence curve and feasible final design",
       "batch": 3,
-      "status": "pending",
-      "evidence": [],
-      "notes": ""
+      "status": "paper_reproduction_to_fix",
+      "evidence": [
+        "evidence/batch3/nlopt_slsqp/report.json"
+      ],
+      "notes": "",
+      "research_cases": [
+        {
+          "case_id": "nlopt_slsqp",
+          "paper_status": "paper_reproduction_to_fix",
+          "target": "Original optimizer numerical example: identified figure and complete inputs pending; library documentation reviewed separately.",
+          "source_url": "https://nlopt.readthedocs.io/en/latest/NLopt_Algorithms/",
+          "checks_passed": true,
+          "evidence": "evidence/batch3/nlopt_slsqp/report.json"
+        }
+      ]
     },
     {
       "id": "updater:nullspace",
@@ -1777,13 +2038,25 @@
       "source_urls": [
         "https://doi.org/10.1051/cocv/2020015"
       ],
-      "citation_review": "metadata only; primary-source figure selection pending",
-      "target_figure": "not selected",
+      "citation_review": "See per-case primary sources and explicit comparison scope; other citations remain unreviewed.",
+      "target_figure": "nullspace",
       "target_type": "convergence curve and feasible final design",
       "batch": 3,
-      "status": "pending",
-      "evidence": [],
-      "notes": ""
+      "status": "paper_reproduction_to_fix",
+      "evidence": [
+        "evidence/batch3/nullspace/report.json"
+      ],
+      "notes": "",
+      "research_cases": [
+        {
+          "case_id": "nullspace",
+          "paper_status": "paper_reproduction_to_fix",
+          "target": "Original optimizer numerical example: identified figure and complete inputs pending; library documentation reviewed separately.",
+          "source_url": "https://doi.org/10.1051/cocv/2020015",
+          "checks_passed": true,
+          "evidence": "evidence/batch3/nullspace/report.json"
+        }
+      ]
     },
     {
       "id": "updater:oc",
@@ -1815,30 +2088,54 @@
       "source_urls": [
         "https://doi.org/10.1016/0045-7825%2891%2990046-9"
       ],
-      "citation_review": "metadata only; primary-source figure selection pending",
-      "target_figure": "not selected",
+      "citation_review": "See per-case primary sources and explicit comparison scope; other citations remain unreviewed.",
+      "target_figure": "oc_multi",
       "target_type": "convergence curve and feasible final design",
       "batch": 3,
-      "status": "pending",
-      "evidence": [],
-      "notes": ""
+      "status": "paper_reproduction_to_fix",
+      "evidence": [
+        "evidence/batch3/oc_multi/report.json"
+      ],
+      "notes": "",
+      "research_cases": [
+        {
+          "case_id": "oc_multi",
+          "paper_status": "paper_reproduction_to_fix",
+          "target": "Zhou-Rozvany (1991) COC examples: panel/inputs pending.",
+          "source_url": "https://doi.org/10.1016/0045-7825%2891%2990046-9",
+          "checks_passed": true,
+          "evidence": "evidence/batch3/oc_multi/report.json"
+        }
+      ]
     },
     {
       "id": "updater:pto",
       "kind": "updater",
       "label": "Proportional topology optimisation",
       "source_file": "toporia/plugins/updaters/pto.py",
-      "reference_declaration": "E. Biyikli and A. C. To, \"Proportional topology optimization: a new non-sensitivity method for structural optimization\", PLoS ONE 10 (2015) e0145041 (ptomethod.org). Papers: https://doi.org/10.1371/journal.pone.0145041",
+      "reference_declaration": "Independent sensitivity-proxy variant inspired by E. Biyikli and A. C. To, \"Proportional topology optimization: a new non-sensitivity method for structural optimization\", PLoS ONE 10 (2015) e0145041 (ptomethod.org). Papers: https://doi.org/10.1371/journal.pone.0145041",
       "source_urls": [
         "https://doi.org/10.1371/journal.pone.0145041"
       ],
-      "citation_review": "metadata only; primary-source figure selection pending",
-      "target_figure": "not selected",
+      "citation_review": "See per-case primary sources and explicit comparison scope; other citations remain unreviewed.",
+      "target_figure": "pto",
       "target_type": "convergence curve and feasible final design",
       "batch": 3,
-      "status": "pending",
-      "evidence": [],
-      "notes": ""
+      "status": "paper_reproduction_to_fix",
+      "evidence": [
+        "evidence/batch3/pto/report.json"
+      ],
+      "notes": "",
+      "research_cases": [
+        {
+          "case_id": "pto",
+          "paper_status": "paper_reproduction_to_fix",
+          "target": "Biyikli-To (2015), Figure 3 MBB PTOc panel (120 by 40, fraction 0.35).",
+          "source_url": "https://journals.plos.org/plosone/article?id=10.1371/journal.pone.0145041",
+          "checks_passed": true,
+          "evidence": "evidence/batch3/pto/report.json"
+        }
+      ]
     },
     {
       "id": "updater:pymoto_gcmma",
@@ -1850,13 +2147,25 @@
         "https://github.com/aatmdelissen/pyMOTO",
         "https://doi.org/10.1137/S1052623499362822"
       ],
-      "citation_review": "metadata only; primary-source figure selection pending",
-      "target_figure": "not selected",
+      "citation_review": "See per-case primary sources and explicit comparison scope; other citations remain unreviewed.",
+      "target_figure": "pymoto_gcmma",
       "target_type": "convergence curve and feasible final design",
       "batch": 3,
-      "status": "pending",
-      "evidence": [],
-      "notes": ""
+      "status": "paper_reproduction_to_fix",
+      "evidence": [
+        "evidence/batch3/pymoto_gcmma/report.json"
+      ],
+      "notes": "",
+      "research_cases": [
+        {
+          "case_id": "pymoto_gcmma",
+          "paper_status": "paper_reproduction_to_fix",
+          "target": "Svanberg MMA/GCMMA numerical examples: numbered panel and original problem inputs still to recover.",
+          "source_url": "https://doi.org/10.1137/S1052623499362822",
+          "checks_passed": true,
+          "evidence": "evidence/batch3/pymoto_gcmma/report.json"
+        }
+      ]
     },
     {
       "id": "updater:pymoto_mma",
@@ -1868,13 +2177,25 @@
         "https://github.com/aatmdelissen/pyMOTO",
         "https://doi.org/10.1002/nme.1620240207"
       ],
-      "citation_review": "metadata only; primary-source figure selection pending",
-      "target_figure": "not selected",
+      "citation_review": "See per-case primary sources and explicit comparison scope; other citations remain unreviewed.",
+      "target_figure": "pymoto_mma",
       "target_type": "convergence curve and feasible final design",
       "batch": 3,
-      "status": "pending",
-      "evidence": [],
-      "notes": ""
+      "status": "paper_reproduction_to_fix",
+      "evidence": [
+        "evidence/batch3/pymoto_mma/report.json"
+      ],
+      "notes": "",
+      "research_cases": [
+        {
+          "case_id": "pymoto_mma",
+          "paper_status": "paper_reproduction_to_fix",
+          "target": "Svanberg MMA/GCMMA numerical examples: numbered panel and original problem inputs still to recover.",
+          "source_url": "https://github.com/aatmdelissen/pyMOTO",
+          "checks_passed": true,
+          "evidence": "evidence/batch3/pymoto_mma/report.json"
+        }
+      ]
     },
     {
       "id": "updater:scipy_slsqp",
@@ -1885,13 +2206,25 @@
       "source_urls": [
         "https://docs.scipy.org/doc/scipy/reference/optimize.minimize-slsqp.html"
       ],
-      "citation_review": "metadata only; primary-source figure selection pending",
-      "target_figure": "not selected",
+      "citation_review": "See per-case primary sources and explicit comparison scope; other citations remain unreviewed.",
+      "target_figure": "scipy_slsqp",
       "target_type": "convergence curve and feasible final design",
       "batch": 3,
-      "status": "pending",
-      "evidence": [],
-      "notes": ""
+      "status": "paper_reproduction_to_fix",
+      "evidence": [
+        "evidence/batch3/scipy_slsqp/report.json"
+      ],
+      "notes": "",
+      "research_cases": [
+        {
+          "case_id": "scipy_slsqp",
+          "paper_status": "paper_reproduction_to_fix",
+          "target": "Original optimizer numerical example: identified figure and complete inputs pending; library documentation reviewed separately.",
+          "source_url": "https://docs.scipy.org/doc/scipy/reference/optimize.minimize-slsqp.html",
+          "checks_passed": true,
+          "evidence": "evidence/batch3/scipy_slsqp/report.json"
+        }
+      ]
     },
     {
       "id": "updater:scipy_trust_constr",
@@ -1902,13 +2235,25 @@
       "source_urls": [
         "https://doi.org/10.1137/1.9780898719857"
       ],
-      "citation_review": "metadata only; primary-source figure selection pending",
-      "target_figure": "not selected",
+      "citation_review": "See per-case primary sources and explicit comparison scope; other citations remain unreviewed.",
+      "target_figure": "scipy_trust_constr",
       "target_type": "convergence curve and feasible final design",
       "batch": 3,
-      "status": "pending",
-      "evidence": [],
-      "notes": ""
+      "status": "paper_reproduction_to_fix",
+      "evidence": [
+        "evidence/batch3/scipy_trust_constr/report.json"
+      ],
+      "notes": "",
+      "research_cases": [
+        {
+          "case_id": "scipy_trust_constr",
+          "paper_status": "paper_reproduction_to_fix",
+          "target": "Original optimizer numerical example: identified figure and complete inputs pending; library documentation reviewed separately.",
+          "source_url": "https://docs.scipy.org/doc/scipy/reference/optimize.minimize-trustconstr.html",
+          "checks_passed": true,
+          "evidence": "evidence/batch3/scipy_trust_constr/report.json"
+        }
+      ]
     },
     {
       "id": "updater:simpl",
@@ -1920,13 +2265,25 @@
         "https://arxiv.org/abs/2411.19421",
         "https://doi.org/10.1007/s00158-025-04008-9"
       ],
-      "citation_review": "metadata only; primary-source figure selection pending",
-      "target_figure": "not selected",
+      "citation_review": "See per-case primary sources and explicit comparison scope; other citations remain unreviewed.",
+      "target_figure": "simpl",
       "target_type": "convergence curve and feasible final design",
       "batch": 3,
-      "status": "pending",
-      "evidence": [],
-      "notes": ""
+      "status": "paper_reproduction_to_fix",
+      "evidence": [
+        "evidence/batch3/simpl/report.json"
+      ],
+      "notes": "",
+      "research_cases": [
+        {
+          "case_id": "simpl",
+          "paper_status": "paper_reproduction_to_fix",
+          "target": "Kim et al., arXiv:2411.19421v2, Figure 1 schematic and equations 14-15; own numerical coordinates.",
+          "source_url": "https://arxiv.org/html/2411.19421v2",
+          "checks_passed": true,
+          "evidence": "evidence/batch3/simpl/report.json"
+        }
+      ]
     },
     {
       "id": "updater:tobs",
@@ -1938,13 +2295,25 @@
         "https://doi.org/10.1016/j.finel.2017.10.006",
         "https://doi.org/10.1007/s00158-020-02719-9"
       ],
-      "citation_review": "metadata only; primary-source figure selection pending",
-      "target_figure": "not selected",
+      "citation_review": "See per-case primary sources and explicit comparison scope; other citations remain unreviewed.",
+      "target_figure": "tobs",
       "target_type": "convergence curve and feasible final design",
       "batch": 3,
-      "status": "pending",
-      "evidence": [],
-      "notes": ""
+      "status": "paper_reproduction_to_fix",
+      "evidence": [
+        "evidence/batch3/tobs/report.json"
+      ],
+      "notes": "",
+      "research_cases": [
+        {
+          "case_id": "tobs",
+          "paper_status": "paper_reproduction_to_fix",
+          "target": "Picelli et al. (2021) TOBS101 examples: numbered panel/inputs pending.",
+          "source_url": "https://doi.org/10.1007/s00158-020-02719-9",
+          "checks_passed": true,
+          "evidence": "evidence/batch3/tobs/report.json"
+        }
+      ]
     }
   ],
   "presets": [
@@ -2129,6 +2498,83 @@
       ]
     },
     {
+      "name": "Research: Adam moments and volume penalty",
+      "source_file": "toporia/plugins/problems/research_b3_adam.py",
+      "about": "Bounded research companion; see help for mathematics, source and limitations.",
+      "reference": "Research target, not a match claim. Papers: https://arxiv.org/abs/1412.6980",
+      "research_description": true,
+      "target_figure": "Kingma-Ba Algorithm 1; Figure 1 learning curves require the original data/task and are not this MBB diagnostic.",
+      "functions": [
+        "updater:adam"
+      ]
+    },
+    {
+      "name": "Research: Augmented Lagrangian through NLopt",
+      "source_file": "toporia/plugins/problems/research_b3_nlopt_auglag.py",
+      "about": "Bounded research companion; see help for mathematics, source and limitations.",
+      "reference": "Research target, not a match claim. Papers: https://nlopt.readthedocs.io/en/latest/NLopt_Algorithms/",
+      "research_description": true,
+      "target_figure": "Original optimizer numerical example: identified figure and complete inputs pending; library documentation reviewed separately.",
+      "functions": [
+        "updater:nlopt_auglag"
+      ]
+    },
+    {
+      "name": "Research: B-spline density coefficients",
+      "source_file": "toporia/plugins/problems/research_b3_bspline.py",
+      "about": "Bounded research companion; see help for mathematics, source and limitations.",
+      "reference": "Research target, not a match claim. Papers: https://doi.org/10.1016/j.cma.2013.06.001",
+      "research_description": true,
+      "target_figure": "Qian (2013) B-spline density-space examples: numbered panel and original knots pending.",
+      "functions": [
+        "representation:bspline"
+      ]
+    },
+    {
+      "name": "Research: BESO hard kill",
+      "source_file": "toporia/plugins/problems/research_b3_beso_hard.py",
+      "about": "Bounded research companion; see help for mathematics, source and limitations.",
+      "reference": "Research target, not a match claim. Papers: https://doi.org/10.1016/j.finel.2007.06.006",
+      "research_description": true,
+      "target_figure": "Huang-Xie BESO beam examples: exact panel and history pending.",
+      "functions": [
+        "updater:beso_hard"
+      ]
+    },
+    {
+      "name": "Research: BESO soft kill",
+      "source_file": "toporia/plugins/problems/research_b3_beso.py",
+      "about": "Bounded research companion; see help for mathematics, source and limitations.",
+      "reference": "Research target, not a match claim. Papers: https://doi.org/10.1016/j.finel.2007.06.006",
+      "research_description": true,
+      "target_figure": "Huang-Xie BESO beam examples: exact panel and history pending.",
+      "functions": [
+        "updater:beso"
+      ]
+    },
+    {
+      "name": "Research: CCSAQ through NLopt",
+      "source_file": "toporia/plugins/problems/research_b3_nlopt_ccsaq.py",
+      "about": "Bounded research companion; see help for mathematics, source and limitations.",
+      "reference": "Research target, not a match claim. Papers: https://nlopt.readthedocs.io/en/latest/NLopt_Algorithms/",
+      "research_description": true,
+      "target_figure": "Original optimizer numerical example: identified figure and complete inputs pending; library documentation reviewed separately.",
+      "functions": [
+        "updater:nlopt_ccsaq"
+      ]
+    },
+    {
+      "name": "Research: CONLIN mixed variables",
+      "source_file": "toporia/plugins/problems/research_b3_conlin.py",
+      "about": "Bounded research companion; see help for mathematics, source and limitations.",
+      "reference": "Research target, not a match claim. Papers: https://doi.org/10.1002/nme.1620230307",
+      "research_description": true,
+      "target_figure": "Fleury-Braibant (1986) numerical example: panel/inputs pending.",
+      "functions": [
+        "updater:conlin"
+      ]
+    },
+    {
       "name": "Research: Casting draw direction",
       "source_file": "toporia/plugins/problems/research_casting.py",
       "about": "Demonstrate Casting draw direction; see preset help for mathematics and evidence scope.",
@@ -2184,6 +2630,39 @@
       ]
     },
     {
+      "name": "Research: Floating projection update",
+      "source_file": "toporia/plugins/problems/research_b3_floating_projection.py",
+      "about": "Bounded research companion; see help for mathematics, source and limitations.",
+      "reference": "Research target, not a match claim. Papers: https://arxiv.org/abs/2006.04306",
+      "research_description": true,
+      "target_figure": "Huang (2020 preprint), FPTO examples: optimization panel/settings pending.",
+      "functions": [
+        "updater:floating_projection"
+      ]
+    },
+    {
+      "name": "Research: GCMMA through mmapy",
+      "source_file": "toporia/plugins/problems/research_b3_mmapy_gcmma.py",
+      "about": "Bounded research companion; see help for mathematics, source and limitations.",
+      "reference": "Research target, not a match claim. Papers: https://doi.org/10.1137/S1052623499362822",
+      "research_description": true,
+      "target_figure": "Svanberg MMA/GCMMA numerical examples: numbered panel and original problem inputs still to recover.",
+      "functions": [
+        "updater:mmapy_gcmma"
+      ]
+    },
+    {
+      "name": "Research: GCMMA through pyMOTO",
+      "source_file": "toporia/plugins/problems/research_b3_pymoto_gcmma.py",
+      "about": "Bounded research companion; see help for mathematics, source and limitations.",
+      "reference": "Research target, not a match claim. Papers: https://doi.org/10.1137/S1052623499362822",
+      "research_description": true,
+      "target_figure": "Svanberg MMA/GCMMA numerical examples: numbered panel and original problem inputs still to recover.",
+      "functions": [
+        "updater:pymoto_gcmma"
+      ]
+    },
+    {
       "name": "Research: Gaynor-Guest support",
       "source_file": "toporia/plugins/problems/research_self_support.py",
       "about": "Demonstrate Gaynor-Guest support; see preset help for mathematics and evidence scope.",
@@ -2203,6 +2682,28 @@
       "target_figure": "Wang et al. (2011), section 4 continuation accompanying Figures 3-4.",
       "functions": [
         "schedule:geometric"
+      ]
+    },
+    {
+      "name": "Research: Geometry projection capsule bars",
+      "source_file": "toporia/plugins/problems/research_b3_geometry_projection.py",
+      "about": "Bounded research companion; see help for mathematics, source and limitations.",
+      "reference": "Research target, not a match claim. Papers: https://link.springer.com/article/10.1007/s00158-020-02552-0",
+      "research_description": true,
+      "target_figure": "Smith-Norato (2020), Figure 1 geometry and equations 1-3: cap construction; optimized examples not reproduced.",
+      "functions": [
+        "representation:geometry_projection"
+      ]
+    },
+    {
+      "name": "Research: Hamilton-Jacobi level-set evolution",
+      "source_file": "toporia/plugins/problems/research_b3_levelset_hamilton_jacobi.py",
+      "about": "Bounded research companion; see help for mathematics, source and limitations.",
+      "reference": "Research target, not a match claim. Papers: https://doi.org/10.1007/s00158-009-0430-0",
+      "research_description": true,
+      "target_figure": "Challis (2010) HJ/topological-derivative examples: numbered panel/inputs pending.",
+      "functions": [
+        "method:levelset_hamilton_jacobi"
       ]
     },
     {
@@ -2228,6 +2729,94 @@
       ]
     },
     {
+      "name": "Research: Local-stress augmented Lagrangian",
+      "source_file": "toporia/plugins/problems/research_b3_augmented_lagrangian.py",
+      "about": "Bounded research companion; see help for mathematics, source and limitations.",
+      "reference": "Research target, not a match claim. Papers: https://doi.org/10.1007/s00158-020-02760-8",
+      "research_description": true,
+      "target_figure": "Giraldo-Londono-Paulino PolyStress examples: matching mesh, stress relaxation and numbered panel pending.",
+      "functions": [
+        "updater:augmented_lagrangian"
+      ]
+    },
+    {
+      "name": "Research: MMA through NLopt",
+      "source_file": "toporia/plugins/problems/research_b3_nlopt_mma.py",
+      "about": "Bounded research companion; see help for mathematics, source and limitations.",
+      "reference": "Research target, not a match claim. Papers: https://nlopt.readthedocs.io/en/latest/NLopt_Algorithms/",
+      "research_description": true,
+      "target_figure": "Svanberg MMA/GCMMA numerical examples: numbered panel and original problem inputs still to recover.",
+      "functions": [
+        "updater:nlopt_mma"
+      ]
+    },
+    {
+      "name": "Research: MMA through mmapy",
+      "source_file": "toporia/plugins/problems/research_b3_mmapy_mma.py",
+      "about": "Bounded research companion; see help for mathematics, source and limitations.",
+      "reference": "Research target, not a match claim. Papers: https://github.com/arjendeetman/GCMMA-MMA-Python",
+      "research_description": true,
+      "target_figure": "Svanberg MMA/GCMMA numerical examples: numbered panel and original problem inputs still to recover.",
+      "functions": [
+        "updater:mmapy_mma"
+      ]
+    },
+    {
+      "name": "Research: MMA through pyMOTO",
+      "source_file": "toporia/plugins/problems/research_b3_pymoto_mma.py",
+      "about": "Bounded research companion; see help for mathematics, source and limitations.",
+      "reference": "Research target, not a match claim. Papers: https://github.com/aatmdelissen/pyMOTO",
+      "research_description": true,
+      "target_figure": "Svanberg MMA/GCMMA numerical examples: numbered panel and original problem inputs still to recover.",
+      "functions": [
+        "updater:pymoto_mma"
+      ]
+    },
+    {
+      "name": "Research: MMA: local one-budget variant",
+      "source_file": "toporia/plugins/problems/research_b3_mma.py",
+      "about": "Bounded research companion; see help for mathematics, source and limitations.",
+      "reference": "Research target, not a match claim. Papers: https://doi.org/10.1002/nme.1620240207",
+      "research_description": true,
+      "target_figure": "Svanberg MMA/GCMMA numerical examples: numbered panel and original problem inputs still to recover.",
+      "functions": [
+        "updater:mma"
+      ]
+    },
+    {
+      "name": "Research: MMC constant-thickness bars",
+      "source_file": "toporia/plugins/problems/research_b3_mmc.py",
+      "about": "Bounded research companion; see help for mathematics, source and limitations.",
+      "reference": "Research target, not a match claim. Papers: https://arxiv.org/pdf/1404.4820",
+      "research_description": true,
+      "target_figure": "Guo et al., arXiv:1404.4820, Figure 8 component and zero contour; own geometry parameters.",
+      "functions": [
+        "representation:mmc"
+      ]
+    },
+    {
+      "name": "Research: MMC variable-thickness bars",
+      "source_file": "toporia/plugins/problems/research_b3_mmc_variable.py",
+      "about": "Bounded research companion; see help for mathematics, source and limitations.",
+      "reference": "Research target, not a match claim. Papers: https://doi.org/10.1007/s00158-015-1372-3",
+      "research_description": true,
+      "target_figure": "Zhang et al. (2016) variable-thickness MMC: exact numbered component/optimized panel pending.",
+      "functions": [
+        "representation:mmc"
+      ]
+    },
+    {
+      "name": "Research: MMV superelliptical holes",
+      "source_file": "toporia/plugins/problems/research_b3_mmv.py",
+      "about": "Bounded research companion; see help for mathematics, source and limitations.",
+      "reference": "Research target, not a match claim. Papers: https://doi.org/10.1016/j.cma.2017.05.002",
+      "research_description": true,
+      "target_figure": "Zhang et al. (2017) 3D MMV: source geometry/panel incompatible with this restricted 2D variant.",
+      "functions": [
+        "representation:mmv"
+      ]
+    },
+    {
       "name": "Research: Mirror symmetry",
       "source_file": "toporia/plugins/problems/research_symmetry.py",
       "about": "Demonstrate Mirror symmetry; see preset help for mathematics and evidence scope.",
@@ -2247,6 +2836,39 @@
       "target_figure": "Sigmund (2007), Figure 3, basic morphology operations; equations (18)-(21).",
       "functions": [
         "filter:morphology"
+      ]
+    },
+    {
+      "name": "Research: Neural coordinate density",
+      "source_file": "toporia/plugins/problems/research_b3_neural.py",
+      "about": "Bounded research companion; see help for mathematics, source and limitations.",
+      "reference": "Research target, not a match claim. Papers: https://doi.org/10.1007/s00158-020-02748-4",
+      "research_description": true,
+      "target_figure": "Chandrasekhar-Suresh TOuNN (2021): architecture/optimization figure alignment pending.",
+      "functions": [
+        "representation:neural"
+      ]
+    },
+    {
+      "name": "Research: Null-space gradient flow",
+      "source_file": "toporia/plugins/problems/research_b3_nullspace.py",
+      "about": "Bounded research companion; see help for mathematics, source and limitations.",
+      "reference": "Research target, not a match claim. Papers: https://doi.org/10.1051/cocv/2020015",
+      "research_description": true,
+      "target_figure": "Original optimizer numerical example: identified figure and complete inputs pending; library documentation reviewed separately.",
+      "functions": [
+        "updater:nullspace"
+      ]
+    },
+    {
+      "name": "Research: OC with several multipliers",
+      "source_file": "toporia/plugins/problems/research_b3_oc_multi.py",
+      "about": "Bounded research companion; see help for mathematics, source and limitations.",
+      "reference": "Research target, not a match claim. Papers: https://doi.org/10.1016/0045-7825%2891%2990046-9",
+      "research_description": true,
+      "target_figure": "Zhou-Rozvany (1991) COC examples: panel/inputs pending.",
+      "functions": [
+        "updater:oc_multi"
       ]
     },
     {
@@ -2283,6 +2905,17 @@
       ]
     },
     {
+      "name": "Research: PTO sensitivity-proxy variant",
+      "source_file": "toporia/plugins/problems/research_b3_pto.py",
+      "about": "Bounded research companion; see help for mathematics, source and limitations.",
+      "reference": "Research target, not a match claim. Papers: https://journals.plos.org/plosone/article?id=10.1371/journal.pone.0145041",
+      "research_description": true,
+      "target_figure": "Biyikli-To (2015), Figure 3 MBB PTOc panel (120 by 40, fraction 0.35).",
+      "functions": [
+        "updater:pto"
+      ]
+    },
+    {
       "name": "Research: RAMP stiffness curves",
       "source_file": "toporia/plugins/problems/research_ramp.py",
       "about": "Demonstrate RAMP stiffness curves; see preset help for mathematics and evidence scope.",
@@ -2291,6 +2924,28 @@
       "target_figure": "Stolpe-Svanberg (2001); original figure/parameter set not available in this source review.",
       "functions": [
         "interpolation:ramp"
+      ]
+    },
+    {
+      "name": "Research: RBF level-set evolution",
+      "source_file": "toporia/plugins/problems/research_b3_levelset.py",
+      "about": "Bounded research companion; see help for mathematics, source and limitations.",
+      "reference": "Research target, not a match claim. Papers: https://doi.org/10.1007/s00158-018-1904-8",
+      "research_description": true,
+      "target_figure": "Wei et al. (2018) TOPRBF cantilever: numbered panel/settings pending.",
+      "functions": [
+        "method:levelset"
+      ]
+    },
+    {
+      "name": "Research: Reaction-diffusion level-set evolution",
+      "source_file": "toporia/plugins/problems/research_b3_levelset_reaction_diffusion.py",
+      "about": "Bounded research companion; see help for mathematics, source and limitations.",
+      "reference": "Research target, not a match claim. Papers: https://doi.org/10.1007/s00158-014-1190-z",
+      "research_description": true,
+      "target_figure": "Otomori et al. (2015) reaction-diffusion examples: numbered panel/inputs pending.",
+      "functions": [
+        "method:levelset_reaction_diffusion"
       ]
     },
     {
@@ -2335,6 +2990,61 @@
       "target_figure": "Bruns (2005), Figure 4, equations (22)-(23).",
       "functions": [
         "interpolation:sinh"
+      ]
+    },
+    {
+      "name": "Research: SLSQP through NLopt",
+      "source_file": "toporia/plugins/problems/research_b3_nlopt_slsqp.py",
+      "about": "Bounded research companion; see help for mathematics, source and limitations.",
+      "reference": "Research target, not a match claim. Papers: https://nlopt.readthedocs.io/en/latest/NLopt_Algorithms/",
+      "research_description": true,
+      "target_figure": "Original optimizer numerical example: identified figure and complete inputs pending; library documentation reviewed separately.",
+      "functions": [
+        "updater:nlopt_slsqp"
+      ]
+    },
+    {
+      "name": "Research: SLSQP through SciPy",
+      "source_file": "toporia/plugins/problems/research_b3_scipy_slsqp.py",
+      "about": "Bounded research companion; see help for mathematics, source and limitations.",
+      "reference": "Research target, not a match claim. Papers: https://docs.scipy.org/doc/scipy/reference/optimize.minimize-slsqp.html",
+      "research_description": true,
+      "target_figure": "Original optimizer numerical example: identified figure and complete inputs pending; library documentation reviewed separately.",
+      "functions": [
+        "updater:scipy_slsqp"
+      ]
+    },
+    {
+      "name": "Research: SiMPL primal and latent steps",
+      "source_file": "toporia/plugins/problems/research_b3_simpl.py",
+      "about": "Bounded research companion; see help for mathematics, source and limitations.",
+      "reference": "Research target, not a match claim. Papers: https://arxiv.org/html/2411.19421v2",
+      "research_description": true,
+      "target_figure": "Kim et al., arXiv:2411.19421v2, Figure 1 schematic and equations 14-15; own numerical coordinates.",
+      "functions": [
+        "updater:simpl"
+      ]
+    },
+    {
+      "name": "Research: TOBS integer design steps",
+      "source_file": "toporia/plugins/problems/research_b3_tobs.py",
+      "about": "Bounded research companion; see help for mathematics, source and limitations.",
+      "reference": "Research target, not a match claim. Papers: https://doi.org/10.1007/s00158-020-02719-9",
+      "research_description": true,
+      "target_figure": "Picelli et al. (2021) TOBS101 examples: numbered panel/inputs pending.",
+      "functions": [
+        "updater:tobs"
+      ]
+    },
+    {
+      "name": "Research: Trust-constr through SciPy",
+      "source_file": "toporia/plugins/problems/research_b3_scipy_trust_constr.py",
+      "about": "Bounded research companion; see help for mathematics, source and limitations.",
+      "reference": "Research target, not a match claim. Papers: https://docs.scipy.org/doc/scipy/reference/optimize.minimize-trustconstr.html",
+      "research_description": true,
+      "target_figure": "Original optimizer numerical example: identified figure and complete inputs pending; library documentation reviewed separately.",
+      "functions": [
+        "updater:scipy_trust_constr"
       ]
     },
     {
@@ -3470,6 +4180,13 @@
       "source_summary": "Batch 2 scientific descriptions and companion optimization recipes."
     },
     {
+      "source_file": "toporia/plugins/problems/_research_batch3.py",
+      "defines_functions": [],
+      "is_preset": false,
+      "classification": "supporting module",
+      "source_summary": "Research recipes for existing updaters, representations and level sets."
+    },
+    {
       "source_file": "toporia/plugins/problems/cantilever.py",
       "defines_functions": [],
       "is_preset": true,
@@ -3594,6 +4311,223 @@
       "is_preset": true,
       "classification": "preset recipe",
       "source_summary": "Research demonstration: AM overhang filter."
+    },
+    {
+      "source_file": "toporia/plugins/problems/research_b3_adam.py",
+      "defines_functions": [],
+      "is_preset": true,
+      "classification": "preset recipe",
+      "source_summary": "Research companion: Adam moments and volume penalty."
+    },
+    {
+      "source_file": "toporia/plugins/problems/research_b3_augmented_lagrangian.py",
+      "defines_functions": [],
+      "is_preset": true,
+      "classification": "preset recipe",
+      "source_summary": "Research companion: Local-stress augmented Lagrangian."
+    },
+    {
+      "source_file": "toporia/plugins/problems/research_b3_beso.py",
+      "defines_functions": [],
+      "is_preset": true,
+      "classification": "preset recipe",
+      "source_summary": "Research companion: BESO soft kill."
+    },
+    {
+      "source_file": "toporia/plugins/problems/research_b3_beso_hard.py",
+      "defines_functions": [],
+      "is_preset": true,
+      "classification": "preset recipe",
+      "source_summary": "Research companion: BESO hard kill."
+    },
+    {
+      "source_file": "toporia/plugins/problems/research_b3_bspline.py",
+      "defines_functions": [],
+      "is_preset": true,
+      "classification": "preset recipe",
+      "source_summary": "Research companion: B-spline density coefficients."
+    },
+    {
+      "source_file": "toporia/plugins/problems/research_b3_conlin.py",
+      "defines_functions": [],
+      "is_preset": true,
+      "classification": "preset recipe",
+      "source_summary": "Research companion: CONLIN mixed variables."
+    },
+    {
+      "source_file": "toporia/plugins/problems/research_b3_floating_projection.py",
+      "defines_functions": [],
+      "is_preset": true,
+      "classification": "preset recipe",
+      "source_summary": "Research companion: Floating projection update."
+    },
+    {
+      "source_file": "toporia/plugins/problems/research_b3_geometry_projection.py",
+      "defines_functions": [],
+      "is_preset": true,
+      "classification": "preset recipe",
+      "source_summary": "Research companion: Geometry projection capsule bars."
+    },
+    {
+      "source_file": "toporia/plugins/problems/research_b3_levelset.py",
+      "defines_functions": [],
+      "is_preset": true,
+      "classification": "preset recipe",
+      "source_summary": "Research companion: RBF level-set evolution."
+    },
+    {
+      "source_file": "toporia/plugins/problems/research_b3_levelset_hamilton_jacobi.py",
+      "defines_functions": [],
+      "is_preset": true,
+      "classification": "preset recipe",
+      "source_summary": "Research companion: Hamilton-Jacobi level-set evolution."
+    },
+    {
+      "source_file": "toporia/plugins/problems/research_b3_levelset_reaction_diffusion.py",
+      "defines_functions": [],
+      "is_preset": true,
+      "classification": "preset recipe",
+      "source_summary": "Research companion: Reaction-diffusion level-set evolution."
+    },
+    {
+      "source_file": "toporia/plugins/problems/research_b3_mma.py",
+      "defines_functions": [],
+      "is_preset": true,
+      "classification": "preset recipe",
+      "source_summary": "Research companion: MMA: local one-budget variant."
+    },
+    {
+      "source_file": "toporia/plugins/problems/research_b3_mmapy_gcmma.py",
+      "defines_functions": [],
+      "is_preset": true,
+      "classification": "preset recipe",
+      "source_summary": "Research companion: GCMMA through mmapy."
+    },
+    {
+      "source_file": "toporia/plugins/problems/research_b3_mmapy_mma.py",
+      "defines_functions": [],
+      "is_preset": true,
+      "classification": "preset recipe",
+      "source_summary": "Research companion: MMA through mmapy."
+    },
+    {
+      "source_file": "toporia/plugins/problems/research_b3_mmc.py",
+      "defines_functions": [],
+      "is_preset": true,
+      "classification": "preset recipe",
+      "source_summary": "Research companion: MMC constant-thickness bars."
+    },
+    {
+      "source_file": "toporia/plugins/problems/research_b3_mmc_variable.py",
+      "defines_functions": [],
+      "is_preset": true,
+      "classification": "preset recipe",
+      "source_summary": "Research companion: MMC variable-thickness bars."
+    },
+    {
+      "source_file": "toporia/plugins/problems/research_b3_mmv.py",
+      "defines_functions": [],
+      "is_preset": true,
+      "classification": "preset recipe",
+      "source_summary": "Research companion: MMV superelliptical holes."
+    },
+    {
+      "source_file": "toporia/plugins/problems/research_b3_neural.py",
+      "defines_functions": [],
+      "is_preset": true,
+      "classification": "preset recipe",
+      "source_summary": "Research companion: Neural coordinate density."
+    },
+    {
+      "source_file": "toporia/plugins/problems/research_b3_nlopt_auglag.py",
+      "defines_functions": [],
+      "is_preset": true,
+      "classification": "preset recipe",
+      "source_summary": "Research companion: Augmented Lagrangian through NLopt."
+    },
+    {
+      "source_file": "toporia/plugins/problems/research_b3_nlopt_ccsaq.py",
+      "defines_functions": [],
+      "is_preset": true,
+      "classification": "preset recipe",
+      "source_summary": "Research companion: CCSAQ through NLopt."
+    },
+    {
+      "source_file": "toporia/plugins/problems/research_b3_nlopt_mma.py",
+      "defines_functions": [],
+      "is_preset": true,
+      "classification": "preset recipe",
+      "source_summary": "Research companion: MMA through NLopt."
+    },
+    {
+      "source_file": "toporia/plugins/problems/research_b3_nlopt_slsqp.py",
+      "defines_functions": [],
+      "is_preset": true,
+      "classification": "preset recipe",
+      "source_summary": "Research companion: SLSQP through NLopt."
+    },
+    {
+      "source_file": "toporia/plugins/problems/research_b3_nullspace.py",
+      "defines_functions": [],
+      "is_preset": true,
+      "classification": "preset recipe",
+      "source_summary": "Research companion: Null-space gradient flow."
+    },
+    {
+      "source_file": "toporia/plugins/problems/research_b3_oc_multi.py",
+      "defines_functions": [],
+      "is_preset": true,
+      "classification": "preset recipe",
+      "source_summary": "Research companion: OC with several multipliers."
+    },
+    {
+      "source_file": "toporia/plugins/problems/research_b3_pto.py",
+      "defines_functions": [],
+      "is_preset": true,
+      "classification": "preset recipe",
+      "source_summary": "Research companion: PTO sensitivity-proxy variant."
+    },
+    {
+      "source_file": "toporia/plugins/problems/research_b3_pymoto_gcmma.py",
+      "defines_functions": [],
+      "is_preset": true,
+      "classification": "preset recipe",
+      "source_summary": "Research companion: GCMMA through pyMOTO."
+    },
+    {
+      "source_file": "toporia/plugins/problems/research_b3_pymoto_mma.py",
+      "defines_functions": [],
+      "is_preset": true,
+      "classification": "preset recipe",
+      "source_summary": "Research companion: MMA through pyMOTO."
+    },
+    {
+      "source_file": "toporia/plugins/problems/research_b3_scipy_slsqp.py",
+      "defines_functions": [],
+      "is_preset": true,
+      "classification": "preset recipe",
+      "source_summary": "Research companion: SLSQP through SciPy."
+    },
+    {
+      "source_file": "toporia/plugins/problems/research_b3_scipy_trust_constr.py",
+      "defines_functions": [],
+      "is_preset": true,
+      "classification": "preset recipe",
+      "source_summary": "Research companion: Trust-constr through SciPy."
+    },
+    {
+      "source_file": "toporia/plugins/problems/research_b3_simpl.py",
+      "defines_functions": [],
+      "is_preset": true,
+      "classification": "preset recipe",
+      "source_summary": "Research companion: SiMPL primal and latent steps."
+    },
+    {
+      "source_file": "toporia/plugins/problems/research_b3_tobs.py",
+      "defines_functions": [],
+      "is_preset": true,
+      "classification": "preset recipe",
+      "source_summary": "Research companion: TOBS integer design steps."
     },
     {
       "source_file": "toporia/plugins/problems/research_casting.py",
@@ -4109,7 +5043,7 @@
       ],
       "is_preset": false,
       "classification": "numerical function implementation",
-      "source_summary": "plugins/updaters/pto.py — proportional topology optimisation (PTO).  Connects to the framework as an Updater.  PTO is the \"no optimiser at all\" baseline: each iteration the whole volume budget is simply handed out to the elements in proportion to how hard each one works, with no Lagrange multiplier, no linearisation and no step-size rule beyond a move limit.  target_i  ∝  e_i^q            (e_i = element strain energy, q = exponent)"
+      "source_summary": "plugins/updaters/pto.py — independent sensitivity-proxy PTO variant.  Connects to the framework as an Updater.  PTO is the \"no optimiser at all\" baseline: each iteration the whole volume budget is simply handed out to the elements using a negative-sensitivity proxy. This is not the paper's element-compliance allocation or filtered redistribution algorithm.  target_i  ∝  e_i^q            (e_i = max(0, -dC/dx_i), q = exponent)"
     },
     {
       "source_file": "toporia/plugins/updaters/pymoto_optimizers.py",
