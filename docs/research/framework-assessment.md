@@ -34,7 +34,7 @@ computational functions from registry, mesh, plotting and orchestration support.
 ## What the new evidence says
 
 - Native and pyMOTO elastic/thermal assemblies can be compared without changing the core contracts. Vibration comparisons must use the same normalization reference as well as the same physical field.
-- A coarse displacement model can pass its own derivative checks and still make an artificially stiff design. The multiresolution companion's fine-Q4 compliance is much larger than its coarse value. Independent analysis belongs in the evidence contract.
+- A coarse displacement model can pass its own derivative checks and still make an artificially stiff design. The multiresolution companion's fine-Q4 compliance was 3.4 times its coarse value until the model began refusing filters smaller than one analysis cell (now 0.986). Independent analysis belongs in the evidence contract.
 - Eigenfrequency, buckling, signed mechanism output and thermal objectives have different units and signs. Future result cards must use response metadata rather than universally labeling values as compliance or “higher is better.”
 - `local_stress` returns a penalty with mutable multipliers. It cannot be treated as an ordinary inequality merely because it is listed under constraints.
 - Post-processing order matters: thresholding changes the interpretation seen by connectivity and exports. An exported file does not inherit the original field's feasibility.

@@ -50,6 +50,12 @@ def field_plot(ax, field, title):
     ax.set(title=title, xlabel="x cell index", ylabel="y cell index")
 
 
+#: Central-difference steps other than the default 1e-6. The multiresolution showcase sums a compliance
+#: near 1000 over 4800 cells; below 1e-5 the coarse saddle-point solve's round-off dominates
+#: (relative error 1.4e-3 at 1e-6, 7e-6 at 1e-4, 3e-8 at 1e-2), as its unit test also notes.
+PROBE_STEPS = {"multires": 1e-4}
+
+
 def gradient_probe(name):
     """Differentiate a separate smooth design with parameters held fixed."""
     scenario, solver = recipe(name)
@@ -64,7 +70,7 @@ def gradient_probe(name):
     direction = rng.normal(size=z.shape)
     direction[upper == lower] = 0.
     direction /= np.linalg.norm(direction)
-    h = 1e-6
+    h = PROBE_STEPS.get(name, 1e-6)
     try:
         base = model.evaluate(z)
         high, low = model.evaluate(z+h*direction, gradients=False), model.evaluate(z-h*direction, gradients=False)
@@ -76,7 +82,7 @@ def gradient_probe(name):
             fd = (a-b)/(2*h)
             adjoint = float(np.sum(gradient*direction))
             errors.append(float(abs(fd-adjoint)/max(1., abs(fd), abs(adjoint))))
-        checks = dict(directional_gradient_errors=errors, gradient_tolerance=3e-3,
+        checks = dict(directional_gradient_errors=errors, gradient_tolerance=3e-3, probe_step=h,
                       checks_passed=max(errors) < 3e-3,
                       scope="Objective, budget and every extra constraint at one smooth deterministic direction. Stress adaptive scale disabled only in the probe; eigenvalue reference and AL multipliers held fixed. Not certification at switches/repeated modes.")
     finally:

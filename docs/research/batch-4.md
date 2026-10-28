@@ -80,12 +80,23 @@ resolved on both the normal and the existing coarse GUI-comparison mesh. Its
 separate 1D calibration uses 4/8/12-cell bars and a requested length of 10; those
 calibration inputs are not silently substituted for the optimization setup.
 
-The multiresolution example makes the strongest warning concrete: its coarse
-Galerkin analysis reports compliance **235.9407**, while independent fine-Q4
-analysis of the same physical density gives **791.4156**. The coarse-to-fine ratio
-is about **0.2981**. Passing a coarse-model derivative check does not establish
-that its design has the predicted physical stiffness. This discrepancy remains
-in the case report and to-fix queue.
+The multiresolution example made the strongest warning concrete: on a 24 x 8
+density mesh with a filter of 0.75 analysis cells its coarse Galerkin analysis
+reported compliance 235.94, while independent fine-Q4 analysis of the same
+density gave 791.42 (ratio 0.298). Passing a coarse-model derivative check does
+not establish that its design has the predicted physical stiffness.
+
+**Resolved 28 October 2026.** A coarse displacement space always predicts a
+stiffer structure, and features smaller than one analysis cell let the optimiser
+exploit that. A sweep on the MBB beam showed the rule of Groen et al. (2017): with
+a density filter below one analysis cell the ratio drops to 0.49 (coarsening 4)
+and the fine design is up to twice as flexible as plain Q4's; at one cell and
+above it is 0.96-0.99 and the design matches plain Q4. The model now refuses a
+smoothing radius below one analysis cell. The showcase uses 120 x 40 density cells
+on a 60 x 20 analysis grid with radius 1.5 analysis cells, 150 iterations: coarse
+212.35, fine-Q4 215.38 (ratio 0.986), equal to plain Q4 on the same mesh (215.28).
+Its gradient probe uses step 1e-4; below 1e-5 the probe measured solver round-off
+(errors 1.4e-3 at 1e-6, 3e-8 at 1e-2).
 
 ![Multiresolution bounded companion](evidence/batch4/multires/figure.png)
 

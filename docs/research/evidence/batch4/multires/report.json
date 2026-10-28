@@ -8,27 +8,28 @@
   ],
   "target": "Nguyen et al. MTOP examples: exact source panel and design/analysis grids pending.",
   "source_url": "https://doi.org/10.1007/s00158-009-0443-8",
-  "limitations": "This exact-subcell Galerkin variant differs from the source centroid rule. Fine features can be artificially stiff on the coarse analysis grid.",
+  "limitations": "This exact-subcell Galerkin variant differs from the source centroid rule. The coarse space is always slightly stiffer than fine Q4 (here 1.4%); features below one analysis cell would be much stiffer, so the model refuses smaller filter radii.",
   "paper_status": "paper_reproduction_to_fix",
   "paper_visual_status": "not_assessed",
   "checks": {
     "directional_gradient_errors": [
-      4.852764846946117e-06,
-      1.650594438906694e-09
+      7.131036698519159e-06,
+      3.2137266359022613e-11
     ],
     "gradient_tolerance": 0.003,
+    "probe_step": 0.0001,
     "checks_passed": true,
     "scope": "Objective, budget and every extra constraint at one smooth deterministic direction. Stress adaptive scale disabled only in the probe; eigenvalue reference and AL multipliers held fixed. Not certification at switches/repeated modes.",
-    "fine_q4_compliance": 791.4155841599306,
-    "coarse_over_fine_compliance": 0.2981248604748077,
+    "fine_q4_compliance": 215.38068913088108,
+    "coarse_over_fine_compliance": 0.9859425626180227,
     "finite_execution": true,
     "bounded_density": true
   },
-  "iterations": 60,
-  "stop_reason": "iteration limit (60)",
-  "fresh_final_objective": 235.94066060526774,
-  "last_recorded_objective": 235.9406608977331,
-  "physical_volume_fraction": 0.49999999991291394,
+  "iterations": 150,
+  "stop_reason": "iteration limit (150)",
+  "fresh_final_objective": 212.3529885801366,
+  "last_recorded_objective": 212.35975065146926,
+  "physical_volume_fraction": 0.4999959817531308,
   "volume_limit": 0.5,
   "feasible_volume_1e_4": true,
   "fresh_reported": {},
@@ -90,13 +91,14 @@
     },
     "filter_specs": [
       {
-        "type": "density"
+        "type": "density",
+        "rmin": 3.0
       }
     ],
     "schedules": [],
     "variants": {},
-    "m": 0.4,
-    "max_iter": 60,
+    "m": 2.0,
+    "max_iter": 150,
     "tol": 0.0
   },
   "resolved_method_params": {
@@ -119,13 +121,7 @@
     "nullspace_optimizer": "1.3.0"
   },
   "iteration_override": null,
-  "runtime_seconds": 0.19135589996585622,
+  "runtime_seconds": 13.290766699996311,
   "protocol": "Existing engine loop; fresh final model evaluation after closing updater. Objective histories may be pre-update. Physical rows begin at y=0; 3D arrays are z,y,x. Diagnostic engine solves are additional to optimization. No source match implied.",
-  "next_check": "Align the source's three grids/projection and centroid integration or identify this Galerkin variant separately. Investigate the recorded fine-Q4 stiffness discrepancy before ranking designs.",
-  "primary_source_review": {
-    "status": "author_paper_summary_reviewed",
-    "url": "https://paulino.princeton.edu/journal_papers/2010/SMO_10_AComputationalParadigm.pdf",
-    "scope": "Author manuscript identifies three displacement/design/density discretizations with projection. Current aligned subcell Galerkin formulation and independent fine-Q4 reevaluation are explicitly separate; no numbered source figure match claimed.",
-    "visual_status": "not_assessed"
-  }
+  "next_check": "Align the identified research family with a numbered source panel, exact loads/supports, discretization and current formulation; see limitations."
 }

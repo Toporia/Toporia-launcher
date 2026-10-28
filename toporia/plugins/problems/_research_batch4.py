@@ -98,7 +98,7 @@ add("multires", "Multiresolution Galerkin stiffness", "model:q4_multiresolution 
     "P: coarse-to-fine interpolation; Kc/Kf: coarse/fine stiffness; u/F: displacement/load.",
     "Uses the existing aligned subcell integration; compares its final physical density against an independent fine-Q4 evaluation with the same supports and loads.",
     "https://doi.org/10.1007/s00158-009-0443-8", "Nguyen et al. MTOP examples: exact source panel and design/analysis grids pending.",
-    "This exact-subcell Galerkin variant differs from the source centroid rule. Fine features can be artificially stiff on the coarse analysis grid.")
+    "This exact-subcell Galerkin variant differs from the source centroid rule. The coarse space is always slightly stiffer than fine Q4 (here 1.4%); features below one analysis cell would be much stiffer, so the model refuses smaller filter radii.")
 add("stress_volume", "Minimum volume with aggregate stress", "response:volume response:stress", [
     (r"J=\sum_e\rho_e,\quad g=\frac{s(\sum_e(\rho_e^q\sigma_{{\rm vm},e})^p)^{1/p}}{\sigma_*}-1", "Minimize summed physical material subject to the existing adaptively scaled p-norm relaxed-stress limit."),
     (r"\max_e(\rho_e^q\sigma_{{\rm vm},e})/\sigma_*-1\leq0", "The exact relaxed peak is recorded separately from the adaptive aggregate; density relaxation is not a full-solid stress certificate.")],
@@ -182,7 +182,10 @@ def recipe(name):
         elif name == "elastic_pymoto":
             solver = replace(solver, method="pymoto_elastic+pymoto_mma", filter_specs=[])
         elif name == "multires":
-            solver = replace(solver, method="q4_multiresolution+mma", method_params=dict(coarsening=2))
+            # 120 x 40 density cells on a 60 x 20 analysis grid; the filter spans 1.5 analysis cells,
+            # above the one-cell minimum (models/q4_multiresolution.py), so the design is not over-stiff.
+            solver = replace(solver, method="q4_multiresolution+mma", method_params=dict(coarsening=2), m=2.,
+                             filter_specs=[dict(type="density", rmin=3.)])
         elif name == "stress_volume":
             scenario = replace(scenario, objective=dict(type="volume"), volfrac=.8, constraints=[dict(type="stress", limit=3.)])
             solver = replace(solver, method="q4+pymoto_mma")
@@ -198,7 +201,7 @@ def recipe(name):
             solver = replace(solver, filter_specs=[])
     if name == "post2d":
         solver = replace(solver, m=.5)
-    return scenario, replace(solver, max_iter=20 if name == "nonlinear" else 60, tol=0.)
+    return scenario, replace(solver, max_iter={"nonlinear": 20, "multires": 150}.get(name, 60), tol=0.)
 
 
 def description(name):

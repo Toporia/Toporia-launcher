@@ -89,8 +89,9 @@ three whole methods bring the method-name total to 279.
   A uniform gray start stalls infeasible after two evaluations. The experiment
   prints by default and refuses to call that start successful.
 - **Multiresolution:** aligned nested 2-D Q4 with exact fine-cell quadrature;
-  coarse displacement spaces can overstate disconnected designs. Fine Q4 remains
-  the independent study referee. No 3-D/adaptive enrichment or stiffness certificate.
+  coarse displacement spaces overstate features smaller than one analysis cell,
+  so the model refuses a smoothing filter below that (28 Oct: showcase coarse/fine
+  0.986). Fine Q4 remains the referee. No 3-D/adaptive enrichment.
 - **Material laws:** basic shared-density SINH and fixed-nu Hashin-Shtrikman
   upper envelope only; no hybrid SINH/separate resource fields or variable-nu HS.
 - MMV is restricted 2-D; capsule geometry projection has fixed radii. Phase field

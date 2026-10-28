@@ -139,7 +139,33 @@ def test_fine_point_and_hole_supports_are_enforced_without_snapping():
     assert np.sum(gradient * direction) == pytest.approx(numerical, rel=2e-6)
 
 
-@pytest.mark.parametrize("filter_specs", [[], [{"type": "density", "rmin": 3}]])
+@pytest.mark.parametrize("filter_specs", [[], [{"type": "density", "rmin": 1.5}],
+                                          [{"type": "pde_anisotropic", "rmin_x": 4, "rmin_y": 1}]])
+def test_a_filter_smaller_than_one_analysis_cell_is_refused(filter_specs):
+    run = get_run("MBB Beam").updated(method="q4_multiresolution+mma", m=0.4,
+        method_params={"coarsening": 2}, filter_specs=filter_specs)
+    with pytest.raises(ValueError, match="one analysis cell"):
+        initialized_method(run)
+
+
+def test_one_analysis_cell_of_filter_keeps_the_coarse_model_honest():
+    # The artefact this rule prevents: below one analysis cell the coarse model claims a design
+    # far stiffer than a fine Q4 analysis of the same density finds.
+    from toporia.plugins.physics.q4_plane_stress import solve_fea
+    run = get_run("MBB Beam").updated(method="q4_multiresolution+mma", m=1.0, max_iter=80, tol=0.0,
+        method_params={"coarsening": 2}, filter_specs=[{"type": "density", "rmin": 2}])
+    method = initialized_method(run)
+    try:
+        for iteration in range(1, 81):
+            method.step(iteration)
+        coarse = method.get_responses()["objective"]
+        fine = float(solve_fea(method.problem, method.get_density(), 3.0)[2])
+    finally:
+        method.close()
+    assert 0.9 < coarse / fine <= 1.0 + 1e-9
+
+
+@pytest.mark.parametrize("filter_specs", [[{"type": "density", "rmin": 2}], [{"type": "density", "rmin": 3}]])
 def test_fine_objective_and_volume_gradients_include_the_full_model_chain(filter_specs):
     run = get_run("MBB Beam").updated(method="q4_multiresolution+mma", m=0.4,
         method_params={"coarsening": 2}, filter_specs=filter_specs)

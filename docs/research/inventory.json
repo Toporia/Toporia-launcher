@@ -924,7 +924,7 @@
       "kind": "model",
       "label": "2-D Q4 multiresolution (nested grids)",
       "source_file": "toporia/plugins/models/q4_multiresolution.py",
-      "reference_declaration": "Independent aligned 2-D Galerkin/subcell-integration variant of T. H. Nguyen, G. H. Paulino, J. Song and C. H. Le, \"A computational paradigm for multiresolution topology optimization (MTOP)\", SMO 41 (2010) 525-539. Uses exact 2x2 integration per fine cell, not the centroid rule. Fine features can be artificially stiff; independent fine-Q4 reevaluation is essential. No stress, springs or 3-D. Papers: https://doi.org/10.1007/s00158-009-0443-8 https://doi.org/10.1007/s00158-018-2048-6",
+      "reference_declaration": "Independent aligned 2-D Galerkin/subcell-integration variant of T. H. Nguyen, G. H. Paulino, J. Song and C. H. Le, \"A computational paradigm for multiresolution topology optimization (MTOP)\", SMO 41 (2010) 525-539. Uses exact 2x2 integration per fine cell, not the centroid rule. Fine features can be artificially stiff; independent fine-Q4 reevaluation is essential. No stress, springs or 3-D. Papers: https://doi.org/10.1007/s00158-009-0443-8 https://doi.org/10.1007/s00158-018-2048-6 Length-scale rule: J. P. Groen, M. Langelaar, O. Sigmund, M. Ruess, \"Higher-order multi-resolution topology optimization using the finite cell method\", IJNME 110 (2017) 903-920.",
       "source_urls": [
         "https://doi.org/10.1007/s00158-009-0443-8",
         "https://doi.org/10.1007/s00158-018-2048-6"
