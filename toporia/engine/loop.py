@@ -21,6 +21,8 @@
 
 import time
 
+import numpy as np
+
 from toporia.framework.parts.method import OBJECTIVE
 from toporia.framework.problem.mesh import make_problem
 from toporia.framework.registry import install_hint, missing_dependencies
@@ -153,6 +155,13 @@ def _loop(run, method, store, on_iteration):
         objective = responses[OBJECTIVE]
         density = method.get_density()
         change = method.get_change()
+        # A NaN never passes `change < tol`, so without this the run would carry on to its cap
+        # and report NaN fields as a result.
+        if not (np.isfinite(objective) and np.all(np.isfinite(density))):
+            raise FloatingPointError(
+                f"iteration {iteration}: {method.label or type(method).__name__} produced a non-finite "
+                f"design or objective ({objective}). Typical causes: a disconnected structure (compliance "
+                f"near 1/Emin), too large a move limit, or a geometric design without a filter.")
         # A schedule waiting for the design to settle watches the physical density: under a sharp
         # projection the design variables keep drifting where the projection is flat.
         settling = method.get_physical_change()

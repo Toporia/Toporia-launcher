@@ -7,7 +7,7 @@
 <p><b>Symbols and units</b><br>rho: normalized density; rho_i: candidate material densities; f_i: candidate modulus fractions; t: local interval coordinate; p: penalty; f: interpolated modulus fraction; A_i/B_i: original global-power coefficients. This implementation requires increasing density and nondecreasing moduli. Superscript T denotes transpose where used.</p>
 <p><b>Research target</b><br>da Silveira-Palma (2022), Figure 1 modified curves, Table 1; compare original equations (2)-(3) separately.</p>
 <p><b>What is compared</b><br>The report separates independent numerical checks, equation/curve agreement, paper-visual comparison and unresolved reproduction. Diagnostic success alone never sets a paper match.</p>
-<p><b>Limitations</b><br>This verifies stiffness interpolation only, with 1e-8 absolute tolerance for the finite soft phase. No cost interpolation, non-monotone moduli, optimizer trajectory or paper bridge design is claimed.</p>
+<p><b>Limitations</b><br>This verifies stiffness interpolation only, with 1e-8 absolute tolerance for the finite soft phase. No cost interpolation, non-monotone moduli, optimizer trajectory or paper bridge design is claimed. The GUI run settles on the material levels: on the MBB about half the cells sit at material 2 (density 0.4), a sixth at material 3 (0.6), a tenth solid; it looks grey because most of the beam is the 0.4 material.</p>
 <p><b>Reproduce</b><br>python -m experiments.research_batch2 --case ordered_simp</p>
 <p><b>Functions demonstrated</b><br>interpolation:ordered_simp</p>
 <p><b>Paper</b><br><a href="https://doi.org/10.1007/s00158-022-03379-7">https://doi.org/10.1007/s00158-022-03379-7</a></p></html>

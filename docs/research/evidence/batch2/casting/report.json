@@ -30,13 +30,13 @@
       1.0
     ]
   },
-  "limitations": "The cited paper uses a Heaviside parameterization. This smooth running-minimum variant is not a direct reproduction; its output is only approximately monotone and does not model a full mould.",
+  "limitations": "The cited paper uses a Heaviside parameterization. This smooth running-minimum variant is not a direct reproduction; its output is only approximately monotone and does not model a full mould. The GUI run draws along +x on the MBB: top and bottom flanges taper towards the support around one grey web plateau (greyness 0.54), which reads as a thinner web; drawn along +y the top load forces grey full-height columns.",
   "parameters": {
     "type": "casting",
     "direction": "+y"
   },
   "next_check": "Resolve the formulation difference: source Heaviside casting parameterization versus the current smooth cumulative minimum.",
   "quarantined_reason": "",
-  "generated_at": "2026-10-28T11:39:48.219186+00:00",
+  "generated_at": "2026-10-28T17:16:06.667349+00:00",
   "reproduce": "python -m experiments.research_batch2 --case casting"
 }

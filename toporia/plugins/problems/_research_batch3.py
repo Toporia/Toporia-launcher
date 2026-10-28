@@ -105,7 +105,8 @@ updater("adam", "Adam moments and volume penalty", (
 ), "m/v: moments; beta1/beta2: decay factors; a_t: decayed rate; d_t: normalized augmented gradient; lambda/mu: multiplier/penalty.",
     "Runs a deterministic independent moment recurrence check and the actual volume-penalized Q4 optimizer.",
     "Kingma-Ba Algorithm 1; Figure 1 learning curves require the original data/task and are not this MBB diagnostic.", "https://arxiv.org/abs/1412.6980",
-    "Algorithm recurrence agreement is not reproduction of machine-learning figures. Toporia's default beta1=0.5, decaying rate, clipping and volume penalty are topology-specific choices.", lr=0.01)
+    "Algorithm recurrence agreement is not reproduction of machine-learning figures. Toporia's default beta1=0.5, decaying rate, clipping and volume penalty are topology-specific choices. "
+    "The showcase uses the default rate 0.05: at 0.01 the decaying rate fell to 0.002 and the design stayed grey (greyness 0.64).", lr=0.05)
 updater("pto", "PTO sensitivity-proxy variant", (
     eq(r"s_j=\max(0,-\partial C/\partial z_j)^q,\quad z_j^+=\mathrm{clip}\left(z_j+\mathrm{clip}(\gamma(a s_j-z_j),-m,m)\right)",
        "A scalar allocation factor a is bisected on actual volume. This code uses negative sensitivity as its energy proxy."),
@@ -179,7 +180,9 @@ representation("mmv", "MMV superelliptical holes", (
 ), "H: smoothed tanh; b: hole index; x'/y',L/t,epsilon: local superellipse geometry and smoothing width.",
     "Moves a fixed set of five-parameter 2D holes, reusing the MMC Jacobian with complementary signs.",
     "Zhang et al. (2017) 3D MMV: source geometry/panel incompatible with this restricted 2D variant.", "https://doi.org/10.1016/j.cma.2017.05.002",
-    "The source uses 3D B-spline void surfaces and DOF removal; this variant cannot reproduce them and cannot nucleate new holes.", n_x=3, n_y=2)
+    "The source uses 3D B-spline void surfaces and DOF removal; this variant cannot reproduce them and cannot nucleate new holes. "
+    "The showcase moves 4 by 2 holes with no density filter (the holes have their own smooth edge; a filter blurred them, "
+    "greyness 0.51) and runs 300 steps at move 0.05.", n_x=4, n_y=2)
 representation("bspline", "B-spline density coefficients", (
     eq(r"\rho=B_y Z B_x^{\mathsf{T}},\quad\nabla_Z C=B_y^{\mathsf{T}}(\nabla_\rho C)B_x",
        "Tensor-product basis evaluation maps the coefficient grid to element centres; the backward map is its transpose."),
@@ -270,11 +273,18 @@ def recipe(case_id):
             solver = replace(solver, method_params={**solver.method_params, "move": 0.02})
         if identity in OWN_STOP:
             solver = replace(solver, tol=0.)
+        if identity == "nlopt_auglag":
+            # NLopt's inner L-BFGS runs on its own: with its default budget and tolerance it stopped at a
+            # grey local point (greyness 0.61); a longer, tighter run reaches a structure close to MMA's.
+            solver = replace(solver, tol=0., method_params=dict(nlopt_maxeval=5000, nlopt_ftol_rel=1e-10,
+                                                                nlopt_local_maxeval=200))
         if identity in DENSE:
             solver = replace(solver, m=0.5)
     elif kind == "representation":
         solver = replace(solver, method="q4+mma", method_params=dict(move=0.02),
                          representation=deepcopy(data["settings"]["representation"]))
+        if identity == "mmv":
+            solver = replace(solver, method_params=dict(move=0.05), tol=0., filter_specs=[])
         if identity == "bspline":
             # The spline's smoothness is the filter; a sharpening projection makes the field black and white.
             solver = replace(solver, method_params=dict(move=0.2), max_iter=400,

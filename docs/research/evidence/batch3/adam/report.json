@@ -6,7 +6,7 @@
   ],
   "source_url": "https://arxiv.org/abs/1412.6980",
   "target": "Kingma-Ba Algorithm 1; Figure 1 learning curves require the original data/task and are not this MBB diagnostic.",
-  "limitations": "Algorithm recurrence agreement is not reproduction of machine-learning figures. Toporia's default beta1=0.5, decaying rate, clipping and volume penalty are topology-specific choices.",
+  "limitations": "Algorithm recurrence agreement is not reproduction of machine-learning figures. Toporia's default beta1=0.5, decaying rate, clipping and volume penalty are topology-specific choices. The showcase uses the default rate 0.05: at 0.01 the decaying rate fell to 0.002 and the design stayed grey (greyness 0.64).",
   "paper_status": "paper_reproduction_to_fix",
   "paper_visual_status": "not_assessed",
   "checks": {
@@ -19,16 +19,16 @@
   "iterations": 300,
   "stop_reason": "iteration limit (300)",
   "optimizer": null,
-  "fresh_final_compliance": 290.8396101707855,
-  "last_recorded_objective": 291.14776666771724,
-  "physical_volume_fraction": 0.4942931015227644,
-  "volume_excess": -0.0057068984772356,
-  "feasible_volume_1e_4": true,
-  "grayness": 0.6359368803118418,
+  "fresh_final_compliance": 221.52895057568756,
+  "last_recorded_objective": 222.243131803836,
+  "physical_volume_fraction": 0.5005938875950039,
+  "volume_excess": 0.0005938875950038947,
+  "feasible_volume_1e_4": false,
+  "grayness": 0.3126497870245643,
   "engine_physics_evaluations_before_final_check": 300,
   "final_check_extra_model_evaluations": 1,
-  "runtime_seconds": 10.542352400021628,
-  "captured_at": "2026-10-28T11:32:25.257369+00:00",
+  "runtime_seconds": 5.839291400043294,
+  "captured_at": "2026-10-28T17:16:00.854167+00:00",
   "versions": {
     "python": "3.14.3",
     "numpy": "2.4.2",
@@ -88,7 +88,7 @@
   "solver": {
     "method": "q4+adam",
     "method_params": {
-      "lr": 0.01
+      "lr": 0.05
     },
     "interpolation": {
       "type": "simp"
@@ -109,7 +109,7 @@
     "tol": 0.0
   },
   "resolved_method_params": {
-    "lr": 0.01,
+    "lr": 0.05,
     "lr_decay": 0.995,
     "beta1": 0.5,
     "beta2": 0.999,

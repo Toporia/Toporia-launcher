@@ -4,7 +4,7 @@ Target: da Silveira-Palma (2022), Figure 1 modified curves, Table 1; compare ori
 
 Known execution issue: None observed in the recorded checks.
 
-Reason: This verifies stiffness interpolation only, with 1e-8 absolute tolerance for the finite soft phase. No cost interpolation, non-monotone moduli, optimizer trajectory or paper bridge design is claimed.
+Reason: This verifies stiffness interpolation only, with 1e-8 absolute tolerance for the finite soft phase. No cost interpolation, non-monotone moduli, optimizer trajectory or paper bridge design is claimed. The GUI run settles on the material levels: on the MBB about half the cells sit at material 2 (density 0.4), a sixth at material 3 (0.6), a tenth solid; it looks grey because most of the beam is the 0.4 material.
 
 Numerical checks: True. A passing engineering check is not a paper reproduction.
 

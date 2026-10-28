@@ -15,26 +15,23 @@
     "finite_execution": true,
     "bounded_density": true
   },
-  "iterations": 90,
-  "stop_reason": "design change 0 < tol 0.01",
+  "iterations": 300,
+  "stop_reason": "iteration limit (300)",
   "optimizer": {
     "optimiser": "Augmented Lagrangian + L-BFGS (NLopt)",
-    "finished": true,
-    "success": true,
-    "message": "MAXEVAL_REACHED",
-    "iterations": null,
-    "evaluations": 501
+    "finished": false,
+    "message": "stopped by Toporia before the optimiser finished"
   },
-  "fresh_final_compliance": 282.18728589538784,
-  "last_recorded_objective": 282.18728589538784,
-  "physical_volume_fraction": 0.4999702165475129,
-  "volume_excess": -2.9783452487108786e-05,
+  "fresh_final_compliance": 219.93866975711572,
+  "last_recorded_objective": 219.99703030904803,
+  "physical_volume_fraction": 0.49987133160183056,
+  "volume_excess": -0.0001286683981694403,
   "feasible_volume_1e_4": true,
-  "grayness": 0.628048344798689,
-  "engine_physics_evaluations_before_final_check": 481,
+  "grayness": 0.28847771634439834,
+  "engine_physics_evaluations_before_final_check": 1249,
   "final_check_extra_model_evaluations": 1,
-  "runtime_seconds": 11.36209939996479,
-  "captured_at": "2026-10-28T11:36:07.651767+00:00",
+  "runtime_seconds": 23.392049900023267,
+  "captured_at": "2026-10-28T17:16:28.779526+00:00",
   "versions": {
     "python": "3.14.3",
     "numpy": "2.4.2",
@@ -93,7 +90,11 @@
   },
   "solver": {
     "method": "q4+nlopt_auglag",
-    "method_params": {},
+    "method_params": {
+      "nlopt_maxeval": 5000,
+      "nlopt_ftol_rel": 1e-10,
+      "nlopt_local_maxeval": 200
+    },
     "interpolation": {
       "type": "simp"
     },
@@ -110,13 +111,13 @@
     "variants": {},
     "m": 1.0,
     "max_iter": 300,
-    "tol": 0.01
+    "tol": 0.0
   },
   "resolved_method_params": {
-    "nlopt_maxeval": 500,
+    "nlopt_maxeval": 5000,
     "nlopt_report_step": 0.02,
-    "nlopt_ftol_rel": 1e-06,
-    "nlopt_local_maxeval": 50
+    "nlopt_ftol_rel": 1e-10,
+    "nlopt_local_maxeval": 200
   },
   "fresh_reported": {},
   "fresh_constraints": [],

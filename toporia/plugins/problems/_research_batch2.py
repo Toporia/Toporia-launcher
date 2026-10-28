@@ -143,7 +143,9 @@ CASES = {
         "https://doi.org/10.1007/s00158-011-0632-0",
         "Gersborg-Andreasen (2011), casting parameterization; exact formulation differs.",
         "The cited paper uses a Heaviside parameterization. This smooth running-minimum variant is not a direct reproduction; "
-        "its output is only approximately monotone and does not model a full mould."),
+        "its output is only approximately monotone and does not model a full mould. The GUI run draws along +x on the MBB: "
+        "top and bottom flanges taper towards the support around one grey web plateau (greyness 0.54), which reads as a thinner web; "
+        "drawn along +y the top load forces grey full-height columns."),
     "machining": _case("PDE machining shadows", "filter", "machining",
         {"type": "machining", "from_pos_y": True, "peclet": 10000., "beta": 8., "eta": .4, "power": -4.},
         [(r"u\cdot\nabla T-D\nabla^2T=\rho/h", "An advection-diffusion solve casts a material shadow from each tool side."),
@@ -187,7 +189,9 @@ CASES = {
         "Recreate the modified curves in da Silveira-Palma Figure 1 at p=1,3,5 and overlay the original formula to expose the attribution difference.",
         ORDERED, "da Silveira-Palma (2022), Figure 1 modified curves, Table 1; compare original equations (2)-(3) separately.",
         "This verifies stiffness interpolation only, with 1e-8 absolute tolerance for the finite soft phase. "
-        "No cost interpolation, non-monotone moduli, optimizer trajectory or paper bridge design is claimed.",
+        "No cost interpolation, non-monotone moduli, optimizer trajectory or paper bridge design is claimed. "
+        "The GUI run settles on the material levels: on the MBB about half the cells sit at material 2 (density 0.4), "
+        "a sixth at material 3 (0.6), a tenth solid; it looks grey because most of the beam is the 0.4 material.",
         overrides={"method": "q4+mma"}),
     "sinh": _case("SINH effective-cost curves", "interpolation", "sinh", {"type": "sinh", "penal": 3.1},
         [(r"\eta_1=\rho,\quad \eta_2=1-\frac{\sinh(p(1-\rho))}{\sinh p}",
@@ -307,8 +311,10 @@ SHOWCASE = {
     # Extrusion is a 3-D rule: a profile constant through the depth (2.5-D parts).
     "extrusion": dict(scenario=cantilever_3d.scenario, filters=[{"type": "extrusion", "axis": "z"}],
                       solver={"method": "h8+mma", "method_params": {"move": .1}, "m": .5}),
-    # The running minimum makes plateaus that can sit at any level; a projection makes the cast part crisp.
-    "casting": dict(filters=[{"type": "casting", "direction": "+y"}] + _PROJECTION, schedules=_BETA_RAMP,
+    # Drawn along x, away from the symmetry plane, each row may only thin towards the support: flanges
+    # taper and the web is one plateau. Drawn along +y the top load needs whole columns, and one cell
+    # just below the projection threshold carries a grey level up each column (greyness 0.72).
+    "casting": dict(filters=[{"type": "casting", "direction": "+x"}] + _PROJECTION, schedules=_BETA_RAMP,
                     solver={**_MMA, "max_iter": 400}),
 }
 

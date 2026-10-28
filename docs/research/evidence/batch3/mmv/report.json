@@ -6,16 +6,16 @@
   ],
   "source_url": "https://doi.org/10.1016/j.cma.2017.05.002",
   "target": "Zhang et al. (2017) 3D MMV: source geometry/panel incompatible with this restricted 2D variant.",
-  "limitations": "The source uses 3D B-spline void surfaces and DOF removal; this variant cannot reproduce them and cannot nucleate new holes.",
+  "limitations": "The source uses 3D B-spline void surfaces and DOF removal; this variant cannot reproduce them and cannot nucleate new holes. The showcase moves 4 by 2 holes with no density filter (the holes have their own smooth edge; a filter blurred them, greyness 0.51) and runs 300 steps at move 0.05.",
   "paper_status": "paper_reproduction_to_fix",
   "paper_visual_status": "not_assessed",
   "checks": {
     "directional_adjoint_errors": [
-      4.3896335994564765e-10,
-      1.0487254434714228e-09,
-      2.71556221888663e-09,
-      3.0629166963936505e-10,
-      1.3860091905678128e-10
+      1.7454676641038174e-10,
+      1.5076016581441666e-10,
+      8.733747571779586e-10,
+      4.1951780030723596e-10,
+      4.0908147479573903e-11
     ],
     "adjoint_tolerance": 2e-05,
     "checks_passed": true,
@@ -23,19 +23,19 @@
     "finite_execution": true,
     "bounded_density": true
   },
-  "iterations": 59,
-  "stop_reason": "design change 0.009 < tol 0.01",
+  "iterations": 300,
+  "stop_reason": "iteration limit (300)",
   "optimizer": null,
-  "fresh_final_compliance": 292.0609676685135,
-  "last_recorded_objective": 296.23520258668736,
-  "physical_volume_fraction": 0.49894902322053913,
-  "volume_excess": -0.001050976779460866,
+  "fresh_final_compliance": 253.72143112847436,
+  "last_recorded_objective": 254.00271742633507,
+  "physical_volume_fraction": 0.4993049643565655,
+  "volume_excess": -0.0006950356434344829,
   "feasible_volume_1e_4": true,
-  "grayness": 0.5112682396394499,
-  "engine_physics_evaluations_before_final_check": 59,
+  "grayness": 0.32251088055397237,
+  "engine_physics_evaluations_before_final_check": 300,
   "final_check_extra_model_evaluations": 1,
-  "runtime_seconds": 2.064943300036248,
-  "captured_at": "2026-10-28T11:36:41.615666+00:00",
+  "runtime_seconds": 7.685119799978565,
+  "captured_at": "2026-10-28T17:16:39.805124+00:00",
   "versions": {
     "python": "3.14.3",
     "numpy": "2.4.2",
@@ -95,30 +95,25 @@
   "solver": {
     "method": "q4+mma",
     "method_params": {
-      "move": 0.02
+      "move": 0.05
     },
     "interpolation": {
       "type": "simp"
     },
     "representation": {
       "type": "mmv",
-      "n_x": 3,
+      "n_x": 4,
       "n_y": 2
     },
-    "filter_specs": [
-      {
-        "type": "density",
-        "rmin": 1.5
-      }
-    ],
+    "filter_specs": [],
     "schedules": [],
     "variants": {},
     "m": 1.0,
     "max_iter": 300,
-    "tol": 0.01
+    "tol": 0.0
   },
   "resolved_method_params": {
-    "move": 0.02,
+    "move": 0.05,
     "mma_tol": 0.0001,
     "asyinit": 0.5,
     "asyincr": 1.2,
