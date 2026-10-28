@@ -1,0 +1,1319 @@
+[
+  {
+    "id": 0,
+    "doi": "10.1080/14786440409463229",
+    "url": "https://doi.org/10.1080/14786440409463229",
+    "year": 1904,
+    "title": "Michell: limits of structural economy",
+    "countries": [
+      "AUS"
+    ],
+    "institutions": "Melbourne research context",
+    "features": [
+      "Michell Cantilever"
+    ],
+    "note": "Historical location inferred from Melbourne consultancy, not a formal university affiliation: https://adb.online.anu.edu.au/biography/michell-anthony-george-maldon-7567",
+    "status": "Historical inference"
+  },
+  {
+    "id": 1,
+    "doi": "10.1016/0146-664X%2874%2990028-8",
+    "url": "https://doi.org/10.1016/0146-664X%2874%2990028-8",
+    "year": 1974,
+    "title": "Chaikin: curve smoothing",
+    "countries": [],
+    "institutions": "",
+    "features": [
+      "Smooth outline (SVG + DXF)"
+    ],
+    "note": "Affiliation unresolved",
+    "status": "Unresolved geography"
+  },
+  {
+    "id": 2,
+    "doi": "10.1002/nme.1620230307",
+    "url": "https://doi.org/10.1002/nme.1620230307",
+    "year": 1986,
+    "title": "Fleury & Braibant: CONLIN",
+    "countries": [
+      "USA",
+      "BEL"
+    ],
+    "institutions": "UCLA; University of Liege",
+    "features": [
+      "CONLIN (convex linearisation)"
+    ],
+    "note": "Verified publisher affiliations; Fleury is listed at UCLA at publication",
+    "status": "Verified affiliations"
+  },
+  {
+    "id": 3,
+    "doi": "10.1002/nme.1620240207",
+    "url": "https://doi.org/10.1002/nme.1620240207",
+    "year": 1987,
+    "title": "Svanberg: method of moving asymptotes",
+    "countries": [
+      "SWE"
+    ],
+    "institutions": "KTH, Stockholm",
+    "features": [
+      "Method of moving asymptotes",
+      "MMA (pyMOTO), GCMMA (pyMOTO)",
+      "MMA (mmapy), GCMMA (mmapy)",
+      "MMA, CCSAQ, SLSQP, augmented Lagrangian + L-BFGS (NLopt)"
+    ],
+    "note": "Verified publisher affiliation",
+    "status": "Verified affiliations"
+  },
+  {
+    "id": 4,
+    "doi": "kraft",
+    "url": "https://jacobwilliams.github.io/slsqp/proc/slsqp.html",
+    "year": 1988,
+    "title": "Kraft: sequential quadratic programming",
+    "countries": [
+      "DEU"
+    ],
+    "institutions": "DFVLR, Oberpfaffenhofen",
+    "features": [
+      "SLSQP"
+    ],
+    "note": "Original report 1988; software author history identifies DFVLR Oberpfaffenhofen.",
+    "status": "Verified affiliations"
+  },
+  {
+    "id": 5,
+    "doi": "10.1007/BF01743804",
+    "url": "https://doi.org/10.1007/BF01743804",
+    "year": 1989,
+    "title": "First and second order convex approximation strategies in structural optimization",
+    "countries": [
+      "USA"
+    ],
+    "institutions": "UCLA",
+    "features": [
+      "CONLIN (convex linearisation)"
+    ],
+    "note": "Publisher affiliation block checked; country counts include all listed affiliations.",
+    "status": "Verified affiliations"
+  },
+  {
+    "id": 6,
+    "doi": "10.1007/BF01650949",
+    "url": "https://doi.org/10.1007/BF01650949",
+    "year": 1989,
+    "title": "Optimal shape design as a material distribution problem",
+    "countries": [
+      "DNK"
+    ],
+    "institutions": "DTU",
+    "features": [
+      "Element densities",
+      "SIMP (power law)"
+    ],
+    "note": "Publisher affiliation block checked; country counts include all listed affiliations.",
+    "status": "Verified affiliations"
+  },
+  {
+    "id": 7,
+    "doi": "10.1137/0728030",
+    "url": "https://doi.org/10.1137/0728030",
+    "year": 1991,
+    "title": "Conn, Gould & Toint: globally convergent augmented Lagrangian",
+    "countries": [],
+    "institutions": "",
+    "features": [
+      "MMA, CCSAQ, SLSQP, augmented Lagrangian + L-BFGS (NLopt)"
+    ],
+    "note": "Publisher title verified; full historical affiliations unresolved",
+    "status": "Unresolved geography"
+  },
+  {
+    "id": 8,
+    "doi": "10.1016/0045-7825%2891%2990046-9",
+    "url": "https://doi.org/10.1016/0045-7825%2891%2990046-9",
+    "year": 1991,
+    "title": "Zhou & Rozvany: COC algorithm",
+    "countries": [],
+    "institutions": "",
+    "features": [
+      "Optimality criteria, several constraints"
+    ],
+    "note": "Affiliation not independently verified for this paper",
+    "status": "Unresolved geography"
+  },
+  {
+    "id": 9,
+    "doi": "10.1002/nme.1620350707",
+    "url": "https://doi.org/10.1002/nme.1620350707",
+    "year": 1992,
+    "title": "Diaz & Kikuchi: eigenvalue optimization",
+    "countries": [
+      "USA"
+    ],
+    "institutions": "Michigan State; University of Michigan",
+    "features": [
+      "Fundamental frequency (maximise)"
+    ],
+    "note": "Verified publisher affiliations",
+    "status": "Verified affiliations"
+  },
+  {
+    "id": 10,
+    "doi": "ma",
+    "url": "",
+    "year": 1993,
+    "title": "Ma, Kikuchi & Hagiwara: dynamic compliance",
+    "countries": [],
+    "institutions": "",
+    "features": [
+      "Dynamic compliance"
+    ],
+    "note": "PDF names a 1993 paper without a link; exact bibliographic identity and geography unresolved.",
+    "status": "Unresolved geography"
+  },
+  {
+    "id": 11,
+    "doi": "10.1080/08905459708945415",
+    "url": "https://doi.org/10.1080/08905459708945415",
+    "year": 1997,
+    "title": "Sigmund: compliant mechanisms",
+    "countries": [],
+    "institutions": "",
+    "features": [
+      "Sensitivity filter",
+      "2-D Q4 compliant mechanism (Toporia)",
+      "Output displacement (maximise)",
+      "Force Inverter"
+    ],
+    "note": "Affiliation not independently verified for this paper",
+    "status": "Unresolved geography"
+  },
+  {
+    "id": 12,
+    "doi": "10.1002/%28SICI%291097-0207%2819981230%2943:8%3C1453::AID-NME480%3E3.0.CO%3B2-2",
+    "url": "https://doi.org/10.1002/%28SICI%291097-0207%2819981230%2943:8%3C1453::AID-NME480%3E3.0.CO%3B2-2",
+    "year": 1998,
+    "title": "Duysinx & Bendsoe: stress constraints",
+    "countries": [],
+    "institutions": "",
+    "features": [
+      "L-bracket"
+    ],
+    "note": "Affiliation not independently verified for this paper",
+    "status": "Unresolved geography"
+  },
+  {
+    "id": 13,
+    "doi": "10.1007/BF01214002",
+    "url": "https://doi.org/10.1007/BF01214002",
+    "year": 1998,
+    "title": "Numerical instabilities in topology optimization: A survey on procedures dealing with checkerboards, mesh-dependencies and local minima",
+    "countries": [
+      "DNK",
+      "SWE"
+    ],
+    "institutions": "DTU; Linkoping University",
+    "features": [
+      "Equal steps"
+    ],
+    "note": "Publisher affiliation block checked; country counts include all listed affiliations.",
+    "status": "Verified affiliations"
+  },
+  {
+    "id": 14,
+    "doi": "10.1007/s004190050248",
+    "url": "https://doi.org/10.1007/s004190050248",
+    "year": 1999,
+    "title": "Material interpolation schemes in topology optimization",
+    "countries": [
+      "DNK"
+    ],
+    "institutions": "DTU",
+    "features": [
+      "Hashin-Shtrikman (fixed-nu upper envelope)"
+    ],
+    "note": "Publisher affiliation block checked; country counts include all listed affiliations.",
+    "status": "Verified affiliations"
+  },
+  {
+    "id": 15,
+    "doi": "10.1137/1.9780898719857",
+    "url": "https://doi.org/10.1137/1.9780898719857",
+    "year": 2000,
+    "title": "Conn, Gould & Toint: Trust Region Methods",
+    "countries": [],
+    "institutions": "",
+    "features": [
+      "trust-constr (SciPy)"
+    ],
+    "note": "Multi-author book; institutional origins unresolved",
+    "status": "Unresolved geography"
+  },
+  {
+    "id": 16,
+    "doi": "10.1007/s001580050130",
+    "url": "https://doi.org/10.1007/s001580050130",
+    "year": 2000,
+    "title": "Maximization of eigenvalues using topology optimization",
+    "countries": [
+      "DNK"
+    ],
+    "institutions": "DTU",
+    "features": [
+      "2-D Q4 with vibration (Toporia)"
+    ],
+    "note": "Publisher affiliation block checked; country counts include all listed affiliations.",
+    "status": "Verified affiliations"
+  },
+  {
+    "id": 17,
+    "doi": "10.1007/s001580050089",
+    "url": "https://doi.org/10.1007/s001580050089",
+    "year": 2000,
+    "title": "Stiffness design of geometrically nonlinear structures using topology optimization",
+    "countries": [
+      "DNK"
+    ],
+    "institutions": "DTU",
+    "features": [
+      "2-D Q4, large deformation (Toporia)",
+      "End compliance (non-linear)",
+      "Nonlinear Cantilever"
+    ],
+    "note": "Publisher affiliation block checked; country counts include all listed affiliations.",
+    "status": "Verified affiliations"
+  },
+  {
+    "id": 18,
+    "doi": "10.1007/s001580050176",
+    "url": "https://doi.org/10.1007/s001580050176",
+    "year": 2001,
+    "title": "A 99 line topology optimization code written in Matlab",
+    "countries": [
+      "DNK"
+    ],
+    "institutions": "DTU",
+    "features": [
+      "Element densities",
+      "Sensitivity filter",
+      "Optimality criteria",
+      "MBB Beam",
+      "Cantilever"
+    ],
+    "note": "Publisher affiliation block checked; country counts include all listed affiliations.",
+    "status": "Verified affiliations"
+  },
+  {
+    "id": 19,
+    "doi": "10.1007/s001580100129",
+    "url": "https://doi.org/10.1007/s001580100129",
+    "year": 2001,
+    "title": "An alternative interpolation scheme for minimum compliance topology optimization",
+    "countries": [
+      "SWE"
+    ],
+    "institutions": "KTH",
+    "features": [
+      "RAMP (rational)"
+    ],
+    "note": "Publisher affiliation block checked; country counts include all listed affiliations.",
+    "status": "Verified affiliations"
+  },
+  {
+    "id": 20,
+    "doi": "10.1002/nme.116",
+    "url": "https://doi.org/10.1002/nme.116",
+    "year": 2001,
+    "title": "Bourdin: density filtering",
+    "countries": [
+      "DNK",
+      "USA"
+    ],
+    "institutions": "DTU; NYU correspondence address",
+    "features": [
+      "Density filter"
+    ],
+    "note": "Both listed addresses retained: https://onlinelibrary.wiley.com/doi/10.1002/nme.116",
+    "status": "Verified affiliations"
+  },
+  {
+    "id": 21,
+    "doi": "10.1016/S0045-7825%2800%2900278-4",
+    "url": "https://doi.org/10.1016/S0045-7825%2800%2900278-4",
+    "year": 2001,
+    "title": "Bruns & Tortorelli: nonlinear structures and mechanisms",
+    "countries": [],
+    "institutions": "",
+    "features": [
+      "Density filter"
+    ],
+    "note": "Affiliation not independently verified for this paper",
+    "status": "Unresolved geography"
+  },
+  {
+    "id": 22,
+    "doi": "10.1007/s001580050170",
+    "url": "https://doi.org/10.1007/s001580050170",
+    "year": 2001,
+    "title": "On the validity of ESO type methods in topology optimization",
+    "countries": [
+      "USA",
+      "HUN"
+    ],
+    "institutions": "Altair Engineering; Budapest University of Technology and Economics",
+    "features": [
+      "BESO (hard kill)"
+    ],
+    "note": "Publisher affiliation block checked; country counts include all listed affiliations. This is a critique of ESO by Zhou and Rozvany, not an original Huang-Xie BESO paper.",
+    "status": "Verified affiliations"
+  },
+  {
+    "id": 23,
+    "doi": "10.1137/S1052623499362822",
+    "url": "https://doi.org/10.1137/S1052623499362822",
+    "year": 2002,
+    "title": "Svanberg: globally convergent MMA / CCSAQ",
+    "countries": [],
+    "institutions": "",
+    "features": [
+      "MMA (pyMOTO), GCMMA (pyMOTO)",
+      "MMA (mmapy), GCMMA (mmapy)",
+      "MMA, CCSAQ, SLSQP, augmented Lagrangian + L-BFGS (NLopt)"
+    ],
+    "note": "Affiliation not independently verified for this paper",
+    "status": "Unresolved geography"
+  },
+  {
+    "id": 24,
+    "doi": "10.1007/978-3-662-05086-6",
+    "url": "https://doi.org/10.1007/978-3-662-05086-6",
+    "year": 2003,
+    "title": "Bendsoe & Sigmund: Topology Optimization",
+    "countries": [],
+    "institutions": "",
+    "features": [
+      "Symmetry filter",
+      "Pattern repetition",
+      "Compliance"
+    ],
+    "note": "Catalogue cites 2003; linked publisher edition is copyright 2004; edition/date ambiguity",
+    "status": "Unresolved geography"
+  },
+  {
+    "id": 25,
+    "doi": "10.1051/cocv:2002070",
+    "url": "https://doi.org/10.1051/cocv:2002070",
+    "year": 2003,
+    "title": "Bourdin & Chambolle: phase-field design-dependent loads",
+    "countries": [],
+    "institutions": "",
+    "features": [
+      "Phase-field regularised compliance"
+    ],
+    "note": "Geography unresolved; do not interpret DOI suffix 2002 as publication year",
+    "status": "Unresolved geography"
+  },
+  {
+    "id": 26,
+    "doi": "10.1002/nme.1064",
+    "url": "https://doi.org/10.1002/nme.1064",
+    "year": 2004,
+    "title": "Guest, Prevost & Belytschko: projection functions",
+    "countries": [
+      "USA"
+    ],
+    "institutions": "Princeton; Northwestern",
+    "features": [
+      "Heaviside projection (fixed or volume-preserving threshold)",
+      "Multiply by a factor"
+    ],
+    "note": "Verified publisher affiliations",
+    "status": "Verified affiliations"
+  },
+  {
+    "id": 27,
+    "doi": "10.1299/jsmea.47.198",
+    "url": "https://doi.org/10.1299/jsmea.47.198",
+    "year": 2004,
+    "title": "Ishii & Aomura: extrusion constraints",
+    "countries": [],
+    "institutions": "",
+    "features": [
+      "Extrusion (constant cross-section)"
+    ],
+    "note": "Affiliation not independently verified for this paper",
+    "status": "Unresolved geography"
+  },
+  {
+    "id": 28,
+    "doi": "10.1007/s00158-005-0537-x",
+    "url": "https://doi.org/10.1007/s00158-005-0537-x",
+    "year": 2005,
+    "title": "A reevaluation of the SIMP method with filtering and an alternative formulation for solid–void topology optimization",
+    "countries": [
+      "USA"
+    ],
+    "institutions": "UIUC; Beckman Institute, UIUC",
+    "features": [
+      "SINH (shared-density variant)"
+    ],
+    "note": "Publisher affiliation block checked; country counts include all listed affiliations.",
+    "status": "Verified affiliations"
+  },
+  {
+    "id": 29,
+    "doi": "berryman",
+    "url": "https://sepwww.stanford.edu/sep/berryman/PS/PHYS.pdf",
+    "year": 2005,
+    "title": "Berryman: elastic Hashin-Shtrikman formulas",
+    "countries": [],
+    "institutions": "",
+    "features": [
+      "Hashin-Shtrikman upper envelope"
+    ],
+    "note": "PDF update cites Berryman 2005; full bibliographic identity and paper-time affiliation remain unresolved.",
+    "status": "Unresolved geography"
+  },
+  {
+    "id": 30,
+    "doi": "10.1007/s00158-005-0584-3",
+    "url": "https://doi.org/10.1007/s00158-005-0584-3",
+    "year": 2006,
+    "title": "Topology optimization of heat conduction problems using the finite volume method",
+    "countries": [
+      "DNK"
+    ],
+    "institutions": "DTU",
+    "features": [
+      "2-D Q4 heat conduction (Toporia)",
+      "3-D H8 heat conduction (Toporia)",
+      "Thermal compliance",
+      "Heat Sink"
+    ],
+    "note": "Publisher affiliation block checked; country counts include all listed affiliations.",
+    "status": "Verified affiliations"
+  },
+  {
+    "id": 31,
+    "doi": "10.1002/nme.1536",
+    "url": "https://doi.org/10.1002/nme.1536",
+    "year": 2006,
+    "title": "Wang & Wang: RBF level set",
+    "countries": [],
+    "institutions": "",
+    "features": [
+      "RBF level set"
+    ],
+    "note": "Affiliation not independently verified for this paper",
+    "status": "Unresolved geography"
+  },
+  {
+    "id": 32,
+    "doi": "10.1016/j.finel.2007.06.006",
+    "url": "https://doi.org/10.1016/j.finel.2007.06.006",
+    "year": 2007,
+    "title": "Huang & Xie: convergent BESO",
+    "countries": [],
+    "institutions": "",
+    "features": [
+      "BESO (soft kill)"
+    ],
+    "note": "Affiliation not independently verified for this paper",
+    "status": "Unresolved geography"
+  },
+  {
+    "id": 33,
+    "doi": "10.1007/s00158-006-0087-x",
+    "url": "https://doi.org/10.1007/s00158-006-0087-x",
+    "year": 2007,
+    "title": "Morphology-based black and white filters for topology optimization",
+    "countries": [
+      "DNK"
+    ],
+    "institutions": "DTU",
+    "features": [
+      "Morphology filter (erode / dilate / open / close)",
+      "Routing radius filter",
+      "Feature size",
+      "Grey level (M_nd) over the run"
+    ],
+    "note": "Publisher affiliation block checked; country counts include all listed affiliations.",
+    "status": "Verified affiliations"
+  },
+  {
+    "id": 34,
+    "doi": "10.1007/s00158-007-0101-y",
+    "url": "https://doi.org/10.1007/s00158-007-0101-y",
+    "year": 2007,
+    "title": "Topological design of freely vibrating continuum structures for maximum values of simple and multiple eigenfrequencies and frequency gaps",
+    "countries": [
+      "DNK"
+    ],
+    "institutions": "Aalborg University",
+    "features": [
+      "2-D Q4 with vibration (Toporia)",
+      "Fundamental frequency (maximise)",
+      "Vibrating Beam"
+    ],
+    "note": "Publisher affiliation block checked; country counts include all listed affiliations.",
+    "status": "Verified affiliations"
+  },
+  {
+    "id": 35,
+    "doi": "10.1080/10556780701577730",
+    "url": "https://doi.org/10.1080/10556780701577730",
+    "year": 2008,
+    "title": "Birgin & Martinez: augmented Lagrangian",
+    "countries": [
+      "BRA"
+    ],
+    "institutions": "University of Sao Paulo; University of Campinas",
+    "features": [
+      "MMA, CCSAQ, SLSQP, augmented Lagrangian + L-BFGS (NLopt)"
+    ],
+    "note": "Publisher affiliations checked: https://www.tandfonline.com/doi/abs/10.1080/10556780701577730",
+    "status": "Verified affiliations"
+  },
+  {
+    "id": 36,
+    "doi": "10.1007/s00158-008-0332-6",
+    "url": "https://doi.org/10.1007/s00158-008-0332-6",
+    "year": 2009,
+    "title": "A simple and effective inverse projection scheme for void distribution control in topology optimization",
+    "countries": [
+      "USA",
+      "BRA"
+    ],
+    "institutions": "Federal University of Goias; UIUC; University of Sao Paulo",
+    "features": [
+      "Pattern repetition"
+    ],
+    "note": "Publisher affiliation block checked; country counts include all listed affiliations. Linked title concerns inverse projection and void distribution; catalogue places it under pattern repetition.",
+    "status": "Verified affiliations"
+  },
+  {
+    "id": 37,
+    "doi": "10.1007/s00158-009-0443-8",
+    "url": "https://doi.org/10.1007/s00158-009-0443-8",
+    "year": 2010,
+    "title": "A computational paradigm for multiresolution topology optimization (MTOP)",
+    "countries": [
+      "USA"
+    ],
+    "institutions": "UIUC",
+    "features": [
+      "2-D Q4 multiresolution (nested grids)"
+    ],
+    "note": "Publisher affiliation block checked; country counts include all listed affiliations.",
+    "status": "Verified affiliations"
+  },
+  {
+    "id": 38,
+    "doi": "10.1007/s00158-009-0430-0",
+    "url": "https://doi.org/10.1007/s00158-009-0430-0",
+    "year": 2010,
+    "title": "A discrete level-set topology optimization code written in Matlab",
+    "countries": [
+      "AUS"
+    ],
+    "institutions": "University of Queensland",
+    "features": [
+      "Hamilton-Jacobi level set with circular-hole derivative"
+    ],
+    "note": "Publisher affiliation block checked; country counts include all listed affiliations.",
+    "status": "Verified affiliations"
+  },
+  {
+    "id": 39,
+    "doi": "10.1002/9780470689486",
+    "url": "https://doi.org/10.1002/9780470689486",
+    "year": 2010,
+    "title": "Huang & Xie: evolutionary topology optimization",
+    "countries": [],
+    "institutions": "",
+    "features": [
+      "BESO (soft kill)",
+      "BESO (hard kill)"
+    ],
+    "note": "Affiliation not independently verified for this book",
+    "status": "Unresolved geography"
+  },
+  {
+    "id": 40,
+    "doi": "10.1007/s00158-009-0440-y",
+    "url": "https://doi.org/10.1007/s00158-009-0440-y",
+    "year": 2010,
+    "title": "Stress-based topology optimization for continua",
+    "countries": [
+      "USA"
+    ],
+    "institutions": "UIUC; Caterpillar, Champaign",
+    "features": [
+      "Material volume",
+      "Peak von Mises stress",
+      "L-bracket"
+    ],
+    "note": "Publisher affiliation block checked; country counts include all listed affiliations.",
+    "status": "Verified affiliations"
+  },
+  {
+    "id": 41,
+    "doi": "10.1016/j.jcp.2009.12.017",
+    "url": "https://doi.org/10.1016/j.jcp.2009.12.017",
+    "year": 2010,
+    "title": "Takezawa, Nishiwaki & Kitamura: phase-field optimization",
+    "countries": [],
+    "institutions": "",
+    "features": [
+      "Phase-field regularised compliance"
+    ],
+    "note": "Geography unresolved; publication title and year verified",
+    "status": "Unresolved geography"
+  },
+  {
+    "id": 42,
+    "doi": "10.1007/s00158-011-0632-0",
+    "url": "https://doi.org/10.1007/s00158-011-0632-0",
+    "year": 2011,
+    "title": "An explicit parameterization for casting constraints in gradient driven topology optimization",
+    "countries": [
+      "DNK"
+    ],
+    "institutions": "DTU",
+    "features": [
+      "Casting (no undercuts)"
+    ],
+    "note": "Publisher affiliation block checked; country counts include all listed affiliations.",
+    "status": "Verified affiliations"
+  },
+  {
+    "id": 43,
+    "doi": "10.1007/s00158-010-0594-7",
+    "url": "https://doi.org/10.1007/s00158-010-0594-7",
+    "year": 2011,
+    "title": "Efficient topology optimization in MATLAB using 88 lines of code",
+    "countries": [
+      "DNK",
+      "BEL"
+    ],
+    "institutions": "DTU; KU Leuven",
+    "features": [
+      "Density filter",
+      "PDE (Helmholtz) filter",
+      "Sensitivity filter",
+      "2-D Q4 plane stress (Toporia)",
+      "Optimality criteria",
+      "Method of moving asymptotes",
+      "Augmented Lagrangian (local constraints)",
+      "MBB Beam"
+    ],
+    "note": "Publisher affiliation block checked; country counts include all listed affiliations.",
+    "status": "Verified affiliations"
+  },
+  {
+    "id": 44,
+    "doi": "10.1007/s00158-011-0676-1",
+    "url": "https://doi.org/10.1007/s00158-011-0676-1",
+    "year": 2011,
+    "title": "Eliminating beta-continuation from Heaviside projection and density filter algorithms",
+    "countries": [
+      "USA"
+    ],
+    "institutions": "Johns Hopkins",
+    "features": [
+      "MBB Beam (Fixed Projection)"
+    ],
+    "note": "Publisher affiliation block checked; country counts include all listed affiliations.",
+    "status": "Verified affiliations"
+  },
+  {
+    "id": 45,
+    "doi": "10.1002/nme.3072",
+    "url": "https://doi.org/10.1002/nme.3072",
+    "year": 2011,
+    "title": "Lazarov & Sigmund: Helmholtz filtering",
+    "countries": [
+      "DNK"
+    ],
+    "institutions": "DTU, Lyngby",
+    "features": [
+      "PDE (Helmholtz) filter",
+      "Anisotropic PDE (Helmholtz) filter"
+    ],
+    "note": "Verified publisher affiliations",
+    "status": "Verified affiliations"
+  },
+  {
+    "id": 46,
+    "doi": "10.1007/s00158-010-0602-y",
+    "url": "https://doi.org/10.1007/s00158-010-0602-y",
+    "year": 2011,
+    "title": "On projection methods, convergence and robust formulations in topology optimization",
+    "countries": [
+      "DNK"
+    ],
+    "institutions": "DTU",
+    "features": [
+      "Heaviside projection (fixed or volume-preserving threshold)",
+      "Multiply by a factor",
+      "When the design settles",
+      "Feature size",
+      "MBB Beam (Robust)"
+    ],
+    "note": "Publisher affiliation block checked; country counts include all listed affiliations.",
+    "status": "Verified affiliations"
+  },
+  {
+    "id": 47,
+    "doi": "10.1016/j.cma.2013.06.001",
+    "url": "https://doi.org/10.1016/j.cma.2013.06.001",
+    "year": 2013,
+    "title": "Qian: B-spline design space",
+    "countries": [
+      "USA"
+    ],
+    "institutions": "Illinois Institute of Technology, Chicago",
+    "features": [
+      "B-spline field"
+    ],
+    "note": "Author manuscript: https://cdm.me.wisc.edu/pub/BtopCMAME13.pdf",
+    "status": "Verified affiliations"
+  },
+  {
+    "id": 48,
+    "doi": "10.1007/s00158-014-1107-x",
+    "url": "https://doi.org/10.1007/s00158-014-1107-x",
+    "year": 2014,
+    "title": "An efficient 3D topology optimization code written in Matlab",
+    "countries": [
+      "USA"
+    ],
+    "institutions": "IUPUI",
+    "features": [
+      "3-D H8 bricks (Toporia)",
+      "Cantilever 3D"
+    ],
+    "note": "Publisher affiliation block checked; country counts include all listed affiliations.",
+    "status": "Verified affiliations"
+  },
+  {
+    "id": 49,
+    "doi": "10.1115/1.4027609",
+    "url": "https://doi.org/10.1115/1.4027609",
+    "year": 2014,
+    "title": "Guo, Zhang & Zhong: moving morphable components",
+    "countries": [],
+    "institutions": "",
+    "features": [
+      "Moving morphable components (constant or variable thickness)"
+    ],
+    "note": "Affiliation not independently verified for this paper",
+    "status": "Unresolved geography"
+  },
+  {
+    "id": 50,
+    "doi": "10.1016/j.cma.2014.03.021",
+    "url": "https://doi.org/10.1016/j.cma.2014.03.021",
+    "year": 2014,
+    "title": "Wang et al.: nonlinear energy interpolation",
+    "countries": [],
+    "institutions": "",
+    "features": [
+      "2-D Q4, large deformation (Toporia)",
+      "Nonlinear Cantilever"
+    ],
+    "note": "Affiliation not independently verified for this paper",
+    "status": "Unresolved geography"
+  },
+  {
+    "id": 51,
+    "doi": "10.1007/s00158-015-1250-z",
+    "url": "https://doi.org/10.1007/s00158-015-1250-z",
+    "year": 2015,
+    "title": "Benchmarking optimization solvers for structural topology optimization",
+    "countries": [
+      "DNK"
+    ],
+    "institutions": "DTU",
+    "features": [
+      "Threshold to black and white"
+    ],
+    "note": "Publisher affiliation block checked; country counts include all listed affiliations.",
+    "status": "Verified affiliations"
+  },
+  {
+    "id": 52,
+    "doi": "10.1371/journal.pone.0145041",
+    "url": "https://doi.org/10.1371/journal.pone.0145041",
+    "year": 2015,
+    "title": "Biyikli & To: proportional topology optimization",
+    "countries": [
+      "USA"
+    ],
+    "institutions": "University of Pittsburgh",
+    "features": [
+      "Proportional topology optimisation"
+    ],
+    "note": "Author manuscript: https://d-scholarship.pitt.edu/downloads/83e340be-0a16-41a8-937c-3f24cb03937d",
+    "status": "Verified affiliations"
+  },
+  {
+    "id": 53,
+    "doi": "adam",
+    "url": "https://arxiv.org/pdf/1412.6980v1",
+    "year": 2015,
+    "title": "Kingma & Ba: Adam",
+    "countries": [
+      "NLD",
+      "CAN"
+    ],
+    "institutions": "University of Amsterdam; University of Toronto",
+    "features": [
+      "Adam"
+    ],
+    "note": "Original 2014 preprint checked for historical affiliations; conference publication 2015. Later arXiv revision adds OpenAI.",
+    "status": "Verified affiliations"
+  },
+  {
+    "id": 54,
+    "doi": "10.1007/s00158-014-1190-z",
+    "url": "https://doi.org/10.1007/s00158-014-1190-z",
+    "year": 2015,
+    "title": "Matlab code for a level set-based topology optimization method using a reaction diffusion equation",
+    "countries": [
+      "JPN"
+    ],
+    "institutions": "Kyoto University",
+    "features": [
+      "Reaction-diffusion level set"
+    ],
+    "note": "Publisher affiliation block checked; country counts include all listed affiliations.",
+    "status": "Verified affiliations"
+  },
+  {
+    "id": 55,
+    "doi": "10.1016/j.cma.2015.05.005",
+    "url": "https://doi.org/10.1016/j.cma.2015.05.005",
+    "year": 2015,
+    "title": "Norato, Bell & Tortorelli: geometry projection",
+    "countries": [],
+    "institutions": "",
+    "features": [
+      "Geometry projection (2D/3D capsule bars)"
+    ],
+    "note": "Institutional record confirms publication; complete affiliations unresolved",
+    "status": "Unresolved geography"
+  },
+  {
+    "id": 56,
+    "doi": "10.1016/j.cma.2015.05.003",
+    "url": "https://doi.org/10.1016/j.cma.2015.05.003",
+    "year": 2015,
+    "title": "Zhou et al.: minimum length-scale constraints",
+    "countries": [],
+    "institutions": "",
+    "features": [
+      "Geometric minimum feature length"
+    ],
+    "note": "DTU record confirms publication; full paper affiliations not independently checked",
+    "status": "Unresolved geography"
+  },
+  {
+    "id": 57,
+    "doi": "10.1007/s00158-015-1372-3",
+    "url": "https://doi.org/10.1007/s00158-015-1372-3",
+    "year": 2016,
+    "title": "A new topology optimization approach based on Moving Morphable Components (MMC) and the ersatz material model",
+    "countries": [
+      "CHN"
+    ],
+    "institutions": "Dalian University of Technology",
+    "features": [
+      "Moving morphable components (constant or variable thickness)"
+    ],
+    "note": "Publisher affiliation block checked; country counts include all listed affiliations.",
+    "status": "Verified affiliations"
+  },
+  {
+    "id": 58,
+    "doi": "10.1016/j.addma.2016.06.010",
+    "url": "https://doi.org/10.1016/j.addma.2016.06.010",
+    "year": 2016,
+    "title": "Langelaar: additive manufacturing constraints",
+    "countries": [],
+    "institutions": "",
+    "features": [
+      "AM overhang filter"
+    ],
+    "note": "Affiliation not independently verified for this paper",
+    "status": "Unresolved geography"
+  },
+  {
+    "id": 59,
+    "doi": "10.1007/s00158-016-1551-x",
+    "url": "https://doi.org/10.1007/s00158-016-1551-x",
+    "year": 2016,
+    "title": "Topology optimization considering overhang constraints: Eliminating sacrificial support material in additive manufacturing through design",
+    "countries": [
+      "USA"
+    ],
+    "institutions": "US Army Research Laboratory; Johns Hopkins",
+    "features": [
+      "Gaynor–Guest self-support projection (2-D)"
+    ],
+    "note": "Publisher affiliation block checked; country counts include all listed affiliations.",
+    "status": "Verified affiliations"
+  },
+  {
+    "id": 60,
+    "doi": "10.1007/s00158-016-1522-2",
+    "url": "https://doi.org/10.1007/s00158-016-1522-2",
+    "year": 2017,
+    "title": "An additive manufacturing filter for topology optimization of print-ready designs",
+    "countries": [
+      "NLD"
+    ],
+    "institutions": "TU Delft",
+    "features": [
+      "AM overhang filter"
+    ],
+    "note": "Publisher affiliation block checked; country counts include all listed affiliations.",
+    "status": "Verified affiliations"
+  },
+  {
+    "id": 61,
+    "doi": "10.1007/s00158-016-1513-3",
+    "url": "https://doi.org/10.1007/s00158-016-1513-3",
+    "year": 2017,
+    "title": "Multi-material topology optimization using ordered SIMP interpolation",
+    "countries": [
+      "USA",
+      "CHN"
+    ],
+    "institutions": "Jilin University; University of Michigan",
+    "features": [
+      "Ordered SIMP (multi-material)"
+    ],
+    "note": "Publisher affiliation block checked; country counts include all listed affiliations.",
+    "status": "Verified affiliations"
+  },
+  {
+    "id": 62,
+    "doi": "10.1016/j.cma.2017.05.002",
+    "url": "https://doi.org/10.1016/j.cma.2017.05.002",
+    "year": 2017,
+    "title": "Zhang et al.: moving morphable voids",
+    "countries": [],
+    "institutions": "",
+    "features": [
+      "Moving morphable voids (restricted 2D superellipses)"
+    ],
+    "note": "Affiliation not independently verified for this paper",
+    "status": "Unresolved geography"
+  },
+  {
+    "id": 63,
+    "doi": "10.1007/s00158-018-1904-8",
+    "url": "https://doi.org/10.1007/s00158-018-1904-8",
+    "year": 2018,
+    "title": "An 88-line MATLAB code for the parameterized level set method based topology optimization using radial basis functions",
+    "countries": [
+      "CHN"
+    ],
+    "institutions": "South China University of Technology; Guangdong University of Petrochemical Technology; HKUST",
+    "features": [
+      "RBF level set"
+    ],
+    "note": "Publisher affiliation block checked; country counts include all listed affiliations. Catalogue says Luo; linked publication is Wei, Li, Li and Wang (2018). Attribution mismatch.",
+    "status": "Verified affiliations"
+  },
+  {
+    "id": 64,
+    "doi": "10.1007/s00158-017-1883-1",
+    "url": "https://doi.org/10.1007/s00158-017-1883-1",
+    "year": 2018,
+    "title": "Minimum length-scale constraints for parameterized implicit function based topology optimization",
+    "countries": [
+      "GBR"
+    ],
+    "institutions": "University of Aberdeen",
+    "features": [
+      "Geometric minimum feature length"
+    ],
+    "note": "Publisher affiliation block checked; country counts include all listed affiliations.",
+    "status": "Verified affiliations"
+  },
+  {
+    "id": 65,
+    "doi": "10.1007/s00158-018-2048-6",
+    "url": "https://doi.org/10.1007/s00158-018-2048-6",
+    "year": 2018,
+    "title": "QR-patterns: artefacts in multiresolution topology optimization",
+    "countries": [
+      "NLD"
+    ],
+    "institutions": "TU Delft",
+    "features": [
+      "2-D Q4 multiresolution (nested grids)"
+    ],
+    "note": "Publisher affiliation block checked; country counts include all listed affiliations.",
+    "status": "Verified affiliations"
+  },
+  {
+    "id": 66,
+    "doi": "10.1016/j.finel.2017.10.006",
+    "url": "https://doi.org/10.1016/j.finel.2017.10.006",
+    "year": 2018,
+    "title": "Sivapuram & Picelli: TOBS",
+    "countries": [],
+    "institutions": "",
+    "features": [
+      "TOBS (integer LP)"
+    ],
+    "note": "Affiliation not independently verified for this paper",
+    "status": "Unresolved geography"
+  },
+  {
+    "id": 67,
+    "doi": "10.1007/s00158-020-02552-0",
+    "url": "https://doi.org/10.1007/s00158-020-02552-0",
+    "year": 2020,
+    "title": "A MATLAB code for topology optimization using the geometry projection method",
+    "countries": [
+      "USA"
+    ],
+    "institutions": "University of Connecticut",
+    "features": [
+      "Geometry projection (2D/3D capsule bars)"
+    ],
+    "note": "Publisher affiliation block checked; country counts include all listed affiliations.",
+    "status": "Verified affiliations"
+  },
+  {
+    "id": 68,
+    "doi": "10.1007/s00158-020-02629-w",
+    "url": "https://doi.org/10.1007/s00158-020-02629-w",
+    "year": 2020,
+    "title": "A new generation 99 line Matlab code for compliance topology optimization and its extension to 3D",
+    "countries": [
+      "DNK"
+    ],
+    "institutions": "DTU",
+    "features": [
+      "Heaviside projection (fixed or volume-preserving threshold)"
+    ],
+    "note": "Publisher affiliation block checked; country counts include all listed affiliations.",
+    "status": "Verified affiliations"
+  },
+  {
+    "id": 69,
+    "doi": "10.1051/cocv/2020015",
+    "url": "https://doi.org/10.1051/cocv/2020015",
+    "year": 2020,
+    "title": "Feppon, Allaire & Dapogny: null-space optimization",
+    "countries": [],
+    "institutions": "",
+    "features": [
+      "Null-space optimiser"
+    ],
+    "note": "Publication confirmed; full affiliation set unresolved",
+    "status": "Unresolved geography"
+  },
+  {
+    "id": 70,
+    "doi": "10.1016/j.engstruct.2020.110330",
+    "url": "https://doi.org/10.1016/j.engstruct.2020.110330",
+    "year": 2020,
+    "title": "Huang: floating projection",
+    "countries": [],
+    "institutions": "",
+    "features": [
+      "Floating projection (FPTO)"
+    ],
+    "note": "Affiliation not independently verified from a primary source",
+    "status": "Unresolved geography"
+  },
+  {
+    "id": 71,
+    "doi": "10.1115/1.4047429",
+    "url": "https://doi.org/10.1115/1.4047429",
+    "year": 2020,
+    "title": "Subedi, Verma & Suresh: post-processing review",
+    "countries": [],
+    "institutions": "",
+    "features": [
+      "Smooth outline (SVG + DXF)"
+    ],
+    "note": "Publication confirmed; full affiliations not independently checked from a primary source",
+    "status": "Unresolved geography"
+  },
+  {
+    "id": 72,
+    "doi": "10.1007/s00158-020-02573-9",
+    "url": "https://doi.org/10.1007/s00158-020-02573-9",
+    "year": 2020,
+    "title": "Topology optimization with local stress constraints: a stress aggregation-free approach",
+    "countries": [
+      "USA",
+      "BRA"
+    ],
+    "institutions": "Georgia Tech; PUC-Rio",
+    "features": [
+      "Local von Mises stress (augmented Lagrangian)"
+    ],
+    "note": "Publisher affiliation block checked; country counts include all listed affiliations.",
+    "status": "Verified affiliations"
+  },
+  {
+    "id": 73,
+    "doi": "10.1007/s00158-020-02719-9",
+    "url": "https://doi.org/10.1007/s00158-020-02719-9",
+    "year": 2021,
+    "title": "A 101-line MATLAB code for topology optimization using binary variables and integer programming",
+    "countries": [
+      "USA",
+      "AUS",
+      "BRA"
+    ],
+    "institutions": "UC San Diego; University of Sao Paulo; RMIT",
+    "features": [
+      "TOBS (integer LP)"
+    ],
+    "note": "Publisher affiliation block checked; country counts include all listed affiliations.",
+    "status": "Verified affiliations"
+  },
+  {
+    "id": 74,
+    "doi": "10.1007/s00158-020-02816-9",
+    "url": "https://doi.org/10.1007/s00158-020-02816-9",
+    "year": 2021,
+    "title": "An efficient 137-line MATLAB code for geometrically nonlinear topology optimization using bi-directional evolutionary structural optimization method",
+    "countries": [
+      "CHN"
+    ],
+    "institutions": "Northwestern Polytechnical University",
+    "features": [
+      "2-D Q4, large deformation (Toporia)"
+    ],
+    "note": "Publisher affiliation block checked; country counts include all listed affiliations.",
+    "status": "Verified affiliations"
+  },
+  {
+    "id": 75,
+    "doi": "10.1016/j.advengsoft.2020.102942",
+    "url": "https://doi.org/10.1016/j.advengsoft.2020.102942",
+    "year": 2021,
+    "title": "Huang: smooth or binary floating projection",
+    "countries": [],
+    "institutions": "",
+    "features": [
+      "Floating projection (FPTO)"
+    ],
+    "note": "Affiliation not independently verified for this paper",
+    "status": "Unresolved geography"
+  },
+  {
+    "id": 76,
+    "doi": "10.1007/s00158-021-02859-6",
+    "url": "https://doi.org/10.1007/s00158-021-02859-6",
+    "year": 2021,
+    "title": "PolyDyna: a Matlab implementation for topology optimization of structures subjected to dynamic loads",
+    "countries": [
+      "USA"
+    ],
+    "institutions": "Georgia Tech; University of Missouri",
+    "features": [
+      "Dynamic compliance (harmonic load)"
+    ],
+    "note": "Publisher affiliation block checked; country counts include all listed affiliations.",
+    "status": "Verified affiliations"
+  },
+  {
+    "id": 77,
+    "doi": "10.1007/s00158-020-02760-8",
+    "url": "https://doi.org/10.1007/s00158-020-02760-8",
+    "year": 2021,
+    "title": "PolyStress: a Matlab implementation for local stress-constrained topology optimization using the augmented Lagrangian method",
+    "countries": [
+      "USA"
+    ],
+    "institutions": "Georgia Tech; University of Missouri",
+    "features": [
+      "Local von Mises stress (augmented Lagrangian)",
+      "Augmented Lagrangian (local constraints)",
+      "L-bracket (local stress)"
+    ],
+    "note": "Publisher affiliation block checked; country counts include all listed affiliations.",
+    "status": "Verified affiliations"
+  },
+  {
+    "id": 78,
+    "doi": "10.1007/s00158-020-02748-4",
+    "url": "https://doi.org/10.1007/s00158-020-02748-4",
+    "year": 2021,
+    "title": "TOuNN: Topology Optimization using Neural Networks",
+    "countries": [
+      "USA"
+    ],
+    "institutions": "UW-Madison",
+    "features": [
+      "Neural coordinate field (2D/3D)",
+      "Adam (augmented Lagrangian)"
+    ],
+    "note": "Publisher affiliation block checked; country counts include all listed affiliations.",
+    "status": "Verified affiliations"
+  },
+  {
+    "id": 79,
+    "doi": "10.1007/s00158-021-02854-x",
+    "url": "https://doi.org/10.1007/s00158-021-02854-x",
+    "year": 2021,
+    "title": "Topology optimization with linearized buckling criteria in 250 lines of Matlab",
+    "countries": [
+      "DNK",
+      "USA"
+    ],
+    "institutions": "DTU; Johns Hopkins",
+    "features": [
+      "2-D Q4 with buckling (Toporia)",
+      "Buckling load factor",
+      "Column Buckling"
+    ],
+    "note": "Publisher affiliation block checked; country counts include all listed affiliations.",
+    "status": "Verified affiliations"
+  },
+  {
+    "id": 80,
+    "doi": "10.1016/j.cma.2021.114488",
+    "url": "https://doi.org/10.1016/j.cma.2021.114488",
+    "year": 2022,
+    "title": "Hoghoj & Traff: machining filter",
+    "countries": [
+      "DNK"
+    ],
+    "institutions": "DTU, Lyngby",
+    "features": [
+      "PDE machining (axis directions)"
+    ],
+    "note": "Journal 2022; preprint 2021: https://arxiv.org/html/2102.12999",
+    "status": "Verified affiliations"
+  },
+  {
+    "id": 81,
+    "doi": "10.1007/s00158-025-04008-9",
+    "url": "https://doi.org/10.1007/s00158-025-04008-9",
+    "year": 2025,
+    "title": "A simple introduction to the SiMPL method for density-based topology optimization",
+    "countries": [
+      "USA",
+      "NOR"
+    ],
+    "institutions": "Brown University; LLNL; Simula Research Laboratory",
+    "features": [
+      "Mirror descent (SiMPL)"
+    ],
+    "note": "Publisher affiliation block checked; country counts include all listed affiliations.",
+    "status": "Verified affiliations"
+  }
+]

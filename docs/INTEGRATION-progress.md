@@ -14,6 +14,14 @@ Hashin-Shtrikman laws. Large framework bridges and datasets remain outside it.
 `Toporia-library-with-links.pdf` preserves the linked catalogue and opens with
 a current-round update containing additions, validation and limitations.
 
+The [research origins audit](research-origins/README.md) records the cited
+literature's geography and publication history as of 27 October 2026. It includes
+an interactive map and timeline, 82 reference records in CSV/JSON, connections to
+the implemented features, and citation caveats. The map locates 54 references
+(53 verified affiliation assignments and one labelled historical inference);
+28 references have unresolved geography. This documentation does not add plugins
+or change implementation counts.
+
 ## Completed integrations
 
 | Commit | Addition / scope |
