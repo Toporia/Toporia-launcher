@@ -6,38 +6,38 @@
   ],
   "source_url": "https://doi.org/10.1016/j.cma.2013.06.001",
   "target": "Qian (2013) B-spline density-space examples: numbered panel and original knots pending.",
-  "limitations": "A controlled coefficient field and independent basis check do not reproduce an optimized paper topology or its knot refinement study.",
+  "limitations": "A controlled coefficient field and independent basis check do not reproduce an optimized paper topology or its knot refinement study. With only 8 by 4 cubic coefficients (one basis function spanning about 7 cells) the field cannot be sharp and stayed grey (greyness 0.87); the showcase uses 40 by 14 quadratic coefficients and a projection.",
   "paper_status": "paper_reproduction_to_fix",
   "paper_visual_status": "not_assessed",
   "checks": {
     "directional_adjoint_errors": [
-      4.902278191579428e-10,
-      1.4392217084597577e-09,
-      6.900639580672717e-11,
-      1.8920558951532718e-10,
-      6.848801800409571e-11
+      9.097302078320268e-10,
+      2.7728706830654204e-10,
+      1.043648803449088e-10,
+      4.861455768218898e-10,
+      5.091826404957089e-10
     ],
     "adjoint_tolerance": 2e-05,
     "checks_passed": true,
     "scope": "Five smooth-field directions; no certification at topology switches or bounds.",
-    "independent_cox_de_boor_max_error": 2.220446049250313e-16,
+    "independent_cox_de_boor_max_error": 3.3306690738754696e-16,
     "partition_of_unity_max_error": 2.220446049250313e-16,
     "finite_execution": true,
     "bounded_density": true
   },
-  "iterations": 55,
-  "stop_reason": "design change 0.00707 < tol 0.01",
+  "iterations": 202,
+  "stop_reason": "design change 0.00918 < tol 0.01",
   "optimizer": null,
-  "fresh_final_compliance": 420.2681321011651,
-  "last_recorded_objective": 420.28291851008504,
-  "physical_volume_fraction": 0.49999744758383713,
-  "volume_excess": -2.5524161628709408e-06,
+  "fresh_final_compliance": 191.01719813493702,
+  "last_recorded_objective": 191.01733810803006,
+  "physical_volume_fraction": 0.4999997245691881,
+  "volume_excess": -2.7543081188019514e-07,
   "feasible_volume_1e_4": true,
-  "grayness": 0.8691475632154796,
-  "engine_physics_evaluations_before_final_check": 55,
+  "grayness": 0.0007393084662367963,
+  "engine_physics_evaluations_before_final_check": 202,
   "final_check_extra_model_evaluations": 1,
-  "runtime_seconds": 1.706312499998603,
-  "captured_at": "2026-10-28T11:36:44.291342+00:00",
+  "runtime_seconds": 8.304997999977786,
+  "captured_at": "2026-10-28T16:50:15.308362+00:00",
   "versions": {
     "python": "3.14.3",
     "numpy": "2.4.2",
@@ -97,31 +97,41 @@
   "solver": {
     "method": "q4+mma",
     "method_params": {
-      "move": 0.02
+      "move": 0.2
     },
     "interpolation": {
       "type": "simp"
     },
     "representation": {
       "type": "bspline",
-      "n_x": 8,
-      "n_y": 4,
-      "degree": 3
+      "n_x": 40,
+      "n_y": 14,
+      "degree": 2
     },
     "filter_specs": [
       {
-        "type": "density",
-        "rmin": 1.5
+        "type": "heaviside",
+        "beta": 1.0,
+        "beta_max": 32.0
       }
     ],
-    "schedules": [],
+    "schedules": [
+      {
+        "path": "filters[0].beta",
+        "type": "geometric",
+        "start": 1.0,
+        "end": 32.0,
+        "factor": 2.0,
+        "every": 30
+      }
+    ],
     "variants": {},
     "m": 1.0,
-    "max_iter": 300,
+    "max_iter": 400,
     "tol": 0.01
   },
   "resolved_method_params": {
-    "move": 0.02,
+    "move": 0.2,
     "mma_tol": 0.0001,
     "asyinit": 0.5,
     "asyincr": 1.2,

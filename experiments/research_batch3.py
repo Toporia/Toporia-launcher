@@ -111,11 +111,13 @@ def representation_probe(case_id, folder):
             a, b = knots[i+p]-knots[i], knots[i+p+1]-knots[i+1]
             return ((x-knots[i])/a*basis(i, p-1, x, knots) if a else 0.) + (
                 (knots[i+p+1]-x)/b*basis(i+1, p-1, x, knots) if b else 0.)
+        spec = recipe(case_id)[1].representation
+        degree, counts = spec["degree"], (spec["n_y"], spec["n_x"])
         matrices = []
-        for n, c in zip(problem.shape, (4, 8), strict=True):
-            knots = [0.]*4 + [i/(c-3) for i in range(1, c-3)] + [1.]*4
-            matrices.append(np.array([[basis(j, 3, (i+.5)/n, knots) for j in range(c)] for i in range(n)]))
-        expected = matrices[0] @ z.reshape(4, 8) @ matrices[1].T
+        for n, c in zip(problem.shape, counts, strict=True):       # clamped uniform knots
+            knots = [0.]*(degree+1) + [i/(c-degree) for i in range(1, c-degree)] + [1.]*(degree+1)
+            matrices.append(np.array([[basis(j, degree, (i+.5)/n, knots) for j in range(c)] for i in range(n)]))
+        expected = matrices[0] @ z.reshape(counts) @ matrices[1].T
         error = float(np.max(np.abs(field-expected)))
         checks.update(independent_cox_de_boor_max_error=error,
                       partition_of_unity_max_error=float(max(np.max(abs(m.sum(axis=1)-1)) for m in matrices)))

@@ -6,16 +6,16 @@
   ],
   "source_url": "https://doi.org/10.1007/s00158-020-02748-4",
   "target": "Chandrasekhar-Suresh TOuNN (2021): architecture/optimization figure alignment pending.",
-  "limitations": "TOuNN uses batch-normalized LeakyReLU and AMSGrad rather than this tanh/Adam-AL variant. Gray fields, approximate volume and local optima remain possible.",
+  "limitations": "TOuNN uses batch-normalized LeakyReLU and AMSGrad rather than this tanh/Adam-AL variant. Gray fields, approximate volume and local optima remain possible. With two 20-wide layers, fixed penalty 3 and no projection the field stayed grey (greyness 0.74); a projection alone made it sharp but disconnected. The penalty continuation is what makes it black and white.",
   "paper_status": "paper_reproduction_to_fix",
   "paper_visual_status": "not_assessed",
   "checks": {
     "directional_adjoint_errors": [
-      4.998935432265483e-10,
-      1.131665129661119e-09,
-      4.206267556483567e-10,
-      3.895612166182616e-10,
-      3.453237695794087e-11
+      1.5601417657773453e-09,
+      1.0841492634194871e-09,
+      2.0573737158358085e-10,
+      1.1713248149192168e-09,
+      9.833791975166761e-10
     ],
     "adjoint_tolerance": 2e-05,
     "checks_passed": true,
@@ -23,19 +23,19 @@
     "finite_execution": true,
     "bounded_density": true
   },
-  "iterations": 300,
-  "stop_reason": "iteration limit (300)",
+  "iterations": 600,
+  "stop_reason": "iteration limit (600)",
   "optimizer": null,
-  "fresh_final_compliance": 385.76673654911565,
-  "last_recorded_objective": 386.26211955582824,
-  "physical_volume_fraction": 0.49963428456497144,
-  "volume_excess": -0.0003657154350285574,
+  "fresh_final_compliance": 272.7424728771025,
+  "last_recorded_objective": 272.8513906688971,
+  "physical_volume_fraction": 0.49716031959135903,
+  "volume_excess": -0.0028396804086409655,
   "feasible_volume_1e_4": true,
-  "grayness": 0.7382351840117439,
-  "engine_physics_evaluations_before_final_check": 300,
+  "grayness": 0.04126586892664667,
+  "engine_physics_evaluations_before_final_check": 600,
   "final_check_extra_model_evaluations": 1,
-  "runtime_seconds": 9.588728400005493,
-  "captured_at": "2026-10-28T11:37:00.475520+00:00",
+  "runtime_seconds": 25.621212300029583,
+  "captured_at": "2026-10-28T16:49:12.291252+00:00",
   "versions": {
     "python": "3.14.3",
     "numpy": "2.4.2",
@@ -102,20 +102,42 @@
     },
     "representation": {
       "type": "neural",
-      "width": 20,
-      "depth": 2,
+      "width": 40,
+      "depth": 3,
       "seed": 0
     },
     "filter_specs": [
       {
         "type": "density",
         "rmin": 1.5
+      },
+      {
+        "type": "heaviside",
+        "beta": 1.0,
+        "beta_max": 16.0
       }
     ],
-    "schedules": [],
+    "schedules": [
+      {
+        "path": "interpolation.penal",
+        "type": "steps",
+        "start": 1.0,
+        "end": 8.0,
+        "step": 0.5,
+        "every": 20
+      },
+      {
+        "path": "filters[1].beta",
+        "type": "geometric",
+        "start": 1.0,
+        "end": 16.0,
+        "factor": 2.0,
+        "every": 60
+      }
+    ],
     "variants": {},
     "m": 1.0,
-    "max_iter": 300,
+    "max_iter": 600,
     "tol": 0.0
   },
   "resolved_method_params": {

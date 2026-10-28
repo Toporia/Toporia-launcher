@@ -120,7 +120,7 @@ add("minimum_length", "Geometric solid and void length indicators", "response:mi
     "H: cone average; G: discrete gradient in minimum-cell-spacing units; c: radius-based scale; a: normalized nodal violations; s: KS sharpness.",
     "Runs the existing cell-centred geometric constraints and tests straight bars against their calibrated nodal indicator.",
     "https://doi.org/10.1016/j.cma.2015.05.003", "Zhou/Dunning length constraints: exact source panel and projection conventions pending.",
-    "Own physical-field/KS variant is not the original three-field formulation. Gray fields, boundary stencils and mesh resolution prevent a universal minimum-feature certificate. In this bounded 24 x 8 example both length constraints remain violated and the field stays grey; on 30 x 10 with lengths 8 or 12 mm they stay violated too.")
+    "Own physical-field/KS variant is not the original three-field formulation. Gray fields, boundary stencils and mesh resolution prevent a universal minimum-feature certificate. In this bounded 24 x 8 example both length constraints remain violated and the field stays grey: on a grey field every cell violates the indicator (about 3800 times its tolerance at the uniform start), so MMA barely moves. With a Heaviside projection sharpened to beta 32 and the tolerance tightened from 100 to 1 on a 180 x 60 mm MBB (60 x 20 cells, mmapy MMA), the field becomes black and white, but 1-cell members and holes remain and the indicators stay about 5 times their tolerance; pyMOTO MMA's subproblem then takes about 30 s per step. The function does not yet show its intended behaviour; its edge stencils and KS calibration need checking against Zhou et al.")
 add("phase_field", "Diffuse-interface energy and compliance", "response:phase_field", [
     (r"J=C/C_{\rm ref}+w\left\langle\frac{\epsilon}{2}|\nabla\rho|^2+\frac{\rho^2(1-\rho)^2}{\epsilon}\right\rangle", "The existing response adds domain-mean Modica-Mortola energy to normalized compliance; w controls the tradeoff."),
     (r"\rho(x)=\frac{1}{1+e^{-\sqrt{2}x/\epsilon}},\quad\gamma=\int_0^1\sqrt{2r^2(1-r)^2}\,dr=\frac{\sqrt{2}}{6}", "A resolved planar transition gives an independent interface-energy limit for this double-well convention.")],
@@ -206,7 +206,9 @@ def recipe(name):
         # The geometric indicators are slow on fine meshes (60 x 20 takes over 20 minutes) and their MMA
         # steps start tiny; this example stays small and bounded and its constraints are not met.
         return scenario, replace(solver, m=.4, max_iter=60, tol=0.)
-    return scenario, replace(solver, max_iter={"nonlinear": 150, "multires": 150}.get(name, 300), tol=.01)
+    # Stress-volume stops at change 0.005: at 0.01 its stress is still 0.02 % over the limit.
+    return scenario, replace(solver, max_iter={"nonlinear": 150, "multires": 150}.get(name, 300),
+                             tol={"stress_volume": .005}.get(name, .01))
 
 
 def description(name):

@@ -62,6 +62,8 @@ def test_recorded_density_reproduces_fresh_compliance_and_honest_status(case_id)
     assert density.shape == problem.shape
     # Re-evaluate the actual physical field, with no extra representation/filter.
     penal = 1. if CASES[case_id]["function"].startswith("method:") else 3.
+    # A penalty continuation (the neural field) ends at its schedule's last value.
+    penal = next((spec["end"] for spec in solver.schedules if spec["path"] == "interpolation.penal"), penal)
     compliance = float(solve_fea(problem, density, penal=penal)[2])
     assert compliance == pytest.approx(report["fresh_final_compliance"], rel=1e-9)
     assert density.mean() == pytest.approx(report["physical_volume_fraction"], abs=1e-14)

@@ -71,7 +71,7 @@ updater("oc_multi", "OC with several multipliers", (
 ), "d: objective direction; v_ij: gradient of constraint i; lambda_i: multiplier; eta: damping exponent.",
     "Uses one volume and one aggregate stress constraint in the companion, so the extra multiplier path is exercised.",
     "Zhou-Rozvany (1991) COC examples: panel/inputs pending.", "https://doi.org/10.1016/0045-7825%2891%2990046-9",
-    "Toporia's cyclic-bisection variant does not establish feasibility or convergence of general signed-gradient constraints.")
+    "Toporia's cyclic-bisection variant does not establish feasibility or convergence of general signed-gradient constraints. The stress limit is 0.8 x the compliance design's peak; it is met only with the small move limit 0.02 (0.3 % over at 0.05), and the earlier limit of 0.27 x the peak cannot be met with half the material at a point load.")
 for name, label in (("beso", "BESO soft kill"), ("beso_hard", "BESO hard kill")):
     updater(name, label, (
         eq(r"V_{k+1}=\max(V_*,(1-ER)V_k),\quad z_j^+\in\{z_{\min},1\}",
@@ -124,7 +124,7 @@ updater("augmented_lagrangian", "Local-stress augmented Lagrangian", (AL, *MMA),
     "lambda/mu: one multiplier/penalty per local stress observation; L/U,p/q,r: MMA approximation data.",
     "Runs Q4 compliance with a local relaxed-stress penalty; MMA handles the volume budget while local multipliers update every inner block.",
     "Giraldo-Londono-Paulino PolyStress examples: matching mesh, stress relaxation and numbered panel pending.", "https://doi.org/10.1007/s00158-020-02760-8",
-    "Q4 ersatz cells and the current density-relaxed stresses differ from PolyStress polygonal meshes. Inspect the exact stress ratio, not just small motion.")
+    "Q4 ersatz cells and the current density-relaxed stresses differ from PolyStress polygonal meshes. Inspect the exact stress ratio, not just small motion. The limit is 0.8 x the compliance design's peak (met, at 3 % more compliance); the earlier 0.27 x the peak cannot be met with half the material at a point load.")
 for name, label, algorithm in (
     ("scipy_slsqp", "SLSQP through SciPy", "SQP"),
     ("nlopt_slsqp", "SLSQP through NLopt", "SQP"),
@@ -184,10 +184,13 @@ representation("bspline", "B-spline density coefficients", (
     eq(r"\rho=B_y Z B_x^{\mathsf{T}},\quad\nabla_Z C=B_y^{\mathsf{T}}(\nabla_\rho C)B_x",
        "Tensor-product basis evaluation maps the coefficient grid to element centres; the backward map is its transpose."),
     eq(r"B_{ij}\geq0,\quad\sum_jB_{ij}=1", "Partition of unity preserves constants and keeps density inside coefficient bounds."),
-), "Z: coefficient grid; Bx/By: clamped uniform spline basis matrices; degree=3; 8 by 4 coefficients.",
-    "Evaluates a smooth field with 32 coefficients on the finer FE grid, then sends physical gradients back through the separable transpose.",
+), "Z: coefficient grid; Bx/By: clamped uniform spline basis matrices; degree=2; 40 by 14 coefficients.",
+    "Evaluates a smooth field with 560 coefficients on the 60 by 20 FE grid (the spline's smoothness replaces the density filter), "
+    "then sends physical gradients back through the separable transpose. A Heaviside projection sharpened from beta 1 to 32 makes it black and white.",
     "Qian (2013) B-spline density-space examples: numbered panel and original knots pending.", "https://doi.org/10.1016/j.cma.2013.06.001",
-    "A controlled coefficient field and independent basis check do not reproduce an optimized paper topology or its knot refinement study.", n_x=8, n_y=4, degree=3)
+    "A controlled coefficient field and independent basis check do not reproduce an optimized paper topology or its knot refinement study. "
+    "With only 8 by 4 cubic coefficients (one basis function spanning about 7 cells) the field cannot be sharp and stayed grey (greyness 0.87); "
+    "the showcase uses 40 by 14 quadratic coefficients and a projection.", n_x=40, n_y=14, degree=2)
 representation("geometry_projection", "Geometry projection capsule bars", (
     eq(r"d=R-\mathrm{dist}(x,[a,b]),\quad t=\mathrm{clip}(d/r,-1,1)",
        "Distance to a capsule medial segment defines an inside-positive boundary distance normalized by the sampling window."),
@@ -203,9 +206,11 @@ representation("neural", "Neural coordinate density", (
     eq(r"\nabla_\theta C=J_\rho(\theta)^{\mathsf{T}}\nabla_\rho C",
        "Explicit NumPy reverse propagation multiplies physical sensitivities by the network Jacobian; no training data or surrogate is used."),
 ), "h0: normalized cell coordinates; h: hidden activations; W/b: weights/biases; d: hidden depth; theta: all weights/biases; sigma: logistic function.",
-    "Uses two 20-wide tanh layers and sigmoid output, initialized to uniform fraction, with the existing Adam updater.",
+    "Uses three 40-wide tanh layers and sigmoid output, initialized to uniform fraction, with the existing Adam updater. "
+    "The SIMP penalty rises from 1 to 8 during training, as in TOuNN, and a projection sharpened to beta 16 removes the last grey band.",
     "Chandrasekhar-Suresh TOuNN (2021): architecture/optimization figure alignment pending.", "https://doi.org/10.1007/s00158-020-02748-4",
-    "TOuNN uses batch-normalized LeakyReLU and AMSGrad rather than this tanh/Adam-AL variant. Gray fields, approximate volume and local optima remain possible.", width=20, depth=2, seed=0)
+    "TOuNN uses batch-normalized LeakyReLU and AMSGrad rather than this tanh/Adam-AL variant. Gray fields, approximate volume and local optima remain possible. With two 20-wide layers, fixed penalty 3 and no projection the field stayed grey (greyness 0.74); "
+    "a projection alone made it sharp but disconnected. The penalty continuation is what makes it black and white.", width=40, depth=3, seed=0)
 
 for name, label, equations, symbols, target, source, limits in (
     ("levelset", "RBF level-set evolution", (
@@ -239,6 +244,10 @@ OWN_STOP = {"beso", "beso_hard", "tobs", "adam"}
 DENSE = {"scipy_slsqp", "nlopt_slsqp", "scipy_trust_constr", "nullspace"}
 
 
+#: Stress limit of the multi-OC and local-stress companions, 0.8 x the compliance design's peak.
+STRESS_LIMIT = 1.5
+
+
 def recipe(case_id):
     # A showcase runs the 60 x 20 half-MBB until the design settles (change below 0.01) or 300 steps.
     data = CASES[case_id]
@@ -250,10 +259,15 @@ def recipe(case_id):
         solver = replace(solver, method="q4+" + identity, method_params=deepcopy(data["settings"]))
         if identity in {"beso", "beso_hard", "tobs"}:
             solver = replace(solver, representation=dict(type="element_density", start="full"))
+        # The compliance design's peak relaxed stress is 1.88 here; a limit of 0.8 times that must
+        # reshape it. The earlier limit 0.5 (27 %) cannot be met with half the material at a point load.
         if identity == "augmented_lagrangian":
-            scenario = replace(scenario, constraints=[dict(type="local_stress", limit=0.5)])
+            scenario = replace(scenario, constraints=[dict(type="local_stress", limit=STRESS_LIMIT)])
         if identity == "oc_multi":
-            scenario = replace(scenario, constraints=[dict(type="stress", limit=0.5)])
+            scenario = replace(scenario, constraints=[dict(type="stress", limit=STRESS_LIMIT)])
+            # A stress gradient changes sign between elements, so OC is only a heuristic for it
+            # (updaters/oc_multi.py); at move 0.05 it ends 0.3 % over the limit, at 0.02 it meets it.
+            solver = replace(solver, method_params={**solver.method_params, "move": 0.02})
         if identity in OWN_STOP:
             solver = replace(solver, tol=0.)
         if identity in DENSE:
@@ -261,8 +275,18 @@ def recipe(case_id):
     elif kind == "representation":
         solver = replace(solver, method="q4+mma", method_params=dict(move=0.02),
                          representation=deepcopy(data["settings"]["representation"]))
+        if identity == "bspline":
+            # The spline's smoothness is the filter; a sharpening projection makes the field black and white.
+            solver = replace(solver, method_params=dict(move=0.2), max_iter=400,
+                             filter_specs=[dict(type="heaviside", beta=1., beta_max=32.)],
+                             schedules=[dict(path="filters[0].beta", type="geometric", start=1., end=32., factor=2., every=30)])
         if identity == "neural":
-            solver = replace(solver, method="q4+adam", method_params=dict(lr=0.01), tol=0.)
+            # As in TOuNN, the SIMP penalty rises during training (1 to 8), which drives the field to 0/1;
+            # a slowly sharpened projection behind the density filter removes the last grey band.
+            solver = replace(solver, method="q4+adam", method_params=dict(lr=0.01), tol=0., max_iter=600,
+                             filter_specs=[dict(type="density", rmin=1.5), dict(type="heaviside", beta=1., beta_max=16.)],
+                             schedules=[dict(path="interpolation.penal", type="steps", start=1., end=8., step=0.5, every=20),
+                                        dict(path="filters[1].beta", type="geometric", start=1., end=16., factor=2., every=60)])
     else:
         solver = replace(solver, method=identity, filter_specs=[])
     return scenario, solver

@@ -6,7 +6,7 @@
   ],
   "source_url": "https://doi.org/10.1016/0045-7825%2891%2990046-9",
   "target": "Zhou-Rozvany (1991) COC examples: panel/inputs pending.",
-  "limitations": "Toporia's cyclic-bisection variant does not establish feasibility or convergence of general signed-gradient constraints.",
+  "limitations": "Toporia's cyclic-bisection variant does not establish feasibility or convergence of general signed-gradient constraints. The stress limit is 0.8 x the compliance design's peak; it is met only with the small move limit 0.02 (0.3 % over at 0.05), and the earlier limit of 0.27 x the peak cannot be met with half the material at a point load.",
   "paper_status": "paper_reproduction_to_fix",
   "paper_visual_status": "not_assessed",
   "checks": {
@@ -18,16 +18,16 @@
   "iterations": 300,
   "stop_reason": "iteration limit (300)",
   "optimizer": null,
-  "fresh_final_compliance": 290.8595958190956,
-  "last_recorded_objective": 297.3333249238473,
-  "physical_volume_fraction": 0.5000000003158416,
-  "volume_excess": 3.1584157511588273e-10,
+  "fresh_final_compliance": 225.41660103835417,
+  "last_recorded_objective": 228.01699715970682,
+  "physical_volume_fraction": 0.4999999999999634,
+  "volume_excess": -3.658184866139891e-14,
   "feasible_volume_1e_4": true,
-  "grayness": 0.3009341140446584,
+  "grayness": 0.27046297121671825,
   "engine_physics_evaluations_before_final_check": 300,
   "final_check_extra_model_evaluations": 1,
-  "runtime_seconds": 29.348555400036275,
-  "captured_at": "2026-10-28T11:31:43.771963+00:00",
+  "runtime_seconds": 66.54764609999256,
+  "captured_at": "2026-10-28T16:48:10.609639+00:00",
   "versions": {
     "python": "3.14.3",
     "numpy": "2.4.2",
@@ -81,7 +81,7 @@
     "constraints": [
       {
         "type": "stress",
-        "limit": 0.5
+        "limit": 1.5
       }
     ],
     "E0": 1.0,
@@ -91,7 +91,9 @@
   },
   "solver": {
     "method": "q4+oc_multi",
-    "method_params": {},
+    "method_params": {
+      "move": 0.02
+    },
     "interpolation": {
       "type": "simp"
     },
@@ -111,21 +113,21 @@
     "tol": 0.01
   },
   "resolved_method_params": {
-    "move": 0.2,
+    "move": 0.02,
     "oc_eta": 0.5,
     "oc_sweeps": 30
   },
   "fresh_reported": {
-    "max_stress": 1.7824305406208116
+    "max_stress": 1.4988116654067793
   },
   "fresh_constraints": [
     {
       "name": "stress",
-      "value": 2.5648610812416233,
-      "exact": 2.5648610812416233
+      "value": -0.0007922230621471016,
+      "exact": -0.0007922230621471016
     }
   ],
-  "fresh_constraints_feasible_1e_4": false,
+  "fresh_constraints_feasible_1e_4": true,
   "primary_source_review": {
     "status": "source_access_or_setup_incomplete",
     "url": "https://doi.org/10.1016/0045-7825%2891%2990046-9",

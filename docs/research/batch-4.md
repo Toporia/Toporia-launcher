@@ -78,10 +78,13 @@ or global optimality certificate. Volume, extra constraints, source matching
 and the stopping reason remain separate report fields.
 
 The **stress-volume** companion ends at 24% volume with its stress constraint
-at 2.0e-4: 0.02% over the limit, just outside the 1e-4 feasibility tolerance.
-With MMA move 0.2 the same problem collapses, so it uses move 0.05. Local stress
+met (g = 4.8e-5). It uses MMA move 0.05, since at 0.2 the same problem
+collapses, and stops at design change 0.005, since at 0.01 it was still 0.02% over. Local stress
 (AL) meets its limits. **Minimum length** keeps both length constraints clearly
-violated (values 89 and 85) and a grey field. The length preset requests 16 physical units so its radius remains
+violated (values 89 and 85) and a grey field. A sharpened projection with a
+tightening tolerance on a larger 180 by 60 mm MBB makes it black and white, but
+1-cell members and holes remain: the function does not yet show its intended
+behaviour, and its implementation needs checking against Zhou et al. The length preset requests 16 physical units so its radius remains
 resolved on both the normal and the existing coarse GUI-comparison mesh. Its
 separate 1D calibration uses 4/8/12-cell bars and a requested length of 10; those
 calibration inputs are not silently substituted for the optimization setup.

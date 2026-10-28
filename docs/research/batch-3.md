@@ -84,17 +84,27 @@ volume budget by more than the absolute tolerance 1e-4: variable-thickness MMC
 at 0.503301 (geometric-variable MMA overshoot). On the earlier 30 by 10 runs
 Adam-AL, local-stress AL, both MMC variants, MMV and the RBF level set did.
 
-The multi-OC and local-stress companions meet their volume budget but not their
-stress limit of 0.5 at the concentrated MBB load (multi-OC normalised constraint
-2.56, local-stress AL penalty 275 at the 300-step cap). These runs do not establish
-that this stress-limited, concentrated-load problem is feasible, and must not be
-displayed as successful constrained designs. L-bracket (local stress) comes
-closest: peak relaxed stress 0.515 against 0.5 (3% over) at its 300-step cap.
+The multi-OC and local-stress companions use a stress limit of 1.5, 0.8 times
+the compliance design's peak relaxed stress (1.88), so the limit must reshape the
+design. Both meet it and the volume budget: multi-OC at 0.08% under the limit with
+move 0.02 (it ends 0.3% over at move 0.05, as expected for OC with a sign-changing
+stress gradient), local-stress AL 0.16% under, at 3% more compliance. The earlier
+limit of 0.5 (0.27 times the peak) cannot be met with half the material at a
+point load. L-bracket (local stress) is a separate preset: it lowers the corner
+peak from 0.673 to 0.514 with 26% material and ends about 3% over its limit of
+0.5, whatever the step count, penalty or limit; its re-entrant corner stress is
+singular (14% over on a twice finer mesh).
 
-Six companions stop at the 300-step cap; twenty-five report the design-change
+B-spline uses 40 by 14 quadratic coefficients with a Heaviside projection
+sharpened to beta 32 (greyness 0.0007, compliance 191; with 8 by 4 cubic
+coefficients it stayed at greyness 0.87). The neural field uses three 40-wide
+layers and, as in TOuNN, a SIMP penalty rising from 1 to 8, with a projection
+behind the density filter (greyness 0.04 after 600 steps; 0.74 before).
+
+Five companions stop at their step cap (300, or 600 for the neural field); twenty-six report the design-change
 tolerance, their own stopping criterion or a library finish flag. Neither category establishes
-global optimality or a paper match. Neural and B-spline final grayness are
-recorded alongside volume and compliance rather than concealed by thresholding.
+global optimality or a paper match. Final grayness is recorded alongside volume and compliance rather than
+concealed by thresholding.
 
 ![Neural field with grayness and physical-volume history](evidence/batch3/neural/figure.png)
 
@@ -120,7 +130,14 @@ mismatch instead of changing the algorithm to force agreement.
 The author-field physics check gives **266.609374**, consistent with the printed
 **266.61**. The Toporia variant reaches **323.297382** at the 600-step cap,
 **21.26% higher compliance**, with maximum density difference **0.99846**.
-This is a failed reproduction even though both fields meet fraction 0.35.
+This is a failed reproduction of `pto`, even though both fields meet fraction 0.35.
+
+**Resolved 28 October 2026 by a separate updater.** `ptoc` implements the published
+algorithm (allocation by element compliance, its own filter on each increment,
+history blend). The preset **Paper: PTOc Fig. 3 (MBB)** matches all 169 printed
+compliances to the printed two decimals and the author's final field to 8.6e-9
+([evidence](evidence/batch3/ptoc/report.json)). `pto` stays a declared
+sensitivity-proxy variant; the rest of this section documents its difference.
 Exact final values and stopping counts are in the linked report. The original
 source code and downloaded manuscripts are not redistributed. The updater's
 comments/reference now identify the proxy variant and remove the incorrect
