@@ -5,8 +5,8 @@ whose paper/setup information is missing. Untouched backlog entries remain in
 the coverage inventory; do not pretend they have been attempted.
 
 Batch 2 contributes 17 unresolved paper cases and a separate original-2017
-ordered-SIMP target. The volume-preserving-projection companion also has a
-documented numerical failure and is quarantined outside preset discovery.
+ordered-SIMP target. The volume-preserving-projection companion's numerical
+failure at 0/1 designs is resolved and the companion is registered again.
 See the [Batch 2 report](../batch-2.md) and [case index](../batch-2-cases.md).
 
 Batch 3 adds 31 unresolved comparisons for 30 functions, including both MMC

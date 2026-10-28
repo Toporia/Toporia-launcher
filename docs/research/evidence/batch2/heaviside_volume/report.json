@@ -13,16 +13,19 @@
   "checks": {
     "directional_adjoint_error": 2.1818280515617516e-09,
     "adjoint_tolerance": 2e-05,
+    "adjoint_scope": "ordinary backward on a separate smooth 0.2-to-0.8 field; not a certificate at binary switches or for backward_volume overrides",
     "adjoint_pass": true,
     "independent_root_eta": 0.44627821304152104,
     "root_field_error": 2.220446049250313e-16,
     "preserved_mean_error": 1.1102230246251565e-16,
-    "checks_passed": false,
+    "checks_passed": true,
     "saturation_probe": {
-      "all_solid_adjoint_finite": false,
-      "input": "all ones",
-      "gradient_seed": "all ones",
-      "failure": "Zero sum of threshold derivatives; implicit-adjoint division is undefined."
+      "all_solid_adjoint_finite": true,
+      "all_solid_identity_fd_error": 3.232169941291829e-05,
+      "mixed_binary_refused": true,
+      "input": "all ones; half zeros/half ones",
+      "gradient_seed": "standard normal",
+      "limit": "Uniform 0/1 designs: identity. Mixed 0/1 designs: no gradient, explicit error."
     }
   },
   "limitations": "Mean preservation does not make every cell or optimized topology agree with top99neo. The input field here is a controlled ramp, not a paper design.",
@@ -32,8 +35,8 @@
     "beta_max": 16.0,
     "eta_mode": "volume_preserving"
   },
-  "next_check": "Resolve the undefined implicit adjoint at saturated inputs before registration: establish a valid derivative/limit or reject incompatible designs/methods. Do not conceal division by zero with an arbitrary epsilon. Then align a numbered source figure.",
-  "quarantined_reason": "Saturated all-solid inputs give a zero implicit-threshold denominator and a non-finite adjoint; GUI Compare Methods can reach this through discrete updates. The recipe is not registered.",
-  "generated_at": "2026-10-27T22:28:42.528133+00:00",
+  "next_check": "The 0/1-design limit is settled (identity when uniform, explicit error when mixed). Align a numbered top99neo source figure and compare its threshold history.",
+  "quarantined_reason": "",
+  "generated_at": "2026-10-28T02:40:40.708523+00:00",
   "reproduce": "python -m experiments.research_batch2 --case heaviside_volume"
 }

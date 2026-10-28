@@ -66,6 +66,7 @@ class TOBSUpdater(Updater):
     """Sequential integer linear programming on binary elements (TOBS)."""
 
     name = "tobs"
+    binary_designs = True
     reference = (
         'R. Sivapuram and R. Picelli, Finite Elem. Anal. Des. 139 (2018) 49-61; R. Picelli, '
         'R. Sivapuram and Y. M. Xie, "A 101-line MATLAB code for topology optimization using '

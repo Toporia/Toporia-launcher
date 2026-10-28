@@ -147,7 +147,7 @@
           "paper_status": "paper_reproduction_to_fix",
           "target": "Ferrari-Sigmund (2020) volume-preserving construction; exact source figure remains to select.",
           "source_url": "https://doi.org/10.1007/s00158-020-02629-w",
-          "checks_passed": false,
+          "checks_passed": true,
           "evidence": "evidence/batch2/heaviside_volume/report.json"
         }
       ]
@@ -2826,7 +2826,7 @@
       "about": "A 60 x 20 mm column clamped at one end and compressed axially at the other: minimise compliance while the buckling load factor stays above a limit.",
       "reference": "Linearised buckling in topology optimisation: F. Ferrari, O. Sigmund and J. K. Guest, Struct. Multidisc. Optim. 63 (2021) 3045-3066. Geometry is Toporia's own. Papers: https://doi.org/10.1007/s00158-021-02854-x",
       "research_description": true,
-      "target_figure": "General-purpose preset: it shows a typical use, not a reproduced paper figure. To try its parts on their own, open these presets: model:q4_buckling: Research: Linearized buckling factors; updater:pymoto_mma: Research: MMA through pyMOTO; response:buckling_load: Research: Linearized buckling factors; filter:heaviside: Research: Heaviside projection curves; schedule:geometric: Research: Geometric beta continuation.",
+      "target_figure": "General-purpose preset: it shows a typical use, not a reproduced paper figure. To try its parts on their own, open these presets: model:q4_buckling: Research: Linearized buckling factors; updater:pymoto_mma: Research: MMA through pyMOTO; response:buckling_load: Research: Linearized buckling factors; filter:heaviside: Research: Heaviside projection curves, Research: Volume-preserving projection; schedule:geometric: Research: Geometric beta continuation.",
       "functions": [
         "model:q4_buckling",
         "physics:q4_buckling",
@@ -2983,7 +2983,7 @@
       "about": "MBB beam with fixed beta=16 projection and conservative MMA asymptotes. No beta continuation; sharpness and optimizer tuning remain problem dependent.",
       "reference": "Independent fixed-projection recipe. MMA parameter recipe: Høghøj & Träff (2021), section 3.1, equation (11); continuation-free motivation: Guest, Asadpoure & Ha (2011). Papers: https://arxiv.org/abs/2102.12999 https://doi.org/10.1007/s00158-011-0676-1",
       "research_description": true,
-      "target_figure": "General-purpose preset: it shows a typical use, not a reproduced paper figure. To try its parts on their own, open these presets: updater:mma: Research: MMA: local one-budget variant; filter:heaviside: Research: Heaviside projection curves.",
+      "target_figure": "General-purpose preset: it shows a typical use, not a reproduced paper figure. To try its parts on their own, open these presets: updater:mma: Research: MMA: local one-budget variant; filter:heaviside: Research: Heaviside projection curves, Research: Volume-preserving projection.",
       "functions": [
         "model:q4",
         "physics:q4_plane_stress",
@@ -3001,7 +3001,7 @@
       "about": "The MBB beam solved robustly: the worst of the eroded, intermediate and dilated designs (Heaviside thresholds 0.75 / 0.5 / 0.25), with a doubling continuation of the sharpness.",
       "reference": "F. Wang, B. S. Lazarov and O. Sigmund, \"On projection methods, convergence and robust formulations in topology optimization\", Struct. Multidisc. Optim. 43 (2011) 767-784. Independent recipe; thresholds match Fig. 6, but volume, aggregation and continuation differ. Papers: https://doi.org/10.1007/s00158-010-0602-y Correction: https://doi.org/10.1007/s00158-022-03326-6",
       "research_description": true,
-      "target_figure": "General-purpose preset: it shows a typical use, not a reproduced paper figure. To try its parts on their own, open these presets: filter:heaviside: Research: Heaviside projection curves; schedule:geometric: Research: Geometric beta continuation.",
+      "target_figure": "General-purpose preset: it shows a typical use, not a reproduced paper figure. To try its parts on their own, open these presets: filter:heaviside: Research: Heaviside projection curves, Research: Volume-preserving projection; schedule:geometric: Research: Geometric beta continuation.",
       "functions": [
         "model:q4",
         "physics:q4_plane_stress",
@@ -3873,6 +3873,17 @@
       ]
     },
     {
+      "name": "Research: Volume-preserving projection",
+      "source_file": "toporia/plugins/problems/research_heaviside_volume.py",
+      "about": "Demonstrate Volume-preserving projection; see preset help for mathematics and evidence scope.",
+      "reference": "Research demonstration. Papers: https://doi.org/10.1007/s00158-020-02629-w",
+      "research_description": true,
+      "target_figure": "Ferrari-Sigmund (2020) volume-preserving construction; exact source figure remains to select.",
+      "functions": [
+        "filter:heaviside"
+      ]
+    },
+    {
       "name": "Standard Bar",
       "source_file": "toporia/plugins/problems/standard_bar.py",
       "about": "A rectangular bar clamped along its left edge with a single load.",
@@ -4463,6 +4474,13 @@
       "is_preset": false,
       "classification": "supporting module",
       "source_summary": "plugins.catalog — every value the platform can vary, as parameter paths."
+    },
+    {
+      "source_file": "toporia/plugins/compatibility.py",
+      "defines_functions": [],
+      "is_preset": false,
+      "classification": "supporting module",
+      "source_summary": "plugins.compatibility — what a part works with, and which presets show it, for its help."
     },
     {
       "source_file": "toporia/plugins/filters/__init__.py",
@@ -5552,6 +5570,13 @@
       "is_preset": true,
       "classification": "preset recipe",
       "source_summary": "Research demonstration: Heaviside projection curves."
+    },
+    {
+      "source_file": "toporia/plugins/problems/research_heaviside_volume.py",
+      "defines_functions": [],
+      "is_preset": true,
+      "classification": "preset recipe",
+      "source_summary": "Research demonstration: volume-preserving Heaviside projection."
     },
     {
       "source_file": "toporia/plugins/problems/research_machining.py",

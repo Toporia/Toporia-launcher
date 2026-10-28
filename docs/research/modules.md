@@ -81,6 +81,7 @@ Generated from every Python module under `toporia/`. A supporting module defines
 | [toporia/framework/registry.py](../../toporia/framework/registry.py) | supporting module | - |
 | [toporia/plugins/__init__.py](../../toporia/plugins/__init__.py) | supporting module | - |
 | [toporia/plugins/catalog.py](../../toporia/plugins/catalog.py) | supporting module | - |
+| [toporia/plugins/compatibility.py](../../toporia/plugins/compatibility.py) | supporting module | - |
 | [toporia/plugins/filters/__init__.py](../../toporia/plugins/filters/__init__.py) | supporting module | - |
 | [toporia/plugins/filters/_neighbours.py](../../toporia/plugins/filters/_neighbours.py) | supporting module | - |
 | [toporia/plugins/filters/am.py](../../toporia/plugins/filters/am.py) | numerical function implementation | filter:am |
@@ -222,6 +223,7 @@ Generated from every Python module under `toporia/`. A supporting module defines
 | [toporia/plugins/problems/research_extrusion.py](../../toporia/plugins/problems/research_extrusion.py) | preset recipe | - |
 | [toporia/plugins/problems/research_hashin_shtrikman.py](../../toporia/plugins/problems/research_hashin_shtrikman.py) | preset recipe | - |
 | [toporia/plugins/problems/research_heaviside.py](../../toporia/plugins/problems/research_heaviside.py) | preset recipe | - |
+| [toporia/plugins/problems/research_heaviside_volume.py](../../toporia/plugins/problems/research_heaviside_volume.py) | preset recipe | - |
 | [toporia/plugins/problems/research_machining.py](../../toporia/plugins/problems/research_machining.py) | preset recipe | - |
 | [toporia/plugins/problems/research_morphology.py](../../toporia/plugins/problems/research_morphology.py) | preset recipe | - |
 | [toporia/plugins/problems/research_ordered_simp.py](../../toporia/plugins/problems/research_ordered_simp.py) | preset recipe | - |

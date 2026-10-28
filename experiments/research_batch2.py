@@ -36,7 +36,7 @@ CURVE_MATCHES = {"sinh", "hashin_shtrikman", "ordered_simp"}
 NEXT_CHECKS = {
     "pde_anisotropic": "Select a published directional FV example or establish this as an explicitly independent extension; the cosine verification already passes.",
     "heaviside": "Obtain the Figure 5 source bitmap and exact filtering settings; do not substitute the diagnostic ramp for the paper pattern.",
-    "heaviside_volume": "Resolve the undefined implicit adjoint at saturated inputs before registration: establish a valid derivative/limit or reject incompatible designs/methods. Do not conceal division by zero with an arbitrary epsilon. Then align a numbered source figure.",
+    "heaviside_volume": "The 0/1-design limit is settled (identity when uniform, explicit error when mixed). Align a numbered top99neo source figure and compare its threshold history.",
     "morphology": "Recover Figure 3's bitmap and five-cell structuring element; compare the uniform-weight hard limit separately from finite-beta cone weighting.",
     "am": "Align an identified Langelaar source panel and input geometry with the build direction and tiny shift/backshift conventions.",
     "symmetry": "Select an identifiable research example for the symmetry restriction, or classify this Toporia operator as an engineering demonstration.",
@@ -236,16 +236,33 @@ def projection_figure(case_id, folder):
         report = {**_adjoint_check(operator, problem.shape), "independent_root_eta": float(eta),
                   "root_field_error": error, "preserved_mean_error": float(abs(actual.mean() - source.mean()))}
         report["checks_passed"] = report["adjoint_pass"] and error < 1e-11 and report["preserved_mean_error"] < 1e-12
+        # At an all-solid design every threshold preserves the volume; the derivative is the identity
+        # limit. Check it against one-sided finite differences in random inward directions.
         saturated = np.ones(problem.shape)
+        seed = np.random.default_rng(3).standard_normal(problem.shape)
         operator.forward(saturated)
-        with np.errstate(divide="ignore", invalid="ignore"):
-            saturated_adjoint = operator.backward(saturated, np.ones_like(saturated))
+        saturated_adjoint = operator.backward(saturated, seed)
+        base, step, worst = float(np.sum(seed * operator.forward(saturated))), 1e-7, 0.0
+        for k in range(4):
+            direction = -np.abs(np.random.default_rng(10 + k).standard_normal(problem.shape))
+            slope = (float(np.sum(seed * operator.forward(saturated + step * direction))) - base) / step
+            worst = max(worst, abs(slope - float(np.sum(saturated_adjoint * direction))) / max(1.0, abs(slope)))
+        mixed = np.ones(problem.shape)
+        mixed[:, : problem.shape[1] // 2] = 0.0
+        operator.forward(mixed)
+        try:
+            operator.backward(mixed, seed)
+            mixed_refused = False
+        except ValueError:
+            mixed_refused = True
         report["saturation_probe"] = {
             "all_solid_adjoint_finite": bool(np.all(np.isfinite(saturated_adjoint))),
-            "input": "all ones", "gradient_seed": "all ones",
-            "failure": "Zero sum of threshold derivatives; implicit-adjoint division is undefined."
+            "all_solid_identity_fd_error": worst, "mixed_binary_refused": mixed_refused,
+            "input": "all ones; half zeros/half ones", "gradient_seed": "standard normal",
+            "limit": "Uniform 0/1 designs: identity. Mixed 0/1 designs: no gradient, explicit error."
         }
-        report["checks_passed"] &= report["saturation_probe"]["all_solid_adjoint_finite"]
+        report["checks_passed"] &= (report["saturation_probe"]["all_solid_adjoint_finite"] and worst < 1e-4
+                                    and mixed_refused)
         for values, label in ((source, "Input"), (fixed, "Fixed eta=.5"), (actual, "Volume-preserving")):
             axes[0, 0].plot(x.ravel(), values.ravel(), label=label)
         axes[0, 0].set_ylabel("Density")

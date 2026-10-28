@@ -42,6 +42,9 @@ class Updater(ABC):
     #: (OC, BESO): it is then refused with any other design representation
     #: (framework/parts/representation.py).
     needs_element_densities = False
+    #: True when every design it produces is exactly 0/1 (TOBS, hard-kill BESO), so a part
+    #: that needs a derivative at grey designs only can refuse it.
+    binary_designs = False
     #: The problem dimensions it works in; None means any (it never looks at the mesh's shape).
     dims = None
     #: Parameters a schedule may change during a run (framework/parts/schedule.py).

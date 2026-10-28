@@ -66,9 +66,24 @@ def test_ordered_simp_original_formula_is_not_misreported_as_a_match(tmp_path):
     assert report["checks"]["original_2017_reproduction_to_fix"]
 
 
-def test_known_failing_companion_is_not_registered():
-    assert metadata("heaviside_volume")[0] not in problem_names()
-    assert "QUARANTINED" in description("heaviside_volume").setup
+def test_volume_preserving_companion_is_registered_once_its_binary_limit_is_settled(tmp_path):
+    assert metadata("heaviside_volume")[0] in problem_names()
+    assert "QUARANTINED" not in description("heaviside_volume").setup
+    probe = run_case("heaviside_volume", tmp_path)["checks"]["saturation_probe"]
+    assert probe["all_solid_adjoint_finite"] and probe["mixed_binary_refused"]
+    assert probe["all_solid_identity_fd_error"] < 1e-4
+
+
+def test_volume_preserving_projection_refuses_binary_updaters_only_as_first_filter():
+    from toporia.framework import Solver
+    from toporia.plugins.filters.heaviside import HeavisideFilter
+    projection = HeavisideFilter(eta_mode="volume_preserving")
+    first = Solver(method="q4+tobs", filter_specs=[{"type": "heaviside", "eta_mode": "volume_preserving"}])
+    with pytest.raises(ValueError, match="first filter"):
+        projection.setup(None, first)
+    behind = Solver(method="q4+tobs", filter_specs=[{"type": "density"},
+                                                    {"type": "heaviside", "eta_mode": "volume_preserving"}])
+    projection.setup(None, behind)
 
 
 def test_original_capture_refuses_changed_source_before_matlab(tmp_path):

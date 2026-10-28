@@ -63,7 +63,7 @@ relaxed to hide it. Do not translate “no pending census rows” into “nothin
 
 | Issue | Evidence / next action |
 | :-- | :-- |
-| Volume-preserving Heaviside adjoint becomes non-finite on saturated all-solid fields | `to-fix/batch2-heaviside_volume/README.md`. A zero implicit-threshold denominator is reproduced. The new companion is quarantined outside discovery. Establish the valid derivative/limit or explicitly reject incompatible states before enabling it; do not mask it with an arbitrary epsilon. |
+| ~~Volume-preserving Heaviside adjoint becomes non-finite on saturated all-solid fields~~ | **Resolved 28 Oct 2026:** identity limit for uniform 0/1 designs, explicit error for mixed ones, companion registered. See `to-fix/batch2-heaviside_volume/README.md`. |
 | Multiresolution analysis can be artificially stiff | `evidence/batch4/multires/report.json`: coarse compliance 235.9407 versus independent fine-Q4 791.4156 on the same density. Investigate discretization/length control and source alignment; preserve independent fine analysis as a required comparison. |
 | PTO is a different algorithm from original PTOc | `evidence/batch3/pto/paper-attempt/report.json`: author 170 iterations, current variant capped at 600, fresh C 266.609374 versus 323.297382 (+21.26%). Current allocation uses negative filtered sensitivity; the author uses element compliance and filtered redistribution. Parameter tuning does not remove that formulation difference. |
 | Sharp continuation companions can perform poorly | Batch 2 report and schedule case records: caps, oscillation and very poor geometric-beta OC behavior remain. Align updater/trigger rules before claiming source trajectories. |

@@ -16,10 +16,10 @@ MORPH = "https://doi.org/10.1007/s00158-006-0087-x"
 ORDERED = "https://doi.org/10.1007/s00158-022-03379-7"
 BRUNS = "https://doi.org/10.1007/s00158-005-0537-x"
 BOUNDS = "https://doi.org/10.1007/s004190050248"
-QUARANTINED = {
-    "heaviside_volume": "Saturated all-solid inputs give a zero implicit-threshold denominator and a non-finite adjoint; "
-                       "GUI Compare Methods can reach this through discrete updates. The recipe is not registered."
-}
+#: Companions kept out of discovery because of a known numerical failure, {case: reason}.  The
+#: volume-preserving projection left it once its 0/1-design limit was settled (identity when uniform,
+#: an explicit error when mixed; see plugins/filters/heaviside.py).
+QUARANTINED = {}
 
 
 def _case(label, kind, name, spec, equations, computes, source, target, limits,

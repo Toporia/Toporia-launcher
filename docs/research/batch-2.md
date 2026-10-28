@@ -80,11 +80,17 @@ a non-finite gradient. Smooth-field finite differences and a nonuniform
 volume-preserving root check had passed; those were insufficient to establish
 compatibility with discrete updates in GUI Compare Methods.
 
-The [failed probe and recipe](to-fix/batch2-heaviside_volume/README.md) are kept
-for investigation. The companion is **not registered in the GUI**. The existing
-filter implementation remains unchanged; fixed-threshold mode is separate.
-The report records the failed check, and the reproduction command returns a
-nonzero exit code. No arbitrary epsilon was added to claim an exact adjoint.
+**Resolved 28 October 2026.** At a design whose every element is exactly 0 or 1,
+every threshold preserves the volume, so the threshold is not defined. For a
+uniform (all-solid or all-void) design the derivative is the identity: any
+admissible perturbation is absorbed by the perturbed elements themselves, which
+one-sided finite differences confirm. For a mixed 0/1 design the first-order
+response depends on the perturbation direction, so no gradient exists; the
+filter now stops with an explicit error, and 0/1-only updaters (TOBS, hard-kill
+BESO) are refused when the projection is the first filter. Exactly-binary
+elements contribute exactly zero to the denominator. No epsilon was added. The
+companion is registered again; its [paper comparison](to-fix/batch2-heaviside_volume/README.md)
+remains open.
 
 ## Continuation companions are bounded observations
 

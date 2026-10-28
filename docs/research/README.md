@@ -64,10 +64,10 @@ See [conventions](conventions.md), the [preset template](templates/preset.md),
 the [researcher contribution template](templates/research-note.md) and the
 [`to-fix` queue](to-fix/README.md).
 
-The inventory separates **97 selectable functions/engines** from **90 presets**
-(18 original and 72 registered research recipes). A further volume-preserving
-projection companion is quarantined, with its description and failed probe in
-the to-fix queue; it is not counted as a selectable preset. One example can demonstrate several
+The inventory separates **97 selectable functions/engines** from **91 presets**
+(18 original and 73 registered research recipes). The volume-preserving
+projection companion was quarantined until its 0/1-design limit was settled;
+it is registered again. One example can demonstrate several
 functions. Metadata citations are starting points; pending rows are not claims
 of paper review or successful reproduction.
 

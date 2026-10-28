@@ -39,6 +39,7 @@ class HardKillBESOUpdater(BESOUpdater):
     """Hard-kill BESO: removed elements sit exactly at the void bound."""
 
     name = "beso_hard"
+    binary_designs = True
     reference = (
         'X. Huang and Y. M. Xie, Evolutionary Topology Optimization of Continuum Structures, '
         'Wiley 2010 (hard-kill BESO); critique: M. Zhou and G. I. N. Rozvany, Struct. '
