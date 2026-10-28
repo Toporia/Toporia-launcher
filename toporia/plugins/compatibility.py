@@ -11,6 +11,7 @@ without anyone writing (and forgetting to update) a compatibility list by hand.
     use_when(cls)           when to choose it (its own `use_when`; a composed method joins its two parts')
     works_with(cls)         [sentence, ...]  what it combines with, and what it refuses
     demo_presets(fid)       presets that exercise it, dedicated research presets first
+    part_class(fid)         the registered class behind an id
 
 Nothing here imports Qt; the GUI's help window and the docs can both use it.
 """
@@ -40,6 +41,27 @@ def function_id(cls):
         if isinstance(cls, type) and issubclass(cls, base):
             return f"{kind}:{cls.name}"
     return ""
+
+
+def part_class(fid):
+    """The registered class for an id such as "filter:heaviside"; None for physics engines and unknown ids."""
+    from toporia.plugins.filters import FILTERS
+    from toporia.plugins.interpolations import INTERPOLATIONS
+    from toporia.plugins.methods import METHODS
+    from toporia.plugins.models import MODELS
+    from toporia.plugins.postprocessors import POSTPROCESSORS
+    from toporia.plugins.representations import REPRESENTATIONS
+    from toporia.plugins.responses import RESPONSES
+    from toporia.plugins.schedules import SCHEDULES
+    from toporia.plugins.updaters import UPDATERS
+    registries = {"filter": FILTERS, "interpolation": INTERPOLATIONS, "representation": REPRESENTATIONS,
+                  "response": RESPONSES, "schedule": SCHEDULES, "postprocessor": POSTPROCESSORS,
+                  "updater": UPDATERS, "model": MODELS, "method": METHODS}
+    kind, _, name = fid.partition(":")
+    try:
+        return registries[kind].get(name)
+    except (KeyError, ValueError):
+        return None
 
 
 def _names(items):

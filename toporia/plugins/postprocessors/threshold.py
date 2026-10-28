@@ -25,7 +25,7 @@ class Threshold(PostProcessor):
     name = "threshold"
     label = "Threshold to black and white"
     use_when = (
-        "Always worth running: turns the grey result into the black-and-white part you would make and re- "
+        "Always worth running: turns the grey result into the black-and-white part you would make and re-"
         "analyses it, so you see its true performance."
     )
     reference = (

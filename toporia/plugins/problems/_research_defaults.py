@@ -142,6 +142,29 @@ def _setup(scenario, solver, model):
     return "\n".join(lines)
 
 
+def readable_setup(scenario, solver):
+    """A preset's setup as plain sentences, one topic per line; shared by every research preset."""
+    from toporia.plugins.methods import method_class
+    return _setup(scenario, solver, method_class(solver.method).name.split("+")[0])
+
+
+def showcase_about(functions):
+    """One or two sentences for a research preset: what its main function is, and when to use it.
+
+    Built from the function's own docstring and use_when, so the preset and the function's help agree.
+    """
+    import inspect
+
+    from toporia.plugins.compatibility import part_class
+    for function in functions:
+        cls = part_class(function)
+        if cls is None:
+            continue
+        what = (inspect.getdoc(cls) or "").split("\n\n")[0].replace("\n", " ").strip()
+        return f"Shows {cls.label}: {what} When to use it: {cls.use_when}".strip()
+    return ""
+
+
 def _try_alone(functions):
     """For each non-baseline part of this preset, the research presets that demonstrate it."""
     from toporia.plugins.problems import _modules

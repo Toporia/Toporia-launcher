@@ -48,7 +48,7 @@ class HardKillBESOUpdater(BESOUpdater):
     )
     label = "BESO (hard kill)"
     use_when = (
-        "Like soft-kill BESO, but removed elements are fully void; mainly for comparison with the hard- "
+        "Like soft-kill BESO, but removed elements are fully void; mainly for comparison with the hard-"
         "kill literature."
     )
     order = 61

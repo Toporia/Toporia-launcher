@@ -98,13 +98,25 @@ def _shown(param, value):
     return f"{value:g}" if isinstance(value, float) else str(value)
 
 
+def _what_it_is(cls):
+    """The class docstring without the paragraphs that only list its parameters (shown under Parameters)."""
+    names = {p.name for p in getattr(cls, "params", ())}
+    kept = []
+    for paragraph in (inspect.getdoc(cls) or "").split("\n\n"):
+        first = paragraph.strip().split("\n")[0]
+        if first.startswith("Parameters") or re.split(r"\s*[:,]", first, maxsplit=1)[0] in names:
+            continue
+        kept.append(paragraph)
+    return "\n\n".join(kept) or UNSTATED
+
+
 def plugin_topic(cls, kind=""):
     """A topic for a plugin class: its docstring, its reference, what it needs, its parameters."""
     from toporia.framework.registry import install_hint, missing_dependencies
 
     title = f"{cls.label}" + (f"  ({kind})" if kind else "")
     topic = HelpTopic(title)
-    topic.add("What it is", inspect.getdoc(cls) or UNSTATED)
+    topic.add("What it is", _what_it_is(cls))
     assembled = getattr(cls, "model", None) is not None
     fallback = "Toporia assembles it from the two parts below; each says where it comes from." if assembled else UNSTATED
     topic.add("Where it is from", getattr(cls, "reference", "") or fallback)

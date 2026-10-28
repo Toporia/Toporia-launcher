@@ -39,7 +39,7 @@ class GeometryProjection(Representation):
     name = "geometry_projection"
     label = "Geometry projection (capsule bars)"
     use_when = (
-        "Like moving components, but with round-ended capsule bars that can switch off; good for truss- "
+        "Like moving components, but with round-ended capsule bars that can switch off; good for truss-"
         "like designs described by bar end points."
     )
     order = 27
