@@ -32,7 +32,8 @@ def equation_image(latex):
 
 def description_html(description):
     """A QTextBrowser-compatible HTML fragment; all contributor text is escaped."""
-    escape = html.escape
+    def escape(text, quote=True):
+        return html.escape(text, quote=quote).replace("\n", "<br>")   # keep the line breaks of multi-line text
     sections = [
         ("Question", description.question),
         ("Setup", description.setup),

@@ -23,7 +23,7 @@ from toporia.framework import EdgeConstraint, LoadCase, PointLoad, Scenario, Sol
 NAME = "Vibrating Beam"
 ORDER = 80
 ABOUT = ('A beam clamped at both ends, carrying a payload at its centre: maximise its lowest natural'
-         ' frequency with the volume fixed. Choose the model 2-D Q4 with vibration.')
+         ' frequency with the volume fixed.')
 REFERENCE = ('After J. Du, N. Olhoff, "Topological design of freely vibrating continuum structures for maximum'
              ' values of simple and multiple eigenfrequencies and frequency gaps", Struct. Multidisc. Optim. 34'
              ' (2007) 91-110, with the mass interpolation of N. L. Pedersen, Struct. Multidisc. Optim. 20 (2000)'

@@ -2792,7 +2792,7 @@
       "about": "A beam clamped along one end with a point load at mid-height of the free end.",
       "reference": "A classic benchmark, e.g. the cantilever example of Sigmund's 99-line code (Struct. Multidisc. Optim. 21 (2001) 120-127). Papers: https://doi.org/10.1007/s001580050176",
       "research_description": true,
-      "target_figure": "General-purpose preset, not a newly certified paper-figure reproduction. Related function examples: Batch 1 linear-elastic baseline and the function census",
+      "target_figure": "General-purpose preset: it shows a typical use, not a reproduced paper figure.",
       "functions": [
         "model:q4",
         "physics:q4_plane_stress",
@@ -2809,7 +2809,7 @@
       "about": "A 60 x 20 mm cantilever extruded 10 mm deep, clamped over one face and loaded along the bottom edge of the free end.",
       "reference": "The benchmark of top3d: K. Liu, A. Tovar, \"An efficient 3D topology optimization code written in Matlab\", Struct. Multidisc. Optim. 50 (2014) 1175-1196. Papers: https://doi.org/10.1007/s00158-014-1107-x",
       "research_description": true,
-      "target_figure": "General-purpose preset, not a newly certified paper-figure reproduction. Related function examples: Batch 4 case solid3d",
+      "target_figure": "General-purpose preset: it shows a typical use, not a reproduced paper figure. To try its parts on their own, open these presets: model:h8: Research: 3D H8 elasticity.",
       "functions": [
         "model:h8",
         "physics:h8_solid",
@@ -2826,7 +2826,7 @@
       "about": "A 60 x 20 mm column clamped at one end and compressed axially at the other: minimise compliance while the buckling load factor stays above a limit.",
       "reference": "Linearised buckling in topology optimisation: F. Ferrari, O. Sigmund and J. K. Guest, Struct. Multidisc. Optim. 63 (2021) 3045-3066. Geometry is Toporia's own. Papers: https://doi.org/10.1007/s00158-021-02854-x",
       "research_description": true,
-      "target_figure": "General-purpose preset, not a newly certified paper-figure reproduction. Related function examples: Batch 4 case buckling",
+      "target_figure": "General-purpose preset: it shows a typical use, not a reproduced paper figure. To try its parts on their own, open these presets: model:q4_buckling: Research: Linearized buckling factors; updater:pymoto_mma: Research: MMA through pyMOTO; response:buckling_load: Research: Linearized buckling factors; filter:heaviside: Research: Heaviside projection curves; schedule:geometric: Research: Geometric beta continuation.",
       "functions": [
         "model:q4_buckling",
         "physics:q4_buckling",
@@ -2846,7 +2846,7 @@
       "about": "A 200 x 85 mm drone arm bracket: bolted to the frame at two holes, loaded at eight motor holes in two load cases.",
       "reference": "Toporia's own application case.",
       "research_description": true,
-      "target_figure": "General-purpose preset, not a newly certified paper-figure reproduction. Related function examples: Batch 1 linear-elastic baseline and the function census",
+      "target_figure": "General-purpose preset: it shows a typical use, not a reproduced paper figure.",
       "functions": [
         "model:q4",
         "physics:q4_plane_stress",
@@ -2863,7 +2863,7 @@
       "about": "The drone arm with an area near the bottom centre that must stay empty for a camera's view.",
       "reference": "Toporia's own application case.",
       "research_description": true,
-      "target_figure": "General-purpose preset, not a newly certified paper-figure reproduction. Related function examples: Batch 1 linear-elastic baseline and the function census",
+      "target_figure": "General-purpose preset: it shows a typical use, not a reproduced paper figure.",
       "functions": [
         "model:q4",
         "physics:q4_plane_stress",
@@ -2880,7 +2880,7 @@
       "about": "The drone arm's layout with point supports and point loads instead of holes and rings.",
       "reference": "Toporia's own application case.",
       "research_description": true,
-      "target_figure": "General-purpose preset, not a newly certified paper-figure reproduction. Related function examples: Batch 1 linear-elastic baseline and the function census",
+      "target_figure": "General-purpose preset: it shows a typical use, not a reproduced paper figure.",
       "functions": [
         "model:q4",
         "physics:q4_plane_stress",
@@ -2897,7 +2897,7 @@
       "about": "A square mechanism held at the two left corners: a rightward input force should move the right output port leftward. Ground springs represent both ports.",
       "reference": "O. Sigmund, \"On the Design of Compliant Mechanisms Using Topology Optimization\", Mechanics of Structures and Machines 25 (1997) 493-524. Toporia uses its own dimensions and spring/load values, not a paper replication. Papers: https://doi.org/10.1080/08905459708945415",
       "research_description": true,
-      "target_figure": "General-purpose preset, not a newly certified paper-figure reproduction. Related function examples: Batch 4 case mechanism",
+      "target_figure": "General-purpose preset: it shows a typical use, not a reproduced paper figure. To try its parts on their own, open these presets: model:q4_mechanism: Research: Compliant force inverter and port adjoint; updater:mma: Research: MMA: local one-budget variant; response:output_displacement: Research: Compliant force inverter and port adjoint.",
       "functions": [
         "model:q4_mechanism",
         "physics:q4_mechanism",
@@ -2914,7 +2914,7 @@
       "about": "A square plate heated uniformly over its whole area, cooled through one small sink in the middle of an edge: distribute 40 % conductor to keep it as cool as possible.",
       "reference": "The heat-sink problem of Bendsoe & Sigmund, Topology Optimization (Springer 2003), section 1.5, as in Gersborg-Hansen, Bendsoe & Sigmund, Struct. Multidisc. Optim. 31 (2006) 251-259. Papers: https://doi.org/10.1007/s00158-005-0584-3",
       "research_description": true,
-      "target_figure": "General-purpose preset, not a newly certified paper-figure reproduction. Related function examples: Batch 4 case heat2d",
+      "target_figure": "General-purpose preset: it shows a typical use, not a reproduced paper figure. To try its parts on their own, open these presets: model:q4_heat: Research: 2D heat conduction and thermal compliance; response:thermal_compliance: Research: 2D heat conduction and thermal compliance.",
       "functions": [
         "model:q4_heat",
         "physics:q4_heat",
@@ -2931,7 +2931,7 @@
       "about": "An L-shaped plate clamped along its top edge and loaded at the tip of its lower arm: the standard stress benchmark, where a compliance design leaves the re-entrant corner sharp.",
       "reference": "P. Duysinx and M. P. Bendsoe, Int. J. Numer. Meth. Eng. 43 (1998) 1453-1478; C. Le, J. Norato, T. Bruns, C. Ha and D. Tortorelli, Struct. Multidisc. Optim. 41 (2010) 605-620. Toporia chooses the 100 x 100 domain, 40-wide arms, unit tip load and 0.4 volume; this is not a reproduction of the benchmarks in either paper. Papers: https://doi.org/10.1002/%28SICI%291097-0207%2819981230%2943:8%3C1453::AID-NME480%3E3.0.CO%3B2-2 https://doi.org/10.1007/s00158-009-0440-y",
       "research_description": true,
-      "target_figure": "General-purpose preset, not a newly certified paper-figure reproduction. Related function examples: Batch 1 linear-elastic baseline and the function census",
+      "target_figure": "General-purpose preset: it shows a typical use, not a reproduced paper figure.",
       "functions": [
         "model:q4",
         "physics:q4_plane_stress",
@@ -2948,7 +2948,7 @@
       "about": "The L-bracket again, now minimising volume under a von Mises limit in every element with the augmented Lagrangian method: the re-entrant corner has to round off to meet the limit.",
       "reference": "O. Giraldo-Londono and G. H. Paulino, Struct. Multidisc. Optim. 63 (2021) 2065-2097 (PolyStress). Geometry as in the L-bracket preset; the limit is chosen here. Papers: https://doi.org/10.1007/s00158-020-02760-8",
       "research_description": true,
-      "target_figure": "General-purpose preset, not a newly certified paper-figure reproduction. Related function examples: Batch 1 linear-elastic baseline and the function census",
+      "target_figure": "General-purpose preset: it shows a typical use, not a reproduced paper figure. To try its parts on their own, open these presets: updater:augmented_lagrangian: Research: Local-stress augmented Lagrangian; response:volume: Research: Minimum volume with aggregate stress; response:local_stress: Research: Local stress penalties and multiplier fields.",
       "functions": [
         "model:q4",
         "physics:q4_plane_stress",
@@ -2966,7 +2966,7 @@
       "about": "The left half of a simply supported beam loaded at its centre, using symmetry: the canonical benchmark of topology optimisation.",
       "reference": "Named after Messerschmitt-Bölkow-Blohm; the half-beam setup and settings of Sigmund's 99-line code (2001) and top88 (Andreassen et al., Struct. Multidisc. Optim. 43 (2011) 1-16). Papers: https://doi.org/10.1007/s001580050176 https://doi.org/10.1007/s00158-010-0594-7",
       "research_description": true,
-      "target_figure": "General-purpose preset, not a newly certified paper-figure reproduction. Related function examples: Batch 1 linear-elastic baseline and the function census",
+      "target_figure": "General-purpose preset: it shows a typical use, not a reproduced paper figure.",
       "functions": [
         "model:q4",
         "physics:q4_plane_stress",
@@ -2983,7 +2983,7 @@
       "about": "MBB beam with fixed beta=16 projection and conservative MMA asymptotes. No beta continuation; sharpness and optimizer tuning remain problem dependent.",
       "reference": "Independent fixed-projection recipe. MMA parameter recipe: Høghøj & Träff (2021), section 3.1, equation (11); continuation-free motivation: Guest, Asadpoure & Ha (2011). Papers: https://arxiv.org/abs/2102.12999 https://doi.org/10.1007/s00158-011-0676-1",
       "research_description": true,
-      "target_figure": "General-purpose preset, not a newly certified paper-figure reproduction. Related function examples: Batch 1 linear-elastic baseline and the function census",
+      "target_figure": "General-purpose preset: it shows a typical use, not a reproduced paper figure. To try its parts on their own, open these presets: updater:mma: Research: MMA: local one-budget variant; filter:heaviside: Research: Heaviside projection curves.",
       "functions": [
         "model:q4",
         "physics:q4_plane_stress",
@@ -3001,7 +3001,7 @@
       "about": "The MBB beam solved robustly: the worst of the eroded, intermediate and dilated designs (Heaviside thresholds 0.75 / 0.5 / 0.25), with a doubling continuation of the sharpness.",
       "reference": "F. Wang, B. S. Lazarov and O. Sigmund, \"On projection methods, convergence and robust formulations in topology optimization\", Struct. Multidisc. Optim. 43 (2011) 767-784. Independent recipe; thresholds match Fig. 6, but volume, aggregation and continuation differ. Papers: https://doi.org/10.1007/s00158-010-0602-y Correction: https://doi.org/10.1007/s00158-022-03326-6",
       "research_description": true,
-      "target_figure": "General-purpose preset, not a newly certified paper-figure reproduction. Related function examples: Batch 1 linear-elastic baseline and the function census",
+      "target_figure": "General-purpose preset: it shows a typical use, not a reproduced paper figure. To try its parts on their own, open these presets: filter:heaviside: Research: Heaviside projection curves; schedule:geometric: Research: Geometric beta continuation.",
       "functions": [
         "model:q4",
         "physics:q4_plane_stress",
@@ -3020,7 +3020,7 @@
       "about": "A point load carried to a clamped ring: one of the few problems whose optimal layout is known analytically, so it checks that a method finds the right shape.",
       "reference": "A. G. M. Michell, \"The limits of economy of material in frame-structures\", Philosophical Magazine 8 (1904) 589-597. Papers: https://doi.org/10.1080/14786440409463229",
       "research_description": true,
-      "target_figure": "General-purpose preset, not a newly certified paper-figure reproduction. Related function examples: Batch 1 linear-elastic baseline and the function census",
+      "target_figure": "General-purpose preset: it shows a typical use, not a reproduced paper figure.",
       "functions": [
         "model:q4",
         "physics:q4_plane_stress",
@@ -3037,7 +3037,7 @@
       "about": "A cantilever with a large tip load, designed with geometrically non-linear elasticity (large displacements, Newton–Raphson with load steps) so the design accounts for how the beam bends.",
       "reference": "Stiffness design of geometrically non-linear structures, T. Buhl, C. B. W. Pedersen, O. Sigmund, Struct. Multidisc. Optim. 19 (2000) 93-104; void by energy interpolation after Wang, Lazarov, Sigmund & Jensen, CMAME 276 (2014) 453-472. Papers: https://doi.org/10.1007/s001580050089 https://doi.org/10.1016/j.cma.2014.03.021",
       "research_description": true,
-      "target_figure": "General-purpose preset, not a newly certified paper-figure reproduction. Related function examples: Batch 4 case nonlinear",
+      "target_figure": "General-purpose preset: it shows a typical use, not a reproduced paper figure. To try its parts on their own, open these presets: model:q4_nonlinear: Research: Large-displacement elasticity and end compliance; updater:mma: Research: MMA: local one-budget variant; response:end_compliance: Research: Large-displacement elasticity and end compliance.",
       "functions": [
         "model:q4_nonlinear",
         "physics:q4_nonlinear",
@@ -3878,7 +3878,7 @@
       "about": "A rectangular bar clamped along its left edge with a single load.",
       "reference": "Toporia's own simple test case.",
       "research_description": true,
-      "target_figure": "General-purpose preset, not a newly certified paper-figure reproduction. Related function examples: Batch 1 linear-elastic baseline and the function census",
+      "target_figure": "General-purpose preset: it shows a typical use, not a reproduced paper figure.",
       "functions": [
         "model:q4",
         "physics:q4_plane_stress",
@@ -3895,7 +3895,7 @@
       "about": "A beam on a pinned and a roller support with a load at the middle of the top edge.",
       "reference": "The three-point bending test of materials testing, as a full (not halved) beam.",
       "research_description": true,
-      "target_figure": "General-purpose preset, not a newly certified paper-figure reproduction. Related function examples: Batch 1 linear-elastic baseline and the function census",
+      "target_figure": "General-purpose preset: it shows a typical use, not a reproduced paper figure.",
       "functions": [
         "model:q4",
         "physics:q4_plane_stress",
@@ -3909,10 +3909,10 @@
     {
       "name": "Vibrating Beam",
       "source_file": "toporia/plugins/problems/vibrating_beam.py",
-      "about": "A beam clamped at both ends, carrying a payload at its centre: maximise its lowest natural frequency with the volume fixed. Choose the model 2-D Q4 with vibration.",
+      "about": "A beam clamped at both ends, carrying a payload at its centre: maximise its lowest natural frequency with the volume fixed.",
       "reference": "After J. Du, N. Olhoff, \"Topological design of freely vibrating continuum structures for maximum values of simple and multiple eigenfrequencies and frequency gaps\", Struct. Multidisc. Optim. 34 (2007) 91-110, with the mass interpolation of N. L. Pedersen, Struct. Multidisc. Optim. 20 (2000) 2-11. Papers: https://doi.org/10.1007/s00158-007-0101-y https://doi.org/10.1007/s001580050130",
       "research_description": true,
-      "target_figure": "General-purpose preset, not a newly certified paper-figure reproduction. Related function examples: Batch 4 case dynamic",
+      "target_figure": "General-purpose preset: it shows a typical use, not a reproduced paper figure. To try its parts on their own, open these presets: model:q4_dynamic: Research: Natural frequencies and mode aggregation; updater:mma: Research: MMA: local one-budget variant; response:eigenfrequency: Research: Natural frequencies and mode aggregation.",
       "functions": [
         "model:q4_dynamic",
         "physics:q4_dynamic",
