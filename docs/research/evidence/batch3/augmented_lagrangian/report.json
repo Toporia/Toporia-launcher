@@ -15,19 +15,19 @@
     "finite_execution": true,
     "bounded_density": true
   },
-  "iterations": 120,
-  "stop_reason": "iteration limit (120)",
+  "iterations": 300,
+  "stop_reason": "iteration limit (300)",
   "optimizer": null,
-  "fresh_final_compliance": 241.55166012911076,
-  "last_recorded_objective": 242.67206553246143,
-  "physical_volume_fraction": 0.5118659646185858,
-  "volume_excess": 0.0118659646185858,
-  "feasible_volume_1e_4": false,
-  "grayness": 0.407803319749683,
-  "engine_physics_evaluations_before_final_check": 120,
+  "fresh_final_compliance": 223.56886967756532,
+  "last_recorded_objective": 223.450363087331,
+  "physical_volume_fraction": 0.4999458853885693,
+  "volume_excess": -5.411461143067786e-05,
+  "feasible_volume_1e_4": true,
+  "grayness": 0.19457825523734773,
+  "engine_physics_evaluations_before_final_check": 300,
   "final_check_extra_model_evaluations": 1,
-  "runtime_seconds": 2.1092187999747694,
-  "captured_at": "2026-10-28T00:04:08.135989+00:00",
+  "runtime_seconds": 13.276562899991404,
+  "captured_at": "2026-10-28T11:34:35.506595+00:00",
   "versions": {
     "python": "3.14.3",
     "numpy": "2.4.2",
@@ -106,9 +106,9 @@
     ],
     "schedules": [],
     "variants": {},
-    "m": 0.5,
-    "max_iter": 120,
-    "tol": 0.0
+    "m": 1.0,
+    "max_iter": 300,
+    "tol": 0.01
   },
   "resolved_method_params": {
     "move": 0.2,
@@ -121,22 +121,22 @@
     "growth": 1.5
   },
   "fresh_reported": {
-    "max_stress": 1.4501056799934027,
-    "violated_elements": 155.0,
-    "stress_ratio": 2.9002113599868053
+    "max_stress": 1.6362029456033698,
+    "violated_elements": 483.0,
+    "stress_ratio": 3.2724058912067395
   },
   "fresh_constraints": [
     {
       "name": "local_stress",
-      "value": 178.8816305435847,
-      "exact": 1.9002113599868053
+      "value": 275.2957846704723,
+      "exact": 2.2724058912067395
     }
   ],
+  "fresh_constraints_feasible_1e_4": false,
   "primary_source_review": {
     "status": "source_access_or_setup_incomplete",
     "url": "https://doi.org/10.1007/s00158-020-02760-8",
     "visual_status": "not_assessed",
     "scope": "Implementation/reference metadata inspected. Full numbered source example not recovered; target remains unresolved."
-  },
-  "fresh_constraints_feasible_1e_4": false
+  }
 }

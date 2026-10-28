@@ -22,12 +22,17 @@ and rerun command. The same description is exported as standalone HTML.
 
 ![Typeset math in the actual preset help window](assets/batch3-research-mmc-variable-thickness-bars-math.png)
 
-The common diagnostic uses a 60 by 20 half-MBB domain, generally 30 by 10 cells,
-physical density filtering with radius 1.5 cells and SIMP p=3. The dense
-trust-constr/null-space companions use 18 by 6 cells. Standalone level sets use
-24 by 8 cells, their own representation/volume control and linear p=1 ersatz
-stiffness. Their different grids, representations and laws preclude treating
-the gallery as a fair optimizer ranking. Exact settings are in every report.
+The common diagnostic uses a 60 by 20 half-MBB domain with 60 by 20 cells
+(28 October 2026; previously 30 by 10 with a fixed 120-step cap), physical
+density filtering with radius 1.5 cells and SIMP p=3, and runs until the design
+change falls below 0.01 or 300 steps. Evolutionary, integer and stochastic
+updaters (BESO, hard-kill BESO, TOBS, Adam) report zero change after one step,
+so they use their own criterion or the cap. The dense SLSQP, trust-constr and
+null-space companions use 30 by 10 cells (SciPy SLSQP takes minutes at 60 by 20).
+Standalone level sets use their own representation/volume control and linear
+p=1 ersatz stiffness. Different representations and laws still preclude treating
+the gallery as a fair optimizer ranking; the four MMA implementations agree at
+compliance 210.66-211.55. Exact settings are in every report.
 
 ![Geometry projection construction and bounded companion](evidence/batch3/geometry_projection/figure.png)
 
@@ -74,26 +79,20 @@ The important formulation gaps are concrete:
 
 ## Feasibility and stopping are separate from execution
 
-Six companions exceed the 0.5 volume budget by more than the reported absolute
-fraction tolerance of 1e-4:
+On the 60 by 20 showcases (28 October 2026) one companion exceeds the 0.5
+volume budget by more than the absolute tolerance 1e-4: variable-thickness MMC
+at 0.503301 (geometric-variable MMA overshoot). On the earlier 30 by 10 runs
+Adam-AL, local-stress AL, both MMC variants, MMV and the RBF level set did.
 
-| Companion | Final fraction | Observation |
-| :-- | --: | :-- |
-| Adam-AL | 0.50688386 | 120-step cap; penalty feasibility not achieved |
-| Local-stress AL | 0.51186596 | 120-step cap; volume and local stress remain violated |
-| MMC | 0.50053472 | 120-step cap; geometric-variable MMA volume overshoot |
-| Variable-thickness MMC | 0.50295160 | 120-step cap; volume overshoot |
-| MMV | 0.50023269 | 120-step cap; volume overshoot |
-| RBF level set | 0.50010629 | Own stopping criterion; narrowly outside this reported tolerance |
+The multi-OC and local-stress companions meet their volume budget but not their
+stress limit of 0.5 at the concentrated MBB load (multi-OC normalised constraint
+2.56, local-stress AL penalty 275 at the 300-step cap). These runs do not establish
+that this stress-limited, concentrated-load problem is feasible, and must not be
+displayed as successful constrained designs. L-bracket (local stress) comes
+closest: peak relaxed stress 0.515 against 0.5 (3% over) at its 300-step cap.
 
-The multi-OC companion meets its volume budget but its fresh relaxed stress is
-about **1.55337 against limit 0.5**. The local-stress companion records about
-**1.45011 against limit 0.5**. These runs do not establish that this particular
-stress-limited, concentrated-load problem is feasible. Their small motion or
-finite output must not be displayed as successful constrained designs.
-
-Twenty-two companions stop at the declared iteration cap; nine report their
-own stopping criterion or a library finish flag. Neither category establishes
+Six companions stop at the 300-step cap; twenty-five report the design-change
+tolerance, their own stopping criterion or a library finish flag. Neither category establishes
 global optimality or a paper match. Neural and B-spline final grayness are
 recorded alongside volume and compliance rather than concealed by thresholding.
 

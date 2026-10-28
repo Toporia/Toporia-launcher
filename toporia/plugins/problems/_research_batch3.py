@@ -9,6 +9,7 @@ from dataclasses import replace
 
 from . import mbb_beam
 from ._research import Equation, ResearchDescription
+from ._research_defaults import readable_setup, showcase_about
 
 
 def eq(latex, text):
@@ -230,11 +231,20 @@ for name, label, equations, symbols, target, source, limits in (
                        target, source, limits)
 
 
+#: Updaters whose design change is not a convergence measure (evolutionary, integer or stochastic steps
+#: report zero change after their first update), so they run to their own criterion or the cap.
+OWN_STOP = {"beso", "beso_hard", "tobs", "adam"}
+#: Dense quasi-Newton / interior-point solvers: a 60 x 20 mesh takes minutes per run (SciPy SLSQP 206 s),
+#: so they show the method on 30 x 10.
+DENSE = {"scipy_slsqp", "nlopt_slsqp", "scipy_trust_constr", "nullspace"}
+
+
 def recipe(case_id):
+    # A showcase runs the 60 x 20 half-MBB until the design settles (change below 0.01) or 300 steps.
     data = CASES[case_id]
     kind, identity = data["function"].split(":")
     scenario = mbb_beam.scenario()
-    solver = replace(mbb_beam.solver(), m=0.5, tol=0., max_iter=120,
+    solver = replace(mbb_beam.solver(), m=1.0, tol=0.01, max_iter=300,
                      filter_specs=[dict(type="density", rmin=1.5)], method_params={})
     if kind == "updater":
         solver = replace(solver, method="q4+" + identity, method_params=deepcopy(data["settings"]))
@@ -244,15 +254,17 @@ def recipe(case_id):
             scenario = replace(scenario, constraints=[dict(type="local_stress", limit=0.5)])
         if identity == "oc_multi":
             scenario = replace(scenario, constraints=[dict(type="stress", limit=0.5)])
-        if identity in {"scipy_trust_constr", "nullspace"}:
-            solver = replace(solver, m=0.3, max_iter=80)
+        if identity in OWN_STOP:
+            solver = replace(solver, tol=0.)
+        if identity in DENSE:
+            solver = replace(solver, m=0.5)
     elif kind == "representation":
         solver = replace(solver, method="q4+mma", method_params=dict(move=0.02),
                          representation=deepcopy(data["settings"]["representation"]))
         if identity == "neural":
-            solver = replace(solver, method="q4+adam", method_params=dict(lr=0.01), max_iter=300)
+            solver = replace(solver, method="q4+adam", method_params=dict(lr=0.01), tol=0.)
     else:
-        solver = replace(solver, method=identity, m=0.4, max_iter=160, filter_specs=[])
+        solver = replace(solver, method=identity, filter_specs=[])
     return scenario, solver
 
 
@@ -261,12 +273,8 @@ def description(case_id):
     scenario, solver = recipe(case_id)
     return ResearchDescription(
         question="How does " + data["label"] + " turn a design and sensitivities into the next material field?",
-        setup=f"GUI Run is a bounded optimization companion, not a claimed paper reproduction. Half-MBB domain 60 by 20 mm, "
-              f"mesh {round(60*solver.m)} by {round(20*solver.m)}, fraction {scenario.volfrac}, E0=1, Emin=1e-9, nu=0.3, "
-              f"top-left downward unit load, left horizontal symmetry and bottom-right vertical roller. "
-              f"Method {solver.method}; cap {solver.max_iter}; tol=0 (cap or optimizer's own stop). "
-              f"Representation {solver.representation}; parameters {solver.method_params}; constraints {scenario.constraints}; "
-              f"filters {solver.filter_specs}. Full numerical evidence is separate from this recipe.",
+        setup=readable_setup(scenario, solver) + "\nGUI Run is an optimization companion, not a claimed paper "
+              "reproduction; the full numerical evidence is recorded separately.",
         computes=data["computes"], equations=data["equations"], symbols=BASE_SYMBOLS + data["symbols"],
         source_url=data["source"], figure=data["target"],
         comparison="The experiment records initial/final fields, pre-update objective histories, fresh final compliance, actual physical volume and solve counts. "
@@ -278,5 +286,5 @@ def description(case_id):
 
 def metadata(case_id):
     data = CASES[case_id]
-    return ("Research: " + data["label"], "Bounded research companion; see help for mathematics, source and limitations.",
+    return ("Research: " + data["label"], showcase_about((data["function"],)),
             "Research target, not a match claim. Papers: " + data["source"], description(case_id))

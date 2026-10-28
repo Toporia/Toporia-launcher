@@ -11,11 +11,11 @@
   "paper_visual_status": "not_assessed",
   "checks": {
     "directional_adjoint_errors": [
-      7.715745848645379e-11,
-      3.149152002661714e-11,
-      1.9171367135134609e-10,
-      1.6481619356786505e-10,
-      2.325097494567322e-10
+      4.3896335994564765e-10,
+      1.0487254434714228e-09,
+      2.71556221888663e-09,
+      3.0629166963936505e-10,
+      1.3860091905678128e-10
     ],
     "adjoint_tolerance": 2e-05,
     "checks_passed": true,
@@ -23,19 +23,19 @@
     "finite_execution": true,
     "bounded_density": true
   },
-  "iterations": 120,
-  "stop_reason": "iteration limit (120)",
+  "iterations": 59,
+  "stop_reason": "design change 0.009 < tol 0.01",
   "optimizer": null,
-  "fresh_final_compliance": 388.0710312706242,
-  "last_recorded_objective": 388.12391384564734,
-  "physical_volume_fraction": 0.5002326893725283,
-  "volume_excess": 0.00023268937252829414,
-  "feasible_volume_1e_4": false,
-  "grayness": 0.8248615544153456,
-  "engine_physics_evaluations_before_final_check": 120,
+  "fresh_final_compliance": 292.0609676685135,
+  "last_recorded_objective": 296.23520258668736,
+  "physical_volume_fraction": 0.49894902322053913,
+  "volume_excess": -0.001050976779460866,
+  "feasible_volume_1e_4": true,
+  "grayness": 0.5112682396394499,
+  "engine_physics_evaluations_before_final_check": 59,
   "final_check_extra_model_evaluations": 1,
-  "runtime_seconds": 1.6740864000166766,
-  "captured_at": "2026-10-28T00:06:19.283154+00:00",
+  "runtime_seconds": 2.064943300036248,
+  "captured_at": "2026-10-28T11:36:41.615666+00:00",
   "versions": {
     "python": "3.14.3",
     "numpy": "2.4.2",
@@ -113,9 +113,9 @@
     ],
     "schedules": [],
     "variants": {},
-    "m": 0.5,
-    "max_iter": 120,
-    "tol": 0.0
+    "m": 1.0,
+    "max_iter": 300,
+    "tol": 0.01
   },
   "resolved_method_params": {
     "move": 0.02,
@@ -127,11 +127,11 @@
   },
   "fresh_reported": {},
   "fresh_constraints": [],
+  "fresh_constraints_feasible_1e_4": true,
   "primary_source_review": {
     "status": "source_access_or_setup_incomplete",
     "url": "https://doi.org/10.1016/j.cma.2017.05.002",
     "visual_status": "not_assessed",
     "scope": "Implementation/reference metadata inspected. Full numbered source example not recovered; target remains unresolved."
-  },
-  "fresh_constraints_feasible_1e_4": true
+  }
 }

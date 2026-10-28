@@ -4,7 +4,7 @@ Target: Zhang et al. (2016) variable-thickness MMC: exact numbered component/opt
 
 Difference/gap: Source and code thickness parameter ordering must be aligned before an MMC188 comparison. Tanh/product union and centre sampling are independent choices.
 
-Recorded execution: 120 steps; iteration limit (120). Fresh final compliance 282.76453; physical fraction 0.5029516; budget 0.5; within budget +1e-4: False. Extra constraints within +1e-4: True. Finite/bounded execution does not establish feasibility, convergence or paper agreement.
+Recorded execution: 91 steps; design change 0.009 < tol 0.01. Fresh final compliance 245.84834; physical fraction 0.50330137; budget 0.5; within budget +1e-4: False. Extra constraints within +1e-4: True. Finite/bounded execution does not establish feasibility, convergence or paper agreement.
 
 Next: Recover a numbered variable-thickness MMC panel and thickness ordering, then align union, Heaviside sampling and optimizer settings with MMC188.
 

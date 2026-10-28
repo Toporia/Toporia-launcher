@@ -4,7 +4,7 @@ Target: Guo et al., arXiv:1404.4820, Figure 8 component and zero contour; own ge
 
 Difference/gap: Zero-contour construction is a controlled instance, not the paper image coordinates or optimized cantilever. Product union/tanh differ from the reference implementation.
 
-Recorded execution: 120 steps; iteration limit (120). Fresh final compliance 282.24959; physical fraction 0.50053472; budget 0.5; within budget +1e-4: False. Extra constraints within +1e-4: True. Finite/bounded execution does not establish feasibility, convergence or paper agreement.
+Recorded execution: 84 steps; design change 0.00592 < tol 0.01. Fresh final compliance 256.09588; physical fraction 0.50008252; budget 0.5; within budget +1e-4: True. Extra constraints within +1e-4: True. Finite/bounded execution does not establish feasibility, convergence or paper agreement.
 
 Next: Recover Figure 8's geometry/field normalization or keep this as an own instance. A final-design comparison also needs the reference maximum union, projection and analysis sampling aligned.
 

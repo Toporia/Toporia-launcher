@@ -15,23 +15,23 @@
     "finite_execution": true,
     "bounded_density": true
   },
-  "iterations": 120,
-  "stop_reason": "iteration limit (120)",
+  "iterations": 90,
+  "stop_reason": "design change 0.00573 < tol 0.01",
   "optimizer": {
     "optimiser": "SLSQP (SciPy)",
     "finished": false,
     "message": "stopped by Toporia before the optimiser finished"
   },
-  "fresh_final_compliance": 249.62379129350998,
-  "last_recorded_objective": 249.64033450688916,
-  "physical_volume_fraction": 0.5000000000000008,
-  "volume_excess": 7.771561172376096e-16,
+  "fresh_final_compliance": 254.84930444179705,
+  "last_recorded_objective": 254.9499287762947,
+  "physical_volume_fraction": 0.5000000000000576,
+  "volume_excess": 5.762057497804562e-14,
   "feasible_volume_1e_4": true,
-  "grayness": 0.4058086008417399,
-  "engine_physics_evaluations_before_final_check": 121,
+  "grayness": 0.4441931379381348,
+  "engine_physics_evaluations_before_final_check": 91,
   "final_check_extra_model_evaluations": 1,
-  "runtime_seconds": 10.73408320004819,
-  "captured_at": "2026-10-28T00:04:20.395527+00:00",
+  "runtime_seconds": 6.759066900005564,
+  "captured_at": "2026-10-28T11:34:43.502992+00:00",
   "versions": {
     "python": "3.14.3",
     "numpy": "2.4.2",
@@ -106,8 +106,8 @@
     "schedules": [],
     "variants": {},
     "m": 0.5,
-    "max_iter": 120,
-    "tol": 0.0
+    "max_iter": 300,
+    "tol": 0.01
   },
   "resolved_method_params": {
     "slsqp_maxiter": 200,
@@ -115,11 +115,11 @@
   },
   "fresh_reported": {},
   "fresh_constraints": [],
+  "fresh_constraints_feasible_1e_4": true,
   "primary_source_review": {
     "status": "official_library_documentation_target",
     "url": "https://docs.scipy.org/doc/scipy/reference/optimize.minimize-slsqp.html",
     "scope": "Exact derivative/bound adapter inspected; no Kraft source numerical figure recovered.",
     "visual_status": "not_assessed"
-  },
-  "fresh_constraints_feasible_1e_4": true
+  }
 }

@@ -4,7 +4,7 @@ Target: Original optimizer numerical example: identified figure and complete inp
 
 Difference/gap: The coarse MBB companion checks adapter execution, not the source optimizer's paper figure or global optimality. Small steps, library success and feasibility are separate observations.
 
-Recorded execution: 101 steps; Augmented Lagrangian + L-BFGS (NLopt) finished: FTOL_REACHED. Fresh final compliance 254.54401; physical fraction 0.49999997; budget 0.5; within budget +1e-4: True. Extra constraints within +1e-4: True. Finite/bounded execution does not establish feasibility, convergence or paper agreement.
+Recorded execution: 90 steps; design change 0 < tol 0.01. Fresh final compliance 282.18729; physical fraction 0.49997022; budget 0.5; within budget +1e-4: True. Extra constraints within +1e-4: True. Finite/bounded execution does not establish feasibility, convergence or paper agreement.
 
 Next: Choose an identified constrained source example and align the outer multiplier and inner L-BFGS budgets; a library FTOL flag alone is insufficient.
 

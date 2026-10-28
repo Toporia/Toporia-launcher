@@ -47,7 +47,7 @@ NEXT_CHECKS = {
     "floating_projection": "Align a numbered FPTO panel, filter placement, move .02, threshold root and complete beta continuation; the 120-step companion has not established a source match.",
     "simpl": "Recover explicit source schematic coordinates or retain the plot as a controlled equation instance. A source optimization match separately needs the SiMPL-A/B step policy and gradient discretization.",
     "adam": "Use original Figure 1 task/data and stochastic gradients for an Adam paper comparison. The deterministic moment probe certifies neither that figure nor topology-specific AL feasibility.",
-    "pto": "Inspect the native 120x40 Figure 3 attempt. An exact PTOc reproduction would need a separately declared element-compliance allocation and filtered redistribution variant, not retuning this sensitivity proxy.",
+    "pto": "None for the algorithm: the original is the separate ptoc updater, which reproduces the captured author run exactly (evidence/batch3/ptoc). This sensitivity-proxy variant stays a declared, different method; its Figure 3 comparison below records that difference.",
     "tobs": "Recover TOBS101 panel inputs, switching relaxation and integer-solve tolerances; compare true physical constraint residuals after each MILP update.",
     "augmented_lagrangian": "Establish a feasible local-stress benchmark with aligned stress relaxation, mesh/load support and multiplier update schedule before comparing a PolyStress panel.",
     "scipy_slsqp": "Recover a Kraft numerical example and align normalization, bound handling, tolerances and accepted-iterate callbacks.",

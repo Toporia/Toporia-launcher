@@ -4,7 +4,7 @@ Target: Svanberg MMA/GCMMA numerical examples: numbered panel and original probl
 
 Difference/gap: The common MBB diagnostic is not a Svanberg paper figure. Library algorithms, scaling, safeguards and stopping rules differ; matching final compliance alone would not establish algorithm equivalence.
 
-Recorded execution: 54 steps; MMA (NLopt) finished: FTOL_REACHED. Fresh final compliance 248.73246; physical fraction 0.5; budget 0.5; within budget +1e-4: True. Extra constraints within +1e-4: True. Finite/bounded execution does not establish feasibility, convergence or paper agreement.
+Recorded execution: 199 steps; design change 0 < tol 0.01. Fresh final compliance 211.54497; physical fraction 0.49999997; budget 0.5; within budget +1e-4: True. Extra constraints within +1e-4: True. Finite/bounded execution does not establish feasibility, convergence or paper agreement.
 
 Next: Align an original MMA/CCSA source example with NLopt's safeguarded variant, tolerances and evaluation callback convention.
 

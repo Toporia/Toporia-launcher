@@ -15,23 +15,23 @@
     "finite_execution": true,
     "bounded_density": true
   },
-  "iterations": 80,
-  "stop_reason": "iteration limit (80)",
+  "iterations": 300,
+  "stop_reason": "iteration limit (300)",
   "optimizer": {
     "optimiser": "Null-space optimiser",
     "finished": false,
     "message": "stopped by Toporia before the optimiser finished"
   },
-  "fresh_final_compliance": 328.99705203099523,
-  "last_recorded_objective": 328.87928551563573,
-  "physical_volume_fraction": 0.49983844148299256,
-  "volume_excess": -0.00016155851700744295,
+  "fresh_final_compliance": 248.73805606496535,
+  "last_recorded_objective": 248.73548996335373,
+  "physical_volume_fraction": 0.49999999999999944,
+  "volume_excess": -5.551115123125783e-16,
   "feasible_volume_1e_4": true,
-  "grayness": 0.6368935380390356,
-  "engine_physics_evaluations_before_final_check": 179,
+  "grayness": 0.38973943281710477,
+  "engine_physics_evaluations_before_final_check": 840,
   "final_check_extra_model_evaluations": 1,
-  "runtime_seconds": 52.255883699981496,
-  "captured_at": "2026-10-28T00:06:00.410820+00:00",
+  "runtime_seconds": 20.483451200008858,
+  "captured_at": "2026-10-28T11:36:28.942862+00:00",
   "versions": {
     "python": "3.14.3",
     "numpy": "2.4.2",
@@ -105,9 +105,9 @@
     ],
     "schedules": [],
     "variants": {},
-    "m": 0.3,
-    "max_iter": 80,
-    "tol": 0.0
+    "m": 0.5,
+    "max_iter": 300,
+    "tol": 0.01
   },
   "resolved_method_params": {
     "nullspace_dt": 0.2,
@@ -117,11 +117,11 @@
   },
   "fresh_reported": {},
   "fresh_constraints": [],
+  "fresh_constraints_feasible_1e_4": true,
   "primary_source_review": {
     "status": "source_access_or_setup_incomplete",
     "url": "https://doi.org/10.1051/cocv/2020015",
     "visual_status": "not_assessed",
     "scope": "Implementation/reference metadata inspected. Full numbered source example not recovered; target remains unresolved."
-  },
-  "fresh_constraints_feasible_1e_4": true
+  }
 }

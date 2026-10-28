@@ -4,7 +4,7 @@ Target: Challis (2010) HJ/topological-derivative examples: numbered panel/inputs
 
 Difference/gap: Independent positive-inside, physically scaled variant with normalized AL feedback, EDT reinitialization and cell-centre sampling; not the source algorithm trajectory.
 
-Recorded execution: 86 steps; feasible volume settled and compliance stable against five previous iterations. Fresh final compliance 246.10836; physical fraction 0.5; budget 0.5; within budget +1e-4: True. Extra constraints within +1e-4: True. Finite/bounded execution does not establish feasibility, convergence or paper agreement.
+Recorded execution: 110 steps; feasible volume settled and compliance stable against five previous iterations. Fresh final compliance 191.66783; physical fraction 0.5; budget 0.5; within budget +1e-4: True. Extra constraints within +1e-4: True. Finite/bounded execution does not establish feasibility, convergence or paper agreement.
 
 Next: Recover a Challis panel and align velocity sign/scale, boundary and topological-derivative conventions, nucleation and volume feedback.
 

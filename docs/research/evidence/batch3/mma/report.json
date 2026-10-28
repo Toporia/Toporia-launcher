@@ -15,19 +15,19 @@
     "finite_execution": true,
     "bounded_density": true
   },
-  "iterations": 76,
-  "stop_reason": "Q4Model_MMAUpdater reported its own convergence criterion",
+  "iterations": 115,
+  "stop_reason": "design change 0.00838 < tol 0.01",
   "optimizer": null,
-  "fresh_final_compliance": 248.73245373877248,
-  "last_recorded_objective": 248.73245382407785,
-  "physical_volume_fraction": 0.4999999999643277,
-  "volume_excess": -3.567229844847475e-11,
+  "fresh_final_compliance": 210.6580968204143,
+  "last_recorded_objective": 210.65815380847275,
+  "physical_volume_fraction": 0.49999996860887524,
+  "volume_excess": -3.1391124755142386e-08,
   "feasible_volume_1e_4": true,
-  "grayness": 0.3895512332900113,
-  "engine_physics_evaluations_before_final_check": 76,
+  "grayness": 0.1975856857401547,
+  "engine_physics_evaluations_before_final_check": 115,
   "final_check_extra_model_evaluations": 1,
-  "runtime_seconds": 2.311465200036764,
-  "captured_at": "2026-10-28T00:02:51.392120+00:00",
+  "runtime_seconds": 4.980170299997553,
+  "captured_at": "2026-10-28T11:30:17.800253+00:00",
   "versions": {
     "python": "3.14.3",
     "numpy": "2.4.2",
@@ -101,9 +101,9 @@
     ],
     "schedules": [],
     "variants": {},
-    "m": 0.5,
-    "max_iter": 120,
-    "tol": 0.0
+    "m": 1.0,
+    "max_iter": 300,
+    "tol": 0.01
   },
   "resolved_method_params": {
     "move": 0.2,
@@ -115,11 +115,11 @@
   },
   "fresh_reported": {},
   "fresh_constraints": [],
+  "fresh_constraints_feasible_1e_4": true,
   "primary_source_review": {
     "status": "publisher_abstract_reviewed",
     "url": "https://onlinelibrary.wiley.com/doi/10.1002/nme.1620240207",
     "scope": "Publisher abstract confirms moving-asymptote convex subproblems; original numerical example inputs/figure unavailable in the accessed text.",
     "visual_status": "not_assessed"
-  },
-  "fresh_constraints_feasible_1e_4": true
+  }
 }

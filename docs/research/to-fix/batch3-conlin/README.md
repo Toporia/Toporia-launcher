@@ -4,7 +4,7 @@ Target: Fleury-Braibant (1986) numerical example: panel/inputs pending.
 
 Difference/gap: Own implementation with move limits; no published CONLIN trajectory is used as a reference.
 
-Recorded execution: 120 steps; iteration limit (120). Fresh final compliance 248.74317; physical fraction 0.5; budget 0.5; within budget +1e-4: True. Extra constraints within +1e-4: True. Finite/bounded execution does not establish feasibility, convergence or paper agreement.
+Recorded execution: 126 steps; design change 0.00988 < tol 0.01. Fresh final compliance 218.80054; physical fraction 0.5; budget 0.5; within budget +1e-4: True. Extra constraints within +1e-4: True. Finite/bounded execution does not establish feasibility, convergence or paper agreement.
 
 Next: Recover Fleury-Braibant geometry, constraint normalization and initial point, then compare reciprocal approximations and the multiplier solve.
 

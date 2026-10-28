@@ -15,26 +15,26 @@
     "finite_execution": true,
     "bounded_density": true
   },
-  "iterations": 101,
-  "stop_reason": "Augmented Lagrangian + L-BFGS (NLopt) finished: FTOL_REACHED",
+  "iterations": 90,
+  "stop_reason": "design change 0 < tol 0.01",
   "optimizer": {
     "optimiser": "Augmented Lagrangian + L-BFGS (NLopt)",
     "finished": true,
     "success": true,
-    "message": "FTOL_REACHED",
+    "message": "MAXEVAL_REACHED",
     "iterations": null,
-    "evaluations": 394
+    "evaluations": 501
   },
-  "fresh_final_compliance": 254.5440101765844,
-  "last_recorded_objective": 254.5440101765844,
-  "physical_volume_fraction": 0.4999999721124116,
-  "volume_excess": -2.7887588405217656e-08,
+  "fresh_final_compliance": 282.18728589538784,
+  "last_recorded_objective": 282.18728589538784,
+  "physical_volume_fraction": 0.4999702165475129,
+  "volume_excess": -2.9783452487108786e-05,
   "feasible_volume_1e_4": true,
-  "grayness": 0.43022943478964426,
-  "engine_physics_evaluations_before_final_check": 366,
+  "grayness": 0.628048344798689,
+  "engine_physics_evaluations_before_final_check": 481,
   "final_check_extra_model_evaluations": 1,
-  "runtime_seconds": 2.9131290999939665,
-  "captured_at": "2026-10-28T00:05:06.200736+00:00",
+  "runtime_seconds": 11.36209939996479,
+  "captured_at": "2026-10-28T11:36:07.651767+00:00",
   "versions": {
     "python": "3.14.3",
     "numpy": "2.4.2",
@@ -108,9 +108,9 @@
     ],
     "schedules": [],
     "variants": {},
-    "m": 0.5,
-    "max_iter": 120,
-    "tol": 0.0
+    "m": 1.0,
+    "max_iter": 300,
+    "tol": 0.01
   },
   "resolved_method_params": {
     "nlopt_maxeval": 500,
@@ -120,11 +120,11 @@
   },
   "fresh_reported": {},
   "fresh_constraints": [],
+  "fresh_constraints_feasible_1e_4": true,
   "primary_source_review": {
     "status": "official_library_documentation_reviewed",
     "url": "https://nlopt.readthedocs.io/en/latest/NLopt_Algorithms/",
     "scope": "Official algorithm descriptions reviewed; adapter calls installed NLopt. Library algorithms/callbacks do not supply a paper figure reference.",
     "visual_status": "not_assessed"
-  },
-  "fresh_constraints_feasible_1e_4": true
+  }
 }

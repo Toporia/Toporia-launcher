@@ -4,7 +4,7 @@ Target: Svanberg MMA/GCMMA numerical examples: numbered panel and original probl
 
 Difference/gap: The common MBB diagnostic is not a Svanberg paper figure. Library algorithms, scaling, safeguards and stopping rules differ; matching final compliance alone would not establish algorithm equivalence.
 
-Recorded execution: 120 steps; iteration limit (120). Fresh final compliance 248.73518; physical fraction 0.49999999; budget 0.5; within budget +1e-4: True. Extra constraints within +1e-4: True. Finite/bounded execution does not establish feasibility, convergence or paper agreement.
+Recorded execution: 90 steps; design change 0.00805 < tol 0.01. Fresh final compliance 210.75513; physical fraction 0.49999994; budget 0.5; within budget +1e-4: True. Extra constraints within +1e-4: True. Finite/bounded execution does not establish feasibility, convergence or paper agreement.
 
 Next: Select a GCMMA conservative-correction example and compare inner trial evaluations, not only final MBB compliance.
 

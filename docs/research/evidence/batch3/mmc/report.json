@@ -11,11 +11,11 @@
   "paper_visual_status": "source_reviewed_not_matched",
   "checks": {
     "directional_adjoint_errors": [
-      3.3544855792840564e-11,
-      8.169730920886231e-10,
-      2.7726347055445305e-11,
-      1.0981139951448012e-09,
-      3.556070302906252e-10
+      5.86285561435626e-11,
+      3.8190685768328827e-10,
+      7.565418281011526e-09,
+      2.6152624210131196e-10,
+      1.6019928811571123e-09
     ],
     "adjoint_tolerance": 2e-05,
     "checks_passed": true,
@@ -23,19 +23,19 @@
     "finite_execution": true,
     "bounded_density": true
   },
-  "iterations": 120,
-  "stop_reason": "iteration limit (120)",
+  "iterations": 84,
+  "stop_reason": "design change 0.00592 < tol 0.01",
   "optimizer": null,
-  "fresh_final_compliance": 282.24958827052177,
-  "last_recorded_objective": 282.8615628647639,
-  "physical_volume_fraction": 0.500534722836651,
-  "volume_excess": 0.0005347228366510137,
-  "feasible_volume_1e_4": false,
-  "grayness": 0.48315068817198464,
-  "engine_physics_evaluations_before_final_check": 120,
+  "fresh_final_compliance": 256.0958802180529,
+  "last_recorded_objective": 255.9891292218084,
+  "physical_volume_fraction": 0.5000825245810123,
+  "volume_excess": 8.252458101232207e-05,
+  "feasible_volume_1e_4": true,
+  "grayness": 0.385383105859096,
+  "engine_physics_evaluations_before_final_check": 84,
   "final_check_extra_model_evaluations": 1,
-  "runtime_seconds": 3.423147700028494,
-  "captured_at": "2026-10-28T00:06:08.477497+00:00",
+  "runtime_seconds": 3.4025005999719724,
+  "captured_at": "2026-10-28T11:36:33.375705+00:00",
   "versions": {
     "python": "3.14.3",
     "numpy": "2.4.2",
@@ -113,9 +113,9 @@
     ],
     "schedules": [],
     "variants": {},
-    "m": 0.5,
-    "max_iter": 120,
-    "tol": 0.0
+    "m": 1.0,
+    "max_iter": 300,
+    "tol": 0.01
   },
   "resolved_method_params": {
     "move": 0.02,
@@ -127,12 +127,12 @@
   },
   "fresh_reported": {},
   "fresh_constraints": [],
+  "fresh_constraints_feasible_1e_4": true,
   "primary_source_review": {
     "status": "primary_text_and_schematic_reviewed",
     "url": "https://arxiv.org/pdf/1404.4820",
     "scope": "Figure 8 on PDF page 27 reviewed: one inclined component and a level-set surface. Geometry parameters/vertical normalization not specified in the figure; no optimized topology match claimed.",
     "visual_status": "source_reviewed_not_matched",
     "source_sha256": "f3a1337f7c210ee6269671ac685811843f55adf80c5ee6d66211591758149793"
-  },
-  "fresh_constraints_feasible_1e_4": true
+  }
 }

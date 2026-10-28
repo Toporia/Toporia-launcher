@@ -15,19 +15,19 @@
     "finite_execution": true,
     "bounded_density": true
   },
-  "iterations": 120,
-  "stop_reason": "iteration limit (120)",
+  "iterations": 109,
+  "stop_reason": "design change 0.0087 < tol 0.01",
   "optimizer": null,
-  "fresh_final_compliance": 248.73272625376723,
-  "last_recorded_objective": 248.73272627598317,
-  "physical_volume_fraction": 0.4999999990356857,
-  "volume_excess": -9.64314295082147e-10,
+  "fresh_final_compliance": 210.66115646540192,
+  "last_recorded_objective": 210.66129337634166,
+  "physical_volume_fraction": 0.49999991999733995,
+  "volume_excess": -8.000266005225853e-08,
   "feasible_volume_1e_4": true,
-  "grayness": 0.38955496886721297,
-  "engine_physics_evaluations_before_final_check": 121,
+  "grayness": 0.1974382821716807,
+  "engine_physics_evaluations_before_final_check": 110,
   "final_check_extra_model_evaluations": 1,
-  "runtime_seconds": 10.403054800000973,
-  "captured_at": "2026-10-28T00:03:03.061012+00:00",
+  "runtime_seconds": 9.94694769999478,
+  "captured_at": "2026-10-28T11:30:29.547429+00:00",
   "versions": {
     "python": "3.14.3",
     "numpy": "2.4.2",
@@ -101,20 +101,20 @@
     ],
     "schedules": [],
     "variants": {},
-    "m": 0.5,
-    "max_iter": 120,
-    "tol": 0.0
+    "m": 1.0,
+    "max_iter": 300,
+    "tol": 0.01
   },
   "resolved_method_params": {
     "move": 0.2
   },
   "fresh_reported": {},
   "fresh_constraints": [],
+  "fresh_constraints_feasible_1e_4": true,
   "primary_source_review": {
     "status": "official_library_documentation_reviewed",
     "url": "https://github.com/aatmdelissen/pyMOTO",
     "scope": "Official project and installed adapter reviewed. Actual configured versions are MMA2007 and GCMMA; common MBB results are not original Svanberg figures.",
     "visual_status": "not_assessed"
-  },
-  "fresh_constraints_feasible_1e_4": true
+  }
 }

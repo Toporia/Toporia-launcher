@@ -15,19 +15,19 @@
     "finite_execution": true,
     "bounded_density": true
   },
-  "iterations": 36,
+  "iterations": 48,
   "stop_reason": "Q4Model_TOBSUpdater reported its own convergence criterion",
   "optimizer": null,
-  "fresh_final_compliance": 257.2224583616893,
-  "last_recorded_objective": 262.1151462749363,
-  "physical_volume_fraction": 0.4988899411644807,
-  "volume_excess": -0.0011100588355192897,
+  "fresh_final_compliance": 215.74813823840424,
+  "last_recorded_objective": 217.54354564693233,
+  "physical_volume_fraction": 0.5,
+  "volume_excess": 0.0,
   "feasible_volume_1e_4": true,
-  "grayness": 0.3643524397235468,
-  "engine_physics_evaluations_before_final_check": 36,
+  "grayness": 0.2280313095511202,
+  "engine_physics_evaluations_before_final_check": 48,
   "final_check_extra_model_evaluations": 1,
-  "runtime_seconds": 6.206364500045311,
-  "captured_at": "2026-10-28T00:04:04.237379+00:00",
+  "runtime_seconds": 108.41188180004247,
+  "captured_at": "2026-10-28T11:34:21.185422+00:00",
   "versions": {
     "python": "3.14.3",
     "numpy": "2.4.2",
@@ -102,8 +102,8 @@
     ],
     "schedules": [],
     "variants": {},
-    "m": 0.5,
-    "max_iter": 120,
+    "m": 1.0,
+    "max_iter": 300,
     "tol": 0.0
   },
   "resolved_method_params": {
@@ -115,11 +115,11 @@
   },
   "fresh_reported": {},
   "fresh_constraints": [],
+  "fresh_constraints_feasible_1e_4": true,
   "primary_source_review": {
     "status": "source_access_or_setup_incomplete",
     "url": "https://doi.org/10.1007/s00158-020-02719-9",
     "visual_status": "not_assessed",
     "scope": "Implementation/reference metadata inspected. Full numbered source example not recovered; target remains unresolved."
-  },
-  "fresh_constraints_feasible_1e_4": true
+  }
 }

@@ -11,11 +11,11 @@
   "paper_visual_status": "not_assessed",
   "checks": {
     "directional_adjoint_errors": [
-      1.200216175984923e-09,
-      1.2611310323361533e-10,
-      8.723912928270982e-09,
-      5.340785256367732e-10,
-      5.89154369623906e-10
+      1.1828295319894716e-09,
+      1.257647637454318e-09,
+      8.653414410704686e-10,
+      1.6280461794926264e-10,
+      7.000460593372732e-10
     ],
     "adjoint_tolerance": 2e-05,
     "checks_passed": true,
@@ -23,19 +23,19 @@
     "finite_execution": true,
     "bounded_density": true
   },
-  "iterations": 120,
-  "stop_reason": "iteration limit (120)",
+  "iterations": 91,
+  "stop_reason": "design change 0.009 < tol 0.01",
   "optimizer": null,
-  "fresh_final_compliance": 282.7645333991539,
-  "last_recorded_objective": 281.38203392804803,
-  "physical_volume_fraction": 0.5029516036292138,
-  "volume_excess": 0.0029516036292137615,
+  "fresh_final_compliance": 245.8483422982876,
+  "last_recorded_objective": 244.3275949809676,
+  "physical_volume_fraction": 0.5033013725457199,
+  "volume_excess": 0.0033013725457199383,
   "feasible_volume_1e_4": false,
-  "grayness": 0.5051578113357538,
-  "engine_physics_evaluations_before_final_check": 120,
+  "grayness": 0.35292968322088925,
+  "engine_physics_evaluations_before_final_check": 91,
   "final_check_extra_model_evaluations": 1,
-  "runtime_seconds": 4.263225000002421,
-  "captured_at": "2026-10-28T00:06:16.262370+00:00",
+  "runtime_seconds": 3.760184200014919,
+  "captured_at": "2026-10-28T11:36:38.487814+00:00",
   "versions": {
     "python": "3.14.3",
     "numpy": "2.4.2",
@@ -114,9 +114,9 @@
     ],
     "schedules": [],
     "variants": {},
-    "m": 0.5,
-    "max_iter": 120,
-    "tol": 0.0
+    "m": 1.0,
+    "max_iter": 300,
+    "tol": 0.01
   },
   "resolved_method_params": {
     "move": 0.02,
@@ -128,11 +128,11 @@
   },
   "fresh_reported": {},
   "fresh_constraints": [],
+  "fresh_constraints_feasible_1e_4": true,
   "primary_source_review": {
     "status": "source_access_or_setup_incomplete",
     "url": "https://doi.org/10.1007/s00158-015-1372-3",
     "visual_status": "not_assessed",
     "scope": "Implementation/reference metadata inspected. Full numbered source example not recovered; target remains unresolved."
-  },
-  "fresh_constraints_feasible_1e_4": true
+  }
 }

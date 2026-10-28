@@ -4,7 +4,7 @@ Target: Original optimizer numerical example: identified figure and complete inp
 
 Difference/gap: The coarse MBB companion checks adapter execution, not the source optimizer's paper figure or global optimality. Small steps, library success and feasibility are separate observations.
 
-Recorded execution: 80 steps; iteration limit (80). Fresh final compliance 329.99803; physical fraction 0.49999741; budget 0.5; within budget +1e-4: True. Extra constraints within +1e-4: True. Finite/bounded execution does not establish feasibility, convergence or paper agreement.
+Recorded execution: 84 steps; design change 0.00622 < tol 0.01. Fresh final compliance 251.47613; physical fraction 0.4999996; budget 0.5; within budget +1e-4: True. Extra constraints within +1e-4: True. Finite/bounded execution does not establish feasibility, convergence or paper agreement.
 
 Next: Choose an identified trust-region/interior-point reference example and align SR1 versus BFGS, scaling, radius and barrier stopping criteria.
 

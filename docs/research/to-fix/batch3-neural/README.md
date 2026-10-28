@@ -4,7 +4,7 @@ Target: Chandrasekhar-Suresh TOuNN (2021): architecture/optimization figure alig
 
 Difference/gap: TOuNN uses batch-normalized LeakyReLU and AMSGrad rather than this tanh/Adam-AL variant. Gray fields, approximate volume and local optima remain possible.
 
-Recorded execution: 300 steps; iteration limit (300). Fresh final compliance 429.59996; physical fraction 0.4999126; budget 0.5; within budget +1e-4: True. Extra constraints within +1e-4: True. Finite/bounded execution does not establish feasibility, convergence or paper agreement.
+Recorded execution: 300 steps; iteration limit (300). Fresh final compliance 385.76674; physical fraction 0.49963428; budget 0.5; within budget +1e-4: True. Extra constraints within +1e-4: True. Finite/bounded execution does not establish feasibility, convergence or paper agreement.
 
 Next: Align a numbered TOuNN panel and its LeakyReLU/batch-normalization/AMSGrad architecture. The present tanh/Adam-AL run remains gray and is not that algorithm.
 

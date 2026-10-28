@@ -15,26 +15,26 @@
     "finite_execution": true,
     "bounded_density": true
   },
-  "iterations": 54,
-  "stop_reason": "MMA (NLopt) finished: FTOL_REACHED",
+  "iterations": 199,
+  "stop_reason": "design change 0 < tol 0.01",
   "optimizer": {
     "optimiser": "MMA (NLopt)",
     "finished": true,
     "success": true,
     "message": "FTOL_REACHED",
     "iterations": null,
-    "evaluations": 70
+    "evaluations": 210
   },
-  "fresh_final_compliance": 248.73246029163107,
-  "last_recorded_objective": 248.73246029163107,
-  "physical_volume_fraction": 0.4999999997168003,
-  "volume_excess": -2.831996859242736e-10,
+  "fresh_final_compliance": 211.54496993853243,
+  "last_recorded_objective": 211.54496993853243,
+  "physical_volume_fraction": 0.4999999678558238,
+  "volume_excess": -3.2144176209669695e-08,
   "feasible_volume_1e_4": true,
-  "grayness": 0.3895614166444938,
-  "engine_physics_evaluations_before_final_check": 70,
+  "grayness": 0.20857470559011665,
+  "engine_physics_evaluations_before_final_check": 210,
   "final_check_extra_model_evaluations": 1,
-  "runtime_seconds": 0.5315407000016421,
-  "captured_at": "2026-10-28T00:03:27.660449+00:00",
+  "runtime_seconds": 6.562066899961792,
+  "captured_at": "2026-10-28T11:31:08.443390+00:00",
   "versions": {
     "python": "3.14.3",
     "numpy": "2.4.2",
@@ -108,9 +108,9 @@
     ],
     "schedules": [],
     "variants": {},
-    "m": 0.5,
-    "max_iter": 120,
-    "tol": 0.0
+    "m": 1.0,
+    "max_iter": 300,
+    "tol": 0.01
   },
   "resolved_method_params": {
     "nlopt_maxeval": 500,
@@ -120,11 +120,11 @@
   },
   "fresh_reported": {},
   "fresh_constraints": [],
+  "fresh_constraints_feasible_1e_4": true,
   "primary_source_review": {
     "status": "official_library_documentation_reviewed",
     "url": "https://nlopt.readthedocs.io/en/latest/NLopt_Algorithms/",
     "scope": "Official algorithm descriptions reviewed; adapter calls installed NLopt. Library algorithms/callbacks do not supply a paper figure reference.",
     "visual_status": "not_assessed"
-  },
-  "fresh_constraints_feasible_1e_4": true
+  }
 }

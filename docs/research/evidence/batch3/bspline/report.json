@@ -11,11 +11,11 @@
   "paper_visual_status": "not_assessed",
   "checks": {
     "directional_adjoint_errors": [
-      1.3797374354140857e-10,
-      6.834318666548711e-10,
-      1.228337269046803e-10,
-      5.756911614085425e-10,
-      1.4815490776559435e-10
+      4.902278191579428e-10,
+      1.4392217084597577e-09,
+      6.900639580672717e-11,
+      1.8920558951532718e-10,
+      6.848801800409571e-11
     ],
     "adjoint_tolerance": 2e-05,
     "checks_passed": true,
@@ -25,19 +25,19 @@
     "finite_execution": true,
     "bounded_density": true
   },
-  "iterations": 120,
-  "stop_reason": "iteration limit (120)",
+  "iterations": 55,
+  "stop_reason": "design change 0.00707 < tol 0.01",
   "optimizer": null,
-  "fresh_final_compliance": 444.1379268715293,
-  "last_recorded_objective": 444.10096106890717,
-  "physical_volume_fraction": 0.4999668539048861,
-  "volume_excess": -3.314609511390065e-05,
+  "fresh_final_compliance": 420.2681321011651,
+  "last_recorded_objective": 420.28291851008504,
+  "physical_volume_fraction": 0.49999744758383713,
+  "volume_excess": -2.5524161628709408e-06,
   "feasible_volume_1e_4": true,
-  "grayness": 0.8843746655770591,
-  "engine_physics_evaluations_before_final_check": 120,
+  "grayness": 0.8691475632154796,
+  "engine_physics_evaluations_before_final_check": 55,
   "final_check_extra_model_evaluations": 1,
-  "runtime_seconds": 1.0897185999783687,
-  "captured_at": "2026-10-28T00:06:22.145129+00:00",
+  "runtime_seconds": 1.706312499998603,
+  "captured_at": "2026-10-28T11:36:44.291342+00:00",
   "versions": {
     "python": "3.14.3",
     "numpy": "2.4.2",
@@ -116,9 +116,9 @@
     ],
     "schedules": [],
     "variants": {},
-    "m": 0.5,
-    "max_iter": 120,
-    "tol": 0.0
+    "m": 1.0,
+    "max_iter": 300,
+    "tol": 0.01
   },
   "resolved_method_params": {
     "move": 0.02,
@@ -130,11 +130,11 @@
   },
   "fresh_reported": {},
   "fresh_constraints": [],
+  "fresh_constraints_feasible_1e_4": true,
   "primary_source_review": {
     "status": "publisher_abstract_reviewed",
     "url": "https://www.sciencedirect.com/science/article/pii/S0045782513001539",
     "scope": "Publisher abstract supports B-spline density representation; original numbered examples and knot inputs were not recovered. Cox-de Boor recursion is an independent engineering check.",
     "visual_status": "not_assessed"
-  },
-  "fresh_constraints_feasible_1e_4": true
+  }
 }

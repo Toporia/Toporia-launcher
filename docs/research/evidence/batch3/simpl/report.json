@@ -16,19 +16,19 @@
     "finite_execution": true,
     "bounded_density": true
   },
-  "iterations": 120,
-  "stop_reason": "iteration limit (120)",
+  "iterations": 239,
+  "stop_reason": "design change 0.00951 < tol 0.01",
   "optimizer": null,
-  "fresh_final_compliance": 248.73510001194845,
-  "last_recorded_objective": 248.7351000153385,
-  "physical_volume_fraction": 0.49999999999999983,
-  "volume_excess": -1.6653345369377348e-16,
+  "fresh_final_compliance": 218.6593255943926,
+  "last_recorded_objective": 218.66001291040206,
+  "physical_volume_fraction": 0.4999999999809461,
+  "volume_excess": -1.9053925104373093e-11,
   "feasible_volume_1e_4": true,
-  "grayness": 0.38976317189797544,
-  "engine_physics_evaluations_before_final_check": 120,
+  "grayness": 0.2590834599449971,
+  "engine_physics_evaluations_before_final_check": 239,
   "final_check_extra_model_evaluations": 1,
-  "runtime_seconds": 1.9506828999728896,
-  "captured_at": "2026-10-28T00:03:51.264597+00:00",
+  "runtime_seconds": 7.331462000031024,
+  "captured_at": "2026-10-28T11:32:13.655754+00:00",
   "versions": {
     "python": "3.14.3",
     "numpy": "2.4.2",
@@ -102,9 +102,9 @@
     ],
     "schedules": [],
     "variants": {},
-    "m": 0.5,
-    "max_iter": 120,
-    "tol": 0.0
+    "m": 1.0,
+    "max_iter": 300,
+    "tol": 0.01
   },
   "resolved_method_params": {
     "step": 1.0,
@@ -113,12 +113,12 @@
   },
   "fresh_reported": {},
   "fresh_constraints": [],
+  "fresh_constraints_feasible_1e_4": true,
   "primary_source_review": {
     "status": "primary_text_and_schematic_reviewed",
     "url": "https://arxiv.org/html/2411.19421v2",
     "scope": "Figure 1 on PDF page 6 and equations 14-16 reviewed. Own numerical coordinates; source schematic has no declared point values. No digitization or SiMPL-A/B history match claimed.",
     "visual_status": "source_reviewed_not_matched",
     "source_sha256": "073261e2941f0cc3ab39154998a215911f8b2bbbf6b60809fd4e956cd94cc43e"
-  },
-  "fresh_constraints_feasible_1e_4": true
+  }
 }

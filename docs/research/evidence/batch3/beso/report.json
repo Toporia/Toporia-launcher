@@ -15,19 +15,19 @@
     "finite_execution": true,
     "bounded_density": true
   },
-  "iterations": 46,
+  "iterations": 74,
   "stop_reason": "Q4Model_BESOUpdater reported its own convergence criterion",
   "optimizer": null,
-  "fresh_final_compliance": 268.6107094295444,
-  "last_recorded_objective": 269.16326888665174,
-  "physical_volume_fraction": 0.499760700815544,
-  "volume_excess": -0.00023929918445597664,
+  "fresh_final_compliance": 213.8188803478389,
+  "last_recorded_objective": 214.25222069270748,
+  "physical_volume_fraction": 0.49975991239805695,
+  "volume_excess": -0.0002400876019430509,
   "feasible_volume_1e_4": true,
-  "grayness": 0.4484366896386058,
-  "engine_physics_evaluations_before_final_check": 46,
+  "grayness": 0.21507380840608675,
+  "engine_physics_evaluations_before_final_check": 74,
   "final_check_extra_model_evaluations": 1,
-  "runtime_seconds": 0.611311900021974,
-  "captured_at": "2026-10-28T00:03:39.451038+00:00",
+  "runtime_seconds": 2.933305599959567,
+  "captured_at": "2026-10-28T11:31:47.684667+00:00",
   "versions": {
     "python": "3.14.3",
     "numpy": "2.4.2",
@@ -102,8 +102,8 @@
     ],
     "schedules": [],
     "variants": {},
-    "m": 0.5,
-    "max_iter": 120,
+    "m": 1.0,
+    "max_iter": 300,
     "tol": 0.0
   },
   "resolved_method_params": {
@@ -116,11 +116,11 @@
   },
   "fresh_reported": {},
   "fresh_constraints": [],
+  "fresh_constraints_feasible_1e_4": true,
   "primary_source_review": {
     "status": "source_access_or_setup_incomplete",
     "url": "https://doi.org/10.1016/j.finel.2007.06.006",
     "visual_status": "not_assessed",
     "scope": "Implementation/reference metadata inspected. Full numbered source example not recovered; target remains unresolved."
-  },
-  "fresh_constraints_feasible_1e_4": true
+  }
 }

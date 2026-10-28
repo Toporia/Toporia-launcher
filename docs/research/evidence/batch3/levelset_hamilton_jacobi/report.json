@@ -15,19 +15,19 @@
     "finite_execution": true,
     "bounded_density": true
   },
-  "iterations": 86,
+  "iterations": 110,
   "stop_reason": "feasible volume settled and compliance stable against five previous iterations",
   "optimizer": null,
-  "fresh_final_compliance": 246.10835825379883,
-  "last_recorded_objective": 246.10835825379883,
+  "fresh_final_compliance": 191.66783204004412,
+  "last_recorded_objective": 191.66783204004412,
   "physical_volume_fraction": 0.5,
   "volume_excess": 0.0,
   "feasible_volume_1e_4": true,
   "grayness": 0.0,
   "engine_physics_evaluations_before_final_check": null,
   "final_check_extra_model_evaluations": 1,
-  "runtime_seconds": 1.1140517999883741,
-  "captured_at": "2026-10-28T00:06:37.903083+00:00",
+  "runtime_seconds": 3.898663599975407,
+  "captured_at": "2026-10-28T11:37:30.832874+00:00",
   "versions": {
     "python": "3.14.3",
     "numpy": "2.4.2",
@@ -96,9 +96,9 @@
     "filter_specs": [],
     "schedules": [],
     "variants": {},
-    "m": 0.4,
-    "max_iter": 160,
-    "tol": 0.0
+    "m": 1.0,
+    "max_iter": 300,
+    "tol": 0.01
   },
   "resolved_method_params": {
     "step_length": 3.0,

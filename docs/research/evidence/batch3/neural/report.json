@@ -11,11 +11,11 @@
   "paper_visual_status": "not_assessed",
   "checks": {
     "directional_adjoint_errors": [
-      1.7707224575502778e-11,
-      9.135422279760164e-11,
-      3.7030950528205153e-10,
-      3.280210825185037e-11,
-      1.7951848341191123e-10
+      4.998935432265483e-10,
+      1.131665129661119e-09,
+      4.206267556483567e-10,
+      3.895612166182616e-10,
+      3.453237695794087e-11
     ],
     "adjoint_tolerance": 2e-05,
     "checks_passed": true,
@@ -26,16 +26,16 @@
   "iterations": 300,
   "stop_reason": "iteration limit (300)",
   "optimizer": null,
-  "fresh_final_compliance": 429.5999565154559,
-  "last_recorded_objective": 429.7431738997424,
-  "physical_volume_fraction": 0.49991260053322056,
-  "volume_excess": -8.739946677943644e-05,
+  "fresh_final_compliance": 385.76673654911565,
+  "last_recorded_objective": 386.26211955582824,
+  "physical_volume_fraction": 0.49963428456497144,
+  "volume_excess": -0.0003657154350285574,
   "feasible_volume_1e_4": true,
-  "grayness": 0.8237458785270687,
+  "grayness": 0.7382351840117439,
   "engine_physics_evaluations_before_final_check": 300,
   "final_check_extra_model_evaluations": 1,
-  "runtime_seconds": 2.952892800036352,
-  "captured_at": "2026-10-28T00:06:30.322987+00:00",
+  "runtime_seconds": 9.588728400005493,
+  "captured_at": "2026-10-28T11:37:00.475520+00:00",
   "versions": {
     "python": "3.14.3",
     "numpy": "2.4.2",
@@ -114,7 +114,7 @@
     ],
     "schedules": [],
     "variants": {},
-    "m": 0.5,
+    "m": 1.0,
     "max_iter": 300,
     "tol": 0.0
   },
@@ -128,11 +128,11 @@
   },
   "fresh_reported": {},
   "fresh_constraints": [],
+  "fresh_constraints_feasible_1e_4": true,
   "primary_source_review": {
     "status": "publisher_abstract_and_author_repository_reviewed",
     "url": "https://github.com/UW-ERSL/TOuNN",
     "scope": "Publisher abstract reviewed and author repository linked for architecture alignment. Toporia source already declares tanh/sigmoid and Adam-AL differences; no numbered paper-panel reproduction claimed.",
     "visual_status": "not_assessed"
-  },
-  "fresh_constraints_feasible_1e_4": true
+  }
 }

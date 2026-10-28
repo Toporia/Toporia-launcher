@@ -15,23 +15,26 @@
     "finite_execution": true,
     "bounded_density": true
   },
-  "iterations": 120,
-  "stop_reason": "iteration limit (120)",
+  "iterations": 131,
+  "stop_reason": "design change 0 < tol 0.01",
   "optimizer": {
     "optimiser": "SLSQP (NLopt)",
-    "finished": false,
-    "message": "stopped by Toporia before the optimiser finished"
+    "finished": true,
+    "success": true,
+    "message": "FTOL_REACHED",
+    "iterations": null,
+    "evaluations": 175
   },
-  "fresh_final_compliance": 248.9708342543416,
-  "last_recorded_objective": 248.9857031913108,
-  "physical_volume_fraction": 0.5000000000002266,
-  "volume_excess": 2.2659651932599445e-13,
+  "fresh_final_compliance": 248.84520033264425,
+  "last_recorded_objective": 248.84520033264425,
+  "physical_volume_fraction": 0.5000000000012738,
+  "volume_excess": 1.273758876152442e-12,
   "feasible_volume_1e_4": true,
-  "grayness": 0.393138480183724,
-  "engine_physics_evaluations_before_final_check": 157,
+  "grayness": 0.39054166329641693,
+  "engine_physics_evaluations_before_final_check": 175,
   "final_check_extra_model_evaluations": 1,
-  "runtime_seconds": 32.671628599986434,
-  "captured_at": "2026-10-28T00:04:54.211350+00:00",
+  "runtime_seconds": 35.856421799981035,
+  "captured_at": "2026-10-28T11:35:20.840297+00:00",
   "versions": {
     "python": "3.14.3",
     "numpy": "2.4.2",
@@ -106,8 +109,8 @@
     "schedules": [],
     "variants": {},
     "m": 0.5,
-    "max_iter": 120,
-    "tol": 0.0
+    "max_iter": 300,
+    "tol": 0.01
   },
   "resolved_method_params": {
     "nlopt_maxeval": 500,
@@ -116,11 +119,11 @@
   },
   "fresh_reported": {},
   "fresh_constraints": [],
+  "fresh_constraints_feasible_1e_4": true,
   "primary_source_review": {
     "status": "official_library_documentation_reviewed",
     "url": "https://nlopt.readthedocs.io/en/latest/NLopt_Algorithms/",
     "scope": "Official algorithm descriptions reviewed; adapter calls installed NLopt. Library algorithms/callbacks do not supply a paper figure reference.",
     "visual_status": "not_assessed"
-  },
-  "fresh_constraints_feasible_1e_4": true
+  }
 }

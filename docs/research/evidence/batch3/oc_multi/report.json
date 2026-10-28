@@ -15,19 +15,19 @@
     "finite_execution": true,
     "bounded_density": true
   },
-  "iterations": 120,
-  "stop_reason": "iteration limit (120)",
+  "iterations": 300,
+  "stop_reason": "iteration limit (300)",
   "optimizer": null,
-  "fresh_final_compliance": 357.0587392852156,
-  "last_recorded_objective": 474.26955742648624,
-  "physical_volume_fraction": 0.4999767300847204,
-  "volume_excess": -2.32699152796223e-05,
+  "fresh_final_compliance": 290.8595958190956,
+  "last_recorded_objective": 297.3333249238473,
+  "physical_volume_fraction": 0.5000000003158416,
+  "volume_excess": 3.1584157511588273e-10,
   "feasible_volume_1e_4": true,
-  "grayness": 0.5490671176374237,
-  "engine_physics_evaluations_before_final_check": 120,
+  "grayness": 0.3009341140446584,
+  "engine_physics_evaluations_before_final_check": 300,
   "final_check_extra_model_evaluations": 1,
-  "runtime_seconds": 6.448583199991845,
-  "captured_at": "2026-10-28T00:03:37.220860+00:00",
+  "runtime_seconds": 29.348555400036275,
+  "captured_at": "2026-10-28T11:31:43.771963+00:00",
   "versions": {
     "python": "3.14.3",
     "numpy": "2.4.2",
@@ -106,9 +106,9 @@
     ],
     "schedules": [],
     "variants": {},
-    "m": 0.5,
-    "max_iter": 120,
-    "tol": 0.0
+    "m": 1.0,
+    "max_iter": 300,
+    "tol": 0.01
   },
   "resolved_method_params": {
     "move": 0.2,
@@ -116,20 +116,20 @@
     "oc_sweeps": 30
   },
   "fresh_reported": {
-    "max_stress": 1.5533669414965159
+    "max_stress": 1.7824305406208116
   },
   "fresh_constraints": [
     {
       "name": "stress",
-      "value": 2.1067338829930318,
-      "exact": 2.1067338829930318
+      "value": 2.5648610812416233,
+      "exact": 2.5648610812416233
     }
   ],
+  "fresh_constraints_feasible_1e_4": false,
   "primary_source_review": {
     "status": "source_access_or_setup_incomplete",
     "url": "https://doi.org/10.1016/0045-7825%2891%2990046-9",
     "visual_status": "not_assessed",
     "scope": "Implementation/reference metadata inspected. Full numbered source example not recovered; target remains unresolved."
-  },
-  "fresh_constraints_feasible_1e_4": false
+  }
 }

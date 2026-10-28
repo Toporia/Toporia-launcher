@@ -15,8 +15,8 @@
     "finite_execution": true,
     "bounded_density": true
   },
-  "iterations": 120,
-  "stop_reason": "iteration limit (120)",
+  "iterations": 162,
+  "stop_reason": "design change 0.00725 < tol 0.01",
   "optimizer": {
     "beta": 8.0,
     "beta_target": 8.0,
@@ -24,16 +24,16 @@
     "finished": true,
     "message": "FP continuation finished: used beta 8, target 8"
   },
-  "fresh_final_compliance": 251.8073661367912,
-  "last_recorded_objective": 251.80736614230491,
-  "physical_volume_fraction": 0.4999999999982478,
-  "volume_excess": -1.7522094886146533e-12,
+  "fresh_final_compliance": 220.00695758468345,
+  "last_recorded_objective": 220.00422199565065,
+  "physical_volume_fraction": 0.4999999999983561,
+  "volume_excess": -1.6439072325624693e-12,
   "feasible_volume_1e_4": true,
-  "grayness": 0.3807551325282195,
-  "engine_physics_evaluations_before_final_check": 120,
+  "grayness": 0.270138464075286,
+  "engine_physics_evaluations_before_final_check": 162,
   "final_check_extra_model_evaluations": 1,
-  "runtime_seconds": 4.714414000045508,
-  "captured_at": "2026-10-28T00:03:48.307247+00:00",
+  "runtime_seconds": 14.429506899963599,
+  "captured_at": "2026-10-28T11:32:05.350218+00:00",
   "versions": {
     "python": "3.14.3",
     "numpy": "2.4.2",
@@ -109,9 +109,9 @@
     ],
     "schedules": [],
     "variants": {},
-    "m": 0.5,
-    "max_iter": 120,
-    "tol": 0.0
+    "m": 1.0,
+    "max_iter": 300,
+    "tol": 0.01
   },
   "resolved_method_params": {
     "move": 0.02,
@@ -120,11 +120,11 @@
   },
   "fresh_reported": {},
   "fresh_constraints": [],
+  "fresh_constraints_feasible_1e_4": true,
   "primary_source_review": {
     "status": "source_access_or_setup_incomplete",
     "url": "https://arxiv.org/abs/2006.04306",
     "visual_status": "not_assessed",
     "scope": "Implementation/reference metadata inspected. Full numbered source example not recovered; target remains unresolved."
-  },
-  "fresh_constraints_feasible_1e_4": true
+  }
 }

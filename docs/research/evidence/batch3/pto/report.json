@@ -15,19 +15,19 @@
     "finite_execution": true,
     "bounded_density": true
   },
-  "iterations": 120,
-  "stop_reason": "iteration limit (120)",
+  "iterations": 94,
+  "stop_reason": "design change 0.00976 < tol 0.01",
   "optimizer": null,
-  "fresh_final_compliance": 254.31328555809472,
-  "last_recorded_objective": 254.31309828742863,
-  "physical_volume_fraction": 0.49999999999989125,
-  "volume_excess": -1.0874634526203408e-13,
+  "fresh_final_compliance": 212.83723473041823,
+  "last_recorded_objective": 212.8435174102841,
+  "physical_volume_fraction": 0.49999999999946415,
+  "volume_excess": -5.358491428353318e-13,
   "feasible_volume_1e_4": true,
-  "grayness": 0.45077687515382353,
-  "engine_physics_evaluations_before_final_check": 120,
+  "grayness": 0.22985365491775098,
+  "engine_physics_evaluations_before_final_check": 94,
   "final_check_extra_model_evaluations": 1,
-  "runtime_seconds": 1.702502700034529,
-  "captured_at": "2026-10-28T00:03:56.676271+00:00",
+  "runtime_seconds": 3.9259187999996357,
+  "captured_at": "2026-10-28T11:32:30.914834+00:00",
   "versions": {
     "python": "3.14.3",
     "numpy": "2.4.2",
@@ -40,7 +40,7 @@
   },
   "protocol": "Unmodified recipe and existing engine _loop; final re-evaluation after optimizer close. Density rows start at physical y=0. Objective histories may be pre-update; volume is displayed post-update. An execution pass does not mean feasibility, convergence or paper agreement.",
   "iteration_override": null,
-  "next_check": "Inspect the native 120x40 Figure 3 attempt. An exact PTOc reproduction would need a separately declared element-compliance allocation and filtered redistribution variant, not retuning this sensitivity proxy.",
+  "next_check": "None for the algorithm: the original is the separate ptoc updater, which reproduces the captured author run exactly (evidence/batch3/ptoc). This sensitivity-proxy variant stays a declared, different method; its Figure 3 comparison below records that difference.",
   "scenario": {
     "Lx": 60.0,
     "Ly": 20.0,
@@ -101,9 +101,9 @@
     ],
     "schedules": [],
     "variants": {},
-    "m": 0.5,
-    "max_iter": 120,
-    "tol": 0.0
+    "m": 1.0,
+    "max_iter": 300,
+    "tol": 0.01
   },
   "resolved_method_params": {
     "move": 0.2,
@@ -112,11 +112,11 @@
   },
   "fresh_reported": {},
   "fresh_constraints": [],
+  "fresh_constraints_feasible_1e_4": true,
   "primary_source_review": {
     "status": "primary_full_text_and_author_code_reviewed",
     "url": "https://journals.plos.org/plosone/article?id=10.1371/journal.pone.0145041",
     "scope": "Sections 3.6-3.7 and 4.1 identify Figure 3 MBB, Table 5 and the source settings. S2 code inspected: element-compliance allocation, inner filtered redistribution and history blend. Native capture/failed comparison in paper-attempt/. No paper-image pixel match claimed.",
     "visual_status": "not_assessed"
-  },
-  "fresh_constraints_feasible_1e_4": true
+  }
 }
