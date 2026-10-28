@@ -53,4 +53,4 @@ def scenario() -> Scenario:
 
 def solver() -> Solver:
     """The solver settings recommended for this problem: a 50 x 50 mesh, optimality criteria."""
-    return Solver(method="q4_heat+oc", filter_specs=[{"type": "density", "rmin": 1.5}], m=0.5, max_iter=100, tol=0.01)
+    return Solver(method="q4_heat+oc", filter_specs=[{"type": "density", "rmin": 1.5}], m=0.5, max_iter=300, tol=0.01)

@@ -26,5 +26,5 @@ def scenario():
 
 
 def solver():
-    return Solver(method="q4_mechanism+mma", m=1.0, max_iter=200, tol=0.001,
+    return Solver(method="q4_mechanism+mma", m=1.0, max_iter=400, tol=0.001,
                   method_params={"move": 0.1}, filter_specs=[{"type": "density", "rmin": 1.5}])

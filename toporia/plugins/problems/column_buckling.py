@@ -60,5 +60,5 @@ def solver() -> Solver:
         filter_specs=[{"type": "density"}, {"type": "heaviside", "beta": 1.0, "eta": 0.5}],
         schedules=[{"path": "filters[1].beta", "type": "geometric", "start": 1.0, "end": 8.0,
                     "factor": 2.0, "every": 30}],
-        m=1.0, max_iter=150, tol=0.01,
+        m=1.0, max_iter=300, tol=0.01,
     )

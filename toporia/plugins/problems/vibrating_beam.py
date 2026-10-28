@@ -46,4 +46,4 @@ def scenario() -> Scenario:
 def solver() -> Solver:
     """The solver settings recommended for this problem."""
     return Solver(method="q4_dynamic+mma", method_params={"attached_mass": 2.0},
-                  filter_specs=[{"type": "density", "rmin": 1.5}], m=10.0, max_iter=100, tol=0.001)
+                  filter_specs=[{"type": "density", "rmin": 1.5}], m=10.0, max_iter=300, tol=0.001)

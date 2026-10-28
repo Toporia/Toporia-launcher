@@ -4,7 +4,7 @@
 # Fixed:   two central mounting holes (bolted to the frame)
 # Load:    eight motor-attachment holes, equal +x and +y load cases
 
-from toporia.framework import HoleConfig, LoadCase, Scenario
+from toporia.framework import HoleConfig, LoadCase, Scenario, Solver
 
 NAME = "Drone Arm"
 ORDER = 50
@@ -38,3 +38,8 @@ def scenario() -> Scenario:
         ],
         volfrac=0.5,
     )
+
+
+def solver() -> Solver:
+    """The default solver, run until the design settles (change below 0.01) or 200 steps."""
+    return Solver(max_iter=200)

@@ -18,7 +18,7 @@
 #   (0, Ly) ─── top-left    (Lx, Ly) ─── top-right
 #   (0,  0) ─── bottom-left (Lx,  0) ─── bottom-right
 
-from toporia.framework import EdgeConstraint, LoadCase, PointLoad, Scenario
+from toporia.framework import EdgeConstraint, LoadCase, PointLoad, Scenario, Solver
 
 NAME = "Cantilever"
 ORDER = 20
@@ -46,3 +46,8 @@ def scenario() -> Scenario:
         load_cases=[LoadCase(Fmag=1.0, Fa=270.0, weight=1.0)],
         volfrac=0.4,
     )
+
+
+def solver() -> Solver:
+    """The default solver, run until the design settles (change below 0.01) or 300 steps."""
+    return Solver(max_iter=300)

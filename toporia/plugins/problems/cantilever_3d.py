@@ -45,4 +45,4 @@ def scenario() -> Scenario:
 
 def solver() -> Solver:
     """The solver settings recommended for this problem: small and quick."""
-    return Solver(method="h8+oc", filter_specs=[{"type": "density", "rmin": 1.5}], m=0.4, max_iter=60, tol=0.01)
+    return Solver(method="h8+oc", filter_specs=[{"type": "density", "rmin": 1.5}], m=0.4, max_iter=200, tol=0.01)

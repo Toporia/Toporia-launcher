@@ -61,4 +61,4 @@ def scenario() -> Scenario:
 def solver() -> Solver:
     """The solver settings recommended for this problem."""
     # A coarser mesh than 1 el/mm keeps the first look quick; raise m to resolve the corner.
-    return Solver(method="q4+oc", filter_specs=[{"type": "density"}], m=0.5, max_iter=100, tol=0.01)
+    return Solver(method="q4+oc", filter_specs=[{"type": "density"}], m=0.5, max_iter=300, tol=0.01)

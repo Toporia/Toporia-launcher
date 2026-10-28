@@ -9,7 +9,7 @@
 
 from dataclasses import replace
 
-from toporia.framework import EnforcedArea, Scenario
+from toporia.framework import EnforcedArea, Scenario, Solver
 
 from . import drone_arm
 
@@ -36,3 +36,8 @@ def scenario() -> Scenario:
         kind="empty",
     )
     return replace(base, enforced_areas=[*base.enforced_areas, camera_view])
+
+
+def solver() -> Solver:
+    """The default solver, run until the design settles (change below 0.01) or 200 steps."""
+    return Solver(max_iter=200)

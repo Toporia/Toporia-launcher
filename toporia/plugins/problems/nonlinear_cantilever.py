@@ -47,4 +47,4 @@ def scenario() -> Scenario:
 
 def solver() -> Solver:
     """MMA on the non-linear model: a coarse mesh keeps a run to a few minutes."""
-    return Solver(method="q4_nonlinear+mma", filter_specs=[{"type": "density"}], m=0.5, max_iter=60, tol=0.01)
+    return Solver(method="q4_nonlinear+mma", filter_specs=[{"type": "density"}], m=0.5, max_iter=150, tol=0.01)

@@ -10,7 +10,7 @@
 # The xy origin is the bottom-left corner. This matches the live canvas and
 # saved density PNGs, which display row 0 of the density array at the bottom.
 
-from toporia.framework import LoadCase, PointConstraint, PointLoad, Scenario
+from toporia.framework import LoadCase, PointConstraint, PointLoad, Scenario, Solver
 
 NAME = "Three-Point Bending"
 ORDER = 30
@@ -36,3 +36,8 @@ def scenario() -> Scenario:
         load_cases=[LoadCase(Fmag=1.0, Fa=270.0, weight=1.0)],
         volfrac=0.5,
     )
+
+
+def solver() -> Solver:
+    """The default solver, run until the design settles (change below 0.01) or 300 steps."""
+    return Solver(max_iter=300)
