@@ -41,6 +41,10 @@ class PatternFilter(Filter):
         ' Papers: https://doi.org/10.1007/978-3-662-05086-6 https://doi.org/10.1007/s00158-008-0332-6'
     )
     label = "Pattern repetition"
+    use_when = (
+        "When the part is made of identical repeated cells, e.g. a periodic panel or a beam of equal "
+        "bays."
+    )
     order = 80
     dims = (2, 3)
     params = (

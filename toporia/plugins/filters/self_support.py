@@ -32,6 +32,10 @@ class SelfSupportProjection(Filter):
 
     name = "self_support"
     label = "Gaynor–Guest self-support projection (2-D)"
+    use_when = (
+        "An alternative overhang rule for 2-D printed parts (support wedge from below). Runs converge "
+        "slowly and leave grey material; check the thresholded design for unsupported cells."
+    )
     order = 96
     must_be_last = True
     calibrate_initial_volume = True

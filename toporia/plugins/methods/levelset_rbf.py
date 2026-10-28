@@ -38,6 +38,10 @@ class LevelSetRBFMethod(OptimizationMethod):
 
     name = "levelset"
     label = "RBF level set"
+    use_when = (
+        "When you want crisp boundaries throughout the run rather than grey densities; compliance with "
+        "the volume budget, 2-D."
+    )
     reference = (
         'A numerical variant of TOPRBF.m by P. Wei, Z. Li, X. Li and M. Y. Wang, SMO 58 '
         '(2018) 831-849; mean rather than median energy normalisation, guarded rescaling '

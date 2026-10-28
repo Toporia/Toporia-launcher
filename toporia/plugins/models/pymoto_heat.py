@@ -38,6 +38,7 @@ class PymotoHeatModel(Model):
 
     name = "pymoto_heat"
     label = "Heat conduction, pyMOTO network"
+    use_when = "To cross-check the heat-conduction results against pyMOTO. Needs pyMOTO installed."
     reference = (
         'pyMOTO by A. Delissen et al. (TU Delft), MIT licence: https://github.com/aatmdelissen/pyMOTO'
         ' - its AssemblePoisson module, as a cross-check of the heat engine after M. P. Bendsoe, O.'

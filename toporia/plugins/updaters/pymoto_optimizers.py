@@ -65,6 +65,7 @@ class PymotoMMAUpdater(Updater):
 
     name = "pymoto_mma"
     label = "MMA (pyMOTO)"
+    use_when = "MMA with any number of constraints, as implemented in pyMOTO; needs pyMOTO installed."
     reference = (
         "K. Svanberg, Int. J. Numer. Meth. Eng. 24 (1987) 359-373, in pyMOTO's implementation:"
         ' https://github.com/aatmdelissen/pyMOTO'
@@ -107,6 +108,7 @@ class PymotoGCMMAUpdater(PymotoMMAUpdater):
 
     name = "pymoto_gcmma"
     label = "GCMMA (pyMOTO)"
+    use_when = "When MMA oscillates or a constraint is hard to satisfy: slower, but every accepted step is safe."
     reference = (
         'K. Svanberg, "A class of globally convergent optimization methods based on conservative'
         ' convex separable approximations", SIAM J. Optim. 12 (2002) 555-573, in pyMOTO\'s'

@@ -20,6 +20,7 @@ class Q4HeatModel(AssembledModel):
 
     name = "q4_heat"
     label = "2-D Q4 heat conduction (Toporia)"
+    use_when = "For 2-D heat-conduction design (heat sinks, spreaders)."
     reference = (
         'M. P. Bendsoe, O. Sigmund, Topology Optimization (Springer 2003), section 1.5; A.'
         ' Gersborg-Hansen, M. P. Bendsoe, O. Sigmund, "Topology optimization of heat conduction'

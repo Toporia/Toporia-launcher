@@ -79,6 +79,11 @@ class MovingMorphableComponents(Representation):
 
     name = "mmc"
     label = "Moving morphable components"
+    use_when = (
+        "When you want a design made of a few explicit bars you can read off (positions, lengths, "
+        "angles), e.g. for direct CAD export. Use a small move limit (about 0.02) and a gradient updater "
+        "such as MMA."
+    )
     reference = (
         'X. Guo, W. Zhang, W. Zhong, "Doing topology optimization explicitly and geometrically - a'
         ' new moving morphable components based framework", J. Appl. Mech. 81 (2014) 081009.'

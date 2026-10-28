@@ -63,6 +63,10 @@ class AMFilter(Filter):
 
     name = "am"
     label = "AM overhang filter"
+    use_when = (
+        "For parts that will be 3-D printed: every element must rest on material below it, so no support "
+        "structures are needed. Choose the build direction; 2-D only."
+    )
     reference = (
         'A port of AMfilter.m: M. Langelaar, "An additive manufacturing filter for topology'
         ' optimization of print-ready designs", Struct. Multidisc. Optim. 55 (2017) 871-883; M.'

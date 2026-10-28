@@ -81,6 +81,7 @@ class MmapyMMAUpdater(Updater):
         ' Papers: https://doi.org/10.1002/nme.1620240207'
     )
     label = "MMA (mmapy)"
+    use_when = "Svanberg's MMA with any number of constraints, via the mmapy package (GPL, optional)."
     order = 32
     params = (MOVE,)
     max_constraints = None   # mmasub takes m constraints
@@ -130,6 +131,7 @@ class MmapyGCMMAUpdater(Updater):
         ' Papers: https://doi.org/10.1137/S1052623499362822'
     )
     label = "GCMMA (mmapy)"
+    use_when = "Globally convergent MMA via mmapy, when plain MMA oscillates (GPL, optional)."
     order = 42
     params = (MOVE,)
     max_constraints = None

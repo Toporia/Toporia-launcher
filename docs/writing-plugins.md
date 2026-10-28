@@ -530,6 +530,22 @@ The GUI shows it, with the class docstring and the parameters, in the help windo
 by the "?" beside the plugin's dropdown. A `Param` may carry its own `source=`; without one,
 its "?" points to the plugin's reference.
 
+## When to use it, and what it works with
+
+Say in a sentence or two when someone should choose your plugin, including any honest
+limit of what it does:
+
+```python
+use_when = "For cast or moulded parts: no undercuts along the draw direction, so the mould can be pulled off."
+```
+
+The help window shows it as "When to use it". Below it, "Works with" is written for you
+from the declarations above (dimensions, objectives and constraints, `needs_element_densities`,
+`accepts_filters` and so on; see [`plugins/compatibility.py`](../toporia/plugins/compatibility.py)),
+so keep those honest and the help stays right. "Try it in these presets" lists the presets
+whose description names your plugin; add a preset that exercises it, since
+`tests/plugins/test_compatibility.py` requires one for every plugin.
+
 ## Optional dependencies
 
 If your plugin needs a package Toporia does not require, import it inside your methods
@@ -579,7 +595,8 @@ reported (in `toporia list` and the GUI's log) and the others still load. In a n
 
 ## Checklist
 
-- [ ] `name`, `label`, `params` declared; `reference` says where it comes from
+- [ ] `name`, `label`, `params` declared; `reference` says where it comes from; `use_when` says when to choose it
+- [ ] a preset that exercises it (its `DESCRIPTION.functions` names it)
 - [ ] capabilities honest: `objectives`, `max_constraints` / `requires` / `exact_adjoint` / `dims`
 - [ ] optional packages in `dependencies`, imported lazily
 - [ ] `toporia check kind:name` passes

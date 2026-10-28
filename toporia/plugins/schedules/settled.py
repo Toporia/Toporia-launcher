@@ -32,6 +32,10 @@ class Settled(Schedule):
         ' Papers: https://doi.org/10.1007/s00158-010-0602-y'
     )
     label = "When the design settles"
+    use_when = (
+        "When you do not know in advance how long each stage needs: steps up only once the design stops "
+        "changing."
+    )
     order = 40
     params = (START,
               Param("end", 64.0, "End", "Value it reaches and then keeps.",

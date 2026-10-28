@@ -20,6 +20,7 @@ class ThermalCompliance(Response):
     """C = Σ w_k q_kᵀ T_k, the load-weighted thermal compliance; minimising it keeps the part cool."""
     name = "thermal_compliance"
     label = "Thermal compliance"
+    use_when = "With a heat-conduction model: places the conductor so the part stays as cool as possible."
     reference = (
         'The objective of the heat-sink problem: M. P. Bendsoe, O. Sigmund, Topology Optimization'
         ' (Springer 2003), section 1.5; A. Gersborg-Hansen, M. P. Bendsoe, O. Sigmund, Struct.'

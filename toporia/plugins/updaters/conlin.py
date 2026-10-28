@@ -60,6 +60,7 @@ class ConlinUpdater(Updater):
         ' Papers: https://doi.org/10.1002/nme.1620230307 https://doi.org/10.1007/BF01743804'
     )
     label = "CONLIN (convex linearisation)"
+    use_when = "A classic, cheap alternative to MMA for a few constraints; good for comparing optimisers."
     order = 25
     params = (
         MOVE,

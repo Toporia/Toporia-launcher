@@ -33,6 +33,7 @@ class Connectivity(PostProcessor):
 
     name = "connectivity"
     label = "Connectivity check"
+    use_when = "Before manufacturing: finds floating islands and checks that the loads reach the supports."
     reference = (
         "Toporia's own check: the connected pieces of the black-and-white design, from the loads to"
         ' the supports.'

@@ -85,6 +85,10 @@ class PdeFilter(Filter):
         ' Papers: https://doi.org/10.1002/nme.3072 https://doi.org/10.1007/s00158-010-0594-7'
     )
     label = "PDE (Helmholtz) filter"
+    use_when = (
+        "Instead of the density filter on large or 3-D meshes, where a neighbourhood matrix gets "
+        "expensive; it gives similar designs for the same radius."
+    )
     dims = (2, 3)
     order = 11
     params = (RMIN,)

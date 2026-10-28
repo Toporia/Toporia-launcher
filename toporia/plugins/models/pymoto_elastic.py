@@ -110,6 +110,10 @@ class PymotoElasticModel(Model):
 
     name = "pymoto_elastic"
     label = "Linear elasticity, pyMOTO network"
+    use_when = (
+        "To cross-check Toporia's own elasticity against the pyMOTO library, or to build on pyMOTO "
+        "modules. Needs pyMOTO installed."
+    )
     reference = (
         'pyMOTO by A. Delissen et al. (TU Delft), MIT licence:'
         ' https://github.com/aatmdelissen/pyMOTO - its module network is used as it is.'

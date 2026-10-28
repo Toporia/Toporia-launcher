@@ -69,8 +69,13 @@ The exterior is void and does not wrap around the rectangular domain.
 
 
 class HamiltonJacobiLevelSet(OptimizationMethod):
+    """Level-set design moved by a Hamilton-Jacobi equation, with circular holes nucleated by the topological derivative (after Challis)."""
     name = "levelset_hamilton_jacobi"
     label = "Hamilton-Jacobi level set (circular TD)"
+    use_when = (
+        "The classic boundary-moving level set with hole nucleation; useful to compare with density "
+        "methods. 2-D compliance."
+    )
     reference = (
         'V. J. Challis, "A discrete level-set topology optimization code written in '
         'Matlab", SMO 41 (2010) 453-464. Independent positive-inside, physically '

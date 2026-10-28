@@ -23,6 +23,10 @@ class RAMP(Interpolation):
 
     name = "ramp"
     label = "RAMP (rational)"
+    use_when = (
+        "Instead of SIMP when the slope at void matters: heat conduction, self-weight or design-dependent "
+        "loads, or when low densities stall under SIMP."
+    )
     reference = (
         'M. Stolpe, K. Svanberg, "An alternative interpolation scheme for minimum compliance'
         ' topology optimization", Struct. Multidisc. Optim. 22 (2001) 116-124.'

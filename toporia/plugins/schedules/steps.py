@@ -15,6 +15,7 @@ class Steps(Schedule):
 
     name = "steps"
     label = "Equal steps"
+    use_when = "To raise a parameter (penalty, beta) by equal amounts at fixed intervals."
     reference = (
         'The classic SIMP continuation, p raised in steps; see O. Sigmund, J. Petersson, "Numerical'
         ' instabilities in topology optimization", Struct. Optim. 16 (1998) 68-75.'

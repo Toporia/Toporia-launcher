@@ -77,6 +77,10 @@ class Eigenfrequency(_EigenfrequencyBase):
 
     name = "eigenfrequency"
     label = "Fundamental frequency (maximise)"
+    use_when = (
+        "When the part must not resonate with low-frequency excitation: pushes the lowest natural "
+        "frequency up."
+    )
     reference = (
         'Eigenvalue optimisation: A. Diaz, N. Kikuchi, "Solutions to shape and topology eigenvalue'
         ' optimization problems using a homogenization method", Int. J. Numer. Meth. Engng 35 (1992)'
@@ -107,6 +111,7 @@ class MinimumEigenfrequency(_EigenfrequencyBase):
 
     name = "eigenfrequency_limit"
     label = "Fundamental frequency (at least)"
+    use_when = "When stiffness is the goal but the lowest natural frequency must stay above a limit."
     reference = Eigenfrequency.reference
     order = 45
     roles = (CONSTRAINT_ROLE,)

@@ -21,6 +21,10 @@ class OCUpdater(Updater):
 
     name = "oc"
     label = "Optimality criteria"
+    use_when = (
+        "The fast default for compliance with only the volume budget. Not for extra constraints or for "
+        "objectives whose sensitivities change sign."
+    )
     reference = (
         'The optimality criteria update of O. Sigmund, "A 99 line topology optimization code'
         ' written in Matlab", Struct. Multidisc. Optim. 21 (2001) 120-127, as written in top88: E.'

@@ -19,6 +19,7 @@ class Q4DynamicModel(AssembledModel):
 
     name = "q4_dynamic"
     label = "2-D Q4 with vibration (Toporia)"
+    use_when = "For 2-D problems about vibration: natural frequencies or a harmonic load response."
     reference = (
         'Mass interpolation that avoids spurious low-density modes: N. L. Pedersen, "Maximization of'
         ' eigenvalues using topology optimization", Struct. Multidisc. Optim. 20 (2000) 2-11; its use for the'

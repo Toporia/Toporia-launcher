@@ -66,6 +66,7 @@ class BESOUpdater(Updater):
 
     name = "beso"
     label = "BESO (soft kill)"
+    use_when = "When you want a strictly black-and-white design at every iteration (evolutionary add/remove)."
     reference = (
         'X. Huang, Y. M. Xie, "Convergent and mesh-independent solutions for the bi-directional'
         ' evolutionary structural optimization method", Finite Elem. Anal. Des. 43 (2007) 1039-1049;'

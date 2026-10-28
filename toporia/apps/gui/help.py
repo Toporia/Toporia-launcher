@@ -13,7 +13,8 @@
 #
 # A topic is a plain HelpTopic, built from what the option already declares:
 # a Param (help, units, range, source), a plugin class (docstring, reference,
-# dependencies, params), or a few sentences written next to the widget.  So a
+# dependencies, params, use_when, and what it works with, read from its declared
+# capabilities by plugins/compatibility.py), or a few sentences written next to the widget.  So a
 # new plugin gets its help window by declaring `reference`, with no GUI change.
 
 import html
@@ -119,6 +120,10 @@ def plugin_topic(cls, kind=""):
     params = getattr(cls, "params", ())
     if params:
         topic.add("Parameters", "\n".join(f"{p.label}: {p.help}" for p in params))
+    from toporia.plugins.compatibility import demo_presets, function_id, use_when, works_with
+    topic.add("When to use it", use_when(cls))
+    topic.add("Works with", "\n".join(works_with(cls)))
+    topic.add("Try it in these presets", "\n".join(demo_presets(function_id(cls))[:5]))
     return topic.add("Name in configs", getattr(cls, "name", ""))
 
 

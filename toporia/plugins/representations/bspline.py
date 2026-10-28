@@ -69,6 +69,10 @@ class BSplineField(Representation):
         ' Papers: https://doi.org/10.1016/j.cma.2013.06.001'
     )
     label = "B-spline field"
+    use_when = (
+        "When you want a smooth design with far fewer variables than elements, or a design that does not "
+        "change when the mesh is refined."
+    )
     order = 30
     element_wise = False
     dims = (2, 3)

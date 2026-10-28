@@ -29,6 +29,7 @@ class ExportSVG(PostProcessor):
 
     name = "export_svg"
     label = "Export outline (SVG)"
+    use_when = "For drawings, laser cutting templates or figures."
     reference = (
         "Toporia's own export, to the W3C SVG format."
     )

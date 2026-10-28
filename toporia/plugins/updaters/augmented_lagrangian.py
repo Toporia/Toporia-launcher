@@ -27,6 +27,7 @@ class AugmentedLagrangianUpdater(MMAUpdater):
 
     name = "augmented_lagrangian"
     label = "Augmented Lagrangian (local constraints)"
+    use_when = "For many local constraints at once (one per element), such as local stress."
     reference = (
         'O. Giraldo-Londono, G. H. Paulino, "PolyStress: a Matlab implementation for local'
         ' stress-constrained topology optimization using the augmented Lagrangian method",'

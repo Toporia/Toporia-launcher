@@ -36,6 +36,10 @@ class ScipySLSQP(ExternalOptimizer):
 
     name = "scipy_slsqp"
     label = "SLSQP (SciPy)"
+    use_when = (
+        "For small problems with a few constraints, when you want a standard SQP from SciPy. Slow on "
+        "large meshes."
+    )
     reference = (
         'D. Kraft, "A software package for sequential quadratic programming", DFVLR-FB 88-28'
         ' (1988), as scipy.optimize.minimize(method="SLSQP"):'

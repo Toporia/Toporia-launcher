@@ -30,6 +30,8 @@ class Interpolation(ABC):
     name = ""
     #: Human-readable name for menus.
     label = ""
+    #: When to choose it, in a sentence or two: shown as "When to use it" in its help window.
+    use_when = ""
     #: Menu position; lower comes first.
     order = 100
     #: Tunable parameters (framework.params.Param).  The constructor must accept

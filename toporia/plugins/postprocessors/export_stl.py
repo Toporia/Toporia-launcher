@@ -68,6 +68,7 @@ class ExportSTL(PostProcessor):
 
     name = "export_stl"
     label = "Export solid (STL)"
+    use_when = "To 3-D print the result or open it in CAD as a solid (a 2-D design is extruded)."
     reference = (
         "Toporia's own export, to binary STL (the stereolithography format of 3D Systems), ready"
         ' for a slicer.'

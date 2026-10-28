@@ -59,6 +59,10 @@ class CastingFilter(Filter):
         ' Papers: https://doi.org/10.1007/s00158-011-0632-0'
     )
     label = "Casting (no undercuts)"
+    use_when = (
+        "For cast or moulded parts: no undercuts along the draw direction, so the mould can be pulled "
+        "off."
+    )
     order = 90
     dims = (2, 3)
     params = (

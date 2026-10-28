@@ -99,6 +99,7 @@ class PymotoDynamicModel(PymotoElasticModel):
 
     name = "pymoto_dynamic"
     label = "Vibration, pyMOTO network"
+    use_when = "To cross-check the vibration results against pyMOTO. Needs pyMOTO installed."
     reference = (
         'pyMOTO by A. Delissen et al. (TU Delft), MIT licence: https://github.com/aatmdelissen/pyMOTO -'
         ' its AssembleMass and EigenSolve modules; the mass fix is that of N. L. Pedersen, Struct. Multidisc.'

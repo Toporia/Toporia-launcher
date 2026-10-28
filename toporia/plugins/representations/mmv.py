@@ -18,6 +18,10 @@ class MovingMorphableVoids(MovingMorphableComponents):
 
     name = "mmv"
     label = "Moving morphable voids (2D)"
+    use_when = (
+        "When the design is a plate with a few explicit holes whose shape you want as parameters. 2-D "
+        "only; use MMA-type updaters."
+    )
     order = 25
     reference = (
         'W. Zhang et al., "Explicit three dimensional topology optimization via Moving '

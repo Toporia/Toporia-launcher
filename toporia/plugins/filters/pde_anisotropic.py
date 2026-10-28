@@ -38,6 +38,10 @@ class AnisotropicPdeFilter(Filter):
 
     name = "pde_anisotropic"
     label = "Anisotropic PDE (Helmholtz) filter"
+    use_when = (
+        "When features should be longer in one grid direction than another, e.g. fibre-like or layered "
+        "parts. Directions follow the grid axes only."
+    )
     reference = (
         'Directional extension of B. S. Lazarov and O. Sigmund, "Filters in topology '
         'optimization based on Helmholtz-type differential equations", Int. J. Numer. '

@@ -47,6 +47,10 @@ class LocalStress(Response):
     #: A penalty, not a "<= 0 is satisfied" constraint: only the augmented Lagrangian reads it right.
     only_with_updaters = ("augmented_lagrangian",)
     label = "Local von Mises stress (augmented Lagrangian)"
+    use_when = (
+        "When every element must stay below a stress limit, not just an aggregate: pairs with the "
+        "augmented-Lagrangian updater, typically minimising volume."
+    )
     reference = (
         'O. Giraldo-Londono, G. H. Paulino, "PolyStress: a Matlab implementation for local'
         ' stress-constrained topology optimization using the augmented Lagrangian method",'

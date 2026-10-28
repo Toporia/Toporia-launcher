@@ -16,8 +16,13 @@ from toporia.framework.parts.response import OBJECTIVE_ROLE, Response, ResponseV
 
 
 class OutputDisplacement(Response):
+    """The displacement of an output port in a chosen direction; minimising its negative makes a mechanism move."""
     name = "output_displacement"
     label = "Output displacement (maximise)"
+    use_when = (
+        "For compliant mechanisms: makes an output port move in a chosen direction (needs port springs "
+        "and MMA-type updaters, because the sensitivities change sign)."
+    )
     order = 17
     roles = (OBJECTIVE_ROLE,)
     dims = (2,)

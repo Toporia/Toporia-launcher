@@ -22,6 +22,10 @@ class Q4Model(AssembledModel):
 
     name = "q4"
     label = "2-D Q4 plane stress (Toporia)"
+    use_when = (
+        "The default for 2-D structural problems: fast, supports every filter, material law, "
+        "representation and stress/length constraint."
+    )
     reference = (
         'The physics half of the top88 code: E. Andreassen, A. Clausen, M. Schevenels, B. S.'
         ' Lazarov, O. Sigmund, "Efficient topology optimization in MATLAB using 88 lines of code",'

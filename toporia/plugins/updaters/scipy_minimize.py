@@ -75,6 +75,10 @@ class ScipyTrustConstr(ExternalOptimizer):
         ' Papers: https://doi.org/10.1137/1.9780898719857'
     )
     label = "trust-constr (SciPy)"
+    use_when = (
+        "For small problems where SciPy's trust-region interior-point solver is wanted; slow on large "
+        "meshes."
+    )
     order = 71
     params = (
         Param("trust_constr_maxiter", 200, "trust-constr iterations",

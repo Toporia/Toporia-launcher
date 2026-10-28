@@ -15,6 +15,10 @@ class Linear(Schedule):
 
     name = "linear"
     label = "Linear ramp"
+    use_when = (
+        "To hold a parameter, then ramp it smoothly, e.g. SIMP penalty 1 to 3 to avoid early local "
+        "minima."
+    )
     reference = (
         "Toporia's own: a straight ramp between two values, a common continuation variant."
     )

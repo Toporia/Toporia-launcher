@@ -45,6 +45,10 @@ class OrderedSIMP(Interpolation):
         ' Papers: https://doi.org/10.1007/s00158-022-03379-7 https://doi.org/10.1007/s00158-016-1513-3'
     )
     label = "Ordered SIMP (multi-material)"
+    use_when = (
+        "When the design may mix void, one or two intermediate materials and solid, ordered by stiffness "
+        "and cost (a cheap way to get multi-material layouts with one variable per element)."
+    )
     order = 30
     schedulable = ("penal",)
     params = (

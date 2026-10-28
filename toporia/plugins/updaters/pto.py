@@ -54,6 +54,10 @@ class PTOUpdater(Updater):
         ' Papers: https://doi.org/10.1371/journal.pone.0145041'
     )
     label = "Proportional topology optimisation"
+    use_when = (
+        "For comparing with proportional topology optimisation. This is a variant, not the original PTOc "
+        "(its designs differ by about 20% in compliance on the MBB beam)."
+    )
     order = 80
     params = (
         MOVE,

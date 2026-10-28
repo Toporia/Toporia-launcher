@@ -20,6 +20,10 @@ class NeuralField(Representation):
 
     name = "neural"
     label = "Neural coordinate field (TOuNN-style)"
+    use_when = (
+        "For experiments with mesh-independent neural parametrisations (TOuNN-style). Known to stay grey "
+        "and give poor thresholded designs here; not a production choice."
+    )
     order = 40
     dims = (2, 3)
     monitor_physical_change = True

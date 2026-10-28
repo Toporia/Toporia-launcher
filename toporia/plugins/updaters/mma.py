@@ -24,6 +24,10 @@ class MMAUpdater(Updater):
 
     name = "mma"
     label = "Method of moving asymptotes"
+    use_when = (
+        "The general-purpose choice when OC does not fit: mechanisms, frequency, non-element "
+        "representations. This one handles the volume budget only."
+    )
     reference = (
         'K. Svanberg, "The method of moving asymptotes - a new method for structural optimization",'
         ' Int. J. Numer. Meth. Eng. 24 (1987) 359-373; the one-constraint form follows the MMA'

@@ -25,6 +25,11 @@ class DensityFilter(Filter):
 
     name = "density"
     label = "Density filter"
+    use_when = (
+        "The default for density methods: always use some filter, otherwise you get checkerboards and "
+        "mesh-dependent designs. Its radius sets the smallest feature, so pick it in elements from the "
+        "size you can make."
+    )
     reference = (
         'T. E. Bruns, D. A. Tortorelli, "Topology optimization of non-linear elastic structures and'
         ' compliant mechanisms", CMAME 190 (2001) 3443-3459; B. Bourdin, "Filters in topology'

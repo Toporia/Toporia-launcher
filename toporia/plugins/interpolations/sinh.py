@@ -18,6 +18,10 @@ class SINH(Interpolation):
 
     name = "sinh"
     label = "SINH (linear stiffness, penalised volume)"
+    use_when = (
+        "To penalise grey material through its cost instead of its stiffness; stiffness stays linear in "
+        "density. Mostly for studying the formulation; SIMP is the usual choice."
+    )
     order = 40
     nonlinear_volume = True
     params = (Param("penal", 3., "Volume penalty p", "Zero gives linear volume. Larger values tax gray material.",

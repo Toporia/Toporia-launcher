@@ -68,6 +68,10 @@ class MultiConstraintOC(Updater):
         ' Papers: https://doi.org/10.1016/0045-7825%2891%2990046-9'
     )
     label = "Optimality criteria, several constraints"
+    use_when = (
+        "OC's simplicity with extra constraints, one multiplier each; compliance objective and element "
+        "densities only."
+    )
     order = 15
     params = (
         MOVE,

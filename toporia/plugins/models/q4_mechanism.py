@@ -5,8 +5,10 @@ from toporia.plugins.physics.q4_mechanism import Q4Mechanism
 
 
 class Q4MechanismModel(AssembledModel):
+    """Toporia's 2-D Q4 solver with input/output port springs, for compliant mechanisms such as a force inverter."""
     name = "q4_mechanism"
     label = "2-D Q4 compliant mechanism (Toporia)"
+    use_when = "For compliant mechanisms (grippers, force inverters): input and output ports with springs."
     order = 13
     physics = Q4Mechanism
     reference = (

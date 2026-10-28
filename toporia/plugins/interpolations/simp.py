@@ -19,6 +19,7 @@ class SIMP(Interpolation):
 
     name = "simp"
     label = "SIMP (power law)"
+    use_when = "The default material law for nearly everything: penalty 3 pushes densities to 0 or 1."
     reference = (
         'M. P. Bendsoe, "Optimal shape design as a material distribution problem", Structural'
         ' Optimization 1 (1989) 193-202.'

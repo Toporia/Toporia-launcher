@@ -25,6 +25,10 @@ class FloatingProjectionUpdater(Updater):
 
     name = "floating_projection"
     label = "Floating projection (FPTO)"
+    use_when = (
+        "An OC-like update that drives the design to 0/1 while keeping the volume; for crisp designs "
+        "without a Heaviside filter."
+    )
     order = 65
     reference = (
         'X. Huang, "Smooth topological design of structures using the floating projection", '

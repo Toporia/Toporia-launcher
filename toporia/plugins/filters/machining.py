@@ -33,6 +33,10 @@ class MachiningFilter(Filter):
 
     name = "machining"
     label = "PDE machining (axis directions)"
+    use_when = (
+        "For milled parts: every surface must be reachable by a tool from the chosen box sides. Element "
+        "densities only; it does not model a finite cutter or holder."
+    )
     order = 95
     dims = (2, 3)
     calibrate_initial_volume = True

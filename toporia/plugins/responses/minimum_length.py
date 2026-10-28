@@ -49,8 +49,13 @@ def difference_matrix(n, scale):
 
 
 class MinimumLength(Response):
+    """Constraints that flag solid members and holes thinner than a requested length (geometric indicators)."""
     name = "minimum_length"
     label = "Minimum feature length (geometric)"
+    use_when = (
+        "When solid members or holes must not get thinner than a manufacturing size. The indicators are "
+        "calibrated proxies, not a size certificate."
+    )
     reference = (
         'M. Zhou, B. S. Lazarov, F. Wang and O. Sigmund, "Minimum length scale in '
         'topology optimization by geometric constraints", CMAME 293 (2015) '

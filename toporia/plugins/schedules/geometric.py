@@ -15,6 +15,7 @@ class Geometric(Schedule):
 
     name = "geometric"
     label = "Multiply by a factor"
+    use_when = "The usual Heaviside beta continuation: double it every few dozen iterations."
     reference = (
         'Multiplying by a factor is the usual beta continuation of a Heaviside projection (Guest et'
         ' al. 2004; Wang, Lazarov & Sigmund 2011).'

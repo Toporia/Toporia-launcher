@@ -31,6 +31,7 @@ class ExportDXF(PostProcessor):
 
     name = "export_dxf"
     label = "Export outline (DXF)"
+    use_when = "To take the 2-D outline into CAD or a waterjet/laser cutter."
     reference = (
         "Toporia's own export, to Autodesk's DXF format."
     )

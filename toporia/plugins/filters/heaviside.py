@@ -67,6 +67,11 @@ class HeavisideFilter(Filter):
 
     name = "heaviside"
     label = "Heaviside projection"
+    use_when = (
+        "After a density filter, when you want a crisp black-and-white design instead of grey material. "
+        "Raise beta gradually (a continuation schedule); a sharp start makes the optimiser stall. The "
+        "volume-preserving mode is quarantined for fully solid regions (known non-finite derivative)."
+    )
     reference = (
         'J. K. Guest, J. H. Prevost, T. Belytschko, "Achieving minimum length scale in topology'
         ' optimization using nodal design variables and projection functions", IJNME 61 (2004)'

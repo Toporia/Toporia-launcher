@@ -60,8 +60,13 @@ measure for this double-well convention.
 
 
 class PhaseFieldCompliance(Response):
+    """Compliance plus a diffuse-interface (perimeter) penalty, so interfaces stay few and smooth."""
     name = "phase_field"
     label = "Phase-field regularised compliance"
+    use_when = (
+        "When you want stiffness and fewer, smoother interfaces at once; the perimeter weight trades one "
+        "for the other."
+    )
     reference = (
         'B. Bourdin and A. Chambolle, "Design-dependent loads in topology '
         'optimization", ESAIM: COCV 9 (2003) 19-48; A. Takezawa, S. Nishiwaki '

@@ -75,6 +75,10 @@ class MorphologyFilter(Filter):
         ' Papers: https://doi.org/10.1007/s00158-006-0087-x'
     )
     label = "Morphology filter (erode / dilate / open / close)"
+    use_when = (
+        "To impose a minimum size on solid (open) or on holes (close), or to build eroded/dilated "
+        "variants for a robust design. Works best with a continuation of its sharpness, like Heaviside."
+    )
     dims = (2, 3)
     order = 35
     params = (

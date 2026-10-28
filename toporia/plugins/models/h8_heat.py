@@ -14,6 +14,7 @@ class H8HeatModel(AssembledModel):
 
     name = "h8_heat"
     label = "3-D H8 heat conduction (Toporia)"
+    use_when = "For 3-D heat-conduction design."
     reference = (
         'M. P. Bendsoe, O. Sigmund, Topology Optimization (Springer 2003), section 1.5; A.'
         ' Gersborg-Hansen, M. P. Bendsoe, O. Sigmund, "Topology optimization of heat conduction'

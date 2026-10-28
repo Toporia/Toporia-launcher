@@ -65,6 +65,10 @@ class AdamUpdater(Updater):
         ' Papers: https://arxiv.org/abs/1412.6980 https://doi.org/10.1007/s00158-020-02748-4'
     )
     label = "Adam (augmented Lagrangian)"
+    use_when = (
+        "For experiments with machine-learning style optimisers (e.g. with the neural field); slower and "
+        "less reliable than MMA on ordinary problems."
+    )
     order = 70
     params = (
         Param("lr", 0.05, "Learning rate",

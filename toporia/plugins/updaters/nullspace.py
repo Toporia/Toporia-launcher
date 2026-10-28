@@ -121,6 +121,10 @@ class NullspaceUpdater(ExternalOptimizer):
         ' Papers: https://doi.org/10.1051/cocv/2020015'
     )
     label = "Null-space optimiser"
+    use_when = (
+        "When constraints must be followed precisely along the way rather than penalised; needs "
+        "nullspace_optimizer."
+    )
     order = 80
     dependencies = ("nullspace_optimizer",)
     params = (

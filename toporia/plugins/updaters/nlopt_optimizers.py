@@ -175,6 +175,7 @@ class NLoptMMA(_CCSAFamily):
         ' Papers: https://doi.org/10.1002/nme.1620240207 https://doi.org/10.1137/S1052623499362822'
     )
     label = "MMA (NLopt)"
+    use_when = "NLopt's MMA, to compare with the other MMA versions; needs NLopt installed."
     order = 80
     algorithm = "LD_MMA"
 
@@ -189,6 +190,7 @@ class NLoptCCSAQ(_CCSAFamily):
         ' Papers: https://doi.org/10.1137/S1052623499362822'
     )
     label = "CCSAQ (NLopt)"
+    use_when = "A globally convergent MMA relative from NLopt, when MMA oscillates; needs NLopt installed."
     order = 81
     algorithm = "LD_CCSAQ"
 
@@ -202,6 +204,7 @@ class NLoptSLSQP(NLoptOptimizer):
         'package for sequential quadratic programming", DFVLR-FB 88-28, 1988.'
     )
     label = "SLSQP (NLopt)"
+    use_when = "NLopt's SQP for small problems with a few constraints; dense, so slow on large meshes."
     order = 82
     algorithm = "LD_SLSQP"
     flat_objective_scale = 1.0      # as for scipy_slsqp: the tolerance is absolute-ish, keep the objective at order 1
@@ -218,6 +221,7 @@ class NLoptAugLag(NLoptOptimizer):
         ' Papers: https://doi.org/10.1137/0728030 https://doi.org/10.1080/10556780701577730'
     )
     label = "Augmented Lagrangian + L-BFGS (NLopt)"
+    use_when = "To try a penalty-based approach to the constraints with L-BFGS steps; needs NLopt installed."
     order = 83
     algorithm = "AUGLAG"
     params = NLoptOptimizer.params + (

@@ -19,6 +19,10 @@ class Q4NonlinearModel(AssembledModel):
 
     name = "q4_nonlinear"
     label = "2-D Q4, large deformation (Toporia)"
+    use_when = (
+        "When loads cause large displacements, so the linear model mispredicts the stiffness. Slower "
+        "(Newton solves per iteration)."
+    )
     reference = (
         'Stiffness design with large displacements: T. Buhl, C. B. W. Pedersen, O. Sigmund,'
         ' "Stiffness design of geometrically nonlinear structures using topology optimization",'

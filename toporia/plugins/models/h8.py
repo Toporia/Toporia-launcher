@@ -16,6 +16,7 @@ class H8Model(AssembledModel):
 
     name = "h8"
     label = "3-D H8 bricks (Toporia)"
+    use_when = "For 3-D parts. Much slower than 2-D; start with a coarse mesh."
     reference = (
         'K. Liu, A. Tovar, "An efficient 3D topology optimization code written in Matlab", Struct.'
         ' Multidisc. Optim. 50 (2014) 1175-1196 (top3d).'

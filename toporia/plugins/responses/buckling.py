@@ -33,6 +33,10 @@ class BucklingLoad(Response):
     """λ_ref · ‖1/λ_i‖_p − 1 over the lowest few buckling modes; minimised, it maximises the buckling load."""
     name = "buckling_load"
     label = "Buckling load factor"
+    use_when = (
+        "For slender or compressed structures, where a stiff design can still buckle: as a constraint "
+        "with a required load factor, or as the objective."
+    )
     reference = (
         'F. Ferrari, O. Sigmund, J. K. Guest, "Topology optimization with linearized buckling'
         ' criteria in 250 lines of Matlab", Struct. Multidisc. Optim. 63 (2021) 3045-3066.'

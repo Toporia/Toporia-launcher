@@ -36,6 +36,7 @@ class GreyLevel(PostProcessor):
         ' Papers: https://doi.org/10.1007/s00158-006-0087-x'
     )
     label = "Grey level (M_nd) over the run"
+    use_when = "To compare methods on how black-and-white their results are."
     order = 20
     table_metrics = ("final_pct", "peak_pct")
     dims = (2, 3)

@@ -65,6 +65,8 @@ class Model(ABC):
     #: Registry key (plugins.models.MODELS).  An empty name means "abstract".
     name = ""
     label = ""
+    #: When to choose it, in a sentence or two: shown as "When to use it" in its help window.
+    use_when = ""
     order = 100
     #: Tunable parameters (framework.params.Param); they become method parameters.
     params = ()

@@ -63,6 +63,10 @@ class VonMisesStress(Response):
     """A limit on the peak von Mises stress, through a p-norm of the relaxed element stresses."""
     name = "stress"
     label = "Peak von Mises stress"
+    use_when = (
+        "When the peak stress matters (sharp corners, notches): one aggregated constraint, cheap to "
+        "enforce with MMA-type updaters. Check the reported exact peak; the aggregate is approximate."
+    )
     reference = (
         'p-norm aggregation with adaptive scaling: C. Le, J. Norato, T. Bruns, C. Ha, D.'
         ' Tortorelli, "Stress-based topology optimization for continua", Struct. Multidisc. Optim.'

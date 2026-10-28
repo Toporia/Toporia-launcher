@@ -48,8 +48,13 @@ def material_fraction(phi, width):
 
 
 class ReactionDiffusionLevelSet(OptimizationMethod):
+    """Level-set design evolved by a reaction-diffusion equation driven by the topological derivative (after Otomori et al.)."""
     name = "levelset_reaction_diffusion"
     label = "Reaction-diffusion level set"
+    use_when = (
+        "A level-set method that can create new holes (topological derivative) and controls complexity by "
+        "a diffusion length; 2-D compliance."
+    )
     reference = (
         'M. Otomori, T. Yamada, K. Izui and S. Nishiwaki, "Matlab code for a '
         'level set-based topology optimization method using a reaction diffusion '

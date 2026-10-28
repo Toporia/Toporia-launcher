@@ -53,6 +53,8 @@ class Response:
     name = ""
     #: Human-readable name for menus.
     label = ""
+    #: When to choose it, in a sentence or two: shown as "When to use it" in its help window.
+    use_when = ""
     #: Menu position; lower comes first.
     order = 100
     #: Which of OBJECTIVE_ROLE / CONSTRAINT_ROLE this response can play.

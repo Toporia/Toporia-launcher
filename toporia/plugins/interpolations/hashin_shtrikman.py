@@ -24,6 +24,10 @@ class HashinShtrikman(Interpolation):
 
     name = "hashin_shtrikman"
     label = "Hashin-Shtrikman upper envelope (fixed nu)"
+    use_when = (
+        "When intermediate densities should be physically realisable composites: it bounds stiffness by "
+        "the Hashin-Shtrikman limit instead of an arbitrary power law."
+    )
     order = 50
     dims = (2, 3)
     reference = (

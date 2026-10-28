@@ -40,6 +40,10 @@ class DynamicCompliance(Response):
 
     name = "dynamic_compliance"
     label = "Dynamic compliance (harmonic load)"
+    use_when = (
+        "When the load oscillates at a known frequency below the first resonance. No damping, so it is "
+        "singular exactly at a resonance."
+    )
     reference = (
         'Own undamped frequency-domain response. Related transient method: O. Giraldo-Londono, G. H. Paulino, "PolyDyna: a'
         ' Matlab implementation for topology optimization of structures subjected to dynamic loads",'

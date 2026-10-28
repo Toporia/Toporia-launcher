@@ -45,6 +45,7 @@ class ExtrusionFilter(Filter):
         ' Papers: https://doi.org/10.1299/jsmea.47.198'
     )
     label = "Extrusion (constant cross-section)"
+    use_when = "When the part is made by extrusion or sheet cutting: the design stays constant along one axis."
     order = 70
     dims = (2, 3)
     params = (

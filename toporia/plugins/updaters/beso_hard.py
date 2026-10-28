@@ -46,6 +46,10 @@ class HardKillBESOUpdater(BESOUpdater):
         ' Papers: https://doi.org/10.1002/9780470689486 https://doi.org/10.1007/s001580050170'
     )
     label = "BESO (hard kill)"
+    use_when = (
+        "Like soft-kill BESO, but removed elements are fully void; mainly for comparison with the hard- "
+        "kill literature."
+    )
     order = 61
     # No residual density to set: removed means void.
     params = tuple(p for p in BESOUpdater.params if p.name != "void_density")

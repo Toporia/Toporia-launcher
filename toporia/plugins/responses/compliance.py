@@ -18,6 +18,7 @@ class Compliance(Response):
     """C = Σ w_k f_kᵀ u_k, the load-weighted compliance; minimising it maximises stiffness."""
     name = "compliance"
     label = "Compliance"
+    use_when = "The standard objective: the stiffest structure for the given loads and material budget."
     reference = (
         'The classic objective of topology optimisation: M. P. Bendsoe, O. Sigmund, Topology'
         ' Optimization: Theory, Methods and Applications, Springer 2003.'

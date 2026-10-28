@@ -74,6 +74,10 @@ class TOBSUpdater(Updater):
         ' Papers: https://doi.org/10.1016/j.finel.2017.10.006 https://doi.org/10.1007/s00158-020-02719-9'
     )
     label = "TOBS (integer LP)"
+    use_when = (
+        "For strictly binary designs: each step solves a small integer linear program under the volume "
+        "budget."
+    )
     order = 65
     params = (
         Param("epsilon", 0.015, "Constraint relaxation (ε)",

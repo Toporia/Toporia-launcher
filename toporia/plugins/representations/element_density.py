@@ -20,6 +20,7 @@ class ElementDensity(Representation):
 
     name = "element_density"
     label = "Element densities"
+    use_when = "The default: one variable per element. Works with every updater, filter and model."
     reference = (
         'One density per element: M. P. Bendsoe, Structural Optimization 1 (1989) 193-202;'
         " Sigmund's 99-line code (2001)."

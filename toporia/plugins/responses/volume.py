@@ -23,6 +23,10 @@ class Volume(Response):
     """The total physical material; as an objective it needs a further constraint."""
     name = "volume"
     label = "Material volume"
+    use_when = (
+        "As the objective when the real requirement is a limit (stress, frequency, ...): the lightest "
+        "design that meets it. Always pair it with such a constraint."
+    )
     reference = (
         "Least material under a stress limit, as in pyMOTO's stress example and in C. Le et al.,"
         ' Struct. Multidisc. Optim. 41 (2010) 605-620.'

@@ -87,6 +87,7 @@ class SmoothOutline(PostProcessor):
         ' Papers: https://doi.org/10.1115/1.4047429 https://doi.org/10.1016/0146-664X%2874%2990028-8'
     )
     label = "Smooth outline (SVG + DXF)"
+    use_when = "When the jagged element outline should become smooth curves for CAD or cutting."
     order = 55
     table_metrics = ()          # files, not numbers to compare
     params = (

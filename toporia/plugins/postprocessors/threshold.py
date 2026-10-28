@@ -24,6 +24,10 @@ class Threshold(PostProcessor):
 
     name = "threshold"
     label = "Threshold to black and white"
+    use_when = (
+        "Always worth running: turns the grey result into the black-and-white part you would make and re- "
+        "analyses it, so you see its true performance."
+    )
     reference = (
         'Cutting to black and white and analysing again, as method comparisons do, e.g. S.'
         ' Rojas-Labanda, M. Stolpe, "Benchmarking optimization solvers for structural topology'

@@ -97,6 +97,10 @@ class SiMPLUpdater(Updater):
 
     name = "simpl"
     label = "Mirror descent (SiMPL)"
+    use_when = (
+        "A newer density update that keeps variables strictly inside 0 to 1 and is designed to need fewer "
+        "iterations than OC; volume budget only."
+    )
     reference = (
         'B. Keith, D. Kim, B. S. Lazarov, T. M. Surowiec, "A simple introduction to the SiMPL'
         ' method for density-based topology optimization", Struct. Multidisc. Optim. 68 (2025);'

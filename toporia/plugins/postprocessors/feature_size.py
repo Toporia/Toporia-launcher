@@ -36,6 +36,7 @@ class FeatureSize(PostProcessor):
 
     name = "feature_size"
     label = "Feature size"
+    use_when = "To check the thinnest member and smallest hole against what your process can make."
     reference = (
         "Toporia's own measurement, of the length scale that filters and projections promise"
         ' (Sigmund 2007; Wang, Lazarov & Sigmund 2011).'

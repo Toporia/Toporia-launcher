@@ -16,6 +16,7 @@ class Q4BucklingModel(AssembledModel):
 
     name = "q4_buckling"
     label = "2-D Q4 with buckling (Toporia)"
+    use_when = "For 2-D structures in compression where buckling must be prevented."
     reference = (
         'F. Ferrari, O. Sigmund, J. K. Guest, "Topology optimization with linearized buckling'
         ' criteria in 250 lines of Matlab", Struct. Multidisc. Optim. 63 (2021) 3045-3066'

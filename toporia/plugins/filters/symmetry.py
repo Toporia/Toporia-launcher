@@ -33,6 +33,10 @@ class SymmetryFilter(Filter):
 
     name = "symmetry"
     label = "Symmetry filter"
+    use_when = (
+        "When the part must be mirror-symmetric, even though the loads are not (e.g. it may be mounted "
+        "either way round)."
+    )
     reference = (
         "Toporia's own: mirror averaging, the usual way to impose symmetry (see M. P. Bendsoe, O."
         ' Sigmund, Topology Optimization, Springer 2003).'

@@ -46,6 +46,7 @@ class RoutingRadiusFilter(Filter):
 
     name = "routing"
     label = "Routing radius filter"
+    use_when = "For 2-D parts cut with a router or end mill: inside corners get at least the tool radius."
     reference = (
         "Toporia's own: a smooth morphological closing for a round router bit, inspired by the"
         ' smooth erode/dilate filters of O. Sigmund, "Morphology-based black and white filters for'

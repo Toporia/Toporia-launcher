@@ -31,6 +31,10 @@ class SensitivityFilter(Filter):
 
     name = "sensitivity"
     label = "Sensitivity filter"
+    use_when = (
+        "To reproduce classic top88/99-line results with OC. It is a heuristic (not an exact derivative), "
+        "so prefer the density filter with MMA or any constrained updater."
+    )
     reference = (
         "Sigmund's heuristic sensitivity filter (Struct. Optim. 1997), as in the 99-line code"
         ' (Sigmund 2001) and top88 (Andreassen et al. 2011).'

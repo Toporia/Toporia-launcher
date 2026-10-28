@@ -18,6 +18,10 @@ class EndCompliance(Response):
     """C = Σ w_k f_kᵀ u_k at the final load of a non-linear solve; minimising it maximises stiffness there."""
     name = "end_compliance"
     label = "End compliance (non-linear)"
+    use_when = (
+        "With the large-deformation model, when the loads are large enough that linear stiffness is "
+        "misleading."
+    )
     reference = (
         'Stiffness design of geometrically non-linear structures: T. Buhl, C. B. W. Pedersen, O.'
         ' Sigmund, Struct. Multidisc. Optim. 19 (2000) 93-104.'
