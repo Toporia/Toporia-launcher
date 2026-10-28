@@ -10,6 +10,7 @@ from toporia.framework import EdgeConstraint, LoadCase, PointLoad, Scenario, Sol
 
 from . import column_buckling, force_inverter, heat_sink, mbb_beam, nonlinear_cantilever, vibrating_beam
 from ._research import Equation, ResearchDescription
+from ._research_defaults import readable_setup, showcase_about
 
 CASES = {}
 
@@ -105,7 +106,7 @@ add("stress_volume", "Minimum volume with aggregate stress", "response:volume re
     "sigma_vm: element von Mises stress; sigma*: limit; q: relaxation; p: p-norm exponent; s: adaptive scale; N: cell count.",
     "Exercises the existing minimum-volume objective, separate from the built-in volume budget, with the stress response and an existing multi-constraint updater.",
     "https://doi.org/10.1007/s00158-009-0440-y", "Le et al. stress-constrained design: exact numbered example pending.",
-    "Own coarse MBB loading and relaxed stresses differ from the source benchmark. The reported peak/feasibility must be inspected even when motion is small.")
+    "Own MBB loading and relaxed stresses differ from the source benchmark. Minimum volume under a stress limit can collapse: with MMA move 0.2, or with a loose limit (6 here), one step thins a member, the stress explodes and the design vanishes. Inspect the reported peak and feasibility.")
 add("local_stress", "Local stress penalties and multiplier fields", "response:local_stress", [
     (r"g_e=\rho_e^q\sigma_{{\rm vm},e}/\sigma_*-1-\epsilon(1-\rho_e)", "Density relaxation and optional void slack define each local inequality."),
     (r"P=\sum_e\frac{\max(0,\lambda_e+\mu g_e)^2-\lambda_e^2}{2\mu}", "The response returns an augmented-Lagrangian penalty, not an ordinary normalized inequality; the matching updater owns multiplier updates.")],
@@ -119,7 +120,7 @@ add("minimum_length", "Geometric solid and void length indicators", "response:mi
     "H: cone average; G: discrete gradient in minimum-cell-spacing units; c: radius-based scale; a: normalized nodal violations; s: KS sharpness.",
     "Runs the existing cell-centred geometric constraints and tests straight bars against their calibrated nodal indicator.",
     "https://doi.org/10.1016/j.cma.2015.05.003", "Zhou/Dunning length constraints: exact source panel and projection conventions pending.",
-    "Own physical-field/KS variant is not the original three-field formulation. Gray fields, boundary stencils and mesh resolution prevent a universal minimum-feature certificate.")
+    "Own physical-field/KS variant is not the original three-field formulation. Gray fields, boundary stencils and mesh resolution prevent a universal minimum-feature certificate. In this bounded 24 x 8 example both length constraints remain violated and the field stays grey; on 30 x 10 with lengths 8 or 12 mm they stay violated too.")
 add("phase_field", "Diffuse-interface energy and compliance", "response:phase_field", [
     (r"J=C/C_{\rm ref}+w\left\langle\frac{\epsilon}{2}|\nabla\rho|^2+\frac{\rho^2(1-\rho)^2}{\epsilon}\right\rangle", "The existing response adds domain-mean Modica-Mortola energy to normalized compliance; w controls the tradeoff."),
     (r"\rho(x)=\frac{1}{1+e^{-\sqrt{2}x/\epsilon}},\quad\gamma=\int_0^1\sqrt{2r^2(1-r)^2}\,dr=\frac{\sqrt{2}}{6}", "A resolved planar transition gives an independent interface-energy limit for this double-well convention.")],
@@ -149,15 +150,15 @@ for name, label, names in (("post2d", "Saved-field 2D post-processing", tuple(k 
 
 def recipe(name):
     if name in {"heat2d", "heat_pymoto"}:
-        scenario, solver = heat_sink.scenario(), replace(heat_sink.solver(), m=.2)
+        scenario, solver = heat_sink.scenario(), replace(heat_sink.solver(), m=.5)
         if name == "heat_pymoto":
             solver = replace(solver, method="pymoto_heat+pymoto_mma", filter_specs=[])
     elif name == "heat3d":
         scenario = Scenario(Lx=8., Ly=4., Lz=2., edge_constraints=[EdgeConstraint("left")],
                             load_cases=[LoadCase(Fmag=0.)], objective=dict(type="thermal_compliance"), volfrac=.5, Emin=1e-3)
-        solver = Solver(method="h8_heat+oc", m=1., filter_specs=[dict(type="density", rmin=1.5)])
+        solver = Solver(method="h8_heat+oc", m=4., filter_specs=[dict(type="density", rmin=1.5)])
     elif name in {"dynamic", "dynamic_pymoto", "frequency_limit", "harmonic"}:
-        scenario, solver = vibrating_beam.scenario(), replace(vibrating_beam.solver(), m=4.)
+        scenario, solver = vibrating_beam.scenario(), replace(vibrating_beam.solver(), m=10.)
         if name == "dynamic_pymoto":
             solver = replace(solver, method="pymoto_dynamic+pymoto_mma", filter_specs=[])
         if name == "frequency_limit":
@@ -168,17 +169,17 @@ def recipe(name):
     elif name == "buckling":
         scenario, solver = column_buckling.scenario(), column_buckling.solver()
         scenario = replace(scenario, objective=dict(type="buckling_load"), constraints=[])
-        solver = replace(solver, m=.3, method="q4_buckling+mma", schedules=[], filter_specs=[dict(type="density", rmin=1.5)])
+        solver = replace(solver, m=1., method="q4_buckling+mma", schedules=[], filter_specs=[dict(type="density", rmin=1.5)])
     elif name == "nonlinear":
-        scenario, solver = nonlinear_cantilever.scenario(), replace(nonlinear_cantilever.solver(), m=.2, method_params=dict(steps=10))
+        scenario, solver = nonlinear_cantilever.scenario(), replace(nonlinear_cantilever.solver(), m=.5, method_params=dict(steps=10))
     elif name == "mechanism":
-        scenario, solver = force_inverter.scenario(), replace(force_inverter.solver(), m=.4)
+        scenario, solver = force_inverter.scenario(), replace(force_inverter.solver(), m=1.)
     else:
-        scenario, solver = mbb_beam.scenario(), replace(mbb_beam.solver(), m=.4, method="q4+mma")
+        scenario, solver = mbb_beam.scenario(), replace(mbb_beam.solver(), m=1., method="q4+mma")
         if name in {"solid3d", "post3d"}:
             scenario = Scenario(Lx=12., Ly=4., Lz=2., volfrac=.3, edge_constraints=[EdgeConstraint("left", "both")],
                                 point_loads=[PointLoad(12., 0.)], load_cases=[LoadCase(Fmag=3., Fa=270.)])
-            solver = replace(solver, method="h8+oc", m=1.)
+            solver = replace(solver, method="h8+oc", m=3.)
         elif name == "elastic_pymoto":
             solver = replace(solver, method="pymoto_elastic+pymoto_mma", filter_specs=[])
         elif name == "multires":
@@ -188,7 +189,8 @@ def recipe(name):
                              filter_specs=[dict(type="density", rmin=3.)])
         elif name == "stress_volume":
             scenario = replace(scenario, objective=dict(type="volume"), volfrac=.8, constraints=[dict(type="stress", limit=3.)])
-            solver = replace(solver, method="q4+pymoto_mma")
+            # Move 0.05: at the default 0.2 one step thins a member, the stress explodes and the design collapses.
+            solver = replace(solver, method="q4+pymoto_mma", method_params=dict(move=.05))
         elif name == "local_stress":
             scenario = replace(scenario, constraints=[dict(type="local_stress", limit=3.)])
             solver = replace(solver, method="q4+augmented_lagrangian")
@@ -199,9 +201,12 @@ def recipe(name):
         elif name == "phase_field":
             scenario = replace(scenario, objective=dict(type="phase_field", interface_width=2.5, perimeter_weight=5.))
             solver = replace(solver, filter_specs=[])
-    if name == "post2d":
-        solver = replace(solver, m=.5)
-    return scenario, replace(solver, max_iter={"nonlinear": 20, "multires": 150}.get(name, 60), tol=0.)
+    # A showcase runs on a mesh that resolves the design until it settles (change below 0.01) or the cap.
+    if name == "minimum_length":
+        # The geometric indicators are slow on fine meshes (60 x 20 takes over 20 minutes) and their MMA
+        # steps start tiny; this example stays small and bounded and its constraints are not met.
+        return scenario, replace(solver, m=.4, max_iter=60, tol=0.)
+    return scenario, replace(solver, max_iter={"nonlinear": 150, "multires": 150}.get(name, 300), tol=.01)
 
 
 def description(name):
@@ -209,10 +214,8 @@ def description(name):
     scenario, solver = recipe(name)
     return ResearchDescription(
         question="What does " + data["label"] + " compute, and what evidence supports its current implementation?",
-        setup=f"GUI Run is a bounded companion, not an assertion of paper reproduction. Domain {scenario.Lx} by {scenario.Ly} by {scenario.Lz}; "
-              f"mesh resolution {solver.m}; volume budget {scenario.volfrac}; method {solver.method}; cap {solver.max_iter}; tol=0. "
-              f"Objective {scenario.objective}; constraints {scenario.constraints}; parameters {solver.method_params}; filters {solver.filter_specs}. "
-              "The saved report records the complete scenario, resolved defaults, physical field and fresh metrics.",
+        setup=readable_setup(scenario, solver) + "\nGUI Run is an optimization companion, not a claimed paper "
+              "reproduction; the saved report records the complete scenario, resolved defaults, field and fresh metrics.",
         computes=data["computes"], equations=data["equations"], symbols=data["symbols"], source_url=data["source"],
         figure=data["target"], comparison="Independent analytic, assembly, gradient and file/metric checks are separate from source-figure reproduction. "
         "Histories, fresh final responses and feasibility are recorded without treating a bounded run as convergence.",
@@ -221,5 +224,5 @@ def description(name):
 
 def metadata(name):
     data = CASES[name]
-    return "Research: " + data["label"], "Existing-function demonstration; see help for mathematics and evidence scope.", (
+    return "Research: " + data["label"], showcase_about(data["functions"]), (
         "Research target. Papers: " + data["source"] if data["source"] else "Own engineering demonstration; no paper match claimed."), description(name)

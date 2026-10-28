@@ -14,22 +14,23 @@
   "paper_visual_status": "not_assessed",
   "checks": {
     "directional_gradient_errors": [
-      2.8254093509261224e-11,
-      1.9807034346008834e-09
+      4.288802299412531e-11,
+      4.8980348077222e-09
     ],
     "gradient_tolerance": 0.003,
+    "probe_step": 1e-06,
     "checks_passed": true,
     "scope": "Objective, budget and every extra constraint at one smooth deterministic direction. Stress adaptive scale disabled only in the probe; eigenvalue reference and AL multipliers held fixed. Not certification at switches/repeated modes.",
-    "small_load_relative_difference": 5.026480910727766e-09,
+    "small_load_relative_difference": 3.526141581383951e-06,
     "small_load_linear_limit_pass": true,
     "finite_execution": true,
     "bounded_density": true
   },
-  "iterations": 20,
-  "stop_reason": "iteration limit (20)",
-  "fresh_final_objective": 0.21065465120463134,
-  "last_recorded_objective": 0.2113197294020776,
-  "physical_volume_fraction": 0.3977238477600172,
+  "iterations": 133,
+  "stop_reason": "design change 0.00742 < tol 0.01",
+  "fresh_final_objective": 0.09955542034924351,
+  "last_recorded_objective": 0.09955570078237835,
+  "physical_volume_fraction": 0.3999998587633637,
   "volume_limit": 0.4,
   "feasible_volume_1e_4": true,
   "fresh_reported": {},
@@ -112,9 +113,9 @@
     ],
     "schedules": [],
     "variants": {},
-    "m": 0.2,
-    "max_iter": 20,
-    "tol": 0.0
+    "m": 0.5,
+    "max_iter": 150,
+    "tol": 0.01
   },
   "resolved_method_params": {
     "steps": 10,
@@ -140,7 +141,7 @@
     "nullspace_optimizer": "1.3.0"
   },
   "iteration_override": null,
-  "runtime_seconds": 4.808271299989428,
+  "runtime_seconds": 62.81584489997476,
   "protocol": "Existing engine loop; fresh final model evaluation after closing updater. Objective histories may be pre-update. Physical rows begin at y=0; 3D arrays are z,y,x. Diagnostic engine solves are additional to optimization. No source match implied.",
   "next_check": "Recover a numbered Buhl/Wang setup, constitutive law, load increments and void blending; compare full equilibrium/adjoint histories and retain Newton failures.",
   "primary_source_review": {

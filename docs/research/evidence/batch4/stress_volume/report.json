@@ -8,37 +8,38 @@
   ],
   "target": "Le et al. stress-constrained design: exact numbered example pending.",
   "source_url": "https://doi.org/10.1007/s00158-009-0440-y",
-  "limitations": "Own coarse MBB loading and relaxed stresses differ from the source benchmark. The reported peak/feasibility must be inspected even when motion is small.",
+  "limitations": "Own MBB loading and relaxed stresses differ from the source benchmark. Minimum volume under a stress limit can collapse: with MMA move 0.2, or with a loose limit (6 here), one step thins a member, the stress explodes and the design vanishes. Inspect the reported peak and feasibility.",
   "paper_status": "paper_reproduction_to_fix",
   "paper_visual_status": "not_assessed",
   "checks": {
     "directional_gradient_errors": [
-      1.650594438906694e-09,
-      1.650594438906694e-09,
-      7.875663830120283e-08
+      2.8047438149769732e-08,
+      2.8047438149769732e-08,
+      3.107921198140795e-07
     ],
     "gradient_tolerance": 0.003,
+    "probe_step": 1e-06,
     "checks_passed": true,
     "scope": "Objective, budget and every extra constraint at one smooth deterministic direction. Stress adaptive scale disabled only in the probe; eigenvalue reference and AL multipliers held fixed. Not certification at switches/repeated modes.",
     "finite_execution": true,
     "bounded_density": true
   },
-  "iterations": 60,
-  "stop_reason": "iteration limit (60)",
-  "fresh_final_objective": 69.91346428191153,
-  "last_recorded_objective": 70.67833537325293,
-  "physical_volume_fraction": 0.3641326264682892,
+  "iterations": 190,
+  "stop_reason": "design change 0.00627 < tol 0.01",
+  "fresh_final_objective": 288.1880910315711,
+  "last_recorded_objective": 288.1262540939711,
+  "physical_volume_fraction": 0.24015674252630925,
   "volume_limit": 0.8,
   "feasible_volume_1e_4": true,
   "fresh_reported": {
-    "max_stress": 3.3282506227089503,
-    "compliance": 1136.145492883048
+    "max_stress": 3.0006108639474145,
+    "compliance": 763.4770390091724
   },
   "constraints": [
     {
       "name": "stress",
-      "value": 0.10941687423631685,
-      "exact": 0.10941687423631685
+      "value": 0.0002036213158047584,
+      "exact": 0.0002036213158047584
     }
   ],
   "feasible_constraints_1e_4": false,
@@ -92,7 +93,9 @@
   },
   "solver": {
     "method": "q4+pymoto_mma",
-    "method_params": {},
+    "method_params": {
+      "move": 0.05
+    },
     "interpolation": {
       "type": "simp"
     },
@@ -106,12 +109,12 @@
     ],
     "schedules": [],
     "variants": {},
-    "m": 0.4,
-    "max_iter": 60,
-    "tol": 0.0
+    "m": 1.0,
+    "max_iter": 300,
+    "tol": 0.01
   },
   "resolved_method_params": {
-    "move": 0.2
+    "move": 0.05
   },
   "versions": {
     "python": "3.14.3",
@@ -124,7 +127,7 @@
     "nullspace_optimizer": "1.3.0"
   },
   "iteration_override": null,
-  "runtime_seconds": 195.90662239998346,
+  "runtime_seconds": 8.171171499998309,
   "protocol": "Existing engine loop; fresh final model evaluation after closing updater. Objective histories may be pre-update. Physical rows begin at y=0; 3D arrays are z,y,x. Diagnostic engine solves are additional to optimization. No source match implied.",
   "next_check": "Recover a feasible named source stress design; distinguish summed volume objective from the budget and hold adaptive stress scaling fixed during gradient checks.",
   "primary_source_review": {

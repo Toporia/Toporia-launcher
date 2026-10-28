@@ -13,10 +13,11 @@
   "paper_visual_status": "not_assessed",
   "checks": {
     "directional_gradient_errors": [
-      1.2959456356499472e-06,
-      2.938966313406042e-10
+      4.373604637069128e-05,
+      3.867467901486066e-09
     ],
     "gradient_tolerance": 0.003,
+    "probe_step": 1e-06,
     "checks_passed": true,
     "scope": "Objective, budget and every extra constraint at one smooth deterministic direction. Stress adaptive scale disabled only in the probe; eigenvalue reference and AL multipliers held fixed. Not certification at switches/repeated modes.",
     "native_scalar_errors": {
@@ -29,11 +30,11 @@
     "finite_execution": true,
     "bounded_density": true
   },
-  "iterations": 60,
-  "stop_reason": "iteration limit (60)",
-  "fresh_final_objective": 7420.780578165852,
-  "last_recorded_objective": 7431.599426758312,
-  "physical_volume_fraction": 0.29996491117701723,
+  "iterations": 130,
+  "stop_reason": "design change 0.00899 < tol 0.01",
+  "fresh_final_objective": 1940.830176726607,
+  "last_recorded_objective": 1941.0078445556433,
+  "physical_volume_fraction": 0.3000006862631772,
   "volume_limit": 0.3,
   "feasible_volume_1e_4": true,
   "fresh_reported": {},
@@ -92,9 +93,9 @@
     ],
     "schedules": [],
     "variants": {},
-    "m": 1.0,
-    "max_iter": 60,
-    "tol": 0.0
+    "m": 3.0,
+    "max_iter": 300,
+    "tol": 0.01
   },
   "resolved_method_params": {
     "linear_solver": "auto",
@@ -113,7 +114,7 @@
     "nullspace_optimizer": "1.3.0"
   },
   "iteration_override": null,
-  "runtime_seconds": 0.426424200006295,
+  "runtime_seconds": 190.52656610001577,
   "protocol": "Existing engine loop; fresh final model evaluation after closing updater. Objective histories may be pre-update. Physical rows begin at y=0; 3D arrays are z,y,x. Diagnostic engine solves are additional to optimization. No source match implied.",
   "next_check": "Recover a numbered top3d paper panel; align discrete depth loads before any full-field comparison. Keep the 39-step scalar oracle scope separate from the production companion.",
   "primary_source_review": {

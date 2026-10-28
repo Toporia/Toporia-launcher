@@ -69,13 +69,19 @@ arithmetic was changed to make this pass.
 
 ## Physical limits remain visible
 
-All 17 optimization companions reach their declared caps: 60 steps, or 20 for
-the nonlinear example. Their finite output is not a convergence or global
-optimality certificate. Volume, extra constraints, source matching and the
-stopping reason remain separate report fields.
+Since 28 October 2026 the 17 optimization companions run until the design
+change falls below 0.01, with a cap of 300 steps (150 for nonlinear and
+multiresolution, 60 for minimum length); previously they used coarser meshes and
+caps of 60 or 20 steps. Thirteen settle before the cap; 3D heat, phase field,
+multiresolution and minimum length stop at it. Neither outcome is a convergence
+or global optimality certificate. Volume, extra constraints, source matching
+and the stopping reason remain separate report fields.
 
-The **stress-volume** and **minimum-length** companions retain violated extra
-constraints. The length preset requests 16 physical units so its radius remains
+The **stress-volume** companion ends at 24% volume with its stress constraint
+at 2.0e-4: 0.02% over the limit, just outside the 1e-4 feasibility tolerance.
+With MMA move 0.2 the same problem collapses, so it uses move 0.05. Local stress
+(AL) meets its limits. **Minimum length** keeps both length constraints clearly
+violated (values 89 and 85) and a grey field. The length preset requests 16 physical units so its radius remains
 resolved on both the normal and the existing coarse GUI-comparison mesh. Its
 separate 1D calibration uses 4/8/12-cell bars and a requested length of 10; those
 calibration inputs are not silently substituted for the optimization setup.

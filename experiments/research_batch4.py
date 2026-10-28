@@ -53,7 +53,9 @@ def field_plot(ax, field, title):
 #: Central-difference steps other than the default 1e-6. The multiresolution showcase sums a compliance
 #: near 1000 over 4800 cells; below 1e-5 the coarse saddle-point solve's round-off dominates
 #: (relative error 1.4e-3 at 1e-6, 7e-6 at 1e-4, 3e-8 at 1e-2), as its unit test also notes.
-PROBE_STEPS = {"multires": 1e-4}
+#: The pyMOTO elastic network on 60 x 20 cells behaves the same way (2.1e-4 at 1e-6, 2.8e-6 at 1e-4,
+#: 1.7e-7 at 1e-3): round-off in the difference, not a wrong adjoint.
+PROBE_STEPS = {"multires": 1e-4, "elastic_pymoto": 1e-4}
 
 
 def gradient_probe(name):
@@ -375,8 +377,6 @@ def post_cases(group, output):
             science_case("solid3d", output)
         field = np.load(source, allow_pickle=False)
     scenario, solver = recipe(group)
-    if group == "post2d":
-        solver = replace(solver, m=.5)
     problem = make_problem(scenario, solver.m)
     if field.shape != problem.shape:
         raise ValueError("Saved post-processing field does not match declared mesh")

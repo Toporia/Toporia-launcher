@@ -24,7 +24,7 @@ NEXT = {
     "buckling": "Align source pre-stress interpolation and KS aggregation rather than assuming the inverse-factor p-norm is topBuck250. Recover a numbered design beyond the independent Euler column.",
     "nonlinear": "Recover a numbered Buhl/Wang setup, constitutive law, load increments and void blending; compare full equilibrium/adjoint histories and retain Newton failures.",
     "mechanism": "Recover the source inverter's port spring constants, mesh and boundary conditions; compare signed output and thresholded connectivity as well as the reciprocal fixed-field check.",
-    "multires": "Align the source's three grids/projection and centroid integration or identify this Galerkin variant separately. Investigate the recorded fine-Q4 stiffness discrepancy before ranking designs.",
+    "multires": "Align the source's three grids/projection and centroid integration, or identify this Galerkin variant separately. The fine-Q4 stiffness discrepancy is resolved: filters below one analysis cell are refused (coarse/fine 0.986 here).",
     "stress_volume": "Recover a feasible named source stress design; distinguish summed volume objective from the budget and hold adaptive stress scaling fixed during gradient checks.",
     "local_stress": "Match PolyStress mesh, relaxation and AL update rules. Inspect exact relaxed peak and per-element feasibility rather than treating penalty reduction as success.",
     "minimum_length": "Align the original three-field source example, or keep the current nodal-KS physical-field variant separate. Resolve the cone adequately and calibrate curved/diagonal features.",

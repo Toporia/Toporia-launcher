@@ -14,27 +14,28 @@
   "paper_visual_status": "not_assessed",
   "checks": {
     "directional_gradient_errors": [
-      1.2183042335384142e-11,
-      1.3448967495222064e-09
+      1.6243657769777e-10,
+      3.519143110253253e-08
     ],
     "gradient_tolerance": 0.003,
+    "probe_step": 1e-06,
     "checks_passed": true,
     "scope": "Objective, budget and every extra constraint at one smooth deterministic direction. Stress adaptive scale disabled only in the probe; eigenvalue reference and AL multipliers held fixed. Not certification at switches/repeated modes.",
-    "maxwell_betti_relative_error": 5.480956258839608e-16,
+    "maxwell_betti_relative_error": 1.189244955446338e-15,
     "reciprocity_pass": true,
     "finite_execution": true,
     "bounded_density": true
   },
-  "iterations": 60,
-  "stop_reason": "iteration limit (60)",
-  "fresh_final_objective": -0.02585690863014702,
-  "last_recorded_objective": -0.025857196077653057,
-  "physical_volume_fraction": 0.39974156887087003,
+  "iterations": 177,
+  "stop_reason": "design change 0.00867 < tol 0.01",
+  "fresh_final_objective": -0.03515441985195863,
+  "last_recorded_objective": -0.03515441920775485,
+  "physical_volume_fraction": 0.3999999813609119,
   "volume_limit": 0.4,
   "feasible_volume_1e_4": true,
   "fresh_reported": {
-    "output_displacement": 0.02585690863014702,
-    "compliance": 5.490162521345456e-05
+    "output_displacement": 0.03515441985195863,
+    "compliance": 4.7550629534401216e-05
   },
   "constraints": [],
   "feasible_constraints_1e_4": true,
@@ -116,9 +117,9 @@
     ],
     "schedules": [],
     "variants": {},
-    "m": 0.4,
-    "max_iter": 60,
-    "tol": 0.0
+    "m": 1.0,
+    "max_iter": 300,
+    "tol": 0.01
   },
   "resolved_method_params": {
     "move": 0.1,
@@ -139,7 +140,7 @@
     "nullspace_optimizer": "1.3.0"
   },
   "iteration_override": null,
-  "runtime_seconds": 0.8081034999922849,
+  "runtime_seconds": 5.088656300038565,
   "protocol": "Existing engine loop; fresh final model evaluation after closing updater. Objective histories may be pre-update. Physical rows begin at y=0; 3D arrays are z,y,x. Diagnostic engine solves are additional to optimization. No source match implied.",
   "next_check": "Recover the source inverter's port spring constants, mesh and boundary conditions; compare signed output and thresholded connectivity as well as the reciprocal fixed-field check.",
   "primary_source_review": {

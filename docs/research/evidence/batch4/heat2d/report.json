@@ -14,10 +14,11 @@
   "paper_visual_status": "not_assessed",
   "checks": {
     "directional_gradient_errors": [
-      4.639060827149599e-08,
-      1.621922521089255e-09
+      2.0959165851486272e-07,
+      2.9706335058499178e-08
     ],
     "gradient_tolerance": 0.003,
+    "probe_step": 1e-06,
     "checks_passed": true,
     "scope": "Objective, budget and every extra constraint at one smooth deterministic direction. Stress adaptive scale disabled only in the probe; eigenvalue reference and AL multipliers held fixed. Not certification at switches/repeated modes.",
     "heat_strip_max_temperature_relative_error": 6.217248937900877e-15,
@@ -39,11 +40,11 @@
     "finite_execution": true,
     "bounded_density": true
   },
-  "iterations": 60,
-  "stop_reason": "iteration limit (60)",
-  "fresh_final_objective": 1.7522059678018882,
-  "last_recorded_objective": 1.7536001639868362,
-  "physical_volume_fraction": 0.40007858065391205,
+  "iterations": 183,
+  "stop_reason": "design change 0.00899 < tol 0.01",
+  "fresh_final_objective": 1.3488987375081956,
+  "last_recorded_objective": 1.348900822712453,
+  "physical_volume_fraction": 0.40000273634953226,
   "volume_limit": 0.4,
   "feasible_volume_1e_4": true,
   "fresh_reported": {},
@@ -101,9 +102,9 @@
     ],
     "schedules": [],
     "variants": {},
-    "m": 0.2,
-    "max_iter": 60,
-    "tol": 0.0
+    "m": 0.5,
+    "max_iter": 300,
+    "tol": 0.01
   },
   "resolved_method_params": {
     "heat_source": 0.0001,
@@ -120,7 +121,7 @@
     "nullspace_optimizer": "1.3.0"
   },
   "iteration_override": null,
-  "runtime_seconds": 0.34848230000352487,
+  "runtime_seconds": 5.966588799958117,
   "protocol": "Existing engine loop; fresh final model evaluation after closing updater. Objective histories may be pre-update. Physical rows begin at y=0; 3D arrays are z,y,x. Diagnostic engine solves are additional to optimization. No source match implied.",
   "next_check": "Select a numbered FVM heat example and compare its harmonic/arithmetic face conductivity with this Q4 FE interpolation; do not relabel the strip as a source topology.",
   "primary_source_review": {

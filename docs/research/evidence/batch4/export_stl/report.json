@@ -15,15 +15,15 @@
     "metrics_finite": true,
     "scope": "Own engineering result/file check; not a source-paper or manufacturing certificate.",
     "stl_byte_count_correct": true,
-    "oriented_mesh_volume": 16.0,
-    "voxel_volume": 16.0
+    "oriented_mesh_volume": 29.03703719598271,
+    "voxel_volume": 29.03703703703703
   },
   "metrics": {
-    "triangles": 112,
-    "volume_mm3": 16.0
+    "triangles": 3600,
+    "volume_mm3": 29.037037037037035
   },
   "source_field": "docs/research/evidence/batch4/solid3d/final-density.npy",
-  "source_field_sha256": "1d7defbe033b00ac6a9ac86d12dc2b6333f7ea6a2e96065c92cb4f2b42dd679a",
+  "source_field_sha256": "dfd5f49ed1dc8b35fc3cf617f427a42d0c194f4de0c51f36f7238275b1f1ba88",
   "iterations": 0,
   "stop_reason": "Saved field reused; no optimization",
   "iteration_override": null,
@@ -85,9 +85,9 @@
     ],
     "schedules": [],
     "variants": {},
-    "m": 1.0,
-    "max_iter": 60,
-    "tol": 0.0
+    "m": 3.0,
+    "max_iter": 300,
+    "tol": 0.01
   },
   "primary_source_review": {
     "status": "own_engineering_or_metric_definition",
@@ -95,5 +95,5 @@
     "scope": "Existing post-processor applied to a saved field; report lists independent invariant/calibration or file checks. Own connectivity/exports have no single paper figure. Source-inspired metrics and smoothing still lack a matched paper panel.",
     "visual_status": "not_assessed"
   },
-  "original_source_field": "results\\research\\batch4\\generated\\solid3d\\final-density.npy"
+  "original_source_field": ".tmp\\b4all\\solid3d\\final-density.npy"
 }

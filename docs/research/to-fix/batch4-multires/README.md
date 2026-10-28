@@ -6,10 +6,8 @@ Target: Nguyen et al. MTOP examples: exact source panel and design/analysis grid
 
 Status: paper_reproduction_to_fix. Independent checks passed within their reported scope.
 
-Limits: This exact-subcell Galerkin variant differs from the source centroid rule.
+Limits: This exact-subcell Galerkin variant differs from the source centroid rule. The coarse space is always slightly stiffer than fine Q4 (here 1.4%); features below one analysis cell would be much stiffer, so the model refuses smaller filter radii.
 
-Numerical issue: **resolved** (28 October 2026). The recorded fine-Q4 discrepancy (ratio 0.298) came from a filter smaller than one analysis cell; the model now refuses that, and the showcase's coarse/fine ratio is 0.986, with a fine-Q4 compliance equal to plain Q4's.
-
-Next: Align the source's three grids/projection and centroid integration, or identify this Galerkin variant separately.
+Next: Align the source's three grids/projection and centroid integration, or identify this Galerkin variant separately. The fine-Q4 stiffness discrepancy is resolved: filters below one analysis cell are refused (coarse/fine 0.986 here).
 
 [Figure](../../evidence/batch4/multires/figure.png) · [Report](../../evidence/batch4/multires/report.json) · [Math](../../evidence/batch4/multires/description.html)

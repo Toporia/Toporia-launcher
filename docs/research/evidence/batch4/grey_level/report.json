@@ -17,13 +17,13 @@
     "independent_grayness_error": 0.0
   },
   "metrics": {
-    "final_pct": 38.955123329001125,
-    "first_pct": 93.50176460033211,
-    "peak_pct": 93.50176460033211,
-    "iterations": 76
+    "final_pct": 19.75856857401547,
+    "first_pct": 92.83703810364733,
+    "peak_pct": 92.83703810364733,
+    "iterations": 115
   },
   "source_field": "docs\\research\\evidence\\batch3\\mma\\final-density.csv",
-  "source_field_sha256": "8c49636005119ecced89b853291804b39cbf45cab0f7d34f161b3dec787b5590",
+  "source_field_sha256": "106c4f0122ee6c8b7d15dcbf07630c25db3a83825bcb8daaafcd64cf494c7717",
   "iterations": 0,
   "stop_reason": "Saved field reused; no optimization",
   "iteration_override": null,
@@ -92,12 +92,12 @@
     ],
     "schedules": [],
     "variants": {},
-    "m": 0.5,
-    "max_iter": 60,
-    "tol": 0.0
+    "m": 1.0,
+    "max_iter": 300,
+    "tol": 0.01
   },
   "source_history": "docs\\research\\evidence\\batch3\\mma\\history.csv",
-  "source_history_sha256": "60d1d0c7608a375d3ae94fc720821a3eee0b51fc92c43c0478208b4bf82bf82c",
+  "source_history_sha256": "1a9e6277f46ddfa1eb8a64453e99bd210921cc332d3d6b34ed67230743acefaa",
   "primary_source_review": {
     "status": "own_engineering_or_metric_definition",
     "url": "",

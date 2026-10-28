@@ -12,24 +12,25 @@
   "paper_visual_status": "not_assessed",
   "checks": {
     "directional_gradient_errors": [
-      6.093548725567121e-06,
-      1.2560260165273007e-08
+      2.7723124076743813e-06,
+      1.511139324783528e-09
     ],
     "gradient_tolerance": 0.003,
+    "probe_step": 0.0001,
     "checks_passed": true,
     "scope": "Objective, budget and every extra constraint at one smooth deterministic direction. Stress adaptive scale disabled only in the probe; eigenvalue reference and AL multipliers held fixed. Not certification at switches/repeated modes.",
-    "independent_library_value_relative_error": 8.410325874420654e-13,
-    "independent_library_gradient_error": 2.058075366747876e-12,
+    "independent_library_value_relative_error": 7.10596701949957e-13,
+    "independent_library_gradient_error": 4.114373803907242e-12,
     "library_probe_pass": true,
     "library_probe_scope": "Same random design and uniform-start objective references; both filters disabled; free-variable gradients only; native/foreign assembly, not a source-paper figure.",
     "finite_execution": true,
     "bounded_density": true
   },
-  "iterations": 60,
-  "stop_reason": "iteration limit (60)",
-  "fresh_final_objective": 274.13317666413974,
-  "last_recorded_objective": 274.1332036225006,
-  "physical_volume_fraction": 0.49999999223235275,
+  "iterations": 109,
+  "stop_reason": "design change 0.0087 < tol 0.01",
+  "fresh_final_objective": 210.66115646535272,
+  "last_recorded_objective": 210.66129337668943,
+  "physical_volume_fraction": 0.4999999199973388,
   "volume_limit": 0.5,
   "feasible_volume_1e_4": true,
   "fresh_reported": {},
@@ -90,9 +91,9 @@
     "filter_specs": [],
     "schedules": [],
     "variants": {},
-    "m": 0.4,
-    "max_iter": 60,
-    "tol": 0.0
+    "m": 1.0,
+    "max_iter": 300,
+    "tol": 0.01
   },
   "resolved_method_params": {
     "penal": 3.0,
@@ -110,7 +111,7 @@
     "nullspace_optimizer": "1.3.0"
   },
   "iteration_override": null,
-  "runtime_seconds": 16.212769800040405,
+  "runtime_seconds": 12.316502299974672,
   "protocol": "Existing engine loop; fresh final model evaluation after closing updater. Objective histories may be pre-update. Physical rows begin at y=0; 3D arrays are z,y,x. Diagnostic engine solves are additional to optimization. No source match implied.",
   "next_check": "Choose a published benchmark in addition to the fixed-design independent assembly check; align filter/pinning and all load cases.",
   "primary_source_review": {

@@ -12,32 +12,33 @@
   "paper_visual_status": "not_assessed",
   "checks": {
     "directional_gradient_errors": [
-      1.344652311606515e-07,
-      3.1230861008435975e-09,
-      1.5048670172696371e-07
+      1.6236460745329805e-06,
+      5.074516456837094e-10,
+      3.079928256877196e-07
     ],
     "gradient_tolerance": 0.003,
+    "probe_step": 1e-06,
     "checks_passed": true,
     "scope": "Objective, budget and every extra constraint at one smooth deterministic direction. Stress adaptive scale disabled only in the probe; eigenvalue reference and AL multipliers held fixed. Not certification at switches/repeated modes.",
     "finite_execution": true,
     "bounded_density": true
   },
-  "iterations": 60,
-  "stop_reason": "iteration limit (60)",
-  "fresh_final_objective": 155.9413430948155,
-  "last_recorded_objective": 155.9717816546797,
-  "physical_volume_fraction": 0.49999132864316753,
+  "iterations": 97,
+  "stop_reason": "design change 0.00919 < tol 0.01",
+  "fresh_final_objective": 97.93894004365973,
+  "last_recorded_objective": 97.94099708561706,
+  "physical_volume_fraction": 0.49999941720238816,
   "volume_limit": 0.5,
   "feasible_volume_1e_4": true,
   "fresh_reported": {
-    "omega_1": 0.042236519524115695,
-    "omega_2": 0.11571785136961915
+    "omega_1": 0.05356501321751521,
+    "omega_2": 0.13074675062378538
   },
   "constraints": [
     {
       "name": "eigenfrequency_limit",
-      "value": -16.839235815110047,
-      "exact": -16.83923581511006
+      "value": -27.6921064099247,
+      "exact": -27.69210640992579
     }
   ],
   "feasible_constraints_1e_4": true,
@@ -106,9 +107,9 @@
     ],
     "schedules": [],
     "variants": {},
-    "m": 4.0,
-    "max_iter": 60,
-    "tol": 0.0
+    "m": 10.0,
+    "max_iter": 300,
+    "tol": 0.01
   },
   "resolved_method_params": {
     "mass_density": 1.0,
@@ -129,7 +130,7 @@
     "nullspace_optimizer": "1.3.0"
   },
   "iteration_override": null,
-  "runtime_seconds": 1.9090926999924704,
+  "runtime_seconds": 3.787618600006681,
   "protocol": "Existing engine loop; fresh final model evaluation after closing updater. Objective histories may be pre-update. Physical rows begin at y=0; 3D arrays are z,y,x. Diagnostic engine solves are additional to optimization. No source match implied.",
   "next_check": "Align eigenvalue units, the chosen soft minimum and a named feasible source problem; inspect both the aggregate constraint and true first frequency.",
   "primary_source_review": {

@@ -26,7 +26,7 @@
     "loads_connected": true
   },
   "source_field": "docs\\research\\evidence\\batch3\\mma\\final-density.csv",
-  "source_field_sha256": "8c49636005119ecced89b853291804b39cbf45cab0f7d34f161b3dec787b5590",
+  "source_field_sha256": "106c4f0122ee6c8b7d15dcbf07630c25db3a83825bcb8daaafcd64cf494c7717",
   "iterations": 0,
   "stop_reason": "Saved field reused; no optimization",
   "iteration_override": null,
@@ -94,9 +94,9 @@
     ],
     "schedules": [],
     "variants": {},
-    "m": 0.5,
-    "max_iter": 60,
-    "tol": 0.0
+    "m": 1.0,
+    "max_iter": 300,
+    "tol": 0.01
   },
   "primary_source_review": {
     "status": "own_engineering_or_metric_definition",

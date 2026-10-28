@@ -7,7 +7,7 @@
   ],
   "target": "Zhou/Dunning length constraints: exact source panel and projection conventions pending.",
   "source_url": "https://doi.org/10.1016/j.cma.2015.05.003",
-  "limitations": "Own physical-field/KS variant is not the original three-field formulation. Gray fields, boundary stencils and mesh resolution prevent a universal minimum-feature certificate.",
+  "limitations": "Own physical-field/KS variant is not the original three-field formulation. Gray fields, boundary stencils and mesh resolution prevent a universal minimum-feature certificate. In this bounded 24 x 8 example both length constraints remain violated and the field stays grey; on 30 x 10 with lengths 8 or 12 mm they stay violated too.",
   "paper_status": "paper_reproduction_to_fix",
   "paper_visual_status": "not_assessed",
   "checks": {
@@ -18,6 +18,7 @@
       2.0070446174070213e-09
     ],
     "gradient_tolerance": 0.003,
+    "probe_step": 1e-06,
     "checks_passed": true,
     "scope": "Objective, budget and every extra constraint at one smooth deterministic direction. Stress adaptive scale disabled only in the probe; eigenvalue reference and AL multipliers held fixed. Not certification at switches/repeated modes.",
     "straight_bar_indicators": [
@@ -155,7 +156,7 @@
     "nullspace_optimizer": "1.3.0"
   },
   "iteration_override": null,
-  "runtime_seconds": 7.090747500013094,
+  "runtime_seconds": 3.635378100036178,
   "protocol": "Existing engine loop; fresh final model evaluation after closing updater. Objective histories may be pre-update. Physical rows begin at y=0; 3D arrays are z,y,x. Diagnostic engine solves are additional to optimization. No source match implied.",
   "next_check": "Align the original three-field source example, or keep the current nodal-KS physical-field variant separate. Resolve the cone adequately and calibrate curved/diagonal features.",
   "primary_source_review": {

@@ -3130,7 +3130,7 @@
     {
       "name": "Research: 2D heat conduction and thermal compliance",
       "source_file": "toporia/plugins/problems/research_b4_heat2d.py",
-      "about": "Existing-function demonstration; see help for mathematics and evidence scope.",
+      "about": "Shows 2-D Q4 heat conduction (Toporia): Toporia's 2-D steady heat conduction, with the filter pipeline and thermal compliance. When to use it: For 2-D heat-conduction design (heat sinks, spreaders).",
       "reference": "Research target. Papers: https://doi.org/10.1007/s00158-005-0584-3",
       "research_description": true,
       "target_figure": "Gersborg-Hansen et al. heat-conduction examples: exact numbered panel/settings pending.",
@@ -3143,7 +3143,7 @@
     {
       "name": "Research: 3D H8 elasticity",
       "source_file": "toporia/plugins/problems/research_b4_solid3d.py",
-      "about": "Existing-function demonstration; see help for mathematics and evidence scope.",
+      "about": "Shows 3-D H8 bricks (Toporia): Toporia's 3-D H8 solver, with the filter pipeline and every response it supports. When to use it: For 3-D parts. Much slower than 2-D; start with a coarse mesh.",
       "reference": "Research target. Papers: https://www.top3d.app/",
       "research_description": true,
       "target_figure": "Liu-Tovar top3d reference; small 12x4x2 author-code benchmark, not an identified paper panel.",
@@ -3155,7 +3155,7 @@
     {
       "name": "Research: 3D H8 heat conduction",
       "source_file": "toporia/plugins/problems/research_b4_heat3d.py",
-      "about": "Existing-function demonstration; see help for mathematics and evidence scope.",
+      "about": "Shows 3-D H8 heat conduction (Toporia): Toporia's 3-D steady heat conduction, with the filter pipeline and thermal compliance. When to use it: For 3-D heat-conduction design.",
       "reference": "Research target. Papers: https://doi.org/10.1007/s00158-005-0584-3",
       "research_description": true,
       "target_figure": "3D extension of steady conduction; no originating 3D source figure selected.",
@@ -3167,7 +3167,7 @@
     {
       "name": "Research: AM overhang filter",
       "source_file": "toporia/plugins/problems/research_am.py",
-      "about": "Demonstrate AM overhang filter; see preset help for mathematics and evidence scope.",
+      "about": "Shows AM overhang filter: Additive manufacturing overhang filter (Langelaar 2016). When to use it: For parts that will be 3-D printed: every element must rest on material below it, so no support structures are needed. Choose the build direction; 2-D only.",
       "reference": "Research demonstration. Papers: https://doi.org/10.1007/s00158-016-1522-2",
       "research_description": true,
       "target_figure": "Langelaar (2017), illustrative printing/filter examples; exact panel and geometry require source alignment.",
@@ -3178,7 +3178,7 @@
     {
       "name": "Research: Adam moments and volume penalty",
       "source_file": "toporia/plugins/problems/research_b3_adam.py",
-      "about": "Bounded research companion; see help for mathematics, source and limitations.",
+      "about": "Shows Adam (augmented Lagrangian): Adam steps on the design, the volume budget as an augmented-Lagrangian term. When to use it: For experiments with machine-learning style optimisers (e.g. with the neural field); slower and less reliable than MMA on ordinary problems.",
       "reference": "Research target, not a match claim. Papers: https://arxiv.org/abs/1412.6980",
       "research_description": true,
       "target_figure": "Kingma-Ba Algorithm 1; Figure 1 learning curves require the original data/task and are not this MBB diagnostic.",
@@ -3189,7 +3189,7 @@
     {
       "name": "Research: Augmented Lagrangian through NLopt",
       "source_file": "toporia/plugins/problems/research_b3_nlopt_auglag.py",
-      "about": "Bounded research companion; see help for mathematics, source and limitations.",
+      "about": "Shows Augmented Lagrangian + L-BFGS (NLopt): NLopt's augmented Lagrangian: the constraints become penalties, L-BFGS solves each bound-constrained subproblem. When to use it: To try a penalty-based approach to the constraints with L-BFGS steps; needs NLopt installed.",
       "reference": "Research target, not a match claim. Papers: https://nlopt.readthedocs.io/en/latest/NLopt_Algorithms/",
       "research_description": true,
       "target_figure": "Original optimizer numerical example: identified figure and complete inputs pending; library documentation reviewed separately.",
@@ -3200,7 +3200,7 @@
     {
       "name": "Research: B-spline density coefficients",
       "source_file": "toporia/plugins/problems/research_b3_bspline.py",
-      "about": "Bounded research companion; see help for mathematics, source and limitations.",
+      "about": "Shows B-spline field: The element density is a tensor-product B-spline of a coarse grid of coefficients. When to use it: When you want a smooth design with far fewer variables than elements, or a design that does not change when the mesh is refined.",
       "reference": "Research target, not a match claim. Papers: https://doi.org/10.1016/j.cma.2013.06.001",
       "research_description": true,
       "target_figure": "Qian (2013) B-spline density-space examples: numbered panel and original knots pending.",
@@ -3211,7 +3211,7 @@
     {
       "name": "Research: BESO hard kill",
       "source_file": "toporia/plugins/problems/research_b3_beso_hard.py",
-      "about": "Bounded research companion; see help for mathematics, source and limitations.",
+      "about": "Shows BESO (hard kill): Hard-kill BESO: removed elements sit exactly at the void bound. When to use it: Like soft-kill BESO, but removed elements are fully void; mainly for comparison with the hard-kill literature.",
       "reference": "Research target, not a match claim. Papers: https://doi.org/10.1016/j.finel.2007.06.006",
       "research_description": true,
       "target_figure": "Huang-Xie BESO beam examples: exact panel and history pending.",
@@ -3222,7 +3222,7 @@
     {
       "name": "Research: BESO soft kill",
       "source_file": "toporia/plugins/problems/research_b3_beso.py",
-      "about": "Bounded research companion; see help for mathematics, source and limitations.",
+      "about": "Shows BESO (soft kill): Soft-kill BESO: binary designs, evolutionary volume schedule, threshold ranking. When to use it: When you want a strictly black-and-white design at every iteration (evolutionary add/remove).",
       "reference": "Research target, not a match claim. Papers: https://doi.org/10.1016/j.finel.2007.06.006",
       "research_description": true,
       "target_figure": "Huang-Xie BESO beam examples: exact panel and history pending.",
@@ -3233,7 +3233,7 @@
     {
       "name": "Research: CCSAQ through NLopt",
       "source_file": "toporia/plugins/problems/research_b3_nlopt_ccsaq.py",
-      "about": "Bounded research companion; see help for mathematics, source and limitations.",
+      "about": "Shows CCSAQ (NLopt): NLopt's CCSA with a quadratic model: MMA's globally convergent relative (Svanberg 2002). When to use it: A globally convergent MMA relative from NLopt, when MMA oscillates; needs NLopt installed.",
       "reference": "Research target, not a match claim. Papers: https://nlopt.readthedocs.io/en/latest/NLopt_Algorithms/",
       "research_description": true,
       "target_figure": "Original optimizer numerical example: identified figure and complete inputs pending; library documentation reviewed separately.",
@@ -3244,7 +3244,7 @@
     {
       "name": "Research: CONLIN mixed variables",
       "source_file": "toporia/plugins/problems/research_b3_conlin.py",
-      "about": "Bounded research companion; see help for mathematics, source and limitations.",
+      "about": "Shows CONLIN (convex linearisation): CONLIN: convex linearisation in x or 1/x, solved through its dual, any number of constraints. When to use it: A classic, cheap alternative to MMA for a few constraints; good for comparing optimisers.",
       "reference": "Research target, not a match claim. Papers: https://doi.org/10.1002/nme.1620230307",
       "research_description": true,
       "target_figure": "Fleury-Braibant (1986) numerical example: panel/inputs pending.",
@@ -3255,7 +3255,7 @@
     {
       "name": "Research: Casting draw direction",
       "source_file": "toporia/plugins/problems/research_casting.py",
-      "about": "Demonstrate Casting draw direction; see preset help for mathematics and evidence scope.",
+      "about": "Shows Casting (no undercuts): No undercuts along a draw direction: density can only decrease along it (smooth running minimum). When to use it: For cast or moulded parts: no undercuts along the draw direction, so the mould can be pulled off.",
       "reference": "Research demonstration. Papers: https://doi.org/10.1007/s00158-011-0632-0",
       "research_description": true,
       "target_figure": "Gersborg-Andreasen (2011), casting parameterization; exact formulation differs.",
@@ -3266,7 +3266,7 @@
     {
       "name": "Research: Compliant force inverter and port adjoint",
       "source_file": "toporia/plugins/problems/research_b4_mechanism.py",
-      "about": "Existing-function demonstration; see help for mathematics and evidence scope.",
+      "about": "Shows 2-D Q4 compliant mechanism (Toporia): Toporia's 2-D Q4 solver with input/output port springs, for compliant mechanisms such as a force inverter. When to use it: For compliant mechanisms (grippers, force inverters): input and output ports with springs.",
       "reference": "Research target. Papers: https://doi.org/10.1080/08905459708945415",
       "research_description": true,
       "target_figure": "Sigmund force-inverter family: exact paper panel/spring constants not aligned.",
@@ -3279,7 +3279,7 @@
     {
       "name": "Research: Constant cross-section",
       "source_file": "toporia/plugins/problems/research_extrusion.py",
-      "about": "Demonstrate Constant cross-section; see preset help for mathematics and evidence scope.",
+      "about": "Shows Extrusion (constant cross-section): Density constant along one axis (average along it, broadcast back). When to use it: When the part is made by extrusion or sheet cutting: the design stays constant along one axis.",
       "reference": "Research demonstration. Papers: https://doi.org/10.1299/jsmea.47.198",
       "research_description": true,
       "target_figure": "Ishii-Aomura (2004), constant-cross-section design; specific optimized panel not reconstructed.",
@@ -3290,7 +3290,7 @@
     {
       "name": "Research: Convergence-triggered beta",
       "source_file": "toporia/plugins/problems/research_schedule_settled.py",
-      "about": "Demonstrate Convergence-triggered beta; see preset help for mathematics and evidence scope.",
+      "about": "Shows When the design settles: start, then x factor (or + step) each time the design settles, up to end. When to use it: When you do not know in advance how long each stage needs: steps up only once the design stops changing.",
       "reference": "Research demonstration. Papers: https://doi.org/10.1007/s00158-010-0602-y",
       "research_description": true,
       "target_figure": "Convergence-triggered continuation described in section 4; exact design history unavailable.",
@@ -3301,7 +3301,7 @@
     {
       "name": "Research: Diffuse-interface energy and compliance",
       "source_file": "toporia/plugins/problems/research_b4_phase_field.py",
-      "about": "Existing-function demonstration; see help for mathematics and evidence scope.",
+      "about": "Shows Phase-field regularised compliance: Compliance plus a diffuse-interface (perimeter) penalty, so interfaces stay few and smooth. When to use it: When you want stiffness and fewer, smoother interfaces at once; the perimeter weight trades one for the other.",
       "reference": "Research target. Papers: https://doi.org/10.1016/j.jcp.2009.12.017",
       "research_description": true,
       "target_figure": "Takezawa et al. Section 2.3 energy family; full numbered source design not reproduced.",
@@ -3312,7 +3312,7 @@
     {
       "name": "Research: Directional PDE filter",
       "source_file": "toporia/plugins/problems/research_pde_anisotropic.py",
-      "about": "Demonstrate Directional PDE filter; see preset help for mathematics and evidence scope.",
+      "about": "Shows Anisotropic PDE (Helmholtz) filter: Helmholtz smoothing with independent x/y/z radii, measured in elements. When to use it: When features should be longer in one grid direction than another, e.g. fibre-like or layered parts. Directions follow the grid axes only.",
       "reference": "Research demonstration. Papers: https://doi.org/10.1002/nme.3072",
       "research_description": true,
       "target_figure": "Lazarov-Sigmund Helmholtz formulation; no matching directional finite-volume paper panel identified.",
@@ -3323,7 +3323,7 @@
     {
       "name": "Research: Elasticity through pyMOTO",
       "source_file": "toporia/plugins/problems/research_b4_elastic_pymoto.py",
-      "about": "Existing-function demonstration; see help for mathematics and evidence scope.",
+      "about": "Shows Linear elasticity, pyMOTO network: Linear elastic SIMP design on a pyMOTO network: compliance or volume, stress limits. When to use it: To cross-check Toporia's own elasticity against the pyMOTO library, or to build on pyMOTO modules. Needs pyMOTO installed.",
       "reference": "Research target. Papers: https://github.com/aatmdelissen/pyMOTO",
       "research_description": true,
       "target_figure": "Author-library cross-check; original research figure not identified.",
@@ -3334,7 +3334,7 @@
     {
       "name": "Research: Equal-step continuation",
       "source_file": "toporia/plugins/problems/research_schedule_steps.py",
-      "about": "Demonstrate Equal-step continuation; see preset help for mathematics and evidence scope.",
+      "about": "Shows Equal steps: start, start + step, ... every `every` iterations, then `end`. When to use it: To raise a parameter (penalty, beta) by equal amounts at fixed intervals.",
       "reference": "Research demonstration. Papers: https://doi.org/10.1007/BF01214002",
       "research_description": true,
       "target_figure": "General SIMP continuation; no source figure for this exact clock.",
@@ -3345,7 +3345,7 @@
     {
       "name": "Research: Floating projection update",
       "source_file": "toporia/plugins/problems/research_b3_floating_projection.py",
-      "about": "Bounded research companion; see help for mathematics, source and limitations.",
+      "about": "Shows Floating projection (FPTO): OC ratio update with a mass-preserving floating projection of its trial. When to use it: An OC-like update that drives the design to 0/1 while keeping the volume; for crisp designs without a Heaviside filter.",
       "reference": "Research target, not a match claim. Papers: https://arxiv.org/abs/2006.04306",
       "research_description": true,
       "target_figure": "Huang (2020 preprint), FPTO examples: optimization panel/settings pending.",
@@ -3356,7 +3356,7 @@
     {
       "name": "Research: GCMMA through mmapy",
       "source_file": "toporia/plugins/problems/research_b3_mmapy_gcmma.py",
-      "about": "Bounded research companion; see help for mathematics, source and limitations.",
+      "about": "Shows GCMMA (mmapy): Svanberg's globally convergent MMA, as ported by mmapy: inner iterations until conservative. When to use it: Globally convergent MMA via mmapy, when plain MMA oscillates (GPL, optional).",
       "reference": "Research target, not a match claim. Papers: https://doi.org/10.1137/S1052623499362822",
       "research_description": true,
       "target_figure": "Svanberg MMA/GCMMA numerical examples: numbered panel and original problem inputs still to recover.",
@@ -3367,7 +3367,7 @@
     {
       "name": "Research: GCMMA through pyMOTO",
       "source_file": "toporia/plugins/problems/research_b3_pymoto_gcmma.py",
-      "about": "Bounded research companion; see help for mathematics, source and limitations.",
+      "about": "Shows GCMMA (pyMOTO): pyMOTO's globally convergent MMA: re-evaluates trial designs until the step is safe. When to use it: When MMA oscillates or a constraint is hard to satisfy: slower, but every accepted step is safe.",
       "reference": "Research target, not a match claim. Papers: https://doi.org/10.1137/S1052623499362822",
       "research_description": true,
       "target_figure": "Svanberg MMA/GCMMA numerical examples: numbered panel and original problem inputs still to recover.",
@@ -3378,7 +3378,7 @@
     {
       "name": "Research: Gaynor-Guest support",
       "source_file": "toporia/plugins/problems/research_self_support.py",
-      "about": "Demonstrate Gaynor-Guest support; see preset help for mathematics and evidence scope.",
+      "about": "Shows Gaynor–Guest self-support projection (2-D): Lower-wedge support gate followed by local exponential projection. When to use it: An alternative overhang rule for 2-D printed parts (support wedge from below). Runs converge slowly and leave grey material; check the thresholded design for unsupported cells.",
       "reference": "Research demonstration. Papers: https://doi.org/10.1007/s00158-016-1551-x",
       "research_description": true,
       "target_figure": "Gaynor-Guest (2016), support projection; exact nodal paper panel not reproduced.",
@@ -3389,7 +3389,7 @@
     {
       "name": "Research: Geometric beta continuation",
       "source_file": "toporia/plugins/problems/research_schedule_geometric.py",
-      "about": "Demonstrate Geometric beta continuation; see preset help for mathematics and evidence scope.",
+      "about": "Shows Multiply by a factor: start, start x factor, start x factor^2, ... every `every` iterations, then `end`. When to use it: The usual Heaviside beta continuation: double it every few dozen iterations.",
       "reference": "Research demonstration. Papers: https://doi.org/10.1007/s00158-010-0602-y",
       "research_description": true,
       "target_figure": "Wang et al. (2011), section 4 continuation accompanying Figures 3-4.",
@@ -3400,7 +3400,7 @@
     {
       "name": "Research: Geometric solid and void length indicators",
       "source_file": "toporia/plugins/problems/research_b4_minimum_length.py",
-      "about": "Existing-function demonstration; see help for mathematics and evidence scope.",
+      "about": "Shows Minimum feature length (geometric): Constraints that flag solid members and holes thinner than a requested length (geometric indicators). When to use it: When solid members or holes must not get thinner than a manufacturing size. The indicators are calibrated proxies, not a size certificate.",
       "reference": "Research target. Papers: https://doi.org/10.1016/j.cma.2015.05.003",
       "research_description": true,
       "target_figure": "Zhou/Dunning length constraints: exact source panel and projection conventions pending.",
@@ -3411,7 +3411,7 @@
     {
       "name": "Research: Geometry projection capsule bars",
       "source_file": "toporia/plugins/problems/research_b3_geometry_projection.py",
-      "about": "Bounded research companion; see help for mathematics, source and limitations.",
+      "about": "Shows Geometry projection (capsule bars): Floating capsule endpoints and component activation, projected to a grid. When to use it: Like moving components, but with round-ended capsule bars that can switch off; good for truss-like designs described by bar end points.",
       "reference": "Research target, not a match claim. Papers: https://link.springer.com/article/10.1007/s00158-020-02552-0",
       "research_description": true,
       "target_figure": "Smith-Norato (2020), Figure 1 geometry and equations 1-3: cap construction; optimized examples not reproduced.",
@@ -3422,7 +3422,7 @@
     {
       "name": "Research: Hamilton-Jacobi level-set evolution",
       "source_file": "toporia/plugins/problems/research_b3_levelset_hamilton_jacobi.py",
-      "about": "Bounded research companion; see help for mathematics, source and limitations.",
+      "about": "Shows Hamilton-Jacobi level set (circular TD): Level-set design moved by a Hamilton-Jacobi equation, with circular holes nucleated by the topological derivative (after Challis). When to use it: The classic boundary-moving level set with hole nucleation; useful to compare with density methods. 2-D compliance.",
       "reference": "Research target, not a match claim. Papers: https://doi.org/10.1007/s00158-009-0430-0",
       "research_description": true,
       "target_figure": "Challis (2010) HJ/topological-derivative examples: numbered panel/inputs pending.",
@@ -3433,7 +3433,7 @@
     {
       "name": "Research: Heat conduction through pyMOTO",
       "source_file": "toporia/plugins/problems/research_b4_heat_pymoto.py",
-      "about": "Existing-function demonstration; see help for mathematics and evidence scope.",
+      "about": "Shows Heat conduction, pyMOTO network: Steady heat conduction on a pyMOTO network: thermal compliance or volume. When to use it: To cross-check the heat-conduction results against pyMOTO. Needs pyMOTO installed.",
       "reference": "Research target. Papers: https://github.com/aatmdelissen/pyMOTO",
       "research_description": true,
       "target_figure": "Author-library cross-check; original research figure not identified.",
@@ -3444,7 +3444,7 @@
     {
       "name": "Research: Heaviside projection curves",
       "source_file": "toporia/plugins/problems/research_heaviside.py",
-      "about": "Demonstrate Heaviside projection curves; see preset help for mathematics and evidence scope.",
+      "about": "Shows Heaviside projection: Heaviside projection with beta continuation. When to use it: After a density filter, when you want a crisp black-and-white design instead of grey material. Raise beta gradually (a continuation schedule); a sharp start makes the optimiser stall. At high beta use MMA (move about 0.1): OC at move 0.2 lets members flip once beta passes about 64. The volume-preserving mode keeps the material budget unchanged; with 0/1-only updaters (TOBS, hard-kill BESO) put a density filter in front of it.",
       "reference": "Research demonstration. Papers: https://doi.org/10.1007/s00158-010-0602-y",
       "research_description": true,
       "target_figure": "Wang et al. (2011), equation (9); Figure 5(f) is a separate pattern-based target.",
@@ -3455,7 +3455,7 @@
     {
       "name": "Research: Large-displacement elasticity and end compliance",
       "source_file": "toporia/plugins/problems/research_b4_nonlinear.py",
-      "about": "Existing-function demonstration; see help for mathematics and evidence scope.",
+      "about": "Shows 2-D Q4, large deformation (Toporia): Toporia's 2-D Q4 solver with large displacements: end compliance and volume, any filter. When to use it: When loads cause large displacements, so the linear model mispredicts the stiffness. Slower (Newton solves per iteration).",
       "reference": "Research target. Papers: https://doi.org/10.1016/j.cma.2014.03.021",
       "research_description": true,
       "target_figure": "Wang et al./Buhl et al. nonlinear designs: matching source geometry, law and panel pending.",
@@ -3468,7 +3468,7 @@
     {
       "name": "Research: Linear parameter ramp",
       "source_file": "toporia/plugins/problems/research_schedule_linear.py",
-      "about": "Demonstrate Linear parameter ramp; see preset help for mathematics and evidence scope.",
+      "about": "Shows Linear ramp: `start` for `after` iterations, then a straight ramp to `end` over `over` iterations. When to use it: To hold a parameter, then ramp it smoothly, e.g. SIMP penalty 1 to 3 to avoid early local minima.",
       "reference": "Toporia engineering demonstration; no originating research figure claimed.",
       "research_description": true,
       "target_figure": "Toporia engineering rule; no direct research figure.",
@@ -3479,7 +3479,7 @@
     {
       "name": "Research: Linearized buckling factors",
       "source_file": "toporia/plugins/problems/research_b4_buckling.py",
-      "about": "Existing-function demonstration; see help for mathematics and evidence scope.",
+      "about": "Shows 2-D Q4 with buckling (Toporia): Toporia's 2-D Q4 solver with linearised buckling: compliance, volume, stress and buckling load. When to use it: For 2-D structures in compression where buckling must be prevented.",
       "reference": "Research target. Papers: https://doi.org/10.1007/s00158-021-02854-x",
       "research_description": true,
       "target_figure": "Ferrari-Sigmund-Guest column examples: exact paper panel and source settings pending.",
@@ -3492,7 +3492,7 @@
     {
       "name": "Research: Local stress penalties and multiplier fields",
       "source_file": "toporia/plugins/problems/research_b4_local_stress.py",
-      "about": "Existing-function demonstration; see help for mathematics and evidence scope.",
+      "about": "Shows Local von Mises stress (augmented Lagrangian): A von Mises limit on every element, enforced by an augmented-Lagrangian penalty. When to use it: When every element must stay below a stress limit, not just an aggregate: pairs with the augmented-Lagrangian updater, typically minimising volume.",
       "reference": "Research target. Papers: https://doi.org/10.1007/s00158-020-02760-8",
       "research_description": true,
       "target_figure": "PolyStress local-stress example: source polygonal mesh/relaxation/panel pending.",
@@ -3503,7 +3503,7 @@
     {
       "name": "Research: Local-stress augmented Lagrangian",
       "source_file": "toporia/plugins/problems/research_b3_augmented_lagrangian.py",
-      "about": "Bounded research companion; see help for mathematics, source and limitations.",
+      "about": "Shows Augmented Lagrangian (local constraints): MMA steps on f + the augmented-Lagrangian penalty, with outer multiplier updates. When to use it: For many local constraints at once (one per element), such as local stress.",
       "reference": "Research target, not a match claim. Papers: https://doi.org/10.1007/s00158-020-02760-8",
       "research_description": true,
       "target_figure": "Giraldo-Londono-Paulino PolyStress examples: matching mesh, stress relaxation and numbered panel pending.",
@@ -3514,7 +3514,7 @@
     {
       "name": "Research: MMA through NLopt",
       "source_file": "toporia/plugins/problems/research_b3_nlopt_mma.py",
-      "about": "Bounded research companion; see help for mathematics, source and limitations.",
+      "about": "Shows MMA (NLopt): NLopt's MMA (Svanberg), with the conservative-approximation safeguard of the 2002 paper. When to use it: NLopt's MMA, to compare with the other MMA versions; needs NLopt installed.",
       "reference": "Research target, not a match claim. Papers: https://nlopt.readthedocs.io/en/latest/NLopt_Algorithms/",
       "research_description": true,
       "target_figure": "Svanberg MMA/GCMMA numerical examples: numbered panel and original problem inputs still to recover.",
@@ -3525,7 +3525,7 @@
     {
       "name": "Research: MMA through mmapy",
       "source_file": "toporia/plugins/problems/research_b3_mmapy_mma.py",
-      "about": "Bounded research companion; see help for mathematics, source and limitations.",
+      "about": "Shows MMA (mmapy): Svanberg's method of moving asymptotes, as ported by mmapy, with any number of constraints. When to use it: Svanberg's MMA with any number of constraints, via the mmapy package (GPL, optional).",
       "reference": "Research target, not a match claim. Papers: https://github.com/arjendeetman/GCMMA-MMA-Python",
       "research_description": true,
       "target_figure": "Svanberg MMA/GCMMA numerical examples: numbered panel and original problem inputs still to recover.",
@@ -3536,7 +3536,7 @@
     {
       "name": "Research: MMA through pyMOTO",
       "source_file": "toporia/plugins/problems/research_b3_pymoto_mma.py",
-      "about": "Bounded research companion; see help for mathematics, source and limitations.",
+      "about": "Shows MMA (pyMOTO): pyMOTO's method of moving asymptotes (Svanberg 2007 variant). When to use it: MMA with any number of constraints, as implemented in pyMOTO; needs pyMOTO installed.",
       "reference": "Research target, not a match claim. Papers: https://github.com/aatmdelissen/pyMOTO",
       "research_description": true,
       "target_figure": "Svanberg MMA/GCMMA numerical examples: numbered panel and original problem inputs still to recover.",
@@ -3547,7 +3547,7 @@
     {
       "name": "Research: MMA: local one-budget variant",
       "source_file": "toporia/plugins/problems/research_b3_mma.py",
-      "about": "Bounded research companion; see help for mathematics, source and limitations.",
+      "about": "Shows Method of moving asymptotes: Method of moving asymptotes for one volume constraint. When to use it: The general-purpose choice when OC does not fit: mechanisms, frequency, non-element representations. This one handles the volume budget only.",
       "reference": "Research target, not a match claim. Papers: https://doi.org/10.1002/nme.1620240207",
       "research_description": true,
       "target_figure": "Svanberg MMA/GCMMA numerical examples: numbered panel and original problem inputs still to recover.",
@@ -3558,7 +3558,7 @@
     {
       "name": "Research: MMC constant-thickness bars",
       "source_file": "toporia/plugins/problems/research_b3_mmc.py",
-      "about": "Bounded research companion; see help for mathematics, source and limitations.",
+      "about": "Shows Moving morphable components: Bars described by centre, half-length, half-thickness (constant, or varying along the bar) and angle, projected onto the grid. When to use it: When you want a design made of a few explicit bars you can read off (positions, lengths, angles), e.g. for direct CAD export. Use a small move limit (about 0.02) and a gradient updater such as MMA.",
       "reference": "Research target, not a match claim. Papers: https://arxiv.org/pdf/1404.4820",
       "research_description": true,
       "target_figure": "Guo et al., arXiv:1404.4820, Figure 8 component and zero contour; own geometry parameters.",
@@ -3569,7 +3569,7 @@
     {
       "name": "Research: MMC variable-thickness bars",
       "source_file": "toporia/plugins/problems/research_b3_mmc_variable.py",
-      "about": "Bounded research companion; see help for mathematics, source and limitations.",
+      "about": "Shows Moving morphable components: Bars described by centre, half-length, half-thickness (constant, or varying along the bar) and angle, projected onto the grid. When to use it: When you want a design made of a few explicit bars you can read off (positions, lengths, angles), e.g. for direct CAD export. Use a small move limit (about 0.02) and a gradient updater such as MMA.",
       "reference": "Research target, not a match claim. Papers: https://doi.org/10.1007/s00158-015-1372-3",
       "research_description": true,
       "target_figure": "Zhang et al. (2016) variable-thickness MMC: exact numbered component/optimized panel pending.",
@@ -3580,7 +3580,7 @@
     {
       "name": "Research: MMV superelliptical holes",
       "source_file": "toporia/plugins/problems/research_b3_mmv.py",
-      "about": "Bounded research companion; see help for mathematics, source and limitations.",
+      "about": "Shows Moving morphable voids (2D): Five normalised variables per hole: centre, two half-axes and angle. When to use it: When the design is a plate with a few explicit holes whose shape you want as parameters. 2-D only; use MMA-type updaters.",
       "reference": "Research target, not a match claim. Papers: https://doi.org/10.1016/j.cma.2017.05.002",
       "research_description": true,
       "target_figure": "Zhang et al. (2017) 3D MMV: source geometry/panel incompatible with this restricted 2D variant.",
@@ -3591,7 +3591,7 @@
     {
       "name": "Research: Minimum eigenvalue constraint",
       "source_file": "toporia/plugins/problems/research_b4_frequency_limit.py",
-      "about": "Existing-function demonstration; see help for mathematics and evidence scope.",
+      "about": "Shows Fundamental frequency (at least): Keep the lowest natural frequency above a limit: 1 − λ / limit ≤ 0. When to use it: When stiffness is the goal but the lowest natural frequency must stay above a limit.",
       "reference": "Research target. Papers: https://doi.org/10.1007/s00158-007-0101-y",
       "research_description": true,
       "target_figure": "Eigenvalue-constrained source design: exact numbered example not recovered.",
@@ -3602,7 +3602,7 @@
     {
       "name": "Research: Minimum volume with aggregate stress",
       "source_file": "toporia/plugins/problems/research_b4_stress_volume.py",
-      "about": "Existing-function demonstration; see help for mathematics and evidence scope.",
+      "about": "Shows Material volume: The total physical material; as an objective it needs a further constraint. When to use it: As the objective when the real requirement is a limit (stress, frequency, ...): the lightest design that meets it. Always pair it with such a constraint.",
       "reference": "Research target. Papers: https://doi.org/10.1007/s00158-009-0440-y",
       "research_description": true,
       "target_figure": "Le et al. stress-constrained design: exact numbered example pending.",
@@ -3614,7 +3614,7 @@
     {
       "name": "Research: Mirror symmetry",
       "source_file": "toporia/plugins/problems/research_symmetry.py",
-      "about": "Demonstrate Mirror symmetry; see preset help for mathematics and evidence scope.",
+      "about": "Shows Symmetry filter: Mirror-average density filter. When to use it: When the part must be mirror-symmetric, even though the loads are not (e.g. it may be mounted either way round).",
       "reference": "Research demonstration. Papers: https://doi.org/10.1007/978-3-662-05086-6",
       "research_description": true,
       "target_figure": "Standard symmetry restriction; no specific book figure assigned to this Toporia implementation.",
@@ -3625,7 +3625,7 @@
     {
       "name": "Research: Morphology: four operations",
       "source_file": "toporia/plugins/problems/research_morphology.py",
-      "about": "Demonstrate Morphology: four operations; see preset help for mathematics and evidence scope.",
+      "about": "Shows Morphology filter (erode / dilate / open / close): Smooth erode / dilate / open / close over a cone neighbourhood (Sigmund 2007). When to use it: To impose a minimum size on solid (open) or on holes (close), or to build eroded/dilated variants for a robust design. Works best with a continuation of its sharpness, like Heaviside.",
       "reference": "Research demonstration. Papers: https://doi.org/10.1007/s00158-006-0087-x",
       "research_description": true,
       "target_figure": "Sigmund (2007), Figure 3, basic morphology operations; equations (18)-(21).",
@@ -3636,7 +3636,7 @@
     {
       "name": "Research: Multiresolution Galerkin stiffness",
       "source_file": "toporia/plugins/problems/research_b4_multires.py",
-      "about": "Existing-function demonstration; see help for mathematics and evidence scope.",
+      "about": "Shows 2-D Q4 multiresolution (nested grids): Nested 2-D multiresolution elasticity; fine-grid filters and representations. When to use it: To get a finer design than the analysis mesh at lower cost. Needs a density or PDE filter radius of at least one analysis cell (the coarsening factor, in fine cells); smaller features look stiffer than they are.",
       "reference": "Research target. Papers: https://doi.org/10.1007/s00158-009-0443-8",
       "research_description": true,
       "target_figure": "Nguyen et al. MTOP examples: exact source panel and design/analysis grids pending.",
@@ -3648,7 +3648,7 @@
     {
       "name": "Research: Natural frequencies and mode aggregation",
       "source_file": "toporia/plugins/problems/research_b4_dynamic.py",
-      "about": "Existing-function demonstration; see help for mathematics and evidence scope.",
+      "about": "Shows 2-D Q4 with vibration (Toporia): Toporia's 2-D Q4 solver with a mass matrix: maximise a natural frequency, or minimise a harmonic response. When to use it: For 2-D problems about vibration: natural frequencies or a harmonic load response.",
       "reference": "Research target. Papers: https://doi.org/10.1007/s00158-007-0101-y",
       "research_description": true,
       "target_figure": "Du-Olhoff beam family: numbered panel and complete payload/mesh inputs pending.",
@@ -3661,7 +3661,7 @@
     {
       "name": "Research: Neural coordinate density",
       "source_file": "toporia/plugins/problems/research_b3_neural.py",
-      "about": "Bounded research companion; see help for mathematics, source and limitations.",
+      "about": "Shows Neural coordinate field (TOuNN-style): Mesh-independent parameter count; density sampled at element centres. When to use it: For experiments with mesh-independent neural parametrisations (TOuNN-style). Known to stay grey and give poor thresholded designs here; not a production choice.",
       "reference": "Research target, not a match claim. Papers: https://doi.org/10.1007/s00158-020-02748-4",
       "research_description": true,
       "target_figure": "Chandrasekhar-Suresh TOuNN (2021): architecture/optimization figure alignment pending.",
@@ -3672,7 +3672,7 @@
     {
       "name": "Research: Null-space gradient flow",
       "source_file": "toporia/plugins/problems/research_b3_nullspace.py",
-      "about": "Bounded research companion; see help for mathematics, source and limitations.",
+      "about": "Shows Null-space optimiser: Feppon's null-space optimiser: constraints followed, not penalised; any number of them. When to use it: When constraints must be followed precisely along the way rather than penalised; needs nullspace_optimizer.",
       "reference": "Research target, not a match claim. Papers: https://doi.org/10.1051/cocv/2020015",
       "research_description": true,
       "target_figure": "Original optimizer numerical example: identified figure and complete inputs pending; library documentation reviewed separately.",
@@ -3683,7 +3683,7 @@
     {
       "name": "Research: OC with several multipliers",
       "source_file": "toporia/plugins/problems/research_b3_oc_multi.py",
-      "about": "Bounded research companion; see help for mathematics, source and limitations.",
+      "about": "Shows Optimality criteria, several constraints: Optimality criteria with a multiplier per constraint, found by cyclic bisection. When to use it: OC's simplicity with extra constraints, one multiplier each; compliance objective and element densities only.",
       "reference": "Research target, not a match claim. Papers: https://doi.org/10.1016/0045-7825%2891%2990046-9",
       "research_description": true,
       "target_figure": "Zhou-Rozvany (1991) COC examples: panel/inputs pending.",
@@ -3694,7 +3694,7 @@
     {
       "name": "Research: Ordered SIMP: formula audit",
       "source_file": "toporia/plugins/problems/research_ordered_simp.py",
-      "about": "Demonstrate Ordered SIMP: formula audit; see preset help for mathematics and evidence scope.",
+      "about": "Shows Ordered SIMP (multi-material): Piecewise SIMP between an ordered list of materials (void, up to two grey ones, solid). When to use it: When the design may mix void, one or two intermediate materials and solid, ordered by stiffness and cost (a cheap way to get multi-material layouts with one variable per element).",
       "reference": "Research demonstration. Papers: https://doi.org/10.1007/s00158-022-03379-7",
       "research_description": true,
       "target_figure": "da Silveira-Palma (2022), Figure 1 modified curves, Table 1; compare original equations (2)-(3) separately.",
@@ -3705,7 +3705,7 @@
     {
       "name": "Research: PDE filter: top82 Fig. 4(b)",
       "source_file": "toporia/plugins/problems/research_pde.py",
-      "about": "Demonstrate PDE filter: top82 Fig. 4(b); see preset help for mathematics and evidence scope.",
+      "about": "Shows PDE (Helmholtz) filter: Helmholtz PDE density filter, solved on the design mesh. When to use it: Instead of the density filter on large or 3-D meshes, where a neighbourhood matrix gets expensive; it gives similar designs for the same radius.",
       "reference": "Research demonstration. Papers: https://doi.org/10.1007/s00158-010-0594-7",
       "research_description": true,
       "target_figure": "Andreassen et al. (2011), Figure 4, middle bottom density-filter panel, 150 by 50 cells, radius 6.",
@@ -3716,7 +3716,7 @@
     {
       "name": "Research: PDE machining shadows",
       "source_file": "toporia/plugins/problems/research_machining.py",
-      "about": "Demonstrate PDE machining shadows; see preset help for mathematics and evidence scope.",
+      "about": "Shows PDE machining (axis directions): Material shadow intersection for tools approaching from selected box sides. When to use it: For milled parts: every surface must be reachable by a tool from the chosen box sides. Element densities only; it does not model a finite cutter or holder.",
       "reference": "Research demonstration. Papers: https://doi.org/10.1016/j.cma.2021.114488",
       "research_description": true,
       "target_figure": "Hoghoj-Traff (2022), advection-diffusion machining; paper geometry is not reproduced by the diagnostic.",
@@ -3727,7 +3727,7 @@
     {
       "name": "Research: PTO sensitivity-proxy variant",
       "source_file": "toporia/plugins/problems/research_b3_pto.py",
-      "about": "Bounded research companion; see help for mathematics, source and limitations.",
+      "about": "Shows Proportional topology optimisation: PTO-inspired allocation from negative sensitivity, not original PTOc. When to use it: A damped, sensitivity-based relative of proportional TO that works with any filter chain. For the published algorithm use PTOc (ptoc), which reproduces the authors' code; this variant's designs differ from it by about 20% in compliance on the MBB beam.",
       "reference": "Research target, not a match claim. Papers: https://journals.plos.org/plosone/article?id=10.1371/journal.pone.0145041",
       "research_description": true,
       "target_figure": "Biyikli-To (2015), Figure 3 MBB PTOc panel (120 by 40, fraction 0.35).",
@@ -3738,7 +3738,7 @@
     {
       "name": "Research: RAMP stiffness curves",
       "source_file": "toporia/plugins/problems/research_ramp.py",
-      "about": "Demonstrate RAMP stiffness curves; see preset help for mathematics and evidence scope.",
+      "about": "Shows RAMP (rational): E = Emin + ρ / (1 + q(1 − ρ)) (E0 − Emin): a rational law with a non-zero slope at void. When to use it: Instead of SIMP when the slope at void matters: heat conduction, self-weight or design-dependent loads, or when low densities stall under SIMP.",
       "reference": "Research demonstration. Papers: https://doi.org/10.1007/s001580100129",
       "research_description": true,
       "target_figure": "Stolpe-Svanberg (2001); original figure/parameter set not available in this source review.",
@@ -3749,7 +3749,7 @@
     {
       "name": "Research: RBF level-set evolution",
       "source_file": "toporia/plugins/problems/research_b3_levelset.py",
-      "about": "Bounded research companion; see help for mathematics, source and limitations.",
+      "about": "Shows RBF level set: RBF level-set topology optimisation, a numerical variant of Wei et al.'s TOPRBF. When to use it: When you want crisp boundaries throughout the run rather than grey densities; compliance with the volume budget, 2-D.",
       "reference": "Research target, not a match claim. Papers: https://doi.org/10.1007/s00158-018-1904-8",
       "research_description": true,
       "target_figure": "Wei et al. (2018) TOPRBF cantilever: numbered panel/settings pending.",
@@ -3760,7 +3760,7 @@
     {
       "name": "Research: Reaction-diffusion level-set evolution",
       "source_file": "toporia/plugins/problems/research_b3_levelset_reaction_diffusion.py",
-      "about": "Bounded research companion; see help for mathematics, source and limitations.",
+      "about": "Shows Reaction-diffusion level set: Level-set design evolved by a reaction-diffusion equation driven by the topological derivative (after Otomori et al.). When to use it: A level-set method that can create new holes (topological derivative) and controls complexity by a diffusion length; 2-D compliance.",
       "reference": "Research target, not a match claim. Papers: https://doi.org/10.1007/s00158-014-1190-z",
       "research_description": true,
       "target_figure": "Otomori et al. (2015) reaction-diffusion examples: numbered panel/inputs pending.",
@@ -3771,7 +3771,7 @@
     {
       "name": "Research: Repeated layout pattern",
       "source_file": "toporia/plugins/problems/research_pattern.py",
-      "about": "Demonstrate Repeated layout pattern; see preset help for mathematics and evidence scope.",
+      "about": "Shows Pattern repetition: Pattern repetition: nx x ny (x nz) identical cells, each the mean of all of them. When to use it: When the part is made of identical repeated cells, e.g. a periodic panel or a beam of equal bays.",
       "reference": "Research demonstration. Papers: https://doi.org/10.1007/s00158-008-0332-6",
       "research_description": true,
       "target_figure": "Almeida et al. layout-pattern restrictions; exact paper geometry/panel pending.",
@@ -3782,7 +3782,7 @@
     {
       "name": "Research: Router-radius closing",
       "source_file": "toporia/plugins/problems/research_routing.py",
-      "about": "Demonstrate Router-radius closing; see preset help for mathematics and evidence scope.",
+      "about": "Shows Routing radius filter: 2D routing tool-radius filter using smooth circular closing. When to use it: For 2-D parts cut with a router or end mill: inside corners get at least the tool radius.",
       "reference": "Research demonstration. Papers: https://doi.org/10.1007/s00158-006-0087-x",
       "research_description": true,
       "target_figure": "Inspired by Sigmund morphology; no published figure for this Toporia-specific router rule.",
@@ -3793,7 +3793,7 @@
     {
       "name": "Research: SIMP and HS envelope",
       "source_file": "toporia/plugins/problems/research_hashin_shtrikman.py",
-      "about": "Demonstrate SIMP and HS envelope; see preset help for mathematics and evidence scope.",
+      "about": "Shows Hashin-Shtrikman upper envelope (fixed nu): Fixed-nu isotropic upper envelope constrained by both HS channels. When to use it: When intermediate densities should be physically realisable composites: it bounds stiffness by the Hashin-Shtrikman limit instead of an arbitrary power law.",
       "reference": "Research demonstration. Papers: https://doi.org/10.1007/s004190050248",
       "research_description": true,
       "target_figure": "Bendsoe-Sigmund (1999), Figure 2, constitutive curves only.",
@@ -3804,7 +3804,7 @@
     {
       "name": "Research: SINH effective-cost curves",
       "source_file": "toporia/plugins/problems/research_sinh.py",
-      "about": "Demonstrate SINH effective-cost curves; see preset help for mathematics and evidence scope.",
+      "about": "Shows SINH (linear stiffness, penalised volume): Basic SINH: intermediate material costs more than its stiffness fraction. When to use it: To penalise grey material through its cost instead of its stiffness; stiffness stays linear in density. Mostly for studying the formulation; SIMP is the usual choice.",
       "reference": "Research demonstration. Papers: https://doi.org/10.1007/s00158-005-0537-x",
       "research_description": true,
       "target_figure": "Bruns (2005), Figure 4, equations (22)-(23).",
@@ -3815,7 +3815,7 @@
     {
       "name": "Research: SLSQP through NLopt",
       "source_file": "toporia/plugins/problems/research_b3_nlopt_slsqp.py",
-      "about": "Bounded research companion; see help for mathematics, source and limitations.",
+      "about": "Shows SLSQP (NLopt): NLopt's SLSQP (Kraft 1988): sequential quadratic programming with a dense quasi-Newton matrix. When to use it: NLopt's SQP for small problems with a few constraints; dense, so slow on large meshes.",
       "reference": "Research target, not a match claim. Papers: https://nlopt.readthedocs.io/en/latest/NLopt_Algorithms/",
       "research_description": true,
       "target_figure": "Original optimizer numerical example: identified figure and complete inputs pending; library documentation reviewed separately.",
@@ -3826,7 +3826,7 @@
     {
       "name": "Research: SLSQP through SciPy",
       "source_file": "toporia/plugins/problems/research_b3_scipy_slsqp.py",
-      "about": "Bounded research companion; see help for mathematics, source and limitations.",
+      "about": "Shows SLSQP (SciPy): SciPy's SLSQP: sequential quadratic programming with any number of constraints. When to use it: For small problems with a few constraints, when you want a standard SQP from SciPy. Slow on large meshes.",
       "reference": "Research target, not a match claim. Papers: https://docs.scipy.org/doc/scipy/reference/optimize.minimize-slsqp.html",
       "research_description": true,
       "target_figure": "Original optimizer numerical example: identified figure and complete inputs pending; library documentation reviewed separately.",
@@ -3837,7 +3837,7 @@
     {
       "name": "Research: Saved-field 2D post-processing",
       "source_file": "toporia/plugins/problems/research_b4_post2d.py",
-      "about": "Existing-function demonstration; see help for mathematics and evidence scope.",
+      "about": "Shows Threshold to black and white: Black and white at the original volume, analysed again by the referee. When to use it: Always worth running: turns the grey result into the black-and-white part you would make and re-analyses it, so you see its true performance.",
       "reference": "Own engineering demonstration; no paper match claimed.",
       "research_description": true,
       "target_figure": "Own engineering exports/checks and source-inspired metrics; no single originating research figure for the group.",
@@ -3854,7 +3854,7 @@
     {
       "name": "Research: Saved-field STL solid export",
       "source_file": "toporia/plugins/problems/research_b4_post3d.py",
-      "about": "Existing-function demonstration; see help for mathematics and evidence scope.",
+      "about": "Shows Export solid (STL): The black-and-white design as a closed solid (a 2-D design extruded), binary STL in millimetres. When to use it: To 3-D print the result or open it in CAD as a solid (a 2-D design is extruded).",
       "reference": "Own engineering demonstration; no paper match claimed.",
       "research_description": true,
       "target_figure": "Own engineering exports/checks and source-inspired metrics; no single originating research figure for the group.",
@@ -3865,7 +3865,7 @@
     {
       "name": "Research: SiMPL primal and latent steps",
       "source_file": "toporia/plugins/problems/research_b3_simpl.py",
-      "about": "Bounded research companion; see help for mathematics, source and limitations.",
+      "about": "Shows Mirror descent (SiMPL): Mirror descent in the logit of the density, under the volume budget. When to use it: A newer density update that keeps variables strictly inside 0 to 1 and is designed to need fewer iterations than OC; volume budget only.",
       "reference": "Research target, not a match claim. Papers: https://arxiv.org/html/2411.19421v2",
       "research_description": true,
       "target_figure": "Kim et al., arXiv:2411.19421v2, Figure 1 schematic and equations 14-15; own numerical coordinates.",
@@ -3876,7 +3876,7 @@
     {
       "name": "Research: TOBS integer design steps",
       "source_file": "toporia/plugins/problems/research_b3_tobs.py",
-      "about": "Bounded research companion; see help for mathematics, source and limitations.",
+      "about": "Shows TOBS (integer LP): Sequential integer linear programming on binary elements (TOBS). When to use it: For strictly binary designs: each step solves a small integer linear program under the volume budget.",
       "reference": "Research target, not a match claim. Papers: https://doi.org/10.1007/s00158-020-02719-9",
       "research_description": true,
       "target_figure": "Picelli et al. (2021) TOBS101 examples: numbered panel/inputs pending.",
@@ -3887,7 +3887,7 @@
     {
       "name": "Research: Trust-constr through SciPy",
       "source_file": "toporia/plugins/problems/research_b3_scipy_trust_constr.py",
-      "about": "Bounded research companion; see help for mathematics, source and limitations.",
+      "about": "Shows trust-constr (SciPy): SciPy's trust-constr: trust-region SQP / interior point, any number of constraints. When to use it: For small problems where SciPy's trust-region interior-point solver is wanted; slow on large meshes.",
       "reference": "Research target, not a match claim. Papers: https://docs.scipy.org/doc/scipy/reference/optimize.minimize-trustconstr.html",
       "research_description": true,
       "target_figure": "Original optimizer numerical example: identified figure and complete inputs pending; library documentation reviewed separately.",
@@ -3898,7 +3898,7 @@
     {
       "name": "Research: Undamped harmonic dynamic compliance",
       "source_file": "toporia/plugins/problems/research_b4_harmonic.py",
-      "about": "Existing-function demonstration; see help for mathematics and evidence scope.",
+      "about": "Shows Dynamic compliance (harmonic load): C(ω) = Σ w |fᵀu| with (K − ω² M) u = f: the compliance of a harmonic load of angular frequency ω. When to use it: When the load oscillates at a known frequency below the first resonance. No damping, so it is singular exactly at a resonance.",
       "reference": "Research target. Papers: https://doi.org/10.1007/BF00370133",
       "research_description": true,
       "target_figure": "Ma-Kikuchi-Hagiwara (1993) frequency-response family: exact objective, numbered panel and loading pending; PolyDyna is a related transient method.",
@@ -3909,7 +3909,7 @@
     {
       "name": "Research: Vibration through pyMOTO",
       "source_file": "toporia/plugins/problems/research_b4_dynamic_pymoto.py",
-      "about": "Existing-function demonstration; see help for mathematics and evidence scope.",
+      "about": "Shows Vibration, pyMOTO network: Maximise a natural frequency on a pyMOTO network of stiffness, consistent mass and eigensolver. When to use it: To cross-check the vibration results against pyMOTO. Needs pyMOTO installed.",
       "reference": "Research target. Papers: https://github.com/aatmdelissen/pyMOTO",
       "research_description": true,
       "target_figure": "Author-library cross-check; original research figure not identified.",
@@ -3920,7 +3920,7 @@
     {
       "name": "Research: Volume-preserving projection",
       "source_file": "toporia/plugins/problems/research_heaviside_volume.py",
-      "about": "Demonstrate Volume-preserving projection; see preset help for mathematics and evidence scope.",
+      "about": "Shows Heaviside projection: Heaviside projection with beta continuation. When to use it: After a density filter, when you want a crisp black-and-white design instead of grey material. Raise beta gradually (a continuation schedule); a sharp start makes the optimiser stall. At high beta use MMA (move about 0.1): OC at move 0.2 lets members flip once beta passes about 64. The volume-preserving mode keeps the material budget unchanged; with 0/1-only updaters (TOBS, hard-kill BESO) put a density filter in front of it.",
       "reference": "Research demonstration. Papers: https://doi.org/10.1007/s00158-020-02629-w",
       "research_description": true,
       "target_figure": "Ferrari-Sigmund (2020) volume-preserving construction; exact source figure remains to select.",

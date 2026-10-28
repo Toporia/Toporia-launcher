@@ -12,29 +12,30 @@
   "paper_visual_status": "not_assessed",
   "checks": {
     "directional_gradient_errors": [
-      6.721263873243899e-08,
-      3.1230861008435975e-09
+      2.3081999728225e-08,
+      6.5215178463886e-08
     ],
     "gradient_tolerance": 0.003,
+    "probe_step": 1e-06,
     "checks_passed": true,
     "scope": "Objective, budget and every extra constraint at one smooth deterministic direction. Stress adaptive scale disabled only in the probe; eigenvalue reference and AL multipliers held fixed. Not certification at switches/repeated modes.",
-    "independent_library_value_relative_error": 1.6395169669108968e-14,
-    "independent_library_gradient_error": 1.832718005134737e-13,
+    "independent_library_value_relative_error": 1.726560462836955e-12,
+    "independent_library_gradient_error": 2.580002184116026e-13,
     "library_probe_pass": true,
     "library_probe_scope": "Same random design and uniform-start objective references; both filters disabled; free-variable gradients only; native/foreign assembly, not a source-paper figure.",
     "finite_execution": true,
     "bounded_density": true
   },
-  "iterations": 60,
-  "stop_reason": "iteration limit (60)",
-  "fresh_final_objective": -1.9156775146200395,
-  "last_recorded_objective": -1.896296394462682,
-  "physical_volume_fraction": 0.4998025375710836,
+  "iterations": 40,
+  "stop_reason": "design change 0.00804 < tol 0.01",
+  "fresh_final_objective": -3.2568162832428453,
+  "last_recorded_objective": -3.2567984438467112,
+  "physical_volume_fraction": 0.4999995350017613,
   "volume_limit": 0.5,
   "feasible_volume_1e_4": true,
   "fresh_reported": {
-    "omega_1": 0.043115675858884886,
-    "omega_2": 0.10984626311382419
+    "omega_1": 0.05526652375536601,
+    "omega_2": 0.11114412758003488
   },
   "constraints": [],
   "feasible_constraints_1e_4": true,
@@ -95,9 +96,9 @@
     "filter_specs": [],
     "schedules": [],
     "variants": {},
-    "m": 4.0,
-    "max_iter": 60,
-    "tol": 0.0
+    "m": 10.0,
+    "max_iter": 300,
+    "tol": 0.01
   },
   "resolved_method_params": {
     "penal": 3.0,
@@ -119,7 +120,7 @@
     "nullspace_optimizer": "1.3.0"
   },
   "iteration_override": null,
-  "runtime_seconds": 19.81868399999803,
+  "runtime_seconds": 6.138496399973519,
   "protocol": "Existing engine loop; fresh final model evaluation after closing updater. Objective histories may be pre-update. Physical rows begin at y=0; 3D arrays are z,y,x. Diagnostic engine solves are additional to optimization. No source match implied.",
   "next_check": "Retain common uniform-start normalization for gradient comparisons. Recover a numbered payload-beam source example and match mass interpolation and mode aggregation.",
   "primary_source_review": {

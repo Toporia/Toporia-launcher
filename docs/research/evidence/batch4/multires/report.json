@@ -99,7 +99,7 @@
     "variants": {},
     "m": 2.0,
     "max_iter": 150,
-    "tol": 0.0
+    "tol": 0.01
   },
   "resolved_method_params": {
     "coarsening": 2,
@@ -121,7 +121,13 @@
     "nullspace_optimizer": "1.3.0"
   },
   "iteration_override": null,
-  "runtime_seconds": 13.290766699996311,
+  "runtime_seconds": 4.204215399979148,
   "protocol": "Existing engine loop; fresh final model evaluation after closing updater. Objective histories may be pre-update. Physical rows begin at y=0; 3D arrays are z,y,x. Diagnostic engine solves are additional to optimization. No source match implied.",
-  "next_check": "Align the identified research family with a numbered source panel, exact loads/supports, discretization and current formulation; see limitations."
+  "next_check": "Align the source's three grids/projection and centroid integration, or identify this Galerkin variant separately. The fine-Q4 stiffness discrepancy is resolved: filters below one analysis cell are refused (coarse/fine 0.986 here).",
+  "primary_source_review": {
+    "status": "author_paper_summary_reviewed",
+    "url": "https://paulino.princeton.edu/journal_papers/2010/SMO_10_AComputationalParadigm.pdf",
+    "scope": "Author manuscript identifies three displacement/design/density discretizations with projection. Current aligned subcell Galerkin formulation and independent fine-Q4 reevaluation are explicitly separate; no numbered source figure match claimed.",
+    "visual_status": "not_assessed"
+  }
 }
