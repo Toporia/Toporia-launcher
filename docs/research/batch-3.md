@@ -45,6 +45,7 @@ compliance 210.66-211.55. Exact settings are in every report.
 | Disk/sphere cap projection versus independent cross-section quadrature | Max error 1.09e-13 | The local flat-interface projection geometry |
 | Adam versus a separate Algorithm 1 moment recurrence | Max state error 1.12e-16 | Inactive-budget, fixed-gradient recurrence; not paper learning curves |
 | SiMPL first step versus an independent scalar root solve | Max density error 8.70e-12 | A controlled instance of the source's primal/latent construction |
+| Directional checks at every saved final design (Batch 3 and 4, [report](evidence/gradients/report.json)) | 42 pass, worst best-step error 5.8e-6; BESO, hard-kill BESO and TOBS end with every element solid or void, so no two-sided derivative exists | Derivatives at the nearly black-and-white end state, interior variables only; `python -m experiments.research_gradients` |
 | Fresh physics on all 31 saved final fields | Agreement with recorded final compliance within 1e-9 relative tolerance | Report/field consistency, without applying the filters twice |
 
 Every executed field and objective history is finite and its densities are

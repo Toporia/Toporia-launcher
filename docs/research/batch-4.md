@@ -54,6 +54,7 @@ every original paper figure has been reproduced.
 | Mechanism reciprocity | Relative error below 5.5e-16 | Fixed spring-stiffness system, forward and reversed ports |
 | Planar phase-field energy | About 4.17e-5 relative error from sqrt(2)/6 | This symmetric double-well convention, not a source Allen-Cahn design |
 | Objective/budget/constraint directions | All recorded errors below 1e-4 | Smooth deterministic probe; multipliers/references fixed; adaptive stress scale disabled only in this check |
+| The same at every saved final design | All below 1e-4 ([report](evidence/gradients/report.json), shared with Batch 3) | Interior variables of the end state, where projections are sharp and stresses sit beside void |
 
 The public native-scalar report links the existing fixture's hash, author-source
 hash, MATLAB version and capture date. It does not claim a fresh MATLAB run,
