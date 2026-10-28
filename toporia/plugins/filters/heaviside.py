@@ -83,7 +83,8 @@ class HeavisideFilter(Filter):
     label = "Heaviside projection"
     use_when = (
         "After a density filter, when you want a crisp black-and-white design instead of grey material. "
-        "Raise beta gradually (a continuation schedule); a sharp start makes the optimiser stall. The "
+        "Raise beta gradually (a continuation schedule); a sharp start makes the optimiser stall. At high beta "
+        "use MMA (move about 0.1): OC at move 0.2 lets members flip once beta passes about 64. The "
         "volume-preserving mode keeps the material budget unchanged; with 0/1-only updaters (TOBS, hard-kill "
         "BESO) put a density filter in front of it."
     )

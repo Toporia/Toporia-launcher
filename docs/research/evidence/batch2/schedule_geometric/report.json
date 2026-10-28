@@ -16,13 +16,13 @@
     "checks_passed": true,
     "event_signal": "own exponential change signal; not a paper iteration history",
     "companion": {
-      "iterations": 450,
-      "stop_reason": "iteration limit (450)",
-      "last_pre_update_compliance": 335201388.56659865,
-      "physical_fraction": 0.49999423077904104,
+      "iterations": 351,
+      "stop_reason": "design change 0.000132 < tol 0.01",
+      "last_pre_update_compliance": 189.27178669142137,
+      "physical_fraction": 0.49999999997393946,
       "parameter_path": "filters[1].beta",
       "last_parameter": 128.0,
-      "converged": false
+      "converged": true
     }
   },
   "limitations": "A schedule plot verifies the fixed-interval rule only. It omits early increases at convergence and does not reproduce an optimized paper design.",
@@ -35,6 +35,6 @@
   },
   "next_check": "Match the paper's optimizer and early-convergence trigger as well as its 50-step clock; the bounded OC companion is not converged.",
   "quarantined_reason": "",
-  "generated_at": "2026-10-27T22:29:04.821228+00:00",
+  "generated_at": "2026-10-28T03:14:53.590960+00:00",
   "reproduce": "python -m experiments.research_batch2 --case schedule_geometric"
 }

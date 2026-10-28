@@ -233,7 +233,10 @@ for _name, _label, _spec, _equations, _source, _target, _limits in (
     CASES["schedule_" + _name] = _case(_label, "schedule", _name, _spec, _equations,
         "Plot actual schedule values at completed-iteration boundaries. Compare to an independent clock/event simulation.",
         _source, _target, _limits, schedules=[{"path": _path, **_spec}],
-        overrides={"max_iter": 450} if _name in {"geometric", "settled"} else {})
+        # Beta continuation runs on MMA (move 0.1), the optimiser of Wang et al. (2011): OC at its default
+        # move 0.2 lets saturated variables bounce, and members flip once beta reaches 128 (C 210 -> 1260).
+        overrides={"max_iter": 450, "method": "q4+mma", "method_params": {"move": .1}}
+                  if _name in {"geometric", "settled"} else {})
 
 SYMBOLS = {
     "pde": "x: input cell densities; rho-bar: smoothed field; T: element-to-node averaging; "

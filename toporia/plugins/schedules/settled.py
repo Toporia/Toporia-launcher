@@ -2,7 +2,8 @@
 #
 # Connects to: framework/parts/schedule.py (the Schedule interface and its optional
 # observe() hook) and engine/loop.py, which calls observe(iteration, change) after
-# every iteration with the design change the method reported.
+# every iteration with the change of the physical density the method reported
+# (not of the design variables, which keep drifting where a sharp projection is flat).
 # The rule: the parameter moves up one level when the design change has been
 # below `change_below` for `settle` iterations in a row (and the level has lasted
 # at least `min_every` iterations), or at the latest after `max_every` iterations

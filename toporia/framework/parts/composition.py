@@ -112,6 +112,7 @@ class ComposedMethod(OptimizationMethod):
         self.density = self._model.physical(self.x)
         self.objective = np.inf
         self.change = np.inf
+        self.physical_change = np.inf
         self._evaluation = None
 
     def _build_model(self, problem, solver):
@@ -142,8 +143,9 @@ class ComposedMethod(OptimizationMethod):
         self.x = x_new
         previous_density = self.density
         self.density = self._model.physical(x_new)
+        self.physical_change = float(np.max(np.abs(self.density - previous_density)))
         if self._model.monitor_physical_change:
-            self.change = max(self.change, float(np.max(np.abs(self.density - previous_density))))
+            self.change = max(self.change, self.physical_change)
         self.objective = evaluation.objective
         self._evaluation = evaluation
 
@@ -204,8 +206,9 @@ class ComposedMethod(OptimizationMethod):
     def close(self):
         self._updater.close()
 
-    def get_density(self):   return self.density
-    def get_change(self):    return self.change
+    def get_density(self):          return self.density
+    def get_change(self):           return self.change
+    def get_physical_change(self):  return self.physical_change
 
     def get_responses(self):
         responses = {OBJECTIVE: self.objective, "volume": float(self.density.mean()),

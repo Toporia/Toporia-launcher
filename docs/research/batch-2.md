@@ -102,12 +102,18 @@ saved separately from the synthetic event diagnostic.
 | :-- | --: | --: | --: | :-- |
 | Equal steps | 200 | 240.0463 | 0.49997867 | Iteration cap |
 | Linear ramp | 200 | 240.0395 | 0.49997440 | Iteration cap |
-| Geometric beta | 450 | 3.3520e8 | 0.49999423 | Iteration cap; poor sharp-projection behavior |
-| Settled beta | 450 | 1227.3681 | 0.50000010 | Iteration cap; oscillatory behavior |
+| Geometric beta | 351 | 189.2718 | 0.50000000 | Converged (design change 0.00013) |
+| Settled beta | 121 | 189.1040 | 0.49999998 | Converged (design change 0.0089) |
 
-These are not converged recommendations. In particular, the source paper's
-optimizer and early-convergence triggers must be aligned before asserting a
-trajectory match. The sharp OC companions remain in the to-fix evidence.
+**Beta companions fixed 28 October 2026.** They first ran on OC with move 0.2 and
+ended at 3.35e8 and 1227: design variables where the projection is flat bounced by
+the full move every iteration, and once beta reached 128 members flipped (C 210 ->
+1260 within one step). They now run on MMA with move 0.1, the optimiser of Wang et
+al. (2011). The settled trigger also never fired, because it watched the change of
+the design variables, which keep drifting under a sharp projection; the engine now
+passes it the change of the physical density, and beta reaches 128 at iteration 116
+instead of 350. The same OC failure hit the MBB Beam (Robust) preset, which now uses
+MMA as well. Matching the paper's trajectory still needs its exact settings.
 
 ## GUI use and reproduction
 

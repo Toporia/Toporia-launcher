@@ -153,8 +153,11 @@ def _loop(run, method, store, on_iteration):
         objective = responses[OBJECTIVE]
         density = method.get_density()
         change = method.get_change()
+        # A schedule waiting for the design to settle watches the physical density: under a sharp
+        # projection the design variables keep drifting where the projection is flat.
+        settling = method.get_physical_change()
         for _, schedule in schedules:
-            schedule.observe(iteration, change)     # optional: lets a schedule wait for the design to settle
+            schedule.observe(iteration, settling)
 
         store.record(iteration=iteration, objective=objective,
                      volume=float(density.mean()), density=density,

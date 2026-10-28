@@ -6,6 +6,12 @@
 # does not certify a minimum feature size or manufacturing tolerance. The projection sharpness
 # beta follows the `geometric` schedule 1 -> 64 (doubled every 25 iterations).
 #
+# The updater is MMA with move 0.1, as in the paper. With OC at its default move 0.2,
+# design variables where the projection is flat bounce by the full move every
+# iteration; at high beta they cross the threshold and members of the eroded
+# design flip (worst case 214 -> 1.2e8 at the 200-iteration cap). With MMA the run
+# converges in about 184 iterations to a worst case near 198, black and white.
+#
 # This is a ready-made recipe, not new mathematics: solver.variants
 # (framework/parts/variants.py) and a schedule (plugins/schedules/geometric.py).
 # Differences from the paper (volume held on the intermediate design, a smooth
@@ -38,10 +44,10 @@ def scenario():
 def solver() -> Solver:
     """Density filter, then Heaviside projection (filters[1]), evaluated eroded / intermediate / dilated."""
     return Solver(
-        method="q4+oc",
+        method="q4+mma", method_params={"move": 0.1},
         filter_specs=[{"type": "density"}, {"type": "heaviside", "beta": 1.0, "eta": 0.5}],
         schedules=[{"path": "filters[1].beta", "type": "geometric", "start": 1.0, "end": 64.0,
                     "factor": 2.0, "every": 25}],
         variants={"path": "filters[1].eta", "values": [0.75, 0.5, 0.25], "combine": "worst", "nominal": 1},
-        m=1.0, max_iter=200, tol=0.01,
+        m=1.0, max_iter=300, tol=0.01,
     )

@@ -29,3 +29,13 @@ def test_robust_preset_evaluates_three_designs_per_iteration():
     store, _ = run_single_with_store(run)
     assert store.responses["solves"][-1] == 9          # three designs, three iterations
     assert store.responses["filters[1].beta"][0] == 1.0  # the geometric schedule starts beta at 1
+
+
+def test_robust_preset_converges_without_flipping_members():
+    # With OC at move 0.2 the eroded design lost a member once beta passed 64 and the worst case
+    # jumped from about 214 to 1.2e8; MMA with move 0.1 converges black and white.
+    store, density = run_single_with_store(get_run("MBB Beam (Robust)").updated(save_every=0))
+    history = np.array(store.responses["objective"])
+    assert store.stop_reason.startswith("design change")
+    assert np.max(history[1:] / history[:-1]) < 1.2
+    assert history[-1] < 220 and np.mean(4 * density * (1 - density)) < 0.01

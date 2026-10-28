@@ -19,8 +19,9 @@
 # parameter can — the density filter's radius is built into its weights when
 # the run starts — so a schedule on any other one is refused before the run.
 # A schedule may also override the optional observe(completed, change), which
-# the engine calls after each iteration with the design change (convergence-
-# triggered continuation); the default ignores it.
+# the engine calls after each iteration with the change of the physical density
+# (method.get_physical_change(), for convergence-triggered continuation); the
+# default ignores it.
 # change_parameter() below sets a value on a live part: through the part's own
 # set_parameter(name, value) when it has one (a parameter that other values
 # are derived from), else on its `settings` dict (responses) or the attribute

@@ -2,7 +2,7 @@
 
 Target: Convergence-triggered continuation described in section 4; exact design history unavailable.
 
-Known execution issue: None observed in the recorded checks.
+Numerical issue: **resolved** (28 October 2026). The trigger watched design-variable change, which never settles under a sharp projection, so it always fell back to max_every; it now watches the physical density and reaches beta 128 at iteration 116. On MMA with move 0.1 the companion converges at iteration 121 with compliance 189.10.
 
 Reason: The synthetic change signal and minimum-duration guard are declared Toporia choices. The source paper's actual observed design history is not reconstructed.
 

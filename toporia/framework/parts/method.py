@@ -173,6 +173,15 @@ class OptimizationMethod(ABC):
         first step.
         """
 
+    def get_physical_change(self):
+        """How much the physical density moved this iteration; by default the same as get_change().
+
+        Under a sharp projection, design variables in saturated regions can move
+        without changing the physical design, so get_change() never settles there.
+        A schedule that waits for the design to settle observes this measure instead.
+        """
+        return self.get_change()
+
     def set_parameter(self, path, value):
         """Change the value at a parameter path during a run, as a schedule does before each iteration.
 

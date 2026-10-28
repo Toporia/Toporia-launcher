@@ -16,13 +16,13 @@
     "checks_passed": true,
     "event_signal": "own exponential change signal; not a paper iteration history",
     "companion": {
-      "iterations": 450,
-      "stop_reason": "iteration limit (450)",
-      "last_pre_update_compliance": 1227.3681304454099,
-      "physical_fraction": 0.5000000961124038,
+      "iterations": 121,
+      "stop_reason": "design change 0.00892 < tol 0.01",
+      "last_pre_update_compliance": 189.1039857326444,
+      "physical_fraction": 0.49999998483163194,
       "parameter_path": "filters[1].beta",
       "last_parameter": 128.0,
-      "converged": false
+      "converged": true
     }
   },
   "limitations": "The synthetic change signal and minimum-duration guard are declared Toporia choices. The source paper's actual observed design history is not reconstructed.",
@@ -38,6 +38,6 @@
   },
   "next_check": "Recover actual paper design-change observations and trigger settings; synthetic rule agreement and an unconverged OC companion are insufficient.",
   "quarantined_reason": "",
-  "generated_at": "2026-10-27T22:29:19.160447+00:00",
+  "generated_at": "2026-10-28T03:15:04.720466+00:00",
   "reproduce": "python -m experiments.research_batch2 --case schedule_settled"
 }

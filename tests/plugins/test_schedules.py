@@ -201,3 +201,24 @@ def test_settled_beta_run_against_the_geometric_continuation():
     for _iterations, compliance, grey, beta in found.values():
         assert beta == 64 and np.isfinite(compliance) and grey < 0.1
     print("geometric vs settled (iterations, compliance, grey, final beta):", found)
+
+
+def test_settling_is_judged_on_the_physical_density(monkeypatch):
+    # Under a sharp projection the design variables keep drifting where the projection is flat, so
+    # a settled schedule observes the change of the physical density instead.
+    from toporia.plugins.schedules.settled import Settled
+    seen, densities = [], []
+    observe = Settled.observe
+
+    def spy(self, completed, change):
+        seen.append(change)
+        observe(self, completed, change)
+
+    monkeypatch.setattr(Settled, "observe", spy)
+    schedule = {"type": "settled", "path": "filters[1].beta", "start": 16, "end": 32, "max_every": 50}
+    run = get_run("MBB Beam").updated(method="q4+mma", max_iter=12, tol=0, save_every=0,
+                                      filter_specs=[{"type": "density"}, {"type": "heaviside", "beta": 16.0}],
+                                      schedules=[schedule])
+    run_single_with_store(run, on_iteration=lambda density, objectives, iteration: densities.append(density.copy()))
+    physical = [float(np.max(np.abs(b - a))) for a, b in zip(densities, densities[1:], strict=False)]
+    assert seen[1:] == pytest.approx(physical)

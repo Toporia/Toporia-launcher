@@ -3001,11 +3001,11 @@
       "about": "The MBB beam solved robustly: the worst of the eroded, intermediate and dilated designs (Heaviside thresholds 0.75 / 0.5 / 0.25), with a doubling continuation of the sharpness.",
       "reference": "F. Wang, B. S. Lazarov and O. Sigmund, \"On projection methods, convergence and robust formulations in topology optimization\", Struct. Multidisc. Optim. 43 (2011) 767-784. Independent recipe; thresholds match Fig. 6, but volume, aggregation and continuation differ. Papers: https://doi.org/10.1007/s00158-010-0602-y Correction: https://doi.org/10.1007/s00158-022-03326-6",
       "research_description": true,
-      "target_figure": "General-purpose preset: it shows a typical use, not a reproduced paper figure. To try its parts on their own, open these presets: filter:heaviside: Research: Heaviside projection curves, Research: Volume-preserving projection; schedule:geometric: Research: Geometric beta continuation.",
+      "target_figure": "General-purpose preset: it shows a typical use, not a reproduced paper figure. To try its parts on their own, open these presets: updater:mma: Research: MMA: local one-budget variant; filter:heaviside: Research: Heaviside projection curves, Research: Volume-preserving projection; schedule:geometric: Research: Geometric beta continuation.",
       "functions": [
         "model:q4",
         "physics:q4_plane_stress",
-        "updater:oc",
+        "updater:mma",
         "representation:element_density",
         "interpolation:simp",
         "response:compliance",
@@ -5920,7 +5920,7 @@
       ],
       "is_preset": false,
       "classification": "numerical function implementation",
-      "source_summary": "plugins/schedules/settled.py — raised when the design has settled, not on a clock.  Connects to: framework/parts/schedule.py (the Schedule interface and its optional observe() hook) and engine/loop.py, which calls observe(iteration, change) after every iteration with the design change the method reported. The rule: the parameter moves up one level when the design change has been below `change_below` for `settle` iterations in a row (and the level has lasted at least `min_every` iterations), or a"
+      "source_summary": "plugins/schedules/settled.py — raised when the design has settled, not on a clock.  Connects to: framework/parts/schedule.py (the Schedule interface and its optional observe() hook) and engine/loop.py, which calls observe(iteration, change) after every iteration with the change of the physical density the method reported (not of the design variables, which keep drifting where a sharp projection is flat). The rule: the parameter moves up one level when the design change has been below `change_bel"
     },
     {
       "source_file": "toporia/plugins/schedules/steps.py",
