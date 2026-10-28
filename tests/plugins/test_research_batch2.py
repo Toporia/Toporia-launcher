@@ -74,16 +74,25 @@ def test_volume_preserving_companion_is_registered_once_its_binary_limit_is_sett
     assert probe["all_solid_identity_fd_error"] < 1e-4
 
 
-def test_volume_preserving_projection_refuses_binary_updaters_only_as_first_filter():
-    from toporia.framework import Solver
+def test_volume_preserving_projection_refuses_solid_void_updaters_in_any_position():
+    # Behind a density filter smaller than one cell a BESO design stays 0/1 (the GUI comparison
+    # hit this on its coarse mesh), so the refusal does not depend on the chain position.
+    from toporia.engine.pipeline import solver_problems
+    from toporia.framework import Run, Scenario, Solver
     from toporia.plugins.filters.heaviside import HeavisideFilter
+    from toporia.plugins.methods import method_class
     projection = HeavisideFilter(eta_mode="volume_preserving")
-    first = Solver(method="q4+tobs", filter_specs=[{"type": "heaviside", "eta_mode": "volume_preserving"}])
-    with pytest.raises(ValueError, match="first filter"):
-        projection.setup(None, first)
-    behind = Solver(method="q4+tobs", filter_specs=[{"type": "density"},
-                                                    {"type": "heaviside", "eta_mode": "volume_preserving"}])
-    projection.setup(None, behind)
+    for method in ("q4+tobs", "q4+beso", "q4+beso_hard"):
+        for specs in ([{"type": "heaviside", "eta_mode": "volume_preserving"}],
+                      [{"type": "density"}, {"type": "heaviside", "eta_mode": "volume_preserving"}]):
+            solver = Solver(method=method, filter_specs=specs)
+            with pytest.raises(ValueError, match="volume-preserving"):
+                projection.setup(None, solver)
+            assert any("volume-preserving" in r for r in solver_problems(method_class(method), Run(Scenario(), solver)))
+    fixed = Solver(method="q4+beso", filter_specs=[{"type": "density"}, {"type": "heaviside"}])
+    assert not solver_problems(method_class("q4+beso"), Run(Scenario(), fixed))
+    smooth = Solver(method="q4+mma", filter_specs=[{"type": "density"}, {"type": "heaviside", "eta_mode": "volume_preserving"}])
+    projection.setup(None, smooth)
 
 
 def test_original_capture_refuses_changed_source_before_matlab(tmp_path):

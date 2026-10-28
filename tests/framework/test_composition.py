@@ -15,6 +15,7 @@ import pytest
 
 from toporia.checks.model import _model_run
 from toporia.engine.loop import initialized_method
+from toporia.engine.pipeline import solver_problems
 from toporia.framework import Param
 from toporia.framework.parts.composition import ComposedMethod, compose
 from toporia.framework.parts.method import OBJECTIVE
@@ -117,6 +118,14 @@ def test_every_model_works_with_every_updater(model_cls, updater_cls):
             initialized_method(run)
         return
     run = _model_run(model_cls, "MBB Beam").updated(constraints=[], max_iter=3)
+    if updater_cls.own_filter:
+        run = run.updated(filter_specs=[])          # it filters its own updates
+    refused = solver_problems(cls, run)
+    if refused:                                     # declared before the run, and refused by it
+        with pytest.raises(ValueError):
+            method = cls()
+            method.initialize(make_problem(run.scenario, run.solver.m), run.solver)
+        return
     # Exercise a compatible objective; all models keep the same benchmark mesh.
     objective = "compliance" if "compliance" in cls.capabilities.objectives else cls.capabilities.objectives[0]
     run = replace(run, scenario=replace(run.scenario, objective={"type": objective}))

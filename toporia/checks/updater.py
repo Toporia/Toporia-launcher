@@ -49,6 +49,7 @@ def check_updater(cls, model="q4", benchmark=True, tolerance=0.10, m=0.4, max_it
     from toporia.plugins.updaters import UPDATERS
 
     report = Report(f"updater {cls.__name__} ({getattr(cls, 'name', '?')})")
+    own = {"filter_specs": []} if cls.own_filter else {}     # it filters its own updates
     check_declaration(report, cls)
     if not report.ok:
         return report
@@ -56,7 +57,7 @@ def check_updater(cls, model="q4", benchmark=True, tolerance=0.10, m=0.4, max_it
     with registered(UPDATERS, cls):
         method_cls = method_class(f"{model}+{cls.name}")
         with report.step(f"short run on the {WITH_HOLES} with {model}") as check:
-            run = small_run(WITH_HOLES, method=method_cls.name, m=0.3, max_iter=4, tol=0.0, volfrac=0.4)
+            run = small_run(WITH_HOLES, method=method_cls.name, m=0.3, max_iter=4, tol=0.0, volfrac=0.4, **own)
             method = initialized_method(run)
             try:
                 iterate(method, 4)
@@ -76,7 +77,7 @@ def check_updater(cls, model="q4", benchmark=True, tolerance=0.10, m=0.4, max_it
                 raise Skip("not requested")
             if "compliance" not in method_cls.capabilities.objectives:
                 raise Skip("cannot minimise compliance")
-            run = small_run(method=method_cls.name, m=m, max_iter=max_iter, tol=0.01)
+            run = small_run(method=method_cls.name, m=m, max_iter=max_iter, tol=0.01, **own)
             method = initialized_method(run)
             try:
                 iterate(method, max_iter, tol=0.01)

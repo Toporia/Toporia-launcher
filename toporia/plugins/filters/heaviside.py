@@ -45,9 +45,10 @@
 #       perturbed elements, so ρ̄ = x to first order: the derivative is the identity;
 #     - mixed 0/1: the first-order response depends on the direction of δx (how
 #       much is added at 0 versus removed at 1), so no gradient exists and the
-#       run stops with an error.  Updaters whose designs are always exactly 0/1
-#       (binary_designs) are refused at setup when the projection is the first
-#       filter; behind a density filter their designs arrive with grey boundaries.
+#       run stops with an error.  Updaters whose designs are always solid or void
+#       (binary_designs: TOBS, BESO) are refused before the run, in any chain
+#       position: behind a density filter smaller than a cell their designs stay
+#       0/1, and they keep the volume themselves anyway.
 #   Exactly-binary elements contribute exactly zero to S (their ∂P/∂η vanishes
 #   identically), so those terms are set to zero rather than kept as rounding noise.
 #
@@ -75,7 +76,7 @@ class HeavisideFilter(Filter):
 
     The volume-preserving threshold has no derivative at a mixed 0/1 design;
     such a design stops the run with an error, and updaters that only produce
-    0/1 designs are refused when this projection is the first filter. All-solid
+    solid/void designs are refused before the run. All-solid
     and all-void designs use the exact limit (the identity).
     """
 
@@ -125,17 +126,25 @@ class HeavisideFilter(Filter):
         self.beta_interval = int(beta_interval)
         self._beta_scheduled = False   # a schedule drives beta: the built-in doubling stands aside
 
+    @classmethod
+    def updater_problems(cls, spec, updater, position):
+        # A solid/void design keeps its 0/1 cells even behind a density filter wherever the filter
+        # radius is under one cell, and a far-from-threshold field gives the threshold no derivative.
+        # Such updaters keep the volume themselves, so the volume-preserving threshold has no job there.
+        if spec.get("eta_mode") == "volume_preserving" and getattr(updater, "binary_designs", False):
+            return [f"volume-preserving Heaviside projection cannot be used with {updater.label}: its designs "
+                    "are solid or void, where the volume-preserving threshold has no derivative, and it keeps "
+                    "the volume itself. Use the fixed threshold mode"]
+        return []
+
     def setup(self, problem, solver):
         if self.eta_mode != "volume_preserving" or solver is None:
             return
         from toporia.plugins.methods import method_class
         updater = getattr(method_class(solver.method), "updater", None)
-        first = solver.filter_specs[0].get("type") if solver.filter_specs else None
-        # Behind another filter a 0/1 design arrives with grey boundaries, where the derivative exists.
-        if getattr(updater, "binary_designs", False) and first == self.name:
-            raise ValueError(f"Volume-preserving Heaviside projection as the first filter cannot be used with "
-                             f"{updater.label}: its designs are exactly 0/1, where the volume-preserving threshold "
-                             "has no derivative. Put a density filter in front, or use the fixed threshold mode.")
+        reasons = self.updater_problems({"eta_mode": self.eta_mode}, updater, None) if updater else []
+        if reasons:
+            raise ValueError(reasons[0] + ".")
 
     def set_parameter(self, name, value):
         """Set beta or eta during a run; a scheduled beta switches the built-in doubling off."""

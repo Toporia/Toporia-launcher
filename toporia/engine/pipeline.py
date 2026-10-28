@@ -73,6 +73,8 @@ def solver_problems(method_cls, run):
             able = [cls.label for cls in UPDATERS.classes() if not cls.needs_element_densities]
             reasons.append(f"{updater.label} moves one density per element, so it cannot move the variables "
                            f"of {representation.label!r} (updaters that can: {', '.join(able)})")
+    if issubclass(method_cls, ComposedMethod):
+        reasons += _updater_problems(method_cls, run)
     reasons += _variant_problems(method_cls, run)
     reasons += dimension_problems(run)
     for spec in run.solver.schedules:
@@ -84,6 +86,21 @@ def solver_problems(method_cls, run):
         elif name not in owner.schedulable:
             can = ", ".join(owner.schedulable) or "none of its parameters"
             reasons.append(f"{owner.label} cannot change {name!r} during a run (it can change: {can})")
+    return reasons
+
+
+def _updater_problems(method_cls, run):
+    """What the updater itself declares it needs from the model and the filter chain."""
+    from toporia.plugins.filters import FILTERS
+    updater, reasons = method_cls.updater, []
+    if updater.own_filter and run.solver.filter_specs:
+        reasons.append(f"{updater.label} filters its own updates, so it needs no filter chain (filter_specs=[])")
+    if updater.needs_material_law and not method_cls.capabilities.accepts_interpolation:
+        reasons.append(f"{updater.label} needs a model with a material law, which {method_cls.model.label} has not")
+    for position, spec in enumerate(run.solver.filter_specs):
+        cls = FILTERS.get(spec.get("type"))
+        if cls is not None:
+            reasons += cls.updater_problems(spec, updater, position)
     return reasons
 
 

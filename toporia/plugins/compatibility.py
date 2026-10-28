@@ -98,13 +98,15 @@ def _compose(model, updater):
 
 
 def _pairs_with(model=None, updater=None):
-    """The partners a model (or updater) forms a usable method with: at least one objective, a shared dimension."""
+    """The partners a model (or updater) forms a usable method with: at least one objective, a shared
+    dimension, and the material law the updater may need."""
     partners = []
     for other in (_updaters() if model is not None else _models()):
         m, u = (model, other) if model is not None else (other, updater)
         caps = _compose(m, u).capabilities
         shared = u.dims is None or set(u.dims) & set(caps.dims)
-        if caps.objectives and shared:
+        material = caps.accepts_interpolation or not u.needs_material_law
+        if caps.objectives and shared and material:
             partners.append(other)
     return partners
 
@@ -141,6 +143,13 @@ def _updater_lines(cls):
         lines.append(f"Enforces the volume budget plus {count} further constraint(s) ({kinds}).")
     if cls.needs_element_densities:
         lines.append("Needs one density per element: refused with any other design representation.")
+    if cls.binary_designs:
+        lines.append("Its designs are solid or void, never grey: parts that need grey designs "
+                     "(volume-preserving projection) refuse it.")
+    if cls.own_filter:
+        lines.append("Filters its own updates: run it with no filter chain.")
+    if cls.needs_material_law:
+        lines.append("Needs a model with a material law; refused by models that compute their own material.")
     if cls.own_loop:
         lines.append("Runs its own optimisation loop in the background (an external library).")
     partners = _pairs_with(updater=cls)

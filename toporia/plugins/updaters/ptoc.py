@@ -72,6 +72,8 @@ class PTOcUpdater(Updater):
     objectives = ("compliance",)
     max_constraints = 0
     needs_element_densities = True
+    own_filter = True
+    needs_material_law = True
     dims = (2, 3)
 
     def initialize(self, model, settings):

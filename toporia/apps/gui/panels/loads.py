@@ -33,7 +33,7 @@ class LoadCaseRow(QWidget):
 
         # Mechanism presets use millinewton loads; rounding those to zero
         # removes both the driving force and the optimisation sensitivities.
-        self.fmag = double_box(fmag, 0, 1e6, dec=6, step=0.001)
+        self.fmag = double_box(fmag, 0, 1e6, dec=9, step=0.001)  # 9: a preset's 1/3 survives the round trip
         self.fa = double_box(fa, -360, 360, dec=1, step=15.0)  # angle in degrees
         self.weight = double_box(weight, 0, 1, dec=1, step=0.1)  # compliance weight (should sum to 1)
         self.fe = double_box(fe, -90, 90, dec=1, step=15.0)  # 3-D only: out of the xy plane

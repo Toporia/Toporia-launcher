@@ -109,6 +109,8 @@ class BESOUpdater(Updater):
     max_constraints = 0
     # The rule moves each element's density on its own (see needs_element_densities).
     needs_element_densities = True
+    # Every element is solid (1) or void (void_density): no grey designs.
+    binary_designs = True
 
     def initialize(self, model, settings):
         self.model = model

@@ -42,9 +42,13 @@ class Updater(ABC):
     #: (OC, BESO): it is then refused with any other design representation
     #: (framework/parts/representation.py).
     needs_element_densities = False
-    #: True when every design it produces is exactly 0/1 (TOBS, hard-kill BESO), so a part
-    #: that needs a derivative at grey designs only can refuse it.
+    #: True when every design it produces is solid or void (TOBS, both BESO variants: 0 or the
+    #: soft-kill minimum, and 1), so a part that needs a derivative at grey designs can refuse it.
     binary_designs = False
+    #: True when it filters its own updates (PTOc), so the run must have no filter chain.
+    own_filter = False
+    #: True when it reads the model's material law (PTOc recovers element compliance from E/E').
+    needs_material_law = False
     #: The problem dimensions it works in; None means any (it never looks at the mesh's shape).
     dims = None
     #: Parameters a schedule may change during a run (framework/parts/schedule.py).

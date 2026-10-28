@@ -717,7 +717,9 @@ def test_every_presets_default_method_comparison_runs_from_the_gui(window, tmp_p
             cls = RESPONSES.get(spec["type"])
             values = {key: value for key, value in spec.items() if key != "type"}
             return {"type": cls.name, **resolve_params(cls.name, cls.params, values)}
-        return replace(scenario, objective=response(scenario.objective),
+        # The force box keeps 9 decimals (panels/loads.py): a preset's 1/3 comes back 3e-10 smaller.
+        loads = [replace(case, Fmag=round(case.Fmag, 9)) for case in scenario.load_cases]
+        return replace(scenario, objective=response(scenario.objective), load_cases=loads,
                        constraints=[response(spec) for spec in scenario.constraints])
 
     original = get_run(preset)

@@ -54,6 +54,12 @@ class Filter(ABC):
     #: Manufacturing maps whose geometric meaning a later filter could break.
     must_be_last = False
 
+    @classmethod
+    def updater_problems(cls, spec, updater, position):
+        """Why this filter, configured by `spec` at `position` in the chain, cannot work with
+        `updater` (an Updater class); empty when it can.  Checked before a run starts."""
+        return []
+
     def setup(self, problem, solver):
         """Prepare for a run (neighbour weights, masks, ...).  Called once."""
 
