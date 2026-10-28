@@ -493,3 +493,9 @@ References: S. Kirkpatrick, C. D. Gelatt Jr., M. P. Vecchi, *Science* 220 (1983)
 `python -m experiments.research_pto_attempt` separately attempts PTOc Figure 3 on the paper's 120-by-40, fraction-0.35 setup against a hash-identified native fixture. It exits nonzero for the documented formulation mismatch. Fresh author capture needs an existing MATLAB installation and unchanged PLOS S2 source; see that module's help. No author code or papers are redistributed.
 
 [Batch 3 report](../docs/research/batch-3.md), [gallery](../docs/research/evidence/batch3/index.html) and [mathematical computation guide](../docs/research/optimization.html) distinguish finite execution, feasibility, convergence and source reproduction.
+
+## Batch 4 research figures
+
+`python -m experiments.research_batch4` runs 17 existing-physics companions and eight saved-field post-processing demonstrations. `--case post2d` reuses Batch 3's saved MMA field/history; STL reuses the H8 field. `--strict-paper` fails for unresolved source comparisons; engineering examples with no originating paper are separate. `python -m experiments.research_publish4` promotes reviewed records, and the inventory/documentation commands refresh the census and guides.
+
+[Batch 4 report](../docs/research/batch-4.md), [case index](../docs/research/batch-4-cases.md), [gallery](../docs/research/evidence/batch4/index.html), and [framework assessment](../docs/research/framework-assessment.html). Analytic limits, independent library assembly, fresh final evaluations and file checks do not certify a paper figure.

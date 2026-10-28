@@ -1,0 +1,176 @@
+# Batch 4: physics, responses, post-processing and framework assessment
+
+Branch: `feature/research-presets-v022`. This batch adds **19 registered presets**
+and **25 demonstrations** covering the remaining **39 numerical functions**.
+Related models, physics engines and responses share examples; seven 2D
+post-processors and STL export reuse saved fields instead of repeating their
+optimizations. The numerical algorithms and GUI framework are unchanged.
+
+[Gallery](evidence/batch4/index.html) · [All cases](batch-4-cases.md) ·
+[Function census](coverage.md) · [Framework assessment](framework-assessment.html)
+([editable source](framework-assessment.md)) · [Source reviews](evidence/batch4/paper-reviews.json)
+
+## What is now available
+
+| Group | Demonstrations | Functions covered |
+| :-- | --: | :-- |
+| H8 elasticity and 2D/3D heat | 3 | Models, engines, thermal compliance |
+| Independent pyMOTO assemblies | 3 | Elastic, thermal and dynamic models |
+| Vibration, harmonic response and eigenvalue limit | 3 | Dynamic model/engine and three response types |
+| Buckling, nonlinear elasticity, mechanism and multiresolution | 4 | Models, engines and associated responses |
+| Stress-volume, local stress, length and phase field | 4 | Five responses, including the separate minimum-volume objective |
+| Saved-field post-processing | 8 | Threshold, connectivity, feature size, grayness, SVG/DXF/STL and smoothing |
+
+Each preset's existing **?** displays the explanation, properly rendered math,
+symbols, numerical choices, source family and reproduction command. Every case
+also exports HTML, a figure, a machine-readable report and its input/final fields.
+The physics cases save actual variables, full scenarios, resolved defaults and
+fresh final evaluations. Saved-field post-processing records source hashes and
+retains downloadable geometry files in the gallery.
+
+The **18 original presets also receive mathematical descriptions**, with their
+actual geometry, loads, supports, material, filters, responses and stopping rules.
+Their runnable configurations are unchanged. The existing description API supplies
+these known built-in explanations; optional/plugin presets can still declare
+their own description. Portable copies are under [original preset help](presets/originals/index.html).
+
+There are now **90 presets**: 18 original and 72 registered research recipes.
+The numerical-function/engine count remains **97**. Every current function has
+an example or engineering record; none is still untouched. This does **not** mean
+every original paper figure has been reproduced.
+
+![Mathematical explanation in the actual help window](assets/batch4-harmonic-help.png)
+
+## Independent verification and its limits
+
+| Check | Evidence | Scope |
+| :-- | :-- | :-- |
+| Small top3d reference | Same 39 stopping steps; first/last printed compliance within 5.1e-5 | Fresh Python probe against the earlier hash-identified author capture; uniform depth-node shares explicitly substituted only for this scalar probe |
+| 2D/3D heated strip | Nodal peak and discrete compliance agree with the quadratic analytic profile | Three mesh resolutions, full recorded source/sink/scaling parameters; not a source optimized topology |
+| pyMOTO/native assembly | Values and free-variable gradients agree on the common random field | Filters disabled; uniform-start eigenvalue reference aligned |
+| Solid cantilever frequency | First bending frequency about 0.53% from Euler-Bernoulli | Independent slender-beam limit, not the payload-beam paper figure |
+| Solid column buckling | About 0.078% from Euler's critical load | Linearized buckling on the declared solid column |
+| Nonlinear small-load limit | About 5.1e-9 relative difference from linear compliance | Fixed starting field at a small load; finite-strain optimized shapes remain separate |
+| Mechanism reciprocity | Relative error below 5.5e-16 | Fixed spring-stiffness system, forward and reversed ports |
+| Planar phase-field energy | About 4.17e-5 relative error from sqrt(2)/6 | This symmetric double-well convention, not a source Allen-Cahn design |
+| Objective/budget/constraint directions | All recorded errors below 1e-4 | Smooth deterministic probe; multipliers/references fixed; adaptive stress scale disabled only in this check |
+
+The public native-scalar report links the existing fixture's hash, author-source
+hash, MATLAB version and capture date. It does not claim a fresh MATLAB run,
+native final-field equality or a numbered top3d paper panel. The production H8
+companion retains its trapezoidal depth-load quadrature, a distinct convention.
+
+The first pyMOTO vibration cross-check used inconsistent objective normalization
+references. Aligning both at the common starting field resolves that comparison;
+the measured eigenfrequencies and derivatives then agree. No optimizer or physics
+arithmetic was changed to make this pass.
+
+![3D heat and independent strip check](evidence/batch4/heat3d/figure.png)
+
+## Physical limits remain visible
+
+All 17 optimization companions reach their declared caps: 60 steps, or 20 for
+the nonlinear example. Their finite output is not a convergence or global
+optimality certificate. Volume, extra constraints, source matching and the
+stopping reason remain separate report fields.
+
+The **stress-volume** and **minimum-length** companions retain violated extra
+constraints. The length preset requests 16 physical units so its radius remains
+resolved on both the normal and the existing coarse GUI-comparison mesh. Its
+separate 1D calibration uses 4/8/12-cell bars and a requested length of 10; those
+calibration inputs are not silently substituted for the optimization setup.
+
+The multiresolution example makes the strongest warning concrete: its coarse
+Galerkin analysis reports compliance **235.9407**, while independent fine-Q4
+analysis of the same physical density gives **791.4156**. The coarse-to-fine ratio
+is about **0.2981**. Passing a coarse-model derivative check does not establish
+that its design has the predicted physical stiffness. This discrepancy remains
+in the case report and to-fix queue.
+
+![Multiresolution bounded companion](evidence/batch4/multires/figure.png)
+
+## Post-processing reuses evidence
+
+The 2D operations reuse Batch 3's saved MMA physical field and, for grayness,
+its recorded optimization history. The STL operation reuses the H8 companion's
+field. No additional optimization is performed for these eight figures.
+
+Independent checks cover integer thresholded volume, a separate face-neighbor
+flood fill, straight-bar feature-size calibration, an equivalent grayness
+formula, SVG parsing, DXF sections and binary-STL byte count/oriented volume.
+For an even six-cell bar, the sampled feature estimate reads five cells; the
+one-cell discretization bias is retained rather than called exact continuum size.
+STL uses the current fixed cutting level when no preceding threshold is selected;
+it does not automatically retain the gray field's volume.
+
+File/metric checks do not certify manufacturability, smooth-outline performance
+or physical feasibility of a binary cut. Four own connectivity/export functions
+have no single originating research paper. They are labeled engineering examples,
+not failed paper matches. The four source-inspired metric/smoothing comparisons
+remain unresolved.
+
+![Saved grayness history reused without optimization](evidence/batch4/grey_level/figure.png)
+
+## Source attributions and reproduction status
+
+**No new full paper figure reproduction is certified.** Twenty-one source
+comparisons remain unresolved; each has a [to-fix record](to-fix/README.md) with
+its exact scope and next check. Four own engineering examples have paper matching
+marked not applicable. Across all four batches, the census now records eight
+baseline examples, four verified research examples, four engineering examples
+and 81 functions with unresolved paper comparisons.
+
+Primary-source review corrected the dynamic-compliance attribution: **PolyDyna
+uses HHT-alpha transient integration**. It is a related dynamic optimization
+method, not the implementation source of Toporia's undamped frequency-domain
+contraction. Absolute F-transpose-u is an amplitude quantity, not net work over
+a complete elastic cycle. The response comments/reference were corrected;
+the numerical calculation is unchanged.
+
+The buckling notes also identify the source's KS aggregation versus the current
+inverse-factor p-norm. Heat uses Q4/H8 finite elements rather than the cited FVM
+face-conductivity scheme. Multiresolution, geometric length and phase-field
+variants retain their explicit formulation differences. Source summaries,
+independent analytic checks and paper visual/numerical matches are not conflated.
+
+## Framework outcome
+
+The [assessment](framework-assessment.html) explains the current extension
+points, the remaining scalar structured-field assumptions and the contracts
+needed for shared variables, typed transfers, coupled adjoints and lifecycle/
+cache ownership. Its effort table is in **hours of agent execution**, with
+framework plumbing separated from a first bounded validated numerical path.
+
+More filters/material laws/scalar responses generally fit existing slots.
+Independent material phases, executable nested networks and unstructured meshes
+need deliberate extensions. The current files can be adapted through their
+existing interfaces while the GUI effort plans its network view. No graph
+executor, new objectives, physics algorithms, release tag or colleague-checkout
+changes were made in this batch.
+
+## Reproduction and validation
+
+```powershell
+python -m experiments.research_batch4
+python -m experiments.research_batch4 --case heat3d
+python -m experiments.research_batch4 --case post2d
+python -m experiments.research_publish4
+python -m experiments.research_inventory
+python -m experiments.research_docs
+```
+
+Default execution checks numerical/engineering outcomes; `--strict-paper` exits
+nonzero for unresolved paper comparisons. The publisher rejects failed or
+shortened captures and cannot certify a paper match. The 3D source field is
+preserved in curated evidence so post-processing provenance survives a fresh
+checkout. Ordinary run folders and downloaded sources are not committed.
+
+**395 distinct checks passed:** 164 existing physics/response/post-processing and
+unchanged golden checks; 92 actual Qt math/help checks; 90 GUI comparison cases;
+48 research recipe, saved-field re-evaluation, provenance and inventory checks;
+and one complete-inventory/preset-link check.
+The post-processing plot test needed a process-local Agg backend because this
+runner's default Tk installation is incomplete. The length preset was adjusted
+to remain resolved under the GUI test's deliberate mesh coarsening. Both affected
+checks then passed; no numerical resolution guard or golden baseline was changed.
+Ruff, whitespace, documentation links and visual previews are checked separately.

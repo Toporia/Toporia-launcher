@@ -1,0 +1,202 @@
+<!doctype html><html lang="en"><meta charset="utf-8"><title>How Toporia computes a design</title><style>body{font:16px/1.65 system-ui,sans-serif;max-width:1000px;margin:32px auto;padding:0 24px;color:#142338;background:white}h1,h2{line-height:1.25;color:#214e78}h2{margin-top:36px}img{max-width:100%;height:auto}.equation{vertical-align:middle}table{border-collapse:collapse;width:100%;font-size:14px}td,th{padding:9px;border-bottom:1px solid #d6e1e9;text-align:left}code{font-size:.9em;background:#edf3f7;padding:2px 4px}a{color:#185d8a}</style><h1>Framework assessment after the four research batches</h1>
+<p><a href="core.html">Computation guide</a> · <a href="optimization.html">Variable/update guide</a> · <a href="batch-4.md">Batch 4 evidence</a></p>
+<p>The current framework can accept more implementations of its existing numerical
+parts without a general rewrite. The hard boundary is <strong>one structured physical
+density field feeding one model evaluation</strong>, not the number of library entries
+or help pages. A nested GUI can plan and explain more than the present engine
+can execute; those are different milestones.</p>
+<h2>What the current code already provides</h2>
+<pre><code class="language-text">Scenario + Solver -&gt; representation -&gt; scalar density -&gt; filter chain
+                                                    -&gt; opaque physics state
+                                                    -&gt; responses + derivatives
+                                                    -&gt; Evaluation -&gt; updater
+</code></pre>
+<table>
+<thead>
+<tr>
+<th style="text-align:left">Existing boundary</th>
+<th style="text-align:left">Evidence and adaptation point</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td style="text-align:left">Registry identity and parameters</td>
+<td style="text-align:left"><code>kind:name</code>, <code>Param</code>, defaults and dependency declarations already support a larger library. <a href="../../toporia/framework/registry.py">Registry</a>, <a href="../../toporia/framework/params.py">parameters</a></td>
+</tr>
+<tr>
+<td style="text-align:left">Representation Jacobian</td>
+<td style="text-align:left">Geometric variables, spline coefficients and neural weights already return to one element field. <a href="../../toporia/framework/parts/representation.py">Contract</a>, <a href="../../toporia/plugins/models/assembled.py">assembled model</a></td>
+</tr>
+<tr>
+<td style="text-align:left">Opaque state and feature requirements</td>
+<td style="text-align:left">A physics state can contain displacements, modes or temperatures; response compatibility is checked through features. <a href="../../toporia/framework/parts/physics.py">Physics</a>, <a href="../../toporia/framework/parts/response.py">responses</a></td>
+</tr>
+<tr>
+<td style="text-align:left">Generic optimizer input</td>
+<td style="text-align:left">Objective, material budget, ordinary constraints and gradients live in <code>Evaluation</code>. <a href="../../toporia/framework/parts/model.py">Model contract</a></td>
+</tr>
+<tr>
+<td style="text-align:left">External optimizer lifecycle</td>
+<td style="text-align:left">Free-variable mapping, cached evaluations, callbacks, stop/close and library verdicts are implemented. <a href="../../toporia/framework/optimisers/flat_view.py">Flat view</a>, <a href="../../toporia/framework/optimisers/external_loop.py">external loop</a></td>
+</tr>
+<tr>
+<td style="text-align:left">Shared-variable variants</td>
+<td style="text-align:left">Repeated evaluations can combine mean/worst objectives and constraints. This is not a general transfer network. <a href="../../toporia/framework/parts/variants.py">Variants</a></td>
+</tr>
+<tr>
+<td style="text-align:left">Research knowledge</td>
+<td style="text-align:left">Plain descriptions, rendered equations, reports, stable function IDs and contribution templates can feed the GUI library/help. <a href="../../toporia/plugins/problems/_research.py">Description data</a>, <a href="templates/research-note.md">contribution template</a></td>
+</tr>
+</tbody>
+</table>
+<p>The selectable <code>model:q4</code> encapsulates filters, material, physics and responses;
+it is not an opaque indivisible algorithm. The module map distinguishes these
+computational functions from registry, mesh, plotting and orchestration support.</p>
+<h2>What the new evidence says</h2>
+<ul>
+<li>Native and pyMOTO elastic/thermal assemblies can be compared without changing the core contracts. Vibration comparisons must use the same normalization reference as well as the same physical field.</li>
+<li>A coarse displacement model can pass its own derivative checks and still make an artificially stiff design. The multiresolution companion's fine-Q4 compliance is much larger than its coarse value. Independent analysis belongs in the evidence contract.</li>
+<li>Eigenfrequency, buckling, signed mechanism output and thermal objectives have different units and signs. Future result cards must use response metadata rather than universally labeling values as compliance or “higher is better.”</li>
+<li><code>local_stress</code> returns a penalty with mutable multipliers. It cannot be treated as an ordinary inequality merely because it is listed under constraints.</li>
+<li>Post-processing order matters: thresholding changes the interpretation seen by connectivity and exports. An exported file does not inherit the original field's feasibility.</li>
+</ul>
+<p>These are concrete requirements for future integration, rather than reasons to
+replace all existing numerical files.</p>
+<h2>Effort for the harder remaining tasks</h2>
+<p>The following are <strong>estimated hours of agent execution</strong>, including inspection,
+implementation and relevant checks. They are not developer person-hours, measured
+benchmarks or a promise to run unattended for that duration. They assume sources
+and dependencies are available and a single bounded reference example is chosen.
+The second column isolates framework plumbing; the third includes the first
+usable numerical path. Tasks overlap, so the rows should not be added blindly.</p>
+<table>
+<thead>
+<tr>
+<th style="text-align:left">Task</th>
+<th style="text-align:right">Framework plumbing</th>
+<th style="text-align:right">First bounded, validated path</th>
+<th style="text-align:left">Main uncertainty</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td style="text-align:left">More filters, material laws or scalar responses on existing features</td>
+<td style="text-align:right">0–2 h</td>
+<td style="text-align:right">2–6 h</td>
+<td style="text-align:left">Correct derivatives and an identifiable source example usually dominate</td>
+</tr>
+<tr>
+<td style="text-align:left">Another general-vector optimizer adapter</td>
+<td style="text-align:right">1–3 h</td>
+<td style="text-align:right">3–7 h</td>
+<td style="text-align:left">Dependency/platform support, accepted-step conventions and constraint scaling</td>
+</tr>
+<tr>
+<td style="text-align:left">Whole-method external-code bridge</td>
+<td style="text-align:right">3–6 h</td>
+<td style="text-align:right">6–12 h</td>
+<td style="text-align:left">Process cancellation, coordinate/load mapping, source/runtime provenance</td>
+</tr>
+<tr>
+<td style="text-align:left">One-way coupled physics on the same structured field</td>
+<td style="text-align:right">3–6 h</td>
+<td style="text-align:right">8–16 h</td>
+<td style="text-align:left">Transfer of loads/states and complete cross-physics adjoints</td>
+</tr>
+<tr>
+<td style="text-align:left">Damped harmonic or transient response</td>
+<td style="text-align:right">2–5 h</td>
+<td style="text-align:right">10–20 h</td>
+<td style="text-align:left">Complex/time states, checkpointing, consistent adjoints and benchmark recovery</td>
+</tr>
+<tr>
+<td style="text-align:left">Independent multi-material phase variables</td>
+<td style="text-align:right">6–12 h</td>
+<td style="text-align:right">14–26 h</td>
+<td style="text-align:left">Material axis, simplex constraints, phase-aware interpolation and pinning</td>
+</tr>
+<tr>
+<td style="text-align:left">Executable nested network of functions</td>
+<td style="text-align:right">6–12 h</td>
+<td style="text-align:right">12–24 h</td>
+<td style="text-align:left">Variable ownership, typed ports, gradient joins, caches and lifecycle; GUI presentation is separate</td>
+</tr>
+<tr>
+<td style="text-align:left">Unstructured mesh/real CAD analysis path</td>
+<td style="text-align:right">12–24 h</td>
+<td style="text-align:right">24–48 h</td>
+<td style="text-align:left">Mesh protocol, quadrature, supports, field transfer, spatial filters and geometric exports</td>
+</tr>
+<tr>
+<td style="text-align:left">GPU/autodiff backend through an existing structured problem</td>
+<td style="text-align:right">4–8 h</td>
+<td style="text-align:right">12–24 h</td>
+<td style="text-align:left">NumPy/device boundaries, sparse solver differentiation, memory and optional-package support</td>
+</tr>
+</tbody>
+</table>
+<p>Source-paper recovery or a difficult nonlinear/eigenvalue convergence issue can
+extend these ranges substantially. The <a href="../../toporia/plugins/TODO.md">integration backlog</a>
+contains historically recorded dependency blockers; this batch does not recheck
+or install every unimplemented external package. No algorithm or physics listed
+in this table was added by the assessment.</p>
+<h2>Contracts needed before executing nested functions</h2>
+<table>
+<thead>
+<tr>
+<th style="text-align:left">Decision</th>
+<th style="text-align:left">Concrete requirement</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td style="text-align:left">Variable ownership</td>
+<td style="text-align:left">A variable belongs to one declared design space. Shared variables are shared deliberately, not duplicated when a block is copied.</td>
+</tr>
+<tr>
+<td style="text-align:left">Ports</td>
+<td style="text-align:left">Declare scalar/vector/tensor field, physical units, grid, location and forward meaning. “Compatible shape” alone is insufficient.</td>
+</tr>
+<tr>
+<td style="text-align:left">Transfers</td>
+<td style="text-align:left">Mesh interpolation, load conversion and filtering must supply their transpose/adjoint, with declared boundary conventions.</td>
+</tr>
+<tr>
+<td style="text-align:left">Branch joins</td>
+<td style="text-align:left">Shared-variable gradients sum over contributions; worst-case/weighted objectives state their scaling explicitly.</td>
+</tr>
+<tr>
+<td style="text-align:left">State/cache lifetime</td>
+<td style="text-align:left">Changing geometry, material, schedule or mesh invalidates the appropriate solves and derivatives. Immutable recipe data does not make mutable solver states reusable.</td>
+</tr>
+<tr>
+<td style="text-align:left">External methods</td>
+<td style="text-align:left">Initialize/advance/stop/close and report ownership need to survive cancellation and errors without leaving optimizer workers alive.</td>
+</tr>
+<tr>
+<td style="text-align:left">Evidence</td>
+<td style="text-align:left">Preserve intended source, actual variant, complete settings, final physical metrics, convergence and reproduction statuses independently.</td>
+</tr>
+</tbody>
+</table>
+<p>For coupled residuals and a scalar objective, the necessary mathematical contract
+is the complete coupled adjoint:</p>
+<p><img class="equation" src="data:image/png;base64,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" width="316" height="16" alt="R(u,z)=0,\quad (\partial_u R)^{\mathsf{T}}a=\partial_u J,\quad \nabla_zJ=\partial_zJ-(\partial_zR)^{\mathsf{T}}a"></p>
+<p>Here u collects every coupled state, z the owned variables and a the adjoint.
+Two independent sensitivity arrays cannot be joined safely if a transferred
+state also changes another model's residual.</p>
+<h2>Recommended next integration boundary</h2>
+<p>The GUI effort can first represent nested containment, link each function to
+the delivered descriptions and show explicit port/compatibility placeholders.
+Current numerical functions can remain adapted through their existing contracts.
+Execution should start with one shared-variable, same-grid example and a complete
+gradient check before introducing independent grids, transient states or new
+material axes. The current <code>VariantModel</code> is a useful reference for shared
+variables and aggregate responses, not a substitute for those new contracts.</p>
+<p>Keep GUI and research work on separate workstream branches/checkouts, using batch
+commits as the review units. Merge reviewed changes into the integration branch;
+create a release tag such as <code>v0.2.2</code> only after the combined version is validated.
+One version label should describe the combined release, rather than making two
+workers edit the same version file. This batch creates no release tag and does
+not modify the colleague's GUI checkout.</p>
+</html>

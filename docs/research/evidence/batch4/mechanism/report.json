@@ -1,0 +1,151 @@
+{
+  "schema": 1,
+  "case_id": "mechanism",
+  "preset_id": "mechanism",
+  "functions": [
+    "model:q4_mechanism",
+    "physics:q4_mechanism",
+    "response:output_displacement"
+  ],
+  "target": "Sigmund force-inverter family: exact paper panel/spring constants not aligned.",
+  "source_url": "https://doi.org/10.1080/08905459708945415",
+  "limitations": "Own dimensions, loads and springs are not source replication. Point hinges and disconnected thresholded designs remain possible.",
+  "paper_status": "paper_reproduction_to_fix",
+  "paper_visual_status": "not_assessed",
+  "checks": {
+    "directional_gradient_errors": [
+      1.2183042335384142e-11,
+      1.3448967495222064e-09
+    ],
+    "gradient_tolerance": 0.003,
+    "checks_passed": true,
+    "scope": "Objective, budget and every extra constraint at one smooth deterministic direction. Stress adaptive scale disabled only in the probe; eigenvalue reference and AL multipliers held fixed. Not certification at switches/repeated modes.",
+    "maxwell_betti_relative_error": 5.480956258839608e-16,
+    "reciprocity_pass": true,
+    "finite_execution": true,
+    "bounded_density": true
+  },
+  "iterations": 60,
+  "stop_reason": "iteration limit (60)",
+  "fresh_final_objective": -0.02585690863014702,
+  "last_recorded_objective": -0.025857196077653057,
+  "physical_volume_fraction": 0.39974156887087003,
+  "volume_limit": 0.4,
+  "feasible_volume_1e_4": true,
+  "fresh_reported": {
+    "output_displacement": 0.02585690863014702,
+    "compliance": 5.490162521345456e-05
+  },
+  "constraints": [],
+  "feasible_constraints_1e_4": true,
+  "scenario": {
+    "Lx": 40.0,
+    "Ly": 40.0,
+    "Lz": 0.0,
+    "holes": [],
+    "enforced_areas": [],
+    "edge_constraints": [],
+    "point_constraints": [
+      {
+        "x": 0.0,
+        "y": 0.0,
+        "dof": "both"
+      },
+      {
+        "x": 0.0,
+        "y": 40.0,
+        "dof": "both"
+      }
+    ],
+    "point_loads": [
+      {
+        "x": 0.0,
+        "y": 20.0
+      }
+    ],
+    "load_cases": [
+      {
+        "Fmag": 0.001,
+        "Fa": 0.0,
+        "weight": 1.0,
+        "Fe": 0.0
+      }
+    ],
+    "volfrac": 0.4,
+    "objective": {
+      "type": "output_displacement",
+      "x": 40.0,
+      "y": 20.0,
+      "angle": 180.0
+    },
+    "constraints": [],
+    "E0": 1.0,
+    "Emin": 1e-09,
+    "nu": 0.3,
+    "point_springs": [
+      {
+        "x": 0.0,
+        "y": 20.0,
+        "stiffness": 0.01,
+        "dof": "x"
+      },
+      {
+        "x": 40.0,
+        "y": 20.0,
+        "stiffness": 0.01,
+        "dof": "x"
+      }
+    ]
+  },
+  "solver": {
+    "method": "q4_mechanism+mma",
+    "method_params": {
+      "move": 0.1
+    },
+    "interpolation": {
+      "type": "simp"
+    },
+    "representation": {
+      "type": "element_density"
+    },
+    "filter_specs": [
+      {
+        "type": "density",
+        "rmin": 1.5
+      }
+    ],
+    "schedules": [],
+    "variants": {},
+    "m": 0.4,
+    "max_iter": 60,
+    "tol": 0.0
+  },
+  "resolved_method_params": {
+    "move": 0.1,
+    "mma_tol": 0.0001,
+    "asyinit": 0.5,
+    "asyincr": 1.2,
+    "asydecr": 0.7,
+    "c": 1000.0
+  },
+  "versions": {
+    "python": "3.14.3",
+    "numpy": "2.4.2",
+    "scipy": "1.17.1",
+    "matplotlib": "3.10.8",
+    "pymoto": "2.0.1",
+    "mmapy": "0.3.1",
+    "nlopt": "2.11.0",
+    "nullspace_optimizer": "1.3.0"
+  },
+  "iteration_override": null,
+  "runtime_seconds": 0.8081034999922849,
+  "protocol": "Existing engine loop; fresh final model evaluation after closing updater. Objective histories may be pre-update. Physical rows begin at y=0; 3D arrays are z,y,x. Diagnostic engine solves are additional to optimization. No source match implied.",
+  "next_check": "Recover the source inverter's port spring constants, mesh and boundary conditions; compare signed output and thresholded connectivity as well as the reciprocal fixed-field check.",
+  "primary_source_review": {
+    "status": "implementation_and_citation_review_only",
+    "url": "https://doi.org/10.1080/08905459708945415",
+    "scope": "Declared reference and existing numerical implementation inspected. Full numbered source panel and complete settings not recovered; analytic checks are not paper matches.",
+    "visual_status": "not_assessed"
+  }
+}

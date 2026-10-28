@@ -1,0 +1,128 @@
+{
+  "schema": 1,
+  "case_id": "heat3d",
+  "preset_id": "heat3d",
+  "functions": [
+    "model:h8_heat",
+    "physics:h8_heat"
+  ],
+  "target": "3D extension of steady conduction; no originating 3D source figure selected.",
+  "source_url": "https://doi.org/10.1007/s00158-005-0584-3",
+  "limitations": "The cited source does not by itself establish this 3D H8 example. 3D extension and analytic verification are distinct from paper reproduction.",
+  "paper_status": "paper_reproduction_to_fix",
+  "paper_visual_status": "not_assessed",
+  "checks": {
+    "directional_gradient_errors": [
+      1.1842287167432384e-14,
+      8.459643092062786e-10
+    ],
+    "gradient_tolerance": 0.003,
+    "checks_passed": true,
+    "scope": "Objective, budget and every extra constraint at one smooth deterministic direction. Stress adaptive scale disabled only in the probe; eigenvalue reference and AL multipliers held fixed. Not certification at switches/repeated modes.",
+    "heat_strip_max_temperature_relative_error": 2.0539125955565396e-14,
+    "heat_strip_discrete_compliance_relative_error": 2.0670334131202915e-14,
+    "heat_strip_parameters": {
+      "Lx": 8.0,
+      "Ly": 2.0,
+      "Lz": 2.0,
+      "heat_source": 0.5,
+      "conductivity": 1.0,
+      "end_temperatures": 0.0,
+      "resolutions": [
+        1.0,
+        2.0,
+        4.0
+      ]
+    },
+    "heat_strip_pass": true,
+    "finite_execution": true,
+    "bounded_density": true
+  },
+  "iterations": 60,
+  "stop_reason": "iteration limit (60)",
+  "fresh_final_objective": 4.81686123633883e-05,
+  "last_recorded_objective": 4.8169020688813305e-05,
+  "physical_volume_fraction": 0.4999082462798806,
+  "volume_limit": 0.5,
+  "feasible_volume_1e_4": true,
+  "fresh_reported": {},
+  "constraints": [],
+  "feasible_constraints_1e_4": true,
+  "scenario": {
+    "Lx": 8.0,
+    "Ly": 4.0,
+    "Lz": 2.0,
+    "holes": [],
+    "enforced_areas": [],
+    "edge_constraints": [
+      {
+        "edge": "left",
+        "dof": "both"
+      }
+    ],
+    "point_constraints": [],
+    "point_loads": [],
+    "load_cases": [
+      {
+        "Fmag": 0.0,
+        "Fa": 0.0,
+        "weight": 1.0,
+        "Fe": 0.0
+      }
+    ],
+    "volfrac": 0.5,
+    "objective": {
+      "type": "thermal_compliance"
+    },
+    "constraints": [],
+    "E0": 1.0,
+    "Emin": 0.001,
+    "nu": 0.3,
+    "point_springs": []
+  },
+  "solver": {
+    "method": "h8_heat+oc",
+    "method_params": {},
+    "interpolation": {
+      "type": "simp"
+    },
+    "representation": {
+      "type": "element_density"
+    },
+    "filter_specs": [
+      {
+        "type": "density",
+        "rmin": 1.5
+      }
+    ],
+    "schedules": [],
+    "variants": {},
+    "m": 1.0,
+    "max_iter": 60,
+    "tol": 0.0
+  },
+  "resolved_method_params": {
+    "heat_source": 0.0001,
+    "move": 0.2
+  },
+  "versions": {
+    "python": "3.14.3",
+    "numpy": "2.4.2",
+    "scipy": "1.17.1",
+    "matplotlib": "3.10.8",
+    "pymoto": "2.0.1",
+    "mmapy": "0.3.1",
+    "nlopt": "2.11.0",
+    "nullspace_optimizer": "1.3.0"
+  },
+  "iteration_override": null,
+  "runtime_seconds": 0.2692412000033073,
+  "protocol": "Existing engine loop; fresh final model evaluation after closing updater. Objective histories may be pre-update. Physical rows begin at y=0; 3D arrays are z,y,x. Diagnostic engine solves are additional to optimization. No source match implied.",
+  "next_check": "Choose a genuine 3D source benchmark with complete heat source, sink and material scaling; the depth-uniform strip is an analytic verification only.",
+  "primary_source_review": {
+    "status": "author_institutional_abstract_reviewed",
+    "url": "https://orbit.dtu.dk/en/publications/topology-optimization-of-heat-conduction-problems-using-the-finit/",
+    "scope": "Source uses finite-volume conduction with arithmetic/harmonic interface conductivity. Current engines use Q4/H8 FE interpolation. Analytic strip verification does not reproduce a source heat-sink topology.",
+    "visual_status": "not_assessed"
+  }
+}

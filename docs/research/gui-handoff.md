@@ -35,9 +35,7 @@ sweep tests can inherit a 3-D `_base_cfg` from a shared MainWindow fixture while
 its preset combo still says MBB. Fresh-process runs pass. Keep explicit fixture
 resetting in mind when restructuring GUI tests; this batch leaves those files alone.
 
-The research renderer requires no network or TeX installation. Existing presets
-without DESCRIPTION keep ordinary help; their fuller mathematical descriptions
-are added when their figure examples are developed in subsequent batches.
+The research renderer requires no network or TeX installation. Known original presets now receive mathematical descriptions through the Batch 4 fallback; unknown/plugin presets without DESCRIPTION retain ordinary help.
 
 ## Batch 2 additions
 
@@ -65,3 +63,25 @@ review and paper matching as separate facts. A finite run or a library success
 flag is not a paper match or feasibility certificate. Local stress and
 multi-constraint OC companions retain failed stress limits in their evidence.
 The numerical framework, library/canvas and colleague checkout are unchanged.
+
+## Batch 4 additions
+
+Nineteen further presets explain the remaining physics/responses and two grouped
+post-processing demonstrations. The groups reuse saved fields for seven 2D
+operations and STL export; GUI Run is the documented ordinary optimization
+companion. The existing Post-processing panel selects actual output operations.
+No preset-to-Output adapter or new GUI execution mode was introduced.
+
+The [framework assessment](framework-assessment.html) lists concrete contracts
+for future typed ports, shared variables, transfers, derivative joins and cache/
+worker lifetimes, with estimates in hours of agent execution. The GUI can reuse
+the delivered knowledge now; execution of a general network remains separate.
+
+Expose physical units and objective meaning: an eigenvalue-normalized objective,
+signed port displacement, nonlinear end compliance and thermal compliance are
+not interchangeable with static compliance. Keep source matching, independent
+numerical checks, feasibility and iteration caps separate. Current coverage has
+no untouched rows; it still has unresolved paper comparisons and known variant
+limitations. No release tag or colleague-checkout change is made here.
+
+The description API also supplies mathematical help for the 18 known original presets through `_research_defaults.py`, with no recipe changes or GUI imports. Explicit `DESCRIPTION` takes precedence; unknown/plugin presets retain the optional fallback. All current presets now have structured mathematical help. The short ABOUT/REFERENCE tuple and existing help sections remain compatible.

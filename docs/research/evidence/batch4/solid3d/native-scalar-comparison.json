@@ -1,0 +1,36 @@
+{
+  "actual": {
+    "name": "top3d_density",
+    "iterations": 39,
+    "first_reported_compliance": 18934.59078677775,
+    "last_reported_compliance": 7549.3805207502155,
+    "final_mean_density": 0.2999529568394772,
+    "last_change": 0.009792996844006141
+  },
+  "reference": {
+    "name": "top3d_density",
+    "command": "top3d(12,4,2,0.3,3,1.5)",
+    "iterations": 39,
+    "first_reported_compliance": 18934.5908,
+    "last_reported_compliance": 7549.3805,
+    "reported_volume": 0.3,
+    "reported_change": 0.01,
+    "load_convention": "One unit downward force on every tip-bottom depth node; the Python reference recipe explicitly uses uniform node shares, not the production trapezoidal line-load quadrature."
+  },
+  "checks": {
+    "native_scalar_errors": {
+      "first_reported_compliance": 1.3222252164268866e-05,
+      "last_reported_compliance": 2.075021529890364e-05
+    },
+    "native_scalar_same_iterations": true,
+    "native_scalar_pass": true,
+    "native_scalar_scope": "Fresh Python probe vs previously captured author first/last printed values and 39 stops. Explicit uniform depth-node shares in this probe only; no native final field comparison."
+  },
+  "author_source": {
+    "url": "https://raw.githubusercontent.com/kliu99/Top3d/master/top3d.m",
+    "sha256": "5b52f5d6aab2fb89c251ee6703a3a9d0df7be61aa1f747c12263da71e32316c3"
+  },
+  "fixture_sha256": "541d41bb5b11b6dca9be75f60ea36529445cfbf06614caee474b23dde2fc1fd7",
+  "native_capture_date": "2026-10-27",
+  "native_runtime": "26.1.0.3346908 (R2026a) Update 5"
+}

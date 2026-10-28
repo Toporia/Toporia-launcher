@@ -1,0 +1,130 @@
+{
+  "schema": 1,
+  "case_id": "buckling",
+  "preset_id": "buckling",
+  "functions": [
+    "model:q4_buckling",
+    "physics:q4_buckling",
+    "response:buckling_load"
+  ],
+  "target": "Ferrari-Sigmund-Guest column examples: exact paper panel and source settings pending.",
+  "source_url": "https://doi.org/10.1007/s00158-021-02854-x",
+  "limitations": "Toporia uses an inverse-factor p-norm rather than the source's KS aggregation, plus own column geometry/interpolation. It is not a direct topBuck250 port. Linear buckling omits postbuckling and imperfections.",
+  "paper_status": "paper_reproduction_to_fix",
+  "paper_visual_status": "not_assessed",
+  "checks": {
+    "directional_gradient_errors": [
+      2.003894783442206e-08,
+      2.1426170674137596e-10
+    ],
+    "gradient_tolerance": 0.003,
+    "checks_passed": true,
+    "scope": "Objective, budget and every extra constraint at one smooth deterministic direction. Stress adaptive scale disabled only in the probe; eigenvalue reference and AL multipliers held fixed. Not certification at switches/repeated modes.",
+    "euler_column_load": 0.008231081802036869,
+    "euler_reference": 0.008224670334241131,
+    "euler_column_relative_error": 0.0007795410071386222,
+    "euler_column_pass": true,
+    "finite_execution": true,
+    "bounded_density": true
+  },
+  "iterations": 60,
+  "stop_reason": "iteration limit (60)",
+  "fresh_final_objective": -0.043251212107739634,
+  "last_recorded_objective": -0.04299062028248257,
+  "physical_volume_fraction": 0.2999887546537106,
+  "volume_limit": 0.3,
+  "feasible_volume_1e_4": true,
+  "fresh_reported": {
+    "buckling_load": 1.0638708336422824,
+    "compliance": 2.0114072858809537
+  },
+  "constraints": [],
+  "feasible_constraints_1e_4": true,
+  "scenario": {
+    "Lx": 60.0,
+    "Ly": 20.0,
+    "Lz": 0.0,
+    "holes": [],
+    "enforced_areas": [],
+    "edge_constraints": [
+      {
+        "edge": "left",
+        "dof": "both"
+      }
+    ],
+    "point_constraints": [],
+    "point_loads": [
+      {
+        "x": 60.0,
+        "y": 10.0
+      }
+    ],
+    "load_cases": [
+      {
+        "Fmag": 0.1,
+        "Fa": 180.0,
+        "weight": 1.0,
+        "Fe": 0.0
+      }
+    ],
+    "volfrac": 0.3,
+    "objective": {
+      "type": "buckling_load"
+    },
+    "constraints": [],
+    "E0": 1.0,
+    "Emin": 1e-09,
+    "nu": 0.3,
+    "point_springs": []
+  },
+  "solver": {
+    "method": "q4_buckling+mma",
+    "method_params": {},
+    "interpolation": {
+      "type": "simp"
+    },
+    "representation": {
+      "type": "element_density"
+    },
+    "filter_specs": [
+      {
+        "type": "density",
+        "rmin": 1.5
+      }
+    ],
+    "schedules": [],
+    "variants": {},
+    "m": 0.3,
+    "max_iter": 60,
+    "tol": 0.0
+  },
+  "resolved_method_params": {
+    "p_sigma": 4.0,
+    "move": 0.2,
+    "mma_tol": 0.0001,
+    "asyinit": 0.5,
+    "asyincr": 1.2,
+    "asydecr": 0.7,
+    "c": 1000.0
+  },
+  "versions": {
+    "python": "3.14.3",
+    "numpy": "2.4.2",
+    "scipy": "1.17.1",
+    "matplotlib": "3.10.8",
+    "pymoto": "2.0.1",
+    "mmapy": "0.3.1",
+    "nlopt": "2.11.0",
+    "nullspace_optimizer": "1.3.0"
+  },
+  "iteration_override": null,
+  "runtime_seconds": 1.1025660000159405,
+  "protocol": "Existing engine loop; fresh final model evaluation after closing updater. Objective histories may be pre-update. Physical rows begin at y=0; 3D arrays are z,y,x. Diagnostic engine solves are additional to optimization. No source match implied.",
+  "next_check": "Align source pre-stress interpolation and KS aggregation rather than assuming the inverse-factor p-norm is topBuck250. Recover a numbered design beyond the independent Euler column.",
+  "primary_source_review": {
+    "status": "publisher_abstract_and_formulation_reviewed",
+    "url": "https://link.springer.com/article/10.1007/s00158-021-02854-x",
+    "scope": "Publisher abstract identifies KS aggregation and tailored MMA/OC-like updates. Current inverse-factor p-norm and own column remain a variant; independent Euler-column agreement is not a source design figure.",
+    "visual_status": "not_assessed"
+  }
+}

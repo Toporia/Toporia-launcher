@@ -16,11 +16,21 @@ Thirty-one additional companions document updaters, representations and level
 sets. Their paper reproductions remain unresolved, with specific differences
 and failed feasibility recorded separately from passing execution checks.
 
+[Batch 4 report](batch-4.md) · [Case index](batch-4-cases.md) ·
+[Gallery](evidence/batch4/index.html) · [Framework assessment](framework-assessment.html).
+All 97 currently inventoried numerical functions/engines now have an example
+or engineering record. Most full paper reproductions remain unresolved;
+coverage, numerical verification and source matching are separate facts.
+
 Every research preset pairs a runnable setup with a short explanation of the
 function, typeset equations, symbol definitions, source figure and comparison
 scope. Its existing preset **?** opens the explanation. The same content exports
 as standalone HTML; no web connection, JavaScript or TeX installation is needed
 to view its equations. The original general-purpose presets remain intact.
+
+The [18 original preset descriptions](presets/originals/index.html) now explain
+their own configurations and core mathematics through the same Help button.
+Their recipes remain unchanged and are not relabeled as paper reproductions.
 
 ## Run the first examples
 
@@ -54,8 +64,8 @@ See [conventions](conventions.md), the [preset template](templates/preset.md),
 the [researcher contribution template](templates/research-note.md) and the
 [`to-fix` queue](to-fix/README.md).
 
-The inventory separates **97 selectable functions/engines** from **71 presets**
-(18 original and 53 registered research recipes). A further volume-preserving
+The inventory separates **97 selectable functions/engines** from **90 presets**
+(18 original and 72 registered research recipes). A further volume-preserving
 projection companion is quarantined, with its description and failed probe in
 the to-fix queue; it is not counted as a selectable preset. One example can demonstrate several
 functions. Metadata citations are starting points; pending rows are not claims

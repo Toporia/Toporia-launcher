@@ -52,7 +52,7 @@ def test_contributor_text_is_escaped(app):
 
 def test_existing_preset_help_stays_compatible(app):
     name = "MBB Beam"
-    assert problem_description(name) is None
+    assert problem_description(name) is not None
     topic = problem_topic(name)
     assert topic.section("What it is") == problem_info(name)[0]
     assert topic.section("Where it is from") == problem_info(name)[1]

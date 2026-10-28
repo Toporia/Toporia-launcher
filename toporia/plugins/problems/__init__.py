@@ -64,9 +64,14 @@ def problem_description(name):
     """Optional structured research explanation, without importing GUI or plotting code.
 
     ABOUT/REFERENCE and problem_info remain the short, backwards-compatible API.
-    New figure presets declare DESCRIPTION alongside the runnable setup.
+    Figure presets declare DESCRIPTION alongside the runnable setup; known
+    original presets obtain mathematical explanations without changing recipes.
     """
-    return getattr(_modules()[name], "DESCRIPTION", None)
+    module = _modules()[name]
+    if hasattr(module, "DESCRIPTION"):
+        return module.DESCRIPTION
+    from ._research_defaults import original_description
+    return original_description(module)
 
 
 def get_default_run():

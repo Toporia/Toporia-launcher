@@ -139,3 +139,7 @@ Then run `toporia check postprocessor:<name>`. It checks that:
 
 - O. Sigmund, "Morphology-based black and white filters for topology optimization", *SMO* 33 (2007) 401–424.
 - F. Wang, B. S. Lazarov, O. Sigmund, "On projection methods, convergence and robust formulations in topology optimization", *SMO* 43 (2011) 767–784.
+
+## Research demonstrations
+
+[Batch 4](../../../docs/research/batch-4.md) reuses saved fields/history for all eight post-processors, with separate figures and metric/file checks. [Gallery](../../../docs/research/evidence/batch4/index.html). Own connectivity/exports have no single originating paper; metrics/smoothing are not claimed as matched paper figures or manufacturing certificates.

@@ -1,0 +1,107 @@
+{
+  "schema": 1,
+  "case_id": "grey_level",
+  "preset_id": "post2d",
+  "functions": [
+    "postprocessor:grey_level"
+  ],
+  "target": "Own engineering export/metric; source-inspired definitions do not identify a paper figure.",
+  "source_url": "",
+  "limitations": "Connectivity/feature estimates, smoothing and exported geometry are separate from physical feasibility. File validity does not establish CAD manufacturability or a paper match.",
+  "paper_status": "paper_reproduction_to_fix",
+  "paper_visual_status": "not_assessed",
+  "checks": {
+    "checks_passed": true,
+    "metrics_finite": true,
+    "scope": "Own engineering result/file check; not a source-paper or manufacturing certificate.",
+    "independent_grayness_error": 0.0
+  },
+  "metrics": {
+    "final_pct": 38.955123329001125,
+    "first_pct": 93.50176460033211,
+    "peak_pct": 93.50176460033211,
+    "iterations": 76
+  },
+  "source_field": "docs\\research\\evidence\\batch3\\mma\\final-density.csv",
+  "source_field_sha256": "8c49636005119ecced89b853291804b39cbf45cab0f7d34f161b3dec787b5590",
+  "iterations": 0,
+  "stop_reason": "Saved field reused; no optimization",
+  "iteration_override": null,
+  "next_check": "Review the engineering invariant/file geometry separately from source-paper reconstruction; add independent calibration for measurements on curved or poorly resolved features.",
+  "files": [
+    "grey_level.csv",
+    "grey_level.png"
+  ],
+  "settings": {},
+  "scenario": {
+    "Lx": 60.0,
+    "Ly": 20.0,
+    "Lz": 0.0,
+    "holes": [],
+    "enforced_areas": [],
+    "edge_constraints": [
+      {
+        "edge": "left",
+        "dof": "x"
+      }
+    ],
+    "point_constraints": [
+      {
+        "x": 60.0,
+        "y": 0.0,
+        "dof": "y"
+      }
+    ],
+    "point_loads": [
+      {
+        "x": 0.0,
+        "y": 20.0
+      }
+    ],
+    "load_cases": [
+      {
+        "Fmag": 1.0,
+        "Fa": 270.0,
+        "weight": 1.0,
+        "Fe": 0.0
+      }
+    ],
+    "volfrac": 0.5,
+    "objective": {
+      "type": "compliance"
+    },
+    "constraints": [],
+    "E0": 1.0,
+    "Emin": 1e-09,
+    "nu": 0.3,
+    "point_springs": []
+  },
+  "solver": {
+    "method": "q4+mma",
+    "method_params": {},
+    "interpolation": {
+      "type": "simp"
+    },
+    "representation": {
+      "type": "element_density"
+    },
+    "filter_specs": [
+      {
+        "type": "density"
+      }
+    ],
+    "schedules": [],
+    "variants": {},
+    "m": 0.5,
+    "max_iter": 60,
+    "tol": 0.0
+  },
+  "source_history": "docs\\research\\evidence\\batch3\\mma\\history.csv",
+  "source_history_sha256": "60d1d0c7608a375d3ae94fc720821a3eee0b51fc92c43c0478208b4bf82bf82c",
+  "primary_source_review": {
+    "status": "own_engineering_or_metric_definition",
+    "url": "",
+    "scope": "Existing post-processor applied to a saved field; report lists independent invariant/calibration or file checks. Own connectivity/exports have no single paper figure. Source-inspired metrics and smoothing still lack a matched paper panel.",
+    "visual_status": "not_assessed"
+  }
+}

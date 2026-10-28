@@ -16,6 +16,13 @@ an author-code comparison on the published MBB setup. See [Batch 3](../batch-3.m
 and its [case index](../batch-3-cases.md). These records do not mean all original
 paper figures have been attempted with completely recovered settings.
 
+Batch 4 supplies 25 records covering the remaining 39 functions. Twenty-one
+source comparisons remain unresolved; four own connectivity/export examples
+have no single originating paper and are marked not applicable. Their queue
+entries describe calibration/engineering follow-ups rather than failed paper
+matches. See [Batch 4](../batch-4.md), the [case index](../batch-4-cases.md) and
+the [framework assessment](../framework-assessment.html).
+
 For each unresolved case create a folder containing:
 
 - `README.md`: function IDs, paper/panel, discrepancy and next useful check.

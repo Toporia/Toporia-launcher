@@ -316,3 +316,7 @@ that can.
 - F. Ferrari, O. Sigmund, "Revisiting topology optimization with buckling constraints", *SMO* 59 (2019) 1401–1415.
 - T. Borrvall, J. Petersson, "Topology optimization of fluids in Stokes flow", *IJNMF* 41 (2003) 77–107.
 - R. E. Christiansen, O. Sigmund, "Inverse design in photonics by topology optimization: tutorial", *JOSA B* 38 (2021) 496–509.
+
+## Mathematical research companions
+
+[Batch 4](../../../docs/research/batch-4.md) documents the remaining responses with rendered equations, bounded recipes and independent checks. [Case index](../../../docs/research/batch-4-cases.md). The harmonic response is an own undamped frequency-domain contraction; related PolyDyna uses HHT-alpha transient integration. Neither that relationship nor passing derivatives establishes a source-figure reproduction.

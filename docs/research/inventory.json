@@ -644,13 +644,25 @@
       "source_urls": [
         "https://doi.org/10.1007/s00158-014-1107-x"
       ],
-      "citation_review": "metadata only; primary-source figure selection pending",
-      "target_figure": "not selected",
+      "citation_review": "See per-case primary sources and explicit comparison scope; other citations remain unreviewed.",
+      "target_figure": "solid3d",
       "target_type": "physical benchmark / field / objective",
       "batch": 4,
-      "status": "pending",
-      "evidence": [],
-      "notes": ""
+      "status": "paper_reproduction_to_fix",
+      "evidence": [
+        "evidence/batch4/solid3d/report.json"
+      ],
+      "notes": "",
+      "research_cases": [
+        {
+          "case_id": "solid3d",
+          "paper_status": "paper_reproduction_to_fix",
+          "target": "Liu-Tovar top3d reference; small 12x4x2 author-code benchmark, not an identified paper panel.",
+          "source_url": "https://www.top3d.app/",
+          "checks_passed": true,
+          "evidence": "evidence/batch4/solid3d/report.json"
+        }
+      ]
     },
     {
       "id": "model:h8_heat",
@@ -661,13 +673,25 @@
       "source_urls": [
         "https://doi.org/10.1007/s00158-005-0584-3"
       ],
-      "citation_review": "metadata only; primary-source figure selection pending",
-      "target_figure": "not selected",
+      "citation_review": "See per-case primary sources and explicit comparison scope; other citations remain unreviewed.",
+      "target_figure": "heat3d",
       "target_type": "physical benchmark / field / objective",
       "batch": 4,
-      "status": "pending",
-      "evidence": [],
-      "notes": ""
+      "status": "paper_reproduction_to_fix",
+      "evidence": [
+        "evidence/batch4/heat3d/report.json"
+      ],
+      "notes": "",
+      "research_cases": [
+        {
+          "case_id": "heat3d",
+          "paper_status": "paper_reproduction_to_fix",
+          "target": "3D extension of steady conduction; no originating 3D source figure selected.",
+          "source_url": "https://doi.org/10.1007/s00158-005-0584-3",
+          "checks_passed": true,
+          "evidence": "evidence/batch4/heat3d/report.json"
+        }
+      ]
     },
     {
       "id": "model:pymoto_dynamic",
@@ -679,13 +703,25 @@
         "https://github.com/aatmdelissen/pyMOTO",
         "https://doi.org/10.1007/s001580050130"
       ],
-      "citation_review": "metadata only; primary-source figure selection pending",
-      "target_figure": "not selected",
+      "citation_review": "See per-case primary sources and explicit comparison scope; other citations remain unreviewed.",
+      "target_figure": "dynamic_pymoto",
       "target_type": "physical benchmark / field / objective",
       "batch": 4,
-      "status": "pending",
-      "evidence": [],
-      "notes": ""
+      "status": "paper_reproduction_to_fix",
+      "evidence": [
+        "evidence/batch4/dynamic_pymoto/report.json"
+      ],
+      "notes": "",
+      "research_cases": [
+        {
+          "case_id": "dynamic_pymoto",
+          "paper_status": "paper_reproduction_to_fix",
+          "target": "Author-library cross-check; original research figure not identified.",
+          "source_url": "https://github.com/aatmdelissen/pyMOTO",
+          "checks_passed": true,
+          "evidence": "evidence/batch4/dynamic_pymoto/report.json"
+        }
+      ]
     },
     {
       "id": "model:pymoto_elastic",
@@ -696,13 +732,25 @@
       "source_urls": [
         "https://github.com/aatmdelissen/pyMOTO"
       ],
-      "citation_review": "metadata only; primary-source figure selection pending",
-      "target_figure": "not selected",
+      "citation_review": "See per-case primary sources and explicit comparison scope; other citations remain unreviewed.",
+      "target_figure": "elastic_pymoto",
       "target_type": "physical benchmark / field / objective",
       "batch": 4,
-      "status": "pending",
-      "evidence": [],
-      "notes": ""
+      "status": "paper_reproduction_to_fix",
+      "evidence": [
+        "evidence/batch4/elastic_pymoto/report.json"
+      ],
+      "notes": "",
+      "research_cases": [
+        {
+          "case_id": "elastic_pymoto",
+          "paper_status": "paper_reproduction_to_fix",
+          "target": "Author-library cross-check; original research figure not identified.",
+          "source_url": "https://github.com/aatmdelissen/pyMOTO",
+          "checks_passed": true,
+          "evidence": "evidence/batch4/elastic_pymoto/report.json"
+        }
+      ]
     },
     {
       "id": "model:pymoto_heat",
@@ -714,13 +762,25 @@
         "https://github.com/aatmdelissen/pyMOTO",
         "https://doi.org/10.1007/s00158-005-0584-3"
       ],
-      "citation_review": "metadata only; primary-source figure selection pending",
-      "target_figure": "not selected",
+      "citation_review": "See per-case primary sources and explicit comparison scope; other citations remain unreviewed.",
+      "target_figure": "heat_pymoto",
       "target_type": "physical benchmark / field / objective",
       "batch": 4,
-      "status": "pending",
-      "evidence": [],
-      "notes": ""
+      "status": "paper_reproduction_to_fix",
+      "evidence": [
+        "evidence/batch4/heat_pymoto/report.json"
+      ],
+      "notes": "",
+      "research_cases": [
+        {
+          "case_id": "heat_pymoto",
+          "paper_status": "paper_reproduction_to_fix",
+          "target": "Author-library cross-check; original research figure not identified.",
+          "source_url": "https://github.com/aatmdelissen/pyMOTO",
+          "checks_passed": true,
+          "evidence": "evidence/batch4/heat_pymoto/report.json"
+        }
+      ]
     },
     {
       "id": "model:q4",
@@ -751,13 +811,25 @@
       "source_urls": [
         "https://doi.org/10.1007/s00158-021-02854-x"
       ],
-      "citation_review": "metadata only; primary-source figure selection pending",
-      "target_figure": "not selected",
+      "citation_review": "See per-case primary sources and explicit comparison scope; other citations remain unreviewed.",
+      "target_figure": "buckling",
       "target_type": "physical benchmark / field / objective",
       "batch": 4,
-      "status": "pending",
-      "evidence": [],
-      "notes": ""
+      "status": "paper_reproduction_to_fix",
+      "evidence": [
+        "evidence/batch4/buckling/report.json"
+      ],
+      "notes": "",
+      "research_cases": [
+        {
+          "case_id": "buckling",
+          "paper_status": "paper_reproduction_to_fix",
+          "target": "Ferrari-Sigmund-Guest column examples: exact paper panel and source settings pending.",
+          "source_url": "https://doi.org/10.1007/s00158-021-02854-x",
+          "checks_passed": true,
+          "evidence": "evidence/batch4/buckling/report.json"
+        }
+      ]
     },
     {
       "id": "model:q4_dynamic",
@@ -769,13 +841,25 @@
         "https://doi.org/10.1007/s001580050130",
         "https://doi.org/10.1007/s00158-007-0101-y"
       ],
-      "citation_review": "metadata only; primary-source figure selection pending",
-      "target_figure": "not selected",
+      "citation_review": "See per-case primary sources and explicit comparison scope; other citations remain unreviewed.",
+      "target_figure": "dynamic",
       "target_type": "physical benchmark / field / objective",
       "batch": 4,
-      "status": "pending",
-      "evidence": [],
-      "notes": ""
+      "status": "paper_reproduction_to_fix",
+      "evidence": [
+        "evidence/batch4/dynamic/report.json"
+      ],
+      "notes": "",
+      "research_cases": [
+        {
+          "case_id": "dynamic",
+          "paper_status": "paper_reproduction_to_fix",
+          "target": "Du-Olhoff beam family: numbered panel and complete payload/mesh inputs pending.",
+          "source_url": "https://doi.org/10.1007/s00158-007-0101-y",
+          "checks_passed": true,
+          "evidence": "evidence/batch4/dynamic/report.json"
+        }
+      ]
     },
     {
       "id": "model:q4_heat",
@@ -786,13 +870,25 @@
       "source_urls": [
         "https://doi.org/10.1007/s00158-005-0584-3"
       ],
-      "citation_review": "metadata only; primary-source figure selection pending",
-      "target_figure": "not selected",
+      "citation_review": "See per-case primary sources and explicit comparison scope; other citations remain unreviewed.",
+      "target_figure": "heat2d",
       "target_type": "physical benchmark / field / objective",
       "batch": 4,
-      "status": "pending",
-      "evidence": [],
-      "notes": ""
+      "status": "paper_reproduction_to_fix",
+      "evidence": [
+        "evidence/batch4/heat2d/report.json"
+      ],
+      "notes": "",
+      "research_cases": [
+        {
+          "case_id": "heat2d",
+          "paper_status": "paper_reproduction_to_fix",
+          "target": "Gersborg-Hansen et al. heat-conduction examples: exact numbered panel/settings pending.",
+          "source_url": "https://doi.org/10.1007/s00158-005-0584-3",
+          "checks_passed": true,
+          "evidence": "evidence/batch4/heat2d/report.json"
+        }
+      ]
     },
     {
       "id": "model:q4_mechanism",
@@ -803,13 +899,25 @@
       "source_urls": [
         "https://doi.org/10.1080/08905459708945415"
       ],
-      "citation_review": "metadata only; primary-source figure selection pending",
-      "target_figure": "not selected",
+      "citation_review": "See per-case primary sources and explicit comparison scope; other citations remain unreviewed.",
+      "target_figure": "mechanism",
       "target_type": "physical benchmark / field / objective",
       "batch": 4,
-      "status": "pending",
-      "evidence": [],
-      "notes": ""
+      "status": "paper_reproduction_to_fix",
+      "evidence": [
+        "evidence/batch4/mechanism/report.json"
+      ],
+      "notes": "",
+      "research_cases": [
+        {
+          "case_id": "mechanism",
+          "paper_status": "paper_reproduction_to_fix",
+          "target": "Sigmund force-inverter family: exact paper panel/spring constants not aligned.",
+          "source_url": "https://doi.org/10.1080/08905459708945415",
+          "checks_passed": true,
+          "evidence": "evidence/batch4/mechanism/report.json"
+        }
+      ]
     },
     {
       "id": "model:q4_multiresolution",
@@ -821,13 +929,25 @@
         "https://doi.org/10.1007/s00158-009-0443-8",
         "https://doi.org/10.1007/s00158-018-2048-6"
       ],
-      "citation_review": "metadata only; primary-source figure selection pending",
-      "target_figure": "not selected",
+      "citation_review": "See per-case primary sources and explicit comparison scope; other citations remain unreviewed.",
+      "target_figure": "multires",
       "target_type": "physical benchmark / field / objective",
       "batch": 4,
-      "status": "pending",
-      "evidence": [],
-      "notes": ""
+      "status": "paper_reproduction_to_fix",
+      "evidence": [
+        "evidence/batch4/multires/report.json"
+      ],
+      "notes": "",
+      "research_cases": [
+        {
+          "case_id": "multires",
+          "paper_status": "paper_reproduction_to_fix",
+          "target": "Nguyen et al. MTOP examples: exact source panel and design/analysis grids pending.",
+          "source_url": "https://doi.org/10.1007/s00158-009-0443-8",
+          "checks_passed": true,
+          "evidence": "evidence/batch4/multires/report.json"
+        }
+      ]
     },
     {
       "id": "model:q4_nonlinear",
@@ -840,13 +960,25 @@
         "https://doi.org/10.1016/j.cma.2014.03.021",
         "https://doi.org/10.1007/s00158-020-02816-9"
       ],
-      "citation_review": "metadata only; primary-source figure selection pending",
-      "target_figure": "not selected",
+      "citation_review": "See per-case primary sources and explicit comparison scope; other citations remain unreviewed.",
+      "target_figure": "nonlinear",
       "target_type": "physical benchmark / field / objective",
       "batch": 4,
-      "status": "pending",
-      "evidence": [],
-      "notes": ""
+      "status": "paper_reproduction_to_fix",
+      "evidence": [
+        "evidence/batch4/nonlinear/report.json"
+      ],
+      "notes": "",
+      "research_cases": [
+        {
+          "case_id": "nonlinear",
+          "paper_status": "paper_reproduction_to_fix",
+          "target": "Wang et al./Buhl et al. nonlinear designs: matching source geometry, law and panel pending.",
+          "source_url": "https://doi.org/10.1016/j.cma.2014.03.021",
+          "checks_passed": true,
+          "evidence": "evidence/batch4/nonlinear/report.json"
+        }
+      ]
     },
     {
       "id": "physics:h8_heat",
@@ -855,13 +987,25 @@
       "source_file": "toporia/plugins/physics/h8_heat.py",
       "reference_declaration": "",
       "source_urls": [],
-      "citation_review": "metadata only; primary-source figure selection pending",
-      "target_figure": "not selected",
+      "citation_review": "See per-case primary sources and explicit comparison scope; other citations remain unreviewed.",
+      "target_figure": "heat3d",
       "target_type": "state or eigenvalue benchmark",
       "batch": 4,
-      "status": "pending",
-      "evidence": [],
-      "notes": ""
+      "status": "paper_reproduction_to_fix",
+      "evidence": [
+        "evidence/batch4/heat3d/report.json"
+      ],
+      "notes": "",
+      "research_cases": [
+        {
+          "case_id": "heat3d",
+          "paper_status": "paper_reproduction_to_fix",
+          "target": "3D extension of steady conduction; no originating 3D source figure selected.",
+          "source_url": "https://doi.org/10.1007/s00158-005-0584-3",
+          "checks_passed": true,
+          "evidence": "evidence/batch4/heat3d/report.json"
+        }
+      ]
     },
     {
       "id": "physics:h8_solid",
@@ -870,13 +1014,25 @@
       "source_file": "toporia/plugins/physics/h8_solid.py",
       "reference_declaration": "",
       "source_urls": [],
-      "citation_review": "metadata only; primary-source figure selection pending",
-      "target_figure": "not selected",
+      "citation_review": "See per-case primary sources and explicit comparison scope; other citations remain unreviewed.",
+      "target_figure": "solid3d",
       "target_type": "state or eigenvalue benchmark",
       "batch": 4,
-      "status": "pending",
-      "evidence": [],
-      "notes": ""
+      "status": "paper_reproduction_to_fix",
+      "evidence": [
+        "evidence/batch4/solid3d/report.json"
+      ],
+      "notes": "",
+      "research_cases": [
+        {
+          "case_id": "solid3d",
+          "paper_status": "paper_reproduction_to_fix",
+          "target": "Liu-Tovar top3d reference; small 12x4x2 author-code benchmark, not an identified paper panel.",
+          "source_url": "https://www.top3d.app/",
+          "checks_passed": true,
+          "evidence": "evidence/batch4/solid3d/report.json"
+        }
+      ]
     },
     {
       "id": "physics:q4_buckling",
@@ -887,13 +1043,25 @@
       "source_urls": [
         "https://doi.org/10.1007/s00158-021-02854-x"
       ],
-      "citation_review": "metadata only; primary-source figure selection pending",
-      "target_figure": "not selected",
+      "citation_review": "See per-case primary sources and explicit comparison scope; other citations remain unreviewed.",
+      "target_figure": "buckling",
       "target_type": "state or eigenvalue benchmark",
       "batch": 4,
-      "status": "pending",
-      "evidence": [],
-      "notes": ""
+      "status": "paper_reproduction_to_fix",
+      "evidence": [
+        "evidence/batch4/buckling/report.json"
+      ],
+      "notes": "",
+      "research_cases": [
+        {
+          "case_id": "buckling",
+          "paper_status": "paper_reproduction_to_fix",
+          "target": "Ferrari-Sigmund-Guest column examples: exact paper panel and source settings pending.",
+          "source_url": "https://doi.org/10.1007/s00158-021-02854-x",
+          "checks_passed": true,
+          "evidence": "evidence/batch4/buckling/report.json"
+        }
+      ]
     },
     {
       "id": "physics:q4_dynamic",
@@ -902,13 +1070,25 @@
       "source_file": "toporia/plugins/physics/q4_dynamic.py",
       "reference_declaration": "",
       "source_urls": [],
-      "citation_review": "metadata only; primary-source figure selection pending",
-      "target_figure": "not selected",
+      "citation_review": "See per-case primary sources and explicit comparison scope; other citations remain unreviewed.",
+      "target_figure": "dynamic",
       "target_type": "state or eigenvalue benchmark",
       "batch": 4,
-      "status": "pending",
-      "evidence": [],
-      "notes": ""
+      "status": "paper_reproduction_to_fix",
+      "evidence": [
+        "evidence/batch4/dynamic/report.json"
+      ],
+      "notes": "",
+      "research_cases": [
+        {
+          "case_id": "dynamic",
+          "paper_status": "paper_reproduction_to_fix",
+          "target": "Du-Olhoff beam family: numbered panel and complete payload/mesh inputs pending.",
+          "source_url": "https://doi.org/10.1007/s00158-007-0101-y",
+          "checks_passed": true,
+          "evidence": "evidence/batch4/dynamic/report.json"
+        }
+      ]
     },
     {
       "id": "physics:q4_heat",
@@ -917,13 +1097,25 @@
       "source_file": "toporia/plugins/physics/q4_heat.py",
       "reference_declaration": "",
       "source_urls": [],
-      "citation_review": "metadata only; primary-source figure selection pending",
-      "target_figure": "not selected",
+      "citation_review": "See per-case primary sources and explicit comparison scope; other citations remain unreviewed.",
+      "target_figure": "heat2d",
       "target_type": "state or eigenvalue benchmark",
       "batch": 4,
-      "status": "pending",
-      "evidence": [],
-      "notes": ""
+      "status": "paper_reproduction_to_fix",
+      "evidence": [
+        "evidence/batch4/heat2d/report.json"
+      ],
+      "notes": "",
+      "research_cases": [
+        {
+          "case_id": "heat2d",
+          "paper_status": "paper_reproduction_to_fix",
+          "target": "Gersborg-Hansen et al. heat-conduction examples: exact numbered panel/settings pending.",
+          "source_url": "https://doi.org/10.1007/s00158-005-0584-3",
+          "checks_passed": true,
+          "evidence": "evidence/batch4/heat2d/report.json"
+        }
+      ]
     },
     {
       "id": "physics:q4_mechanism",
@@ -932,13 +1124,25 @@
       "source_file": "toporia/plugins/physics/q4_mechanism.py",
       "reference_declaration": "",
       "source_urls": [],
-      "citation_review": "metadata only; primary-source figure selection pending",
-      "target_figure": "not selected",
+      "citation_review": "See per-case primary sources and explicit comparison scope; other citations remain unreviewed.",
+      "target_figure": "mechanism",
       "target_type": "state or eigenvalue benchmark",
       "batch": 4,
-      "status": "pending",
-      "evidence": [],
-      "notes": ""
+      "status": "paper_reproduction_to_fix",
+      "evidence": [
+        "evidence/batch4/mechanism/report.json"
+      ],
+      "notes": "",
+      "research_cases": [
+        {
+          "case_id": "mechanism",
+          "paper_status": "paper_reproduction_to_fix",
+          "target": "Sigmund force-inverter family: exact paper panel/spring constants not aligned.",
+          "source_url": "https://doi.org/10.1080/08905459708945415",
+          "checks_passed": true,
+          "evidence": "evidence/batch4/mechanism/report.json"
+        }
+      ]
     },
     {
       "id": "physics:q4_multiresolution",
@@ -950,13 +1154,25 @@
         "https://doi.org/10.1007/s00158-009-0443-8",
         "https://doi.org/10.1007/s00158-018-2048-6"
       ],
-      "citation_review": "metadata only; primary-source figure selection pending",
-      "target_figure": "not selected",
+      "citation_review": "See per-case primary sources and explicit comparison scope; other citations remain unreviewed.",
+      "target_figure": "multires",
       "target_type": "state or eigenvalue benchmark",
       "batch": 4,
-      "status": "pending",
-      "evidence": [],
-      "notes": ""
+      "status": "paper_reproduction_to_fix",
+      "evidence": [
+        "evidence/batch4/multires/report.json"
+      ],
+      "notes": "",
+      "research_cases": [
+        {
+          "case_id": "multires",
+          "paper_status": "paper_reproduction_to_fix",
+          "target": "Nguyen et al. MTOP examples: exact source panel and design/analysis grids pending.",
+          "source_url": "https://doi.org/10.1007/s00158-009-0443-8",
+          "checks_passed": true,
+          "evidence": "evidence/batch4/multires/report.json"
+        }
+      ]
     },
     {
       "id": "physics:q4_nonlinear",
@@ -968,13 +1184,25 @@
         "https://doi.org/10.1016/j.cma.2014.03.021",
         "https://doi.org/10.1007/s001580050089"
       ],
-      "citation_review": "metadata only; primary-source figure selection pending",
-      "target_figure": "not selected",
+      "citation_review": "See per-case primary sources and explicit comparison scope; other citations remain unreviewed.",
+      "target_figure": "nonlinear",
       "target_type": "state or eigenvalue benchmark",
       "batch": 4,
-      "status": "pending",
-      "evidence": [],
-      "notes": ""
+      "status": "paper_reproduction_to_fix",
+      "evidence": [
+        "evidence/batch4/nonlinear/report.json"
+      ],
+      "notes": "",
+      "research_cases": [
+        {
+          "case_id": "nonlinear",
+          "paper_status": "paper_reproduction_to_fix",
+          "target": "Wang et al./Buhl et al. nonlinear designs: matching source geometry, law and panel pending.",
+          "source_url": "https://doi.org/10.1016/j.cma.2014.03.021",
+          "checks_passed": true,
+          "evidence": "evidence/batch4/nonlinear/report.json"
+        }
+      ]
     },
     {
       "id": "physics:q4_plane_stress",
@@ -1001,13 +1229,25 @@
       "source_file": "toporia/plugins/postprocessors/connectivity.py",
       "reference_declaration": "Toporia's own check: the connected pieces of the black-and-white design, from the loads to the supports.",
       "source_urls": [],
-      "citation_review": "metadata only; primary-source figure selection pending",
-      "target_figure": "not selected",
+      "citation_review": "See per-case primary sources and explicit comparison scope; other citations remain unreviewed.",
+      "target_figure": "connectivity",
       "target_type": "before/after geometry or independently checked metric/export",
       "batch": 4,
-      "status": "pending",
-      "evidence": [],
-      "notes": ""
+      "status": "engineering_example",
+      "evidence": [
+        "evidence/batch4/connectivity/report.json"
+      ],
+      "notes": "",
+      "research_cases": [
+        {
+          "case_id": "connectivity",
+          "paper_status": "not_applicable_engineering_demo",
+          "target": "Own engineering export/metric; source-inspired definitions do not identify a paper figure.",
+          "source_url": "",
+          "checks_passed": true,
+          "evidence": "evidence/batch4/connectivity/report.json"
+        }
+      ]
     },
     {
       "id": "postprocessor:export_dxf",
@@ -1016,13 +1256,25 @@
       "source_file": "toporia/plugins/postprocessors/export_dxf.py",
       "reference_declaration": "Toporia's own export, to Autodesk's DXF format.",
       "source_urls": [],
-      "citation_review": "metadata only; primary-source figure selection pending",
-      "target_figure": "not selected",
+      "citation_review": "See per-case primary sources and explicit comparison scope; other citations remain unreviewed.",
+      "target_figure": "export_dxf",
       "target_type": "before/after geometry or independently checked metric/export",
       "batch": 4,
-      "status": "pending",
-      "evidence": [],
-      "notes": ""
+      "status": "engineering_example",
+      "evidence": [
+        "evidence/batch4/export_dxf/report.json"
+      ],
+      "notes": "",
+      "research_cases": [
+        {
+          "case_id": "export_dxf",
+          "paper_status": "not_applicable_engineering_demo",
+          "target": "Own engineering export/metric; source-inspired definitions do not identify a paper figure.",
+          "source_url": "",
+          "checks_passed": true,
+          "evidence": "evidence/batch4/export_dxf/report.json"
+        }
+      ]
     },
     {
       "id": "postprocessor:export_stl",
@@ -1031,13 +1283,25 @@
       "source_file": "toporia/plugins/postprocessors/export_stl.py",
       "reference_declaration": "Toporia's own export, to binary STL (the stereolithography format of 3D Systems), ready for a slicer.",
       "source_urls": [],
-      "citation_review": "metadata only; primary-source figure selection pending",
-      "target_figure": "not selected",
+      "citation_review": "See per-case primary sources and explicit comparison scope; other citations remain unreviewed.",
+      "target_figure": "export_stl",
       "target_type": "before/after geometry or independently checked metric/export",
       "batch": 4,
-      "status": "pending",
-      "evidence": [],
-      "notes": ""
+      "status": "engineering_example",
+      "evidence": [
+        "evidence/batch4/export_stl/report.json"
+      ],
+      "notes": "",
+      "research_cases": [
+        {
+          "case_id": "export_stl",
+          "paper_status": "not_applicable_engineering_demo",
+          "target": "Own engineering export/metric; source-inspired definitions do not identify a paper figure.",
+          "source_url": "",
+          "checks_passed": true,
+          "evidence": "evidence/batch4/export_stl/report.json"
+        }
+      ]
     },
     {
       "id": "postprocessor:export_svg",
@@ -1046,13 +1310,25 @@
       "source_file": "toporia/plugins/postprocessors/export_svg.py",
       "reference_declaration": "Toporia's own export, to the W3C SVG format.",
       "source_urls": [],
-      "citation_review": "metadata only; primary-source figure selection pending",
-      "target_figure": "not selected",
+      "citation_review": "See per-case primary sources and explicit comparison scope; other citations remain unreviewed.",
+      "target_figure": "export_svg",
       "target_type": "before/after geometry or independently checked metric/export",
       "batch": 4,
-      "status": "pending",
-      "evidence": [],
-      "notes": ""
+      "status": "engineering_example",
+      "evidence": [
+        "evidence/batch4/export_svg/report.json"
+      ],
+      "notes": "",
+      "research_cases": [
+        {
+          "case_id": "export_svg",
+          "paper_status": "not_applicable_engineering_demo",
+          "target": "Own engineering export/metric; source-inspired definitions do not identify a paper figure.",
+          "source_url": "",
+          "checks_passed": true,
+          "evidence": "evidence/batch4/export_svg/report.json"
+        }
+      ]
     },
     {
       "id": "postprocessor:feature_size",
@@ -1064,13 +1340,25 @@
         "https://doi.org/10.1007/s00158-006-0087-x",
         "https://doi.org/10.1007/s00158-010-0602-y"
       ],
-      "citation_review": "metadata only; primary-source figure selection pending",
-      "target_figure": "not selected",
+      "citation_review": "See per-case primary sources and explicit comparison scope; other citations remain unreviewed.",
+      "target_figure": "feature_size",
       "target_type": "before/after geometry or independently checked metric/export",
       "batch": 4,
-      "status": "pending",
-      "evidence": [],
-      "notes": ""
+      "status": "paper_reproduction_to_fix",
+      "evidence": [
+        "evidence/batch4/feature_size/report.json"
+      ],
+      "notes": "",
+      "research_cases": [
+        {
+          "case_id": "feature_size",
+          "paper_status": "paper_reproduction_to_fix",
+          "target": "Own engineering export/metric; source-inspired definitions do not identify a paper figure.",
+          "source_url": "",
+          "checks_passed": true,
+          "evidence": "evidence/batch4/feature_size/report.json"
+        }
+      ]
     },
     {
       "id": "postprocessor:grey_level",
@@ -1081,13 +1369,25 @@
       "source_urls": [
         "https://doi.org/10.1007/s00158-006-0087-x"
       ],
-      "citation_review": "metadata only; primary-source figure selection pending",
-      "target_figure": "not selected",
+      "citation_review": "See per-case primary sources and explicit comparison scope; other citations remain unreviewed.",
+      "target_figure": "grey_level",
       "target_type": "before/after geometry or independently checked metric/export",
       "batch": 4,
-      "status": "pending",
-      "evidence": [],
-      "notes": ""
+      "status": "paper_reproduction_to_fix",
+      "evidence": [
+        "evidence/batch4/grey_level/report.json"
+      ],
+      "notes": "",
+      "research_cases": [
+        {
+          "case_id": "grey_level",
+          "paper_status": "paper_reproduction_to_fix",
+          "target": "Own engineering export/metric; source-inspired definitions do not identify a paper figure.",
+          "source_url": "",
+          "checks_passed": true,
+          "evidence": "evidence/batch4/grey_level/report.json"
+        }
+      ]
     },
     {
       "id": "postprocessor:smooth_outline",
@@ -1099,13 +1399,25 @@
         "https://doi.org/10.1115/1.4047429",
         "https://doi.org/10.1016/0146-664X%2874%2990028-8"
       ],
-      "citation_review": "metadata only; primary-source figure selection pending",
-      "target_figure": "not selected",
+      "citation_review": "See per-case primary sources and explicit comparison scope; other citations remain unreviewed.",
+      "target_figure": "smooth_outline",
       "target_type": "before/after geometry or independently checked metric/export",
       "batch": 4,
-      "status": "pending",
-      "evidence": [],
-      "notes": ""
+      "status": "paper_reproduction_to_fix",
+      "evidence": [
+        "evidence/batch4/smooth_outline/report.json"
+      ],
+      "notes": "",
+      "research_cases": [
+        {
+          "case_id": "smooth_outline",
+          "paper_status": "paper_reproduction_to_fix",
+          "target": "Own engineering export/metric; source-inspired definitions do not identify a paper figure.",
+          "source_url": "",
+          "checks_passed": true,
+          "evidence": "evidence/batch4/smooth_outline/report.json"
+        }
+      ]
     },
     {
       "id": "postprocessor:threshold",
@@ -1116,13 +1428,25 @@
       "source_urls": [
         "https://doi.org/10.1007/s00158-015-1250-z"
       ],
-      "citation_review": "metadata only; primary-source figure selection pending",
-      "target_figure": "not selected",
+      "citation_review": "See per-case primary sources and explicit comparison scope; other citations remain unreviewed.",
+      "target_figure": "threshold",
       "target_type": "before/after geometry or independently checked metric/export",
       "batch": 4,
-      "status": "pending",
-      "evidence": [],
-      "notes": ""
+      "status": "paper_reproduction_to_fix",
+      "evidence": [
+        "evidence/batch4/threshold/report.json"
+      ],
+      "notes": "",
+      "research_cases": [
+        {
+          "case_id": "threshold",
+          "paper_status": "paper_reproduction_to_fix",
+          "target": "Own engineering export/metric; source-inspired definitions do not identify a paper figure.",
+          "source_url": "",
+          "checks_passed": true,
+          "evidence": "evidence/batch4/threshold/report.json"
+        }
+      ]
     },
     {
       "id": "representation:bspline",
@@ -1310,13 +1634,25 @@
       "source_urls": [
         "https://doi.org/10.1007/s00158-021-02854-x"
       ],
-      "citation_review": "metadata only; primary-source figure selection pending",
-      "target_figure": "not selected",
+      "citation_review": "See per-case primary sources and explicit comparison scope; other citations remain unreviewed.",
+      "target_figure": "buckling",
       "target_type": "response curve / field and independent evaluation",
       "batch": 4,
-      "status": "pending",
-      "evidence": [],
-      "notes": ""
+      "status": "paper_reproduction_to_fix",
+      "evidence": [
+        "evidence/batch4/buckling/report.json"
+      ],
+      "notes": "",
+      "research_cases": [
+        {
+          "case_id": "buckling",
+          "paper_status": "paper_reproduction_to_fix",
+          "target": "Ferrari-Sigmund-Guest column examples: exact paper panel and source settings pending.",
+          "source_url": "https://doi.org/10.1007/s00158-021-02854-x",
+          "checks_passed": true,
+          "evidence": "evidence/batch4/buckling/report.json"
+        }
+      ]
     },
     {
       "id": "response:compliance",
@@ -1343,17 +1679,30 @@
       "kind": "response",
       "label": "Dynamic compliance (harmonic load)",
       "source_file": "toporia/plugins/responses/dynamic_compliance.py",
-      "reference_declaration": "Frequency-domain adjoint and implementation: R. Giraldo-Londono, G. H. Paulino, \"PolyDyna: a Matlab implementation for topology optimization of structures subjected to dynamic loads\", Struct. Multidisc. Optim. 64 (2021) 957-990; the objective goes back to Ma, Kikuchi and Hagiwara (Comput. Mech. 13 (1993) 157-174). Papers: https://doi.org/10.1007/s00158-021-02859-6",
+      "reference_declaration": "Own undamped frequency-domain response. Related transient method: O. Giraldo-Londono, G. H. Paulino, \"PolyDyna: a Matlab implementation for topology optimization of structures subjected to dynamic loads\", Struct. Multidisc. Optim. 64 (2021) 957-990; the objective goes back to Ma, Kikuchi and Hagiwara (Comput. Mech. 13 (1993) 157-174). Papers: https://doi.org/10.1007/BF00370133 https://doi.org/10.1007/s00158-021-02859-6",
       "source_urls": [
+        "https://doi.org/10.1007/BF00370133",
         "https://doi.org/10.1007/s00158-021-02859-6"
       ],
-      "citation_review": "metadata only; primary-source figure selection pending",
-      "target_figure": "not selected",
+      "citation_review": "See per-case primary sources and explicit comparison scope; other citations remain unreviewed.",
+      "target_figure": "harmonic",
       "target_type": "response curve / field and independent evaluation",
       "batch": 4,
-      "status": "pending",
-      "evidence": [],
-      "notes": ""
+      "status": "paper_reproduction_to_fix",
+      "evidence": [
+        "evidence/batch4/harmonic/report.json"
+      ],
+      "notes": "",
+      "research_cases": [
+        {
+          "case_id": "harmonic",
+          "paper_status": "paper_reproduction_to_fix",
+          "target": "Ma-Kikuchi-Hagiwara (1993) frequency-response family: exact objective, numbered panel and loading pending; PolyDyna is a related transient method.",
+          "source_url": "https://doi.org/10.1007/BF00370133",
+          "checks_passed": true,
+          "evidence": "evidence/batch4/harmonic/report.json"
+        }
+      ]
     },
     {
       "id": "response:eigenfrequency",
@@ -1365,13 +1714,25 @@
         "https://doi.org/10.1002/nme.1620350707",
         "https://doi.org/10.1007/s00158-007-0101-y"
       ],
-      "citation_review": "metadata only; primary-source figure selection pending",
-      "target_figure": "not selected",
+      "citation_review": "See per-case primary sources and explicit comparison scope; other citations remain unreviewed.",
+      "target_figure": "dynamic",
       "target_type": "response curve / field and independent evaluation",
       "batch": 4,
-      "status": "pending",
-      "evidence": [],
-      "notes": ""
+      "status": "paper_reproduction_to_fix",
+      "evidence": [
+        "evidence/batch4/dynamic/report.json"
+      ],
+      "notes": "",
+      "research_cases": [
+        {
+          "case_id": "dynamic",
+          "paper_status": "paper_reproduction_to_fix",
+          "target": "Du-Olhoff beam family: numbered panel and complete payload/mesh inputs pending.",
+          "source_url": "https://doi.org/10.1007/s00158-007-0101-y",
+          "checks_passed": true,
+          "evidence": "evidence/batch4/dynamic/report.json"
+        }
+      ]
     },
     {
       "id": "response:eigenfrequency_limit",
@@ -1383,13 +1744,25 @@
         "https://doi.org/10.1002/nme.1620350707",
         "https://doi.org/10.1007/s00158-007-0101-y"
       ],
-      "citation_review": "metadata only; primary-source figure selection pending",
-      "target_figure": "not selected",
+      "citation_review": "See per-case primary sources and explicit comparison scope; other citations remain unreviewed.",
+      "target_figure": "frequency_limit",
       "target_type": "response curve / field and independent evaluation",
       "batch": 4,
-      "status": "pending",
-      "evidence": [],
-      "notes": ""
+      "status": "paper_reproduction_to_fix",
+      "evidence": [
+        "evidence/batch4/frequency_limit/report.json"
+      ],
+      "notes": "",
+      "research_cases": [
+        {
+          "case_id": "frequency_limit",
+          "paper_status": "paper_reproduction_to_fix",
+          "target": "Eigenvalue-constrained source design: exact numbered example not recovered.",
+          "source_url": "https://doi.org/10.1007/s00158-007-0101-y",
+          "checks_passed": true,
+          "evidence": "evidence/batch4/frequency_limit/report.json"
+        }
+      ]
     },
     {
       "id": "response:end_compliance",
@@ -1400,13 +1773,25 @@
       "source_urls": [
         "https://doi.org/10.1007/s001580050089"
       ],
-      "citation_review": "metadata only; primary-source figure selection pending",
-      "target_figure": "not selected",
+      "citation_review": "See per-case primary sources and explicit comparison scope; other citations remain unreviewed.",
+      "target_figure": "nonlinear",
       "target_type": "response curve / field and independent evaluation",
       "batch": 4,
-      "status": "pending",
-      "evidence": [],
-      "notes": ""
+      "status": "paper_reproduction_to_fix",
+      "evidence": [
+        "evidence/batch4/nonlinear/report.json"
+      ],
+      "notes": "",
+      "research_cases": [
+        {
+          "case_id": "nonlinear",
+          "paper_status": "paper_reproduction_to_fix",
+          "target": "Wang et al./Buhl et al. nonlinear designs: matching source geometry, law and panel pending.",
+          "source_url": "https://doi.org/10.1016/j.cma.2014.03.021",
+          "checks_passed": true,
+          "evidence": "evidence/batch4/nonlinear/report.json"
+        }
+      ]
     },
     {
       "id": "response:local_stress",
@@ -1418,13 +1803,25 @@
         "https://doi.org/10.1007/s00158-020-02760-8",
         "https://doi.org/10.1007/s00158-020-02573-9"
       ],
-      "citation_review": "metadata only; primary-source figure selection pending",
-      "target_figure": "not selected",
+      "citation_review": "See per-case primary sources and explicit comparison scope; other citations remain unreviewed.",
+      "target_figure": "local_stress",
       "target_type": "response curve / field and independent evaluation",
       "batch": 4,
-      "status": "pending",
-      "evidence": [],
-      "notes": ""
+      "status": "paper_reproduction_to_fix",
+      "evidence": [
+        "evidence/batch4/local_stress/report.json"
+      ],
+      "notes": "",
+      "research_cases": [
+        {
+          "case_id": "local_stress",
+          "paper_status": "paper_reproduction_to_fix",
+          "target": "PolyStress local-stress example: source polygonal mesh/relaxation/panel pending.",
+          "source_url": "https://doi.org/10.1007/s00158-020-02760-8",
+          "checks_passed": true,
+          "evidence": "evidence/batch4/local_stress/report.json"
+        }
+      ]
     },
     {
       "id": "response:minimum_length",
@@ -1436,13 +1833,25 @@
         "https://doi.org/10.1016/j.cma.2015.05.003",
         "https://doi.org/10.1007/s00158-017-1883-1"
       ],
-      "citation_review": "metadata only; primary-source figure selection pending",
-      "target_figure": "not selected",
+      "citation_review": "See per-case primary sources and explicit comparison scope; other citations remain unreviewed.",
+      "target_figure": "minimum_length",
       "target_type": "response curve / field and independent evaluation",
       "batch": 4,
-      "status": "pending",
-      "evidence": [],
-      "notes": ""
+      "status": "paper_reproduction_to_fix",
+      "evidence": [
+        "evidence/batch4/minimum_length/report.json"
+      ],
+      "notes": "",
+      "research_cases": [
+        {
+          "case_id": "minimum_length",
+          "paper_status": "paper_reproduction_to_fix",
+          "target": "Zhou/Dunning length constraints: exact source panel and projection conventions pending.",
+          "source_url": "https://doi.org/10.1016/j.cma.2015.05.003",
+          "checks_passed": true,
+          "evidence": "evidence/batch4/minimum_length/report.json"
+        }
+      ]
     },
     {
       "id": "response:output_displacement",
@@ -1453,13 +1862,25 @@
       "source_urls": [
         "https://doi.org/10.1080/08905459708945415"
       ],
-      "citation_review": "metadata only; primary-source figure selection pending",
-      "target_figure": "not selected",
+      "citation_review": "See per-case primary sources and explicit comparison scope; other citations remain unreviewed.",
+      "target_figure": "mechanism",
       "target_type": "response curve / field and independent evaluation",
       "batch": 4,
-      "status": "pending",
-      "evidence": [],
-      "notes": ""
+      "status": "paper_reproduction_to_fix",
+      "evidence": [
+        "evidence/batch4/mechanism/report.json"
+      ],
+      "notes": "",
+      "research_cases": [
+        {
+          "case_id": "mechanism",
+          "paper_status": "paper_reproduction_to_fix",
+          "target": "Sigmund force-inverter family: exact paper panel/spring constants not aligned.",
+          "source_url": "https://doi.org/10.1080/08905459708945415",
+          "checks_passed": true,
+          "evidence": "evidence/batch4/mechanism/report.json"
+        }
+      ]
     },
     {
       "id": "response:phase_field",
@@ -1471,13 +1892,25 @@
         "https://doi.org/10.1051/cocv:2002070",
         "https://doi.org/10.1016/j.jcp.2009.12.017"
       ],
-      "citation_review": "metadata only; primary-source figure selection pending",
-      "target_figure": "not selected",
+      "citation_review": "See per-case primary sources and explicit comparison scope; other citations remain unreviewed.",
+      "target_figure": "phase_field",
       "target_type": "response curve / field and independent evaluation",
       "batch": 4,
-      "status": "pending",
-      "evidence": [],
-      "notes": ""
+      "status": "paper_reproduction_to_fix",
+      "evidence": [
+        "evidence/batch4/phase_field/report.json"
+      ],
+      "notes": "",
+      "research_cases": [
+        {
+          "case_id": "phase_field",
+          "paper_status": "paper_reproduction_to_fix",
+          "target": "Takezawa et al. Section 2.3 energy family; full numbered source design not reproduced.",
+          "source_url": "https://doi.org/10.1016/j.jcp.2009.12.017",
+          "checks_passed": true,
+          "evidence": "evidence/batch4/phase_field/report.json"
+        }
+      ]
     },
     {
       "id": "response:stress",
@@ -1488,13 +1921,25 @@
       "source_urls": [
         "https://doi.org/10.1007/s00158-009-0440-y"
       ],
-      "citation_review": "metadata only; primary-source figure selection pending",
-      "target_figure": "not selected",
+      "citation_review": "See per-case primary sources and explicit comparison scope; other citations remain unreviewed.",
+      "target_figure": "stress_volume",
       "target_type": "response curve / field and independent evaluation",
       "batch": 4,
-      "status": "pending",
-      "evidence": [],
-      "notes": ""
+      "status": "paper_reproduction_to_fix",
+      "evidence": [
+        "evidence/batch4/stress_volume/report.json"
+      ],
+      "notes": "",
+      "research_cases": [
+        {
+          "case_id": "stress_volume",
+          "paper_status": "paper_reproduction_to_fix",
+          "target": "Le et al. stress-constrained design: exact numbered example pending.",
+          "source_url": "https://doi.org/10.1007/s00158-009-0440-y",
+          "checks_passed": true,
+          "evidence": "evidence/batch4/stress_volume/report.json"
+        }
+      ]
     },
     {
       "id": "response:thermal_compliance",
@@ -1505,13 +1950,25 @@
       "source_urls": [
         "https://doi.org/10.1007/s00158-005-0584-3"
       ],
-      "citation_review": "metadata only; primary-source figure selection pending",
-      "target_figure": "not selected",
+      "citation_review": "See per-case primary sources and explicit comparison scope; other citations remain unreviewed.",
+      "target_figure": "heat2d",
       "target_type": "response curve / field and independent evaluation",
       "batch": 4,
-      "status": "pending",
-      "evidence": [],
-      "notes": ""
+      "status": "paper_reproduction_to_fix",
+      "evidence": [
+        "evidence/batch4/heat2d/report.json"
+      ],
+      "notes": "",
+      "research_cases": [
+        {
+          "case_id": "heat2d",
+          "paper_status": "paper_reproduction_to_fix",
+          "target": "Gersborg-Hansen et al. heat-conduction examples: exact numbered panel/settings pending.",
+          "source_url": "https://doi.org/10.1007/s00158-005-0584-3",
+          "checks_passed": true,
+          "evidence": "evidence/batch4/heat2d/report.json"
+        }
+      ]
     },
     {
       "id": "response:volume",
@@ -1522,13 +1979,25 @@
       "source_urls": [
         "https://doi.org/10.1007/s00158-009-0440-y"
       ],
-      "citation_review": "metadata only; primary-source figure selection pending",
-      "target_figure": "not selected",
+      "citation_review": "See per-case primary sources and explicit comparison scope; other citations remain unreviewed.",
+      "target_figure": "stress_volume",
       "target_type": "response curve / field and independent evaluation",
       "batch": 4,
-      "status": "pending",
-      "evidence": [],
-      "notes": "The baseline volume budget does not exercise this separate minimum-volume objective; its paper example is pending."
+      "status": "paper_reproduction_to_fix",
+      "evidence": [
+        "evidence/batch4/stress_volume/report.json"
+      ],
+      "notes": "The baseline volume budget does not exercise this separate minimum-volume objective; its paper example is pending.",
+      "research_cases": [
+        {
+          "case_id": "stress_volume",
+          "paper_status": "paper_reproduction_to_fix",
+          "target": "Le et al. stress-constrained design: exact numbered example pending.",
+          "source_url": "https://doi.org/10.1007/s00158-009-0440-y",
+          "checks_passed": true,
+          "evidence": "evidence/batch4/stress_volume/report.json"
+        }
+      ]
     },
     {
       "id": "schedule:geometric",
@@ -2322,135 +2791,262 @@
       "source_file": "toporia/plugins/problems/cantilever.py",
       "about": "A beam clamped along one end with a point load at mid-height of the free end.",
       "reference": "A classic benchmark, e.g. the cantilever example of Sigmund's 99-line code (Struct. Multidisc. Optim. 21 (2001) 120-127). Papers: https://doi.org/10.1007/s001580050176",
-      "research_description": false,
-      "target_figure": "not assigned",
-      "functions": []
+      "research_description": true,
+      "target_figure": "General-purpose preset, not a newly certified paper-figure reproduction. Related function examples: Batch 1 linear-elastic baseline and the function census",
+      "functions": [
+        "model:q4",
+        "physics:q4_plane_stress",
+        "updater:oc",
+        "representation:element_density",
+        "interpolation:simp",
+        "response:compliance",
+        "filter:density"
+      ]
     },
     {
       "name": "Cantilever 3D",
       "source_file": "toporia/plugins/problems/cantilever_3d.py",
       "about": "A 60 x 20 mm cantilever extruded 10 mm deep, clamped over one face and loaded along the bottom edge of the free end.",
       "reference": "The benchmark of top3d: K. Liu, A. Tovar, \"An efficient 3D topology optimization code written in Matlab\", Struct. Multidisc. Optim. 50 (2014) 1175-1196. Papers: https://doi.org/10.1007/s00158-014-1107-x",
-      "research_description": false,
-      "target_figure": "not assigned",
-      "functions": []
+      "research_description": true,
+      "target_figure": "General-purpose preset, not a newly certified paper-figure reproduction. Related function examples: Batch 4 case solid3d",
+      "functions": [
+        "model:h8",
+        "physics:h8_solid",
+        "updater:oc",
+        "representation:element_density",
+        "interpolation:simp",
+        "response:compliance",
+        "filter:density"
+      ]
     },
     {
       "name": "Column Buckling",
       "source_file": "toporia/plugins/problems/column_buckling.py",
       "about": "A 60 x 20 mm column clamped at one end and compressed axially at the other: minimise compliance while the buckling load factor stays above a limit.",
       "reference": "Linearised buckling in topology optimisation: F. Ferrari, O. Sigmund and J. K. Guest, Struct. Multidisc. Optim. 63 (2021) 3045-3066. Geometry is Toporia's own. Papers: https://doi.org/10.1007/s00158-021-02854-x",
-      "research_description": false,
-      "target_figure": "not assigned",
-      "functions": []
+      "research_description": true,
+      "target_figure": "General-purpose preset, not a newly certified paper-figure reproduction. Related function examples: Batch 4 case buckling",
+      "functions": [
+        "model:q4_buckling",
+        "physics:q4_buckling",
+        "updater:pymoto_mma",
+        "representation:element_density",
+        "interpolation:simp",
+        "response:compliance",
+        "response:buckling_load",
+        "filter:density",
+        "filter:heaviside",
+        "schedule:geometric"
+      ]
     },
     {
       "name": "Drone Arm",
       "source_file": "toporia/plugins/problems/drone_arm.py",
       "about": "A 200 x 85 mm drone arm bracket: bolted to the frame at two holes, loaded at eight motor holes in two load cases.",
       "reference": "Toporia's own application case.",
-      "research_description": false,
-      "target_figure": "not assigned",
-      "functions": []
+      "research_description": true,
+      "target_figure": "General-purpose preset, not a newly certified paper-figure reproduction. Related function examples: Batch 1 linear-elastic baseline and the function census",
+      "functions": [
+        "model:q4",
+        "physics:q4_plane_stress",
+        "updater:oc",
+        "representation:element_density",
+        "interpolation:simp",
+        "response:compliance",
+        "filter:density"
+      ]
     },
     {
       "name": "Drone Arm (Camera View)",
       "source_file": "toporia/plugins/problems/drone_arm_camera_view.py",
       "about": "The drone arm with an area near the bottom centre that must stay empty for a camera's view.",
       "reference": "Toporia's own application case.",
-      "research_description": false,
-      "target_figure": "not assigned",
-      "functions": []
+      "research_description": true,
+      "target_figure": "General-purpose preset, not a newly certified paper-figure reproduction. Related function examples: Batch 1 linear-elastic baseline and the function census",
+      "functions": [
+        "model:q4",
+        "physics:q4_plane_stress",
+        "updater:oc",
+        "representation:element_density",
+        "interpolation:simp",
+        "response:compliance",
+        "filter:density"
+      ]
     },
     {
       "name": "Drone Arm (Point Loads)",
       "source_file": "toporia/plugins/problems/drone_arm_point_loads.py",
       "about": "The drone arm's layout with point supports and point loads instead of holes and rings.",
       "reference": "Toporia's own application case.",
-      "research_description": false,
-      "target_figure": "not assigned",
-      "functions": []
+      "research_description": true,
+      "target_figure": "General-purpose preset, not a newly certified paper-figure reproduction. Related function examples: Batch 1 linear-elastic baseline and the function census",
+      "functions": [
+        "model:q4",
+        "physics:q4_plane_stress",
+        "updater:oc",
+        "representation:element_density",
+        "interpolation:simp",
+        "response:compliance",
+        "filter:density"
+      ]
     },
     {
       "name": "Force Inverter",
       "source_file": "toporia/plugins/problems/force_inverter.py",
       "about": "A square mechanism held at the two left corners: a rightward input force should move the right output port leftward. Ground springs represent both ports.",
       "reference": "O. Sigmund, \"On the Design of Compliant Mechanisms Using Topology Optimization\", Mechanics of Structures and Machines 25 (1997) 493-524. Toporia uses its own dimensions and spring/load values, not a paper replication. Papers: https://doi.org/10.1080/08905459708945415",
-      "research_description": false,
-      "target_figure": "not assigned",
-      "functions": []
+      "research_description": true,
+      "target_figure": "General-purpose preset, not a newly certified paper-figure reproduction. Related function examples: Batch 4 case mechanism",
+      "functions": [
+        "model:q4_mechanism",
+        "physics:q4_mechanism",
+        "updater:mma",
+        "representation:element_density",
+        "interpolation:simp",
+        "response:output_displacement",
+        "filter:density"
+      ]
     },
     {
       "name": "Heat Sink",
       "source_file": "toporia/plugins/problems/heat_sink.py",
       "about": "A square plate heated uniformly over its whole area, cooled through one small sink in the middle of an edge: distribute 40 % conductor to keep it as cool as possible.",
       "reference": "The heat-sink problem of Bendsoe & Sigmund, Topology Optimization (Springer 2003), section 1.5, as in Gersborg-Hansen, Bendsoe & Sigmund, Struct. Multidisc. Optim. 31 (2006) 251-259. Papers: https://doi.org/10.1007/s00158-005-0584-3",
-      "research_description": false,
-      "target_figure": "not assigned",
-      "functions": []
+      "research_description": true,
+      "target_figure": "General-purpose preset, not a newly certified paper-figure reproduction. Related function examples: Batch 4 case heat2d",
+      "functions": [
+        "model:q4_heat",
+        "physics:q4_heat",
+        "updater:oc",
+        "representation:element_density",
+        "interpolation:simp",
+        "response:thermal_compliance",
+        "filter:density"
+      ]
     },
     {
       "name": "L-bracket",
       "source_file": "toporia/plugins/problems/l_bracket.py",
       "about": "An L-shaped plate clamped along its top edge and loaded at the tip of its lower arm: the standard stress benchmark, where a compliance design leaves the re-entrant corner sharp.",
       "reference": "P. Duysinx and M. P. Bendsoe, Int. J. Numer. Meth. Eng. 43 (1998) 1453-1478; C. Le, J. Norato, T. Bruns, C. Ha and D. Tortorelli, Struct. Multidisc. Optim. 41 (2010) 605-620. Toporia chooses the 100 x 100 domain, 40-wide arms, unit tip load and 0.4 volume; this is not a reproduction of the benchmarks in either paper. Papers: https://doi.org/10.1002/%28SICI%291097-0207%2819981230%2943:8%3C1453::AID-NME480%3E3.0.CO%3B2-2 https://doi.org/10.1007/s00158-009-0440-y",
-      "research_description": false,
-      "target_figure": "not assigned",
-      "functions": []
+      "research_description": true,
+      "target_figure": "General-purpose preset, not a newly certified paper-figure reproduction. Related function examples: Batch 1 linear-elastic baseline and the function census",
+      "functions": [
+        "model:q4",
+        "physics:q4_plane_stress",
+        "updater:oc",
+        "representation:element_density",
+        "interpolation:simp",
+        "response:compliance",
+        "filter:density"
+      ]
     },
     {
       "name": "L-bracket (local stress)",
       "source_file": "toporia/plugins/problems/l_bracket_stress.py",
       "about": "The L-bracket again, now minimising volume under a von Mises limit in every element with the augmented Lagrangian method: the re-entrant corner has to round off to meet the limit.",
       "reference": "O. Giraldo-Londono and G. H. Paulino, Struct. Multidisc. Optim. 63 (2021) 2065-2097 (PolyStress). Geometry as in the L-bracket preset; the limit is chosen here. Papers: https://doi.org/10.1007/s00158-020-02760-8",
-      "research_description": false,
-      "target_figure": "not assigned",
-      "functions": []
+      "research_description": true,
+      "target_figure": "General-purpose preset, not a newly certified paper-figure reproduction. Related function examples: Batch 1 linear-elastic baseline and the function census",
+      "functions": [
+        "model:q4",
+        "physics:q4_plane_stress",
+        "updater:augmented_lagrangian",
+        "representation:element_density",
+        "interpolation:simp",
+        "response:volume",
+        "response:local_stress",
+        "filter:density"
+      ]
     },
     {
       "name": "MBB Beam",
       "source_file": "toporia/plugins/problems/mbb_beam.py",
       "about": "The left half of a simply supported beam loaded at its centre, using symmetry: the canonical benchmark of topology optimisation.",
       "reference": "Named after Messerschmitt-Bölkow-Blohm; the half-beam setup and settings of Sigmund's 99-line code (2001) and top88 (Andreassen et al., Struct. Multidisc. Optim. 43 (2011) 1-16). Papers: https://doi.org/10.1007/s001580050176 https://doi.org/10.1007/s00158-010-0594-7",
-      "research_description": false,
-      "target_figure": "not assigned",
-      "functions": []
+      "research_description": true,
+      "target_figure": "General-purpose preset, not a newly certified paper-figure reproduction. Related function examples: Batch 1 linear-elastic baseline and the function census",
+      "functions": [
+        "model:q4",
+        "physics:q4_plane_stress",
+        "updater:oc",
+        "representation:element_density",
+        "interpolation:simp",
+        "response:compliance",
+        "filter:density"
+      ]
     },
     {
       "name": "MBB Beam (Fixed Projection)",
       "source_file": "toporia/plugins/problems/mbb_beam_fixed_projection.py",
       "about": "MBB beam with fixed beta=16 projection and conservative MMA asymptotes. No beta continuation; sharpness and optimizer tuning remain problem dependent.",
       "reference": "Independent fixed-projection recipe. MMA parameter recipe: Høghøj & Träff (2021), section 3.1, equation (11); continuation-free motivation: Guest, Asadpoure & Ha (2011). Papers: https://arxiv.org/abs/2102.12999 https://doi.org/10.1007/s00158-011-0676-1",
-      "research_description": false,
-      "target_figure": "not assigned",
-      "functions": []
+      "research_description": true,
+      "target_figure": "General-purpose preset, not a newly certified paper-figure reproduction. Related function examples: Batch 1 linear-elastic baseline and the function census",
+      "functions": [
+        "model:q4",
+        "physics:q4_plane_stress",
+        "updater:mma",
+        "representation:element_density",
+        "interpolation:simp",
+        "response:compliance",
+        "filter:density",
+        "filter:heaviside"
+      ]
     },
     {
       "name": "MBB Beam (Robust)",
       "source_file": "toporia/plugins/problems/mbb_beam_robust.py",
       "about": "The MBB beam solved robustly: the worst of the eroded, intermediate and dilated designs (Heaviside thresholds 0.75 / 0.5 / 0.25), with a doubling continuation of the sharpness.",
       "reference": "F. Wang, B. S. Lazarov and O. Sigmund, \"On projection methods, convergence and robust formulations in topology optimization\", Struct. Multidisc. Optim. 43 (2011) 767-784. Independent recipe; thresholds match Fig. 6, but volume, aggregation and continuation differ. Papers: https://doi.org/10.1007/s00158-010-0602-y Correction: https://doi.org/10.1007/s00158-022-03326-6",
-      "research_description": false,
-      "target_figure": "not assigned",
-      "functions": []
+      "research_description": true,
+      "target_figure": "General-purpose preset, not a newly certified paper-figure reproduction. Related function examples: Batch 1 linear-elastic baseline and the function census",
+      "functions": [
+        "model:q4",
+        "physics:q4_plane_stress",
+        "updater:oc",
+        "representation:element_density",
+        "interpolation:simp",
+        "response:compliance",
+        "filter:density",
+        "filter:heaviside",
+        "schedule:geometric"
+      ]
     },
     {
       "name": "Michell Cantilever",
       "source_file": "toporia/plugins/problems/michell_cantilever.py",
       "about": "A point load carried to a clamped ring: one of the few problems whose optimal layout is known analytically, so it checks that a method finds the right shape.",
       "reference": "A. G. M. Michell, \"The limits of economy of material in frame-structures\", Philosophical Magazine 8 (1904) 589-597. Papers: https://doi.org/10.1080/14786440409463229",
-      "research_description": false,
-      "target_figure": "not assigned",
-      "functions": []
+      "research_description": true,
+      "target_figure": "General-purpose preset, not a newly certified paper-figure reproduction. Related function examples: Batch 1 linear-elastic baseline and the function census",
+      "functions": [
+        "model:q4",
+        "physics:q4_plane_stress",
+        "updater:oc",
+        "representation:element_density",
+        "interpolation:simp",
+        "response:compliance",
+        "filter:density"
+      ]
     },
     {
       "name": "Nonlinear Cantilever",
       "source_file": "toporia/plugins/problems/nonlinear_cantilever.py",
       "about": "A cantilever with a large tip load, designed with geometrically non-linear elasticity (large displacements, Newton–Raphson with load steps) so the design accounts for how the beam bends.",
       "reference": "Stiffness design of geometrically non-linear structures, T. Buhl, C. B. W. Pedersen, O. Sigmund, Struct. Multidisc. Optim. 19 (2000) 93-104; void by energy interpolation after Wang, Lazarov, Sigmund & Jensen, CMAME 276 (2014) 453-472. Papers: https://doi.org/10.1007/s001580050089 https://doi.org/10.1016/j.cma.2014.03.021",
-      "research_description": false,
-      "target_figure": "not assigned",
-      "functions": []
+      "research_description": true,
+      "target_figure": "General-purpose preset, not a newly certified paper-figure reproduction. Related function examples: Batch 4 case nonlinear",
+      "functions": [
+        "model:q4_nonlinear",
+        "physics:q4_nonlinear",
+        "updater:mma",
+        "representation:element_density",
+        "interpolation:simp",
+        "response:end_compliance",
+        "filter:density"
+      ]
     },
     {
       "name": "Paper: top88 Fig. 3(a) - Density",
@@ -2484,6 +3080,43 @@
         "interpolation:simp",
         "response:compliance",
         "updater:oc"
+      ]
+    },
+    {
+      "name": "Research: 2D heat conduction and thermal compliance",
+      "source_file": "toporia/plugins/problems/research_b4_heat2d.py",
+      "about": "Existing-function demonstration; see help for mathematics and evidence scope.",
+      "reference": "Research target. Papers: https://doi.org/10.1007/s00158-005-0584-3",
+      "research_description": true,
+      "target_figure": "Gersborg-Hansen et al. heat-conduction examples: exact numbered panel/settings pending.",
+      "functions": [
+        "model:q4_heat",
+        "physics:q4_heat",
+        "response:thermal_compliance"
+      ]
+    },
+    {
+      "name": "Research: 3D H8 elasticity",
+      "source_file": "toporia/plugins/problems/research_b4_solid3d.py",
+      "about": "Existing-function demonstration; see help for mathematics and evidence scope.",
+      "reference": "Research target. Papers: https://www.top3d.app/",
+      "research_description": true,
+      "target_figure": "Liu-Tovar top3d reference; small 12x4x2 author-code benchmark, not an identified paper panel.",
+      "functions": [
+        "model:h8",
+        "physics:h8_solid"
+      ]
+    },
+    {
+      "name": "Research: 3D H8 heat conduction",
+      "source_file": "toporia/plugins/problems/research_b4_heat3d.py",
+      "about": "Existing-function demonstration; see help for mathematics and evidence scope.",
+      "reference": "Research target. Papers: https://doi.org/10.1007/s00158-005-0584-3",
+      "research_description": true,
+      "target_figure": "3D extension of steady conduction; no originating 3D source figure selected.",
+      "functions": [
+        "model:h8_heat",
+        "physics:h8_heat"
       ]
     },
     {
@@ -2586,6 +3219,19 @@
       ]
     },
     {
+      "name": "Research: Compliant force inverter and port adjoint",
+      "source_file": "toporia/plugins/problems/research_b4_mechanism.py",
+      "about": "Existing-function demonstration; see help for mathematics and evidence scope.",
+      "reference": "Research target. Papers: https://doi.org/10.1080/08905459708945415",
+      "research_description": true,
+      "target_figure": "Sigmund force-inverter family: exact paper panel/spring constants not aligned.",
+      "functions": [
+        "model:q4_mechanism",
+        "physics:q4_mechanism",
+        "response:output_displacement"
+      ]
+    },
+    {
       "name": "Research: Constant cross-section",
       "source_file": "toporia/plugins/problems/research_extrusion.py",
       "about": "Demonstrate Constant cross-section; see preset help for mathematics and evidence scope.",
@@ -2608,6 +3254,17 @@
       ]
     },
     {
+      "name": "Research: Diffuse-interface energy and compliance",
+      "source_file": "toporia/plugins/problems/research_b4_phase_field.py",
+      "about": "Existing-function demonstration; see help for mathematics and evidence scope.",
+      "reference": "Research target. Papers: https://doi.org/10.1016/j.jcp.2009.12.017",
+      "research_description": true,
+      "target_figure": "Takezawa et al. Section 2.3 energy family; full numbered source design not reproduced.",
+      "functions": [
+        "response:phase_field"
+      ]
+    },
+    {
       "name": "Research: Directional PDE filter",
       "source_file": "toporia/plugins/problems/research_pde_anisotropic.py",
       "about": "Demonstrate Directional PDE filter; see preset help for mathematics and evidence scope.",
@@ -2616,6 +3273,17 @@
       "target_figure": "Lazarov-Sigmund Helmholtz formulation; no matching directional finite-volume paper panel identified.",
       "functions": [
         "filter:pde_anisotropic"
+      ]
+    },
+    {
+      "name": "Research: Elasticity through pyMOTO",
+      "source_file": "toporia/plugins/problems/research_b4_elastic_pymoto.py",
+      "about": "Existing-function demonstration; see help for mathematics and evidence scope.",
+      "reference": "Research target. Papers: https://github.com/aatmdelissen/pyMOTO",
+      "research_description": true,
+      "target_figure": "Author-library cross-check; original research figure not identified.",
+      "functions": [
+        "model:pymoto_elastic"
       ]
     },
     {
@@ -2685,6 +3353,17 @@
       ]
     },
     {
+      "name": "Research: Geometric solid and void length indicators",
+      "source_file": "toporia/plugins/problems/research_b4_minimum_length.py",
+      "about": "Existing-function demonstration; see help for mathematics and evidence scope.",
+      "reference": "Research target. Papers: https://doi.org/10.1016/j.cma.2015.05.003",
+      "research_description": true,
+      "target_figure": "Zhou/Dunning length constraints: exact source panel and projection conventions pending.",
+      "functions": [
+        "response:minimum_length"
+      ]
+    },
+    {
       "name": "Research: Geometry projection capsule bars",
       "source_file": "toporia/plugins/problems/research_b3_geometry_projection.py",
       "about": "Bounded research companion; see help for mathematics, source and limitations.",
@@ -2707,6 +3386,17 @@
       ]
     },
     {
+      "name": "Research: Heat conduction through pyMOTO",
+      "source_file": "toporia/plugins/problems/research_b4_heat_pymoto.py",
+      "about": "Existing-function demonstration; see help for mathematics and evidence scope.",
+      "reference": "Research target. Papers: https://github.com/aatmdelissen/pyMOTO",
+      "research_description": true,
+      "target_figure": "Author-library cross-check; original research figure not identified.",
+      "functions": [
+        "model:pymoto_heat"
+      ]
+    },
+    {
       "name": "Research: Heaviside projection curves",
       "source_file": "toporia/plugins/problems/research_heaviside.py",
       "about": "Demonstrate Heaviside projection curves; see preset help for mathematics and evidence scope.",
@@ -2718,6 +3408,19 @@
       ]
     },
     {
+      "name": "Research: Large-displacement elasticity and end compliance",
+      "source_file": "toporia/plugins/problems/research_b4_nonlinear.py",
+      "about": "Existing-function demonstration; see help for mathematics and evidence scope.",
+      "reference": "Research target. Papers: https://doi.org/10.1016/j.cma.2014.03.021",
+      "research_description": true,
+      "target_figure": "Wang et al./Buhl et al. nonlinear designs: matching source geometry, law and panel pending.",
+      "functions": [
+        "model:q4_nonlinear",
+        "physics:q4_nonlinear",
+        "response:end_compliance"
+      ]
+    },
+    {
       "name": "Research: Linear parameter ramp",
       "source_file": "toporia/plugins/problems/research_schedule_linear.py",
       "about": "Demonstrate Linear parameter ramp; see preset help for mathematics and evidence scope.",
@@ -2726,6 +3429,30 @@
       "target_figure": "Toporia engineering rule; no direct research figure.",
       "functions": [
         "schedule:linear"
+      ]
+    },
+    {
+      "name": "Research: Linearized buckling factors",
+      "source_file": "toporia/plugins/problems/research_b4_buckling.py",
+      "about": "Existing-function demonstration; see help for mathematics and evidence scope.",
+      "reference": "Research target. Papers: https://doi.org/10.1007/s00158-021-02854-x",
+      "research_description": true,
+      "target_figure": "Ferrari-Sigmund-Guest column examples: exact paper panel and source settings pending.",
+      "functions": [
+        "model:q4_buckling",
+        "physics:q4_buckling",
+        "response:buckling_load"
+      ]
+    },
+    {
+      "name": "Research: Local stress penalties and multiplier fields",
+      "source_file": "toporia/plugins/problems/research_b4_local_stress.py",
+      "about": "Existing-function demonstration; see help for mathematics and evidence scope.",
+      "reference": "Research target. Papers: https://doi.org/10.1007/s00158-020-02760-8",
+      "research_description": true,
+      "target_figure": "PolyStress local-stress example: source polygonal mesh/relaxation/panel pending.",
+      "functions": [
+        "response:local_stress"
       ]
     },
     {
@@ -2817,6 +3544,29 @@
       ]
     },
     {
+      "name": "Research: Minimum eigenvalue constraint",
+      "source_file": "toporia/plugins/problems/research_b4_frequency_limit.py",
+      "about": "Existing-function demonstration; see help for mathematics and evidence scope.",
+      "reference": "Research target. Papers: https://doi.org/10.1007/s00158-007-0101-y",
+      "research_description": true,
+      "target_figure": "Eigenvalue-constrained source design: exact numbered example not recovered.",
+      "functions": [
+        "response:eigenfrequency_limit"
+      ]
+    },
+    {
+      "name": "Research: Minimum volume with aggregate stress",
+      "source_file": "toporia/plugins/problems/research_b4_stress_volume.py",
+      "about": "Existing-function demonstration; see help for mathematics and evidence scope.",
+      "reference": "Research target. Papers: https://doi.org/10.1007/s00158-009-0440-y",
+      "research_description": true,
+      "target_figure": "Le et al. stress-constrained design: exact numbered example pending.",
+      "functions": [
+        "response:volume",
+        "response:stress"
+      ]
+    },
+    {
       "name": "Research: Mirror symmetry",
       "source_file": "toporia/plugins/problems/research_symmetry.py",
       "about": "Demonstrate Mirror symmetry; see preset help for mathematics and evidence scope.",
@@ -2836,6 +3586,31 @@
       "target_figure": "Sigmund (2007), Figure 3, basic morphology operations; equations (18)-(21).",
       "functions": [
         "filter:morphology"
+      ]
+    },
+    {
+      "name": "Research: Multiresolution Galerkin stiffness",
+      "source_file": "toporia/plugins/problems/research_b4_multires.py",
+      "about": "Existing-function demonstration; see help for mathematics and evidence scope.",
+      "reference": "Research target. Papers: https://doi.org/10.1007/s00158-009-0443-8",
+      "research_description": true,
+      "target_figure": "Nguyen et al. MTOP examples: exact source panel and design/analysis grids pending.",
+      "functions": [
+        "model:q4_multiresolution",
+        "physics:q4_multiresolution"
+      ]
+    },
+    {
+      "name": "Research: Natural frequencies and mode aggregation",
+      "source_file": "toporia/plugins/problems/research_b4_dynamic.py",
+      "about": "Existing-function demonstration; see help for mathematics and evidence scope.",
+      "reference": "Research target. Papers: https://doi.org/10.1007/s00158-007-0101-y",
+      "research_description": true,
+      "target_figure": "Du-Olhoff beam family: numbered panel and complete payload/mesh inputs pending.",
+      "functions": [
+        "model:q4_dynamic",
+        "physics:q4_dynamic",
+        "response:eigenfrequency"
       ]
     },
     {
@@ -3015,6 +3790,34 @@
       ]
     },
     {
+      "name": "Research: Saved-field 2D post-processing",
+      "source_file": "toporia/plugins/problems/research_b4_post2d.py",
+      "about": "Existing-function demonstration; see help for mathematics and evidence scope.",
+      "reference": "Own engineering demonstration; no paper match claimed.",
+      "research_description": true,
+      "target_figure": "Own engineering exports/checks and source-inspired metrics; no single originating research figure for the group.",
+      "functions": [
+        "postprocessor:threshold",
+        "postprocessor:connectivity",
+        "postprocessor:feature_size",
+        "postprocessor:grey_level",
+        "postprocessor:export_svg",
+        "postprocessor:export_dxf",
+        "postprocessor:smooth_outline"
+      ]
+    },
+    {
+      "name": "Research: Saved-field STL solid export",
+      "source_file": "toporia/plugins/problems/research_b4_post3d.py",
+      "about": "Existing-function demonstration; see help for mathematics and evidence scope.",
+      "reference": "Own engineering demonstration; no paper match claimed.",
+      "research_description": true,
+      "target_figure": "Own engineering exports/checks and source-inspired metrics; no single originating research figure for the group.",
+      "functions": [
+        "postprocessor:export_stl"
+      ]
+    },
+    {
       "name": "Research: SiMPL primal and latent steps",
       "source_file": "toporia/plugins/problems/research_b3_simpl.py",
       "about": "Bounded research companion; see help for mathematics, source and limitations.",
@@ -3048,31 +3851,77 @@
       ]
     },
     {
+      "name": "Research: Undamped harmonic dynamic compliance",
+      "source_file": "toporia/plugins/problems/research_b4_harmonic.py",
+      "about": "Existing-function demonstration; see help for mathematics and evidence scope.",
+      "reference": "Research target. Papers: https://doi.org/10.1007/BF00370133",
+      "research_description": true,
+      "target_figure": "Ma-Kikuchi-Hagiwara (1993) frequency-response family: exact objective, numbered panel and loading pending; PolyDyna is a related transient method.",
+      "functions": [
+        "response:dynamic_compliance"
+      ]
+    },
+    {
+      "name": "Research: Vibration through pyMOTO",
+      "source_file": "toporia/plugins/problems/research_b4_dynamic_pymoto.py",
+      "about": "Existing-function demonstration; see help for mathematics and evidence scope.",
+      "reference": "Research target. Papers: https://github.com/aatmdelissen/pyMOTO",
+      "research_description": true,
+      "target_figure": "Author-library cross-check; original research figure not identified.",
+      "functions": [
+        "model:pymoto_dynamic"
+      ]
+    },
+    {
       "name": "Standard Bar",
       "source_file": "toporia/plugins/problems/standard_bar.py",
       "about": "A rectangular bar clamped along its left edge with a single load.",
       "reference": "Toporia's own simple test case.",
-      "research_description": false,
-      "target_figure": "not assigned",
-      "functions": []
+      "research_description": true,
+      "target_figure": "General-purpose preset, not a newly certified paper-figure reproduction. Related function examples: Batch 1 linear-elastic baseline and the function census",
+      "functions": [
+        "model:q4",
+        "physics:q4_plane_stress",
+        "updater:oc",
+        "representation:element_density",
+        "interpolation:simp",
+        "response:compliance",
+        "filter:density"
+      ]
     },
     {
       "name": "Three-Point Bending",
       "source_file": "toporia/plugins/problems/three_point_bending.py",
       "about": "A beam on a pinned and a roller support with a load at the middle of the top edge.",
       "reference": "The three-point bending test of materials testing, as a full (not halved) beam.",
-      "research_description": false,
-      "target_figure": "not assigned",
-      "functions": []
+      "research_description": true,
+      "target_figure": "General-purpose preset, not a newly certified paper-figure reproduction. Related function examples: Batch 1 linear-elastic baseline and the function census",
+      "functions": [
+        "model:q4",
+        "physics:q4_plane_stress",
+        "updater:oc",
+        "representation:element_density",
+        "interpolation:simp",
+        "response:compliance",
+        "filter:density"
+      ]
     },
     {
       "name": "Vibrating Beam",
       "source_file": "toporia/plugins/problems/vibrating_beam.py",
       "about": "A beam clamped at both ends, carrying a payload at its centre: maximise its lowest natural frequency with the volume fixed. Choose the model 2-D Q4 with vibration.",
       "reference": "After J. Du, N. Olhoff, \"Topological design of freely vibrating continuum structures for maximum values of simple and multiple eigenfrequencies and frequency gaps\", Struct. Multidisc. Optim. 34 (2007) 91-110, with the mass interpolation of N. L. Pedersen, Struct. Multidisc. Optim. 20 (2000) 2-11. Papers: https://doi.org/10.1007/s00158-007-0101-y https://doi.org/10.1007/s001580050130",
-      "research_description": false,
-      "target_figure": "not assigned",
-      "functions": []
+      "research_description": true,
+      "target_figure": "General-purpose preset, not a newly certified paper-figure reproduction. Related function examples: Batch 4 case dynamic",
+      "functions": [
+        "model:q4_dynamic",
+        "physics:q4_dynamic",
+        "updater:mma",
+        "representation:element_density",
+        "interpolation:simp",
+        "response:eigenfrequency",
+        "filter:density"
+      ]
     }
   ],
   "modules": [
@@ -4187,6 +5036,20 @@
       "source_summary": "Research recipes for existing updaters, representations and level sets."
     },
     {
+      "source_file": "toporia/plugins/problems/_research_batch4.py",
+      "defines_functions": [],
+      "is_preset": false,
+      "classification": "supporting module",
+      "source_summary": "Existing physics/response recipes and grouped post-processing explanations."
+    },
+    {
+      "source_file": "toporia/plugins/problems/_research_defaults.py",
+      "defines_functions": [],
+      "is_preset": false,
+      "classification": "supporting module",
+      "source_summary": "Mathematical help for the original built-in presets, without changing recipes."
+    },
+    {
       "source_file": "toporia/plugins/problems/cantilever.py",
       "defines_functions": [],
       "is_preset": true,
@@ -4530,6 +5393,139 @@
       "source_summary": "Research companion: TOBS integer design steps."
     },
     {
+      "source_file": "toporia/plugins/problems/research_b4_buckling.py",
+      "defines_functions": [],
+      "is_preset": true,
+      "classification": "preset recipe",
+      "source_summary": "Research companion: Linearized buckling factors."
+    },
+    {
+      "source_file": "toporia/plugins/problems/research_b4_dynamic.py",
+      "defines_functions": [],
+      "is_preset": true,
+      "classification": "preset recipe",
+      "source_summary": "Research companion: Natural frequencies and mode aggregation."
+    },
+    {
+      "source_file": "toporia/plugins/problems/research_b4_dynamic_pymoto.py",
+      "defines_functions": [],
+      "is_preset": true,
+      "classification": "preset recipe",
+      "source_summary": "Research companion: Vibration through pyMOTO."
+    },
+    {
+      "source_file": "toporia/plugins/problems/research_b4_elastic_pymoto.py",
+      "defines_functions": [],
+      "is_preset": true,
+      "classification": "preset recipe",
+      "source_summary": "Research companion: Elasticity through pyMOTO."
+    },
+    {
+      "source_file": "toporia/plugins/problems/research_b4_frequency_limit.py",
+      "defines_functions": [],
+      "is_preset": true,
+      "classification": "preset recipe",
+      "source_summary": "Research companion: Minimum eigenvalue constraint."
+    },
+    {
+      "source_file": "toporia/plugins/problems/research_b4_harmonic.py",
+      "defines_functions": [],
+      "is_preset": true,
+      "classification": "preset recipe",
+      "source_summary": "Research companion: Undamped harmonic dynamic compliance."
+    },
+    {
+      "source_file": "toporia/plugins/problems/research_b4_heat2d.py",
+      "defines_functions": [],
+      "is_preset": true,
+      "classification": "preset recipe",
+      "source_summary": "Research companion: 2D heat conduction and thermal compliance."
+    },
+    {
+      "source_file": "toporia/plugins/problems/research_b4_heat3d.py",
+      "defines_functions": [],
+      "is_preset": true,
+      "classification": "preset recipe",
+      "source_summary": "Research companion: 3D H8 heat conduction."
+    },
+    {
+      "source_file": "toporia/plugins/problems/research_b4_heat_pymoto.py",
+      "defines_functions": [],
+      "is_preset": true,
+      "classification": "preset recipe",
+      "source_summary": "Research companion: Heat conduction through pyMOTO."
+    },
+    {
+      "source_file": "toporia/plugins/problems/research_b4_local_stress.py",
+      "defines_functions": [],
+      "is_preset": true,
+      "classification": "preset recipe",
+      "source_summary": "Research companion: Local stress penalties and multiplier fields."
+    },
+    {
+      "source_file": "toporia/plugins/problems/research_b4_mechanism.py",
+      "defines_functions": [],
+      "is_preset": true,
+      "classification": "preset recipe",
+      "source_summary": "Research companion: Compliant force inverter and port adjoint."
+    },
+    {
+      "source_file": "toporia/plugins/problems/research_b4_minimum_length.py",
+      "defines_functions": [],
+      "is_preset": true,
+      "classification": "preset recipe",
+      "source_summary": "Research companion: Geometric solid and void length indicators."
+    },
+    {
+      "source_file": "toporia/plugins/problems/research_b4_multires.py",
+      "defines_functions": [],
+      "is_preset": true,
+      "classification": "preset recipe",
+      "source_summary": "Research companion: Multiresolution Galerkin stiffness."
+    },
+    {
+      "source_file": "toporia/plugins/problems/research_b4_nonlinear.py",
+      "defines_functions": [],
+      "is_preset": true,
+      "classification": "preset recipe",
+      "source_summary": "Research companion: Large-displacement elasticity and end compliance."
+    },
+    {
+      "source_file": "toporia/plugins/problems/research_b4_phase_field.py",
+      "defines_functions": [],
+      "is_preset": true,
+      "classification": "preset recipe",
+      "source_summary": "Research companion: Diffuse-interface energy and compliance."
+    },
+    {
+      "source_file": "toporia/plugins/problems/research_b4_post2d.py",
+      "defines_functions": [],
+      "is_preset": true,
+      "classification": "preset recipe",
+      "source_summary": "Research companion: Saved-field 2D post-processing."
+    },
+    {
+      "source_file": "toporia/plugins/problems/research_b4_post3d.py",
+      "defines_functions": [],
+      "is_preset": true,
+      "classification": "preset recipe",
+      "source_summary": "Research companion: Saved-field STL solid export."
+    },
+    {
+      "source_file": "toporia/plugins/problems/research_b4_solid3d.py",
+      "defines_functions": [],
+      "is_preset": true,
+      "classification": "preset recipe",
+      "source_summary": "Research companion: 3D H8 elasticity."
+    },
+    {
+      "source_file": "toporia/plugins/problems/research_b4_stress_volume.py",
+      "defines_functions": [],
+      "is_preset": true,
+      "classification": "preset recipe",
+      "source_summary": "Research companion: Minimum volume with aggregate stress."
+    },
+    {
       "source_file": "toporia/plugins/problems/research_casting.py",
       "defines_functions": [],
       "is_preset": true,
@@ -4776,7 +5772,7 @@
       ],
       "is_preset": false,
       "classification": "numerical function implementation",
-      "source_summary": "plugins/responses/dynamic_compliance.py — compliance under a harmonic load.  A load f cos(ωt) of driving frequency ω makes the structure vibrate with the amplitude u of  (K − ω² M) u = f.  The dynamic compliance  C(ω) = Σ_k w_k | f_kᵀ u_k |  is the work of the load over one cycle: small where the structure is stiff"
+      "source_summary": "plugins/responses/dynamic_compliance.py — compliance under a harmonic load.  A load f cos(ωt) of driving frequency ω makes the structure vibrate with the amplitude u of  (K − ω² M) u = f.  The dynamic compliance  C(ω) = Σ_k w_k | f_kᵀ u_k |  is an absolute load-displacement amplitude: small where the structure is stiff"
     },
     {
       "source_file": "toporia/plugins/responses/eigenfrequency.py",

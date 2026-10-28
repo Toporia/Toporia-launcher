@@ -1,0 +1,99 @@
+{
+  "schema": 1,
+  "case_id": "export_stl",
+  "preset_id": "post3d",
+  "functions": [
+    "postprocessor:export_stl"
+  ],
+  "target": "Own engineering export/metric; source-inspired definitions do not identify a paper figure.",
+  "source_url": "",
+  "limitations": "Connectivity/feature estimates, smoothing and exported geometry are separate from physical feasibility. File validity does not establish CAD manufacturability or a paper match.",
+  "paper_status": "not_applicable_engineering_demo",
+  "paper_visual_status": "not_assessed",
+  "checks": {
+    "checks_passed": true,
+    "metrics_finite": true,
+    "scope": "Own engineering result/file check; not a source-paper or manufacturing certificate.",
+    "stl_byte_count_correct": true,
+    "oriented_mesh_volume": 16.0,
+    "voxel_volume": 16.0
+  },
+  "metrics": {
+    "triangles": 112,
+    "volume_mm3": 16.0
+  },
+  "source_field": "docs/research/evidence/batch4/solid3d/final-density.npy",
+  "source_field_sha256": "1d7defbe033b00ac6a9ac86d12dc2b6333f7ea6a2e96065c92cb4f2b42dd679a",
+  "iterations": 0,
+  "stop_reason": "Saved field reused; no optimization",
+  "iteration_override": null,
+  "next_check": "Review the engineering invariant/file geometry separately from source-paper reconstruction; add independent calibration for measurements on curved or poorly resolved features.",
+  "files": [
+    "design.stl"
+  ],
+  "settings": {},
+  "scenario": {
+    "Lx": 12.0,
+    "Ly": 4.0,
+    "Lz": 2.0,
+    "holes": [],
+    "enforced_areas": [],
+    "edge_constraints": [
+      {
+        "edge": "left",
+        "dof": "both"
+      }
+    ],
+    "point_constraints": [],
+    "point_loads": [
+      {
+        "x": 12.0,
+        "y": 0.0
+      }
+    ],
+    "load_cases": [
+      {
+        "Fmag": 3.0,
+        "Fa": 270.0,
+        "weight": 1.0,
+        "Fe": 0.0
+      }
+    ],
+    "volfrac": 0.3,
+    "objective": {
+      "type": "compliance"
+    },
+    "constraints": [],
+    "E0": 1.0,
+    "Emin": 1e-09,
+    "nu": 0.3,
+    "point_springs": []
+  },
+  "solver": {
+    "method": "h8+oc",
+    "method_params": {},
+    "interpolation": {
+      "type": "simp"
+    },
+    "representation": {
+      "type": "element_density"
+    },
+    "filter_specs": [
+      {
+        "type": "density"
+      }
+    ],
+    "schedules": [],
+    "variants": {},
+    "m": 1.0,
+    "max_iter": 60,
+    "tol": 0.0
+  },
+  "primary_source_review": {
+    "status": "own_engineering_or_metric_definition",
+    "url": "",
+    "scope": "Existing post-processor applied to a saved field; report lists independent invariant/calibration or file checks. Own connectivity/exports have no single paper figure. Source-inspired metrics and smoothing still lack a matched paper panel.",
+    "visual_status": "not_assessed"
+  },
+  "original_source_field": "results\\research\\batch4\\generated\\solid3d\\final-density.npy"
+}

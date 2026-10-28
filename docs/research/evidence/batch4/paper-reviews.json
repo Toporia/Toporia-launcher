@@ -1,0 +1,153 @@
+{
+  "solid3d": {
+    "status": "official_author_site_and_captured_scalar_oracle",
+    "url": "https://www.top3d.app/",
+    "scope": "Author site identifies top3d and paper DOI. The existing hash-identified MATLAB fixture supplies the 12x4x2 benchmark; fresh Python first/last printed compliance and 39 stops agree after explicit uniform nodal depth loading. No final native field or numbered paper-panel match.",
+    "visual_status": "not_assessed"
+  },
+  "heat2d": {
+    "status": "author_institutional_abstract_reviewed",
+    "url": "https://orbit.dtu.dk/en/publications/topology-optimization-of-heat-conduction-problems-using-the-finit/",
+    "scope": "Source uses finite-volume conduction with arithmetic/harmonic interface conductivity. Current engines use Q4/H8 FE interpolation. Analytic strip verification does not reproduce a source heat-sink topology.",
+    "visual_status": "not_assessed"
+  },
+  "heat3d": {
+    "status": "author_institutional_abstract_reviewed",
+    "url": "https://orbit.dtu.dk/en/publications/topology-optimization-of-heat-conduction-problems-using-the-finit/",
+    "scope": "Source uses finite-volume conduction with arithmetic/harmonic interface conductivity. Current engines use Q4/H8 FE interpolation. Analytic strip verification does not reproduce a source heat-sink topology.",
+    "visual_status": "not_assessed"
+  },
+  "elastic_pymoto": {
+    "status": "official_library_and_independent_assembly_review",
+    "url": "https://github.com/aatmdelissen/pyMOTO",
+    "scope": "Existing installed module networks compared with independent native assembly on a common random field. Filters disabled and uniform-start eigenvalue normalization aligned. No published optimized figure reconstructed.",
+    "visual_status": "not_assessed"
+  },
+  "heat_pymoto": {
+    "status": "official_library_and_independent_assembly_review",
+    "url": "https://github.com/aatmdelissen/pyMOTO",
+    "scope": "Existing installed module networks compared with independent native assembly on a common random field. Filters disabled and uniform-start eigenvalue normalization aligned. No published optimized figure reconstructed.",
+    "visual_status": "not_assessed"
+  },
+  "dynamic_pymoto": {
+    "status": "official_library_and_independent_assembly_review",
+    "url": "https://github.com/aatmdelissen/pyMOTO",
+    "scope": "Existing installed module networks compared with independent native assembly on a common random field. Filters disabled and uniform-start eigenvalue normalization aligned. No published optimized figure reconstructed.",
+    "visual_status": "not_assessed"
+  },
+  "harmonic": {
+    "status": "primary_publisher_abstracts_reviewed",
+    "url": "https://doi.org/10.1007/BF00370133",
+    "scope": "Ma-Kikuchi-Hagiwara publisher abstract identifies frequency-response optimization via homogenization/MOC and direct/modal sensitivities; the own SIMP/MMA amplitude response is a variant. PolyDyna publisher abstract explicitly identifies HHT-alpha transient integration, polygonal elements and ZPR updates, so it is a related transient method rather than this implementation source. No numbered source figure/objective matched.",
+    "visual_status": "not_assessed",
+    "related_transient_source": "https://link.springer.com/article/10.1007/s00158-021-02859-6"
+  },
+  "buckling": {
+    "status": "publisher_abstract_and_formulation_reviewed",
+    "url": "https://link.springer.com/article/10.1007/s00158-021-02854-x",
+    "scope": "Publisher abstract identifies KS aggregation and tailored MMA/OC-like updates. Current inverse-factor p-norm and own column remain a variant; independent Euler-column agreement is not a source design figure.",
+    "visual_status": "not_assessed"
+  },
+  "multires": {
+    "status": "author_paper_summary_reviewed",
+    "url": "https://paulino.princeton.edu/journal_papers/2010/SMO_10_AComputationalParadigm.pdf",
+    "scope": "Author manuscript identifies three displacement/design/density discretizations with projection. Current aligned subcell Galerkin formulation and independent fine-Q4 reevaluation are explicitly separate; no numbered source figure match claimed.",
+    "visual_status": "not_assessed"
+  },
+  "minimum_length": {
+    "status": "primary_source_overview_reviewed",
+    "url": "https://www.sciencedirect.com/science/article/pii/S0045782515001693",
+    "scope": "Primary text overview identifies filtering/thresholding, geometric constraints and a three-field approach. Current cell-centred physical-field/KS/1D-tolerance variant is not that exact formulation. Straight bars are separate calibration inputs.",
+    "visual_status": "not_assessed"
+  },
+  "stress_volume": {
+    "status": "publisher_and_declared_reference_review",
+    "url": "https://link.springer.com/article/10.1007/s00158-009-0440-y",
+    "scope": "Stress-source metadata reviewed; current density relaxation, adaptive scale and local AL rules inspected in implementation. Full numbered source mesh/load/example not recovered. Local-stress PolyStress attribution remains a separate source family.",
+    "visual_status": "not_assessed"
+  },
+  "local_stress": {
+    "status": "publisher_and_declared_reference_review",
+    "url": "https://link.springer.com/article/10.1007/s00158-009-0440-y",
+    "scope": "Stress-source metadata reviewed; current density relaxation, adaptive scale and local AL rules inspected in implementation. Full numbered source mesh/load/example not recovered. Local-stress PolyStress attribution remains a separate source family.",
+    "visual_status": "not_assessed"
+  },
+  "dynamic": {
+    "status": "implementation_and_citation_review_only",
+    "url": "https://doi.org/10.1007/s00158-007-0101-y",
+    "scope": "Declared reference and existing numerical implementation inspected. Full numbered source panel and complete settings not recovered; analytic checks are not paper matches.",
+    "visual_status": "not_assessed"
+  },
+  "frequency_limit": {
+    "status": "implementation_and_citation_review_only",
+    "url": "https://doi.org/10.1007/s00158-007-0101-y",
+    "scope": "Declared reference and existing numerical implementation inspected. Full numbered source panel and complete settings not recovered; analytic checks are not paper matches.",
+    "visual_status": "not_assessed"
+  },
+  "nonlinear": {
+    "status": "implementation_and_citation_review_only",
+    "url": "https://doi.org/10.1016/j.cma.2014.03.021",
+    "scope": "Declared reference and existing numerical implementation inspected. Full numbered source panel and complete settings not recovered; analytic checks are not paper matches.",
+    "visual_status": "not_assessed"
+  },
+  "mechanism": {
+    "status": "implementation_and_citation_review_only",
+    "url": "https://doi.org/10.1080/08905459708945415",
+    "scope": "Declared reference and existing numerical implementation inspected. Full numbered source panel and complete settings not recovered; analytic checks are not paper matches.",
+    "visual_status": "not_assessed"
+  },
+  "phase_field": {
+    "status": "implementation_and_citation_review_only",
+    "url": "https://doi.org/10.1016/j.jcp.2009.12.017",
+    "scope": "Declared reference and existing numerical implementation inspected. Full numbered source panel and complete settings not recovered; analytic checks are not paper matches.",
+    "visual_status": "not_assessed"
+  },
+  "threshold": {
+    "status": "own_engineering_or_metric_definition",
+    "url": "",
+    "scope": "Existing post-processor applied to a saved field; report lists independent invariant/calibration or file checks. Own connectivity/exports have no single paper figure. Source-inspired metrics and smoothing still lack a matched paper panel.",
+    "visual_status": "not_assessed"
+  },
+  "connectivity": {
+    "status": "own_engineering_or_metric_definition",
+    "url": "",
+    "scope": "Existing post-processor applied to a saved field; report lists independent invariant/calibration or file checks. Own connectivity/exports have no single paper figure. Source-inspired metrics and smoothing still lack a matched paper panel.",
+    "visual_status": "not_assessed"
+  },
+  "feature_size": {
+    "status": "own_engineering_or_metric_definition",
+    "url": "",
+    "scope": "Existing post-processor applied to a saved field; report lists independent invariant/calibration or file checks. Own connectivity/exports have no single paper figure. Source-inspired metrics and smoothing still lack a matched paper panel.",
+    "visual_status": "not_assessed"
+  },
+  "grey_level": {
+    "status": "own_engineering_or_metric_definition",
+    "url": "",
+    "scope": "Existing post-processor applied to a saved field; report lists independent invariant/calibration or file checks. Own connectivity/exports have no single paper figure. Source-inspired metrics and smoothing still lack a matched paper panel.",
+    "visual_status": "not_assessed"
+  },
+  "export_svg": {
+    "status": "own_engineering_or_metric_definition",
+    "url": "https://www.w3.org/TR/SVG2/",
+    "scope": "Existing post-processor applied to a saved field; report lists independent invariant/calibration or file checks. Own connectivity/exports have no single paper figure. Source-inspired metrics and smoothing still lack a matched paper panel.",
+    "visual_status": "not_assessed"
+  },
+  "export_dxf": {
+    "status": "own_engineering_or_metric_definition",
+    "url": "",
+    "scope": "Existing post-processor applied to a saved field; report lists independent invariant/calibration or file checks. Own connectivity/exports have no single paper figure. Source-inspired metrics and smoothing still lack a matched paper panel.",
+    "visual_status": "not_assessed"
+  },
+  "smooth_outline": {
+    "status": "own_engineering_or_metric_definition",
+    "url": "",
+    "scope": "Existing post-processor applied to a saved field; report lists independent invariant/calibration or file checks. Own connectivity/exports have no single paper figure. Source-inspired metrics and smoothing still lack a matched paper panel.",
+    "visual_status": "not_assessed"
+  },
+  "export_stl": {
+    "status": "own_engineering_or_metric_definition",
+    "url": "",
+    "scope": "Existing post-processor applied to a saved field; report lists independent invariant/calibration or file checks. Own connectivity/exports have no single paper figure. Source-inspired metrics and smoothing still lack a matched paper panel.",
+    "visual_status": "not_assessed"
+  }
+}

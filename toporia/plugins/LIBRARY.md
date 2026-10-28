@@ -235,3 +235,7 @@ Twenty additional registered recipes expose mathematical descriptions and runnab
 ### Batch 3 research companions
 
 Thirty-one further presets document 30 existing updater, representation and standalone level-set functions. [Case index](../../docs/research/batch-3-cases.md), [gallery](../../docs/research/evidence/batch3/index.html) and [optimization guide](../../docs/research/optimization.html). All new full paper reproductions remain unresolved; independent equation/Jacobian checks are recorded separately. The library now has 71 presets; numerical algorithms are unchanged.
+
+### Batch 4 research companions
+
+Nineteen further presets and 25 demonstrations cover the remaining 39 physics/response/post-processing functions. [Report](../../docs/research/batch-4.md), [gallery](../../docs/research/evidence/batch4/index.html), [framework assessment](../../docs/research/framework-assessment.html). All 97 functions now have an example/engineering record; unresolved source matching stays explicit. There are 90 presets. The dynamic-compliance reference now distinguishes this own undamped frequency response from related transient PolyDyna. Numerical algorithms are unchanged.

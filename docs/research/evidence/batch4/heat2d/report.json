@@ -1,0 +1,132 @@
+{
+  "schema": 1,
+  "case_id": "heat2d",
+  "preset_id": "heat2d",
+  "functions": [
+    "model:q4_heat",
+    "physics:q4_heat",
+    "response:thermal_compliance"
+  ],
+  "target": "Gersborg-Hansen et al. heat-conduction examples: exact numbered panel/settings pending.",
+  "source_url": "https://doi.org/10.1007/s00158-005-0584-3",
+  "limitations": "This is a finite-element variant of a finite-volume source paper. The strip is an independent analytic check; the own half-disc-sink example is not a paper figure.",
+  "paper_status": "paper_reproduction_to_fix",
+  "paper_visual_status": "not_assessed",
+  "checks": {
+    "directional_gradient_errors": [
+      4.639060827149599e-08,
+      1.621922521089255e-09
+    ],
+    "gradient_tolerance": 0.003,
+    "checks_passed": true,
+    "scope": "Objective, budget and every extra constraint at one smooth deterministic direction. Stress adaptive scale disabled only in the probe; eigenvalue reference and AL multipliers held fixed. Not certification at switches/repeated modes.",
+    "heat_strip_max_temperature_relative_error": 6.217248937900877e-15,
+    "heat_strip_discrete_compliance_relative_error": 5.3342797757943005e-15,
+    "heat_strip_parameters": {
+      "Lx": 8.0,
+      "Ly": 2.0,
+      "Lz": 0.0,
+      "heat_source": 0.5,
+      "conductivity": 1.0,
+      "end_temperatures": 0.0,
+      "resolutions": [
+        1.0,
+        2.0,
+        4.0
+      ]
+    },
+    "heat_strip_pass": true,
+    "finite_execution": true,
+    "bounded_density": true
+  },
+  "iterations": 60,
+  "stop_reason": "iteration limit (60)",
+  "fresh_final_objective": 1.7522059678018882,
+  "last_recorded_objective": 1.7536001639868362,
+  "physical_volume_fraction": 0.40007858065391205,
+  "volume_limit": 0.4,
+  "feasible_volume_1e_4": true,
+  "fresh_reported": {},
+  "constraints": [],
+  "feasible_constraints_1e_4": true,
+  "scenario": {
+    "Lx": 100.0,
+    "Ly": 100.0,
+    "Lz": 0.0,
+    "holes": [
+      {
+        "cx": 50.0,
+        "cy": 0.0,
+        "r_void": 0.0,
+        "r_passive": 6.0,
+        "kind": "fixed"
+      }
+    ],
+    "enforced_areas": [],
+    "edge_constraints": [],
+    "point_constraints": [],
+    "point_loads": [],
+    "load_cases": [
+      {
+        "Fmag": 0.0,
+        "Fa": 0.0,
+        "weight": 1.0,
+        "Fe": 0.0
+      }
+    ],
+    "volfrac": 0.4,
+    "objective": {
+      "type": "thermal_compliance"
+    },
+    "constraints": [],
+    "E0": 1.0,
+    "Emin": 0.001,
+    "nu": 0.3,
+    "point_springs": []
+  },
+  "solver": {
+    "method": "q4_heat+oc",
+    "method_params": {},
+    "interpolation": {
+      "type": "simp"
+    },
+    "representation": {
+      "type": "element_density"
+    },
+    "filter_specs": [
+      {
+        "type": "density",
+        "rmin": 1.5
+      }
+    ],
+    "schedules": [],
+    "variants": {},
+    "m": 0.2,
+    "max_iter": 60,
+    "tol": 0.0
+  },
+  "resolved_method_params": {
+    "heat_source": 0.0001,
+    "move": 0.2
+  },
+  "versions": {
+    "python": "3.14.3",
+    "numpy": "2.4.2",
+    "scipy": "1.17.1",
+    "matplotlib": "3.10.8",
+    "pymoto": "2.0.1",
+    "mmapy": "0.3.1",
+    "nlopt": "2.11.0",
+    "nullspace_optimizer": "1.3.0"
+  },
+  "iteration_override": null,
+  "runtime_seconds": 0.34848230000352487,
+  "protocol": "Existing engine loop; fresh final model evaluation after closing updater. Objective histories may be pre-update. Physical rows begin at y=0; 3D arrays are z,y,x. Diagnostic engine solves are additional to optimization. No source match implied.",
+  "next_check": "Select a numbered FVM heat example and compare its harmonic/arithmetic face conductivity with this Q4 FE interpolation; do not relabel the strip as a source topology.",
+  "primary_source_review": {
+    "status": "author_institutional_abstract_reviewed",
+    "url": "https://orbit.dtu.dk/en/publications/topology-optimization-of-heat-conduction-problems-using-the-finit/",
+    "scope": "Source uses finite-volume conduction with arithmetic/harmonic interface conductivity. Current engines use Q4/H8 FE interpolation. Analytic strip verification does not reproduce a source heat-sink topology.",
+    "visual_status": "not_assessed"
+  }
+}

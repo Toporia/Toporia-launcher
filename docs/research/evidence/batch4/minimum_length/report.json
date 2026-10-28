@@ -1,0 +1,167 @@
+{
+  "schema": 1,
+  "case_id": "minimum_length",
+  "preset_id": "minimum_length",
+  "functions": [
+    "response:minimum_length"
+  ],
+  "target": "Zhou/Dunning length constraints: exact source panel and projection conventions pending.",
+  "source_url": "https://doi.org/10.1016/j.cma.2015.05.003",
+  "limitations": "Own physical-field/KS variant is not the original three-field formulation. Gray fields, boundary stencils and mesh resolution prevent a universal minimum-feature certificate.",
+  "paper_status": "paper_reproduction_to_fix",
+  "paper_visual_status": "not_assessed",
+  "checks": {
+    "directional_gradient_errors": [
+      1.7053473193877944e-06,
+      1.650594438906694e-09,
+      2.1932105353222982e-09,
+      2.0070446174070213e-09
+    ],
+    "gradient_tolerance": 0.003,
+    "checks_passed": true,
+    "scope": "Objective, budget and every extra constraint at one smooth deterministic direction. Stress adaptive scale disabled only in the probe; eigenvalue reference and AL multipliers held fixed. Not certification at switches/repeated modes.",
+    "straight_bar_indicators": [
+      [
+        4,
+        171.50146622138485,
+        1.0
+      ],
+      [
+        8,
+        1.9273700509926843,
+        1.0
+      ],
+      [
+        12,
+        0.7537687077037981,
+        1.0
+      ]
+    ],
+    "length_indicator_pass": true,
+    "finite_execution": true,
+    "bounded_density": true
+  },
+  "iterations": 60,
+  "stop_reason": "iteration limit (60)",
+  "fresh_final_objective": 1998.8673019954817,
+  "last_recorded_objective": 2061.187263124406,
+  "physical_volume_fraction": 0.4822907059070316,
+  "volume_limit": 0.5,
+  "feasible_volume_1e_4": true,
+  "fresh_reported": {
+    "length_scale_peak_ratio_0": 90.21777278406479,
+    "length_scale_tolerance_0": 0.001290657837263228,
+    "length_scale_peak_ratio_1": 85.92364721042314,
+    "length_scale_tolerance_1": 0.001290657837263228
+  },
+  "constraints": [
+    {
+      "name": "minimum_length",
+      "value": 89.217772784068,
+      "exact": null
+    },
+    {
+      "name": "minimum_length",
+      "value": 84.92364721042316,
+      "exact": null
+    }
+  ],
+  "feasible_constraints_1e_4": false,
+  "scenario": {
+    "Lx": 60.0,
+    "Ly": 20.0,
+    "Lz": 0.0,
+    "holes": [],
+    "enforced_areas": [],
+    "edge_constraints": [
+      {
+        "edge": "left",
+        "dof": "x"
+      }
+    ],
+    "point_constraints": [
+      {
+        "x": 60.0,
+        "y": 0.0,
+        "dof": "y"
+      }
+    ],
+    "point_loads": [
+      {
+        "x": 0.0,
+        "y": 20.0
+      }
+    ],
+    "load_cases": [
+      {
+        "Fmag": 1.0,
+        "Fa": 270.0,
+        "weight": 1.0,
+        "Fe": 0.0
+      }
+    ],
+    "volfrac": 0.5,
+    "objective": {
+      "type": "compliance"
+    },
+    "constraints": [
+      {
+        "type": "minimum_length",
+        "phase": "solid",
+        "min_length": 16.0
+      },
+      {
+        "type": "minimum_length",
+        "phase": "void",
+        "min_length": 16.0
+      }
+    ],
+    "E0": 1.0,
+    "Emin": 1e-09,
+    "nu": 0.3,
+    "point_springs": []
+  },
+  "solver": {
+    "method": "q4+pymoto_mma",
+    "method_params": {},
+    "interpolation": {
+      "type": "simp"
+    },
+    "representation": {
+      "type": "element_density"
+    },
+    "filter_specs": [
+      {
+        "type": "density"
+      }
+    ],
+    "schedules": [],
+    "variants": {},
+    "m": 0.4,
+    "max_iter": 60,
+    "tol": 0.0
+  },
+  "resolved_method_params": {
+    "move": 0.2
+  },
+  "versions": {
+    "python": "3.14.3",
+    "numpy": "2.4.2",
+    "scipy": "1.17.1",
+    "matplotlib": "3.10.8",
+    "pymoto": "2.0.1",
+    "mmapy": "0.3.1",
+    "nlopt": "2.11.0",
+    "nullspace_optimizer": "1.3.0"
+  },
+  "iteration_override": null,
+  "runtime_seconds": 7.090747500013094,
+  "protocol": "Existing engine loop; fresh final model evaluation after closing updater. Objective histories may be pre-update. Physical rows begin at y=0; 3D arrays are z,y,x. Diagnostic engine solves are additional to optimization. No source match implied.",
+  "next_check": "Align the original three-field source example, or keep the current nodal-KS physical-field variant separate. Resolve the cone adequately and calibrate curved/diagonal features.",
+  "primary_source_review": {
+    "status": "primary_source_overview_reviewed",
+    "url": "https://www.sciencedirect.com/science/article/pii/S0045782515001693",
+    "scope": "Primary text overview identifies filtering/thresholding, geometric constraints and a three-field approach. Current cell-centred physical-field/KS/1D-tolerance variant is not that exact formulation. Straight bars are separate calibration inputs.",
+    "visual_status": "not_assessed"
+  }
+}

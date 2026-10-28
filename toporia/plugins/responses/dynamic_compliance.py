@@ -5,7 +5,7 @@
 #
 #     C(ω) = Σ_k w_k | f_kᵀ u_k |
 #
-# is the work of the load over one cycle: small where the structure is stiff
+# is an absolute load-displacement amplitude: small where the structure is stiff
 # and not near a resonance.  At ω = 0 it is the static compliance.  Minimising
 # it at a given ω stiffens the structure against that excitation.
 #
@@ -23,8 +23,10 @@
 #
 # References: the frequency-response objective of Z.-D. Ma, N. Kikuchi, I. Hagiwara,
 # "Structural topology and shape optimization for a frequency response problem",
-# Comput. Mech. 13 (1993) 157-174 (cited from memory, no link checked); the
-# adjoint as in PolyDyna, R. Giraldo-Londoño, G. H. Paulino, SMO 64 (2021) 957-990.
+# Comput. Mech. 13 (1993) 157-174, DOI 10.1007/BF00370133; the
+# related transient dynamic optimisation: PolyDyna, Giraldo-Londono & Paulino,
+# SMO 64 (2021) 957-990. PolyDyna uses HHT-alpha time integration; it is not
+# the implementation source for this undamped frequency-domain contraction.
 
 import numpy as np
 
@@ -39,11 +41,11 @@ class DynamicCompliance(Response):
     name = "dynamic_compliance"
     label = "Dynamic compliance (harmonic load)"
     reference = (
-        'Frequency-domain adjoint and implementation: R. Giraldo-Londono, G. H. Paulino, "PolyDyna: a'
+        'Own undamped frequency-domain response. Related transient method: O. Giraldo-Londono, G. H. Paulino, "PolyDyna: a'
         ' Matlab implementation for topology optimization of structures subjected to dynamic loads",'
         ' Struct. Multidisc. Optim. 64 (2021) 957-990; the objective goes back to Ma, Kikuchi and Hagiwara'
         ' (Comput. Mech. 13 (1993) 157-174).'
-        ' Papers: https://doi.org/10.1007/s00158-021-02859-6'
+        ' Papers: https://doi.org/10.1007/BF00370133 https://doi.org/10.1007/s00158-021-02859-6'
     )
     order = 15
     roles = (OBJECTIVE_ROLE,)

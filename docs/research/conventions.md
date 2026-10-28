@@ -21,6 +21,11 @@ constitutive curve and a physics engine an independent state benchmark.
 | To fix | A required comparison failed, information is missing, or implementation differences prevent an honest match. |
 
 Native agreement and paper comparison are separate fields, not one green tick.
+
+Own engineering connectivity/export tools can have no originating paper figure.
+Their `not_applicable_engineering_demo` status records that fact; it is not a
+paper match or a manufacturing certificate. An `engineering_example` census
+row is distinct from a verified research reproduction.
 Keep image interpolation, thresholding, field orientation and normalization
 explicit. Do not compare a pre-update objective with a fresh final-design solve.
 Physical volume, objective, stopping reason, iteration cap and source hashes

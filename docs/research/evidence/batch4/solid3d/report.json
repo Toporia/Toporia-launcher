@@ -1,0 +1,125 @@
+{
+  "schema": 1,
+  "case_id": "solid3d",
+  "preset_id": "solid3d",
+  "functions": [
+    "model:h8",
+    "physics:h8_solid"
+  ],
+  "target": "Liu-Tovar top3d reference; small 12x4x2 author-code benchmark, not an identified paper panel.",
+  "source_url": "https://www.top3d.app/",
+  "limitations": "The GUI companion uses production trapezoidal depth-load quadrature. The native scalar probe explicitly substitutes uniform nodal depth shares. No native final-field or paper-image equality is claimed.",
+  "paper_status": "paper_reproduction_to_fix",
+  "paper_visual_status": "not_assessed",
+  "checks": {
+    "directional_gradient_errors": [
+      1.2959456356499472e-06,
+      2.938966313406042e-10
+    ],
+    "gradient_tolerance": 0.003,
+    "checks_passed": true,
+    "scope": "Objective, budget and every extra constraint at one smooth deterministic direction. Stress adaptive scale disabled only in the probe; eigenvalue reference and AL multipliers held fixed. Not certification at switches/repeated modes.",
+    "native_scalar_errors": {
+      "first_reported_compliance": 1.3222252164268866e-05,
+      "last_reported_compliance": 2.075021529890364e-05
+    },
+    "native_scalar_same_iterations": true,
+    "native_scalar_pass": true,
+    "native_scalar_scope": "Fresh Python probe vs previously captured author first/last printed values and 39 stops. Explicit uniform depth-node shares in this probe only; no native final field comparison.",
+    "finite_execution": true,
+    "bounded_density": true
+  },
+  "iterations": 60,
+  "stop_reason": "iteration limit (60)",
+  "fresh_final_objective": 7420.780578165852,
+  "last_recorded_objective": 7431.599426758312,
+  "physical_volume_fraction": 0.29996491117701723,
+  "volume_limit": 0.3,
+  "feasible_volume_1e_4": true,
+  "fresh_reported": {},
+  "constraints": [],
+  "feasible_constraints_1e_4": true,
+  "scenario": {
+    "Lx": 12.0,
+    "Ly": 4.0,
+    "Lz": 2.0,
+    "holes": [],
+    "enforced_areas": [],
+    "edge_constraints": [
+      {
+        "edge": "left",
+        "dof": "both"
+      }
+    ],
+    "point_constraints": [],
+    "point_loads": [
+      {
+        "x": 12.0,
+        "y": 0.0
+      }
+    ],
+    "load_cases": [
+      {
+        "Fmag": 3.0,
+        "Fa": 270.0,
+        "weight": 1.0,
+        "Fe": 0.0
+      }
+    ],
+    "volfrac": 0.3,
+    "objective": {
+      "type": "compliance"
+    },
+    "constraints": [],
+    "E0": 1.0,
+    "Emin": 1e-09,
+    "nu": 0.3,
+    "point_springs": []
+  },
+  "solver": {
+    "method": "h8+oc",
+    "method_params": {},
+    "interpolation": {
+      "type": "simp"
+    },
+    "representation": {
+      "type": "element_density"
+    },
+    "filter_specs": [
+      {
+        "type": "density"
+      }
+    ],
+    "schedules": [],
+    "variants": {},
+    "m": 1.0,
+    "max_iter": 60,
+    "tol": 0.0
+  },
+  "resolved_method_params": {
+    "linear_solver": "auto",
+    "amg_above": 60000,
+    "amg_tol": 1e-08,
+    "move": 0.2
+  },
+  "versions": {
+    "python": "3.14.3",
+    "numpy": "2.4.2",
+    "scipy": "1.17.1",
+    "matplotlib": "3.10.8",
+    "pymoto": "2.0.1",
+    "mmapy": "0.3.1",
+    "nlopt": "2.11.0",
+    "nullspace_optimizer": "1.3.0"
+  },
+  "iteration_override": null,
+  "runtime_seconds": 0.426424200006295,
+  "protocol": "Existing engine loop; fresh final model evaluation after closing updater. Objective histories may be pre-update. Physical rows begin at y=0; 3D arrays are z,y,x. Diagnostic engine solves are additional to optimization. No source match implied.",
+  "next_check": "Recover a numbered top3d paper panel; align discrete depth loads before any full-field comparison. Keep the 39-step scalar oracle scope separate from the production companion.",
+  "primary_source_review": {
+    "status": "official_author_site_and_captured_scalar_oracle",
+    "url": "https://www.top3d.app/",
+    "scope": "Author site identifies top3d and paper DOI. The existing hash-identified MATLAB fixture supplies the 12x4x2 benchmark; fresh Python first/last printed compliance and 39 stops agree after explicit uniform nodal depth loading. No final native field or numbered paper-panel match.",
+    "visual_status": "not_assessed"
+  }
+}

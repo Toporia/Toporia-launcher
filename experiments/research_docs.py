@@ -124,7 +124,7 @@ def main():
     (folder / "assets").mkdir(parents=True, exist_ok=True)
     flow_diagram(folder / "assets/core-flow.png")
     optimization_diagram(folder / "assets/optimization-flow.png")
-    for name in ("core", "optimization"):
+    for name in ("core", "optimization", "framework-assessment"):
         source = folder / (name + ".md")
         (folder / (name + ".html")).write_text(render_guide(source.read_text(encoding="utf-8")), encoding="utf-8")
         print(folder / (name + ".html"))
