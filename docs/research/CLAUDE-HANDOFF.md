@@ -102,6 +102,15 @@ next actions and preserve prior valid evidence.
   errors passed the tighter 1e-4 saved-evidence regression. This is not a complete
   derivative proof at topology switches, repeated modes or all parameter regimes.
   Existing relevant numerical tests were also run.
+- **Added 28 October 2026:** `python -m experiments.research_gradients` checks the
+  gradient at every saved *final* design of Batch 3 and 4 (nearly 0/1 fields, sharp
+  projections, stress beside void, final eigenvalues), perturbing only variables
+  inside their bounds, at three steps. All 42 gradient-based showcases agree within
+  6e-6 ([report](evidence/gradients/report.json), pinned by
+  `tests/plugins/test_research_gradients.py`). BESO, hard-kill BESO and TOBS end
+  with every element at a bound, so only one-sided derivatives exist there; floating
+  projection has a single interior variable. Kinks themselves (a variable exactly
+  at a bound, crossing modes) are still not certified.
 - Post-processing checks include an independent flood fill, integer thresholded
   volume, simple straight-bar calibration, grayness identity, SVG parsing, DXF
   sections and STL byte count/oriented volume. They do not establish full geometric
