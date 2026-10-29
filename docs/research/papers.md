@@ -48,6 +48,8 @@ multi-tool cases. The single tool from the left (180 degrees) is 15% stiffer
 in the paper. One-tool designs at p = 5 have close local minima, and the
 paper's MMA settings and step count are not given. Running 800 steps gives the same 4.72; a move limit of 0.05 gives 5.22. The difference stays open.
 
+![Our designs for the five machining cases](assets/machining-paper-comparison.png)
+
 Toporia's filter handles tools along the axes only. The paper's oblique tools
 (-30, 160 and 240 degrees, and the four diagonals) are left out.
 

@@ -98,6 +98,8 @@ switching the constraints in while a projection sharpens: after 391 steps it
 ends at 50% volume with both phases met (fresh peaks 0.985 and 0.994 of the
 tolerance) and compliance 191.6, against 185.4 for the same problem without them,
 whose members are 1-2 mm wide.
+
+![Minimum length: the same beam without and with the constraints, and where each is too thin](assets/minimum-length-with-and-without.png)
 Its separate 1D calibration uses 4/8/12-cell bars and a requested length of 10; those
 calibration inputs are not silently substituted for the optimization setup.
 
