@@ -73,21 +73,32 @@ arithmetic was changed to make this pass.
 Since 28 October 2026 the 17 optimization companions run until the design
 change falls below 0.01, with a cap of 300 steps (150 for nonlinear and
 multiresolution, 60 for minimum length); previously they used coarser meshes and
-caps of 60 or 20 steps. Thirteen settle before the cap; 3D heat, phase field,
-multiresolution and minimum length stop at it. Neither outcome is a convergence
+caps of 60 or 20 steps. Fourteen settle before the cap; 3D heat, phase field
+and multiresolution stop at it. Neither outcome is a convergence
 or global optimality certificate. Volume, extra constraints, source matching
 and the stopping reason remain separate report fields.
 
 The **stress-volume** companion ends at 24% volume with its stress constraint
 met (g = 4.8e-5). It uses MMA move 0.05, since at 0.2 the same problem
 collapses, and stops at design change 0.005, since at 0.01 it was still 0.02% over. Local stress
-(AL) meets its limits. **Minimum length** keeps both length constraints clearly
-violated (values 89 and 85) and a grey field. A sharpened projection with a
-tightening tolerance on a larger 180 by 60 mm MBB makes it black and white, but
-1-cell members and holes remain: the function does not yet show its intended
-behaviour, and its implementation needs checking against Zhou et al. The length preset requests 16 physical units so its radius remains
-resolved on both the normal and the existing coarse GUI-comparison mesh. Its
-separate 1D calibration uses 4/8/12-cell bars and a requested length of 10; those
+(AL) meets its limits.
+
+**Minimum length was wrong until 29 October 2026.** Its indicator penalised a
+cone average below 1 on a medial line, where Zhou et al. penalise only an average
+below the erosion threshold (0.75). The inside corners of every junction have an
+average just under 1, so even a truss of members wider than requested violated
+it, and no optimiser could remove the last 1-cell members. The indicator now uses
+the threshold, with a cone radius that puts a bar exactly the requested length
+wide at it (about 1.06 times the length in 2D) and a tolerance equal to the
+deficit of a bar 10% thinner; straight bars and trusses of known width test it.
+Its medial-line detector decays by 0.3 (R/h)^4 instead of (R/h)^4: at the old
+value a short 1 mm member between two solid regions escaped, because the average
+rises along it. The showcase asks for 4 mm (8 cells) on the 120 x 40 MBB,
+switching the constraints in while a projection sharpens: after 391 steps it
+ends at 50% volume with both phases met (fresh peaks 0.985 and 0.994 of the
+tolerance) and compliance 191.6, against 185.4 for the same problem without them,
+whose members are 1-2 mm wide.
+Its separate 1D calibration uses 4/8/12-cell bars and a requested length of 10; those
 calibration inputs are not silently substituted for the optimization setup.
 
 The multiresolution example made the strongest warning concrete: on a 24 x 8

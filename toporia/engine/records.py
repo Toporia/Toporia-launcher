@@ -164,16 +164,22 @@ def check_limits(scenario, responses):
             }
         )
 
+    from toporia.plugins.responses import RESPONSES
+
     for i, spec in enumerate(scenario.constraints):
         key = f"constraint_{i}_{spec.get('type')}"
         g = responses.get(f"{key}_exact", responses.get(key))
         name = f"constraint {i + 1} ({spec.get('type')})"
+        # A scheduled limit ends at its last value, not the scenario's starting one.
+        limit = responses.get(f"constraints[{i}].limit", spec.get("limit"))
+        cls = RESPONSES.get(spec.get("type")) if spec.get("type") in RESPONSES else None
+        if cls is not None and not cls.limit_in_units:
+            limit = None
         if g is None:
-            report.append({"name": name, "value": None, "limit": spec.get("limit"), "satisfied": None})
+            report.append({"name": name, "value": None, "limit": limit, "satisfied": None})
             continue
         # Constraints are normalised as value / limit − 1; show them in the
-        # user's units when the spec has a limit.
-        limit = spec.get("limit")
+        # user's units when the limit is a bound on the value.
         value = (1.0 + g) * limit if limit is not None else g
         report.append(
             {

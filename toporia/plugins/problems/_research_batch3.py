@@ -174,7 +174,9 @@ representation("mmc_variable", "MMC variable-thickness bars", (
 ), "u: local axial coordinate; t1/t2/t3: half-thickness samples; T replaces t in the bar formula; b,L,epsilon as for constant MMC.",
     "Seven normalized variables per bar let its thickness taper or bulge. A thickness floor and product union remain in use.",
     "Zhang et al. (2016) variable-thickness MMC: exact numbered component/optimized panel pending.", "https://doi.org/10.1007/s00158-015-1372-3",
-    "Source and code thickness parameter ordering must be aligned before an MMC188 comparison. Tanh/product union and centre sampling are independent choices.", thickness="variable", n_x=3, n_y=2)
+    "Source and code thickness parameter ordering must be aligned before an MMC188 comparison. Tanh/product union and centre sampling are independent choices. "
+    "The showcase uses GCMMA: with plain MMA (Toporia's and pyMOTO's) the design stayed 0.3-0.7 % over the volume budget for 600 steps, "
+    "because the bar volume is strongly nonlinear in the bar parameters; GCMMA's conservative approximation ends exactly on it, at lower compliance.", thickness="variable", n_x=3, n_y=2)
 representation("mmv", "MMV superelliptical holes", (
     eq(r"\rho=\prod_b(1-H(\phi_b))", "Complement the smooth union: solid remains outside the moving superelliptical holes."), BAR,
 ), "H: smoothed tanh; b: hole index; x'/y',L/t,epsilon: local superellipse geometry and smoothing width.",
@@ -283,6 +285,11 @@ def recipe(case_id):
     elif kind == "representation":
         solver = replace(solver, method="q4+mma", method_params=dict(move=0.02),
                          representation=deepcopy(data["settings"]["representation"]))
+        if case_id == "mmc_variable":
+            # The bar volume is strongly nonlinear in the bar parameters: plain MMA's approximation
+            # underestimates it every step and the design stayed 0.3-0.7 % over budget (two MMA codes
+            # alike). GCMMA enlarges its approximation until it is conservative, so it ends on the budget.
+            solver = replace(solver, method="q4+mmapy_gcmma", tol=0.)
         if identity == "mmv":
             solver = replace(solver, method_params=dict(move=0.05), tol=0., filter_specs=[])
         if identity == "bspline":

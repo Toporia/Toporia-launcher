@@ -8,6 +8,7 @@ import numpy as np
 import pytest
 
 from experiments.research_batch4 import science_case
+from experiments.research_gradients import at_schedule_end
 from experiments.research_inventory import inventory
 from experiments.research_publish4 import CASE_IDS, publish
 from toporia.engine.loop import initialized_method
@@ -49,6 +50,7 @@ def test_curated_reports_retain_the_actual_final_fields_and_comparison_scope(nam
         return
     scenario, solver = recipe(name)
     method = initialized_method(Run(scenario, solver))
+    at_schedule_end(method, solver)      # a projection or tolerance continuation ends at its last value
     try:
         model = method._model
         # Set first-design eigenvalue normalization at the same point as capture.

@@ -7,34 +7,34 @@
   ],
   "target": "Zhou/Dunning length constraints: exact source panel and projection conventions pending.",
   "source_url": "https://doi.org/10.1016/j.cma.2015.05.003",
-  "limitations": "Own physical-field/KS variant is not the original three-field formulation. Gray fields, boundary stencils and mesh resolution prevent a universal minimum-feature certificate. In this bounded 24 x 8 example both length constraints remain violated and the field stays grey: on a grey field every cell violates the indicator (about 3800 times its tolerance at the uniform start), so MMA barely moves. With a Heaviside projection sharpened to beta 32 and the tolerance tightened from 100 to 1 on a 180 x 60 mm MBB (60 x 20 cells, mmapy MMA), the field becomes black and white, but 1-cell members and holes remain and the indicators stay about 5 times their tolerance; pyMOTO MMA's subproblem then takes about 30 s per step. The function does not yet show its intended behaviour; its edge stencils and KS calibration need checking against Zhou et al.",
+  "limitations": "Own physical-field/KS variant, not the original three-field formulation; mesh resolution and grey fields prevent a universal minimum-size certificate. Until 29 October 2026 the indicator penalised every cone average below 1 instead of below the threshold: the inside corners of every junction then violated it, so even a truss of wide members was infeasible and the optimiser kept 1-cell members. The constraints are switched in gradually (tolerance 64 times larger at the start, halved every 40 steps) while a projection sharpens to beta 16 (doubled every 60), as in Zhou et al.; started at full strength on a grey field every cell violates and MMA barely moves. The medial-line detector uses a decay of 0.3 times (R/h)^4: at 1 a short thin member between two solid regions escaped, because the average rises along it. Without the constraints the same problem keeps members 1-2 mm wide.",
   "paper_status": "paper_reproduction_to_fix",
   "paper_visual_status": "not_assessed",
   "checks": {
     "directional_gradient_errors": [
-      1.7053473193877944e-06,
-      1.650594438906694e-09,
-      2.1932105353222982e-09,
-      2.0070446174070213e-09
+      7.456945501287538e-07,
+      6.144625075776386e-11,
+      2.8356180251098984e-13,
+      1.3466441503573456e-13
     ],
     "gradient_tolerance": 0.003,
-    "probe_step": 1e-06,
+    "probe_step": 0.001,
     "checks_passed": true,
     "scope": "Objective, budget and every extra constraint at one smooth deterministic direction. Stress adaptive scale disabled only in the probe; eigenvalue reference and AL multipliers held fixed. Not certification at switches/repeated modes.",
     "straight_bar_indicators": [
       [
         4,
-        171.50146622138485,
+        46.75946372312787,
         1.0
       ],
       [
         8,
-        1.9273700509926843,
+        3.7950669725312016,
         1.0
       ],
       [
         12,
-        0.7537687077037981,
+        0.10000000024201529,
         1.0
       ]
     ],
@@ -42,32 +42,32 @@
     "finite_execution": true,
     "bounded_density": true
   },
-  "iterations": 60,
-  "stop_reason": "iteration limit (60)",
-  "fresh_final_objective": 1998.8673019954817,
-  "last_recorded_objective": 2061.187263124406,
-  "physical_volume_fraction": 0.4822907059070316,
+  "iterations": 391,
+  "stop_reason": "design change 0.00767 < tol 0.01",
+  "fresh_final_objective": 191.60328123734055,
+  "last_recorded_objective": 191.60191963428738,
+  "physical_volume_fraction": 0.4999979574949856,
   "volume_limit": 0.5,
   "feasible_volume_1e_4": true,
   "fresh_reported": {
-    "length_scale_peak_ratio_0": 90.21777278406479,
-    "length_scale_tolerance_0": 0.001290657837263228,
-    "length_scale_peak_ratio_1": 85.92364721042314,
-    "length_scale_tolerance_1": 0.001290657837263228
+    "length_scale_peak_ratio_0": 0.9845696670600503,
+    "length_scale_tolerance_0": 0.00296553965274776,
+    "length_scale_peak_ratio_1": 0.9943701322150093,
+    "length_scale_tolerance_1": 0.00296553965274776
   },
   "constraints": [
     {
       "name": "minimum_length",
-      "value": 89.217772784068,
+      "value": -0.00022326227189461978,
       "exact": null
     },
     {
       "name": "minimum_length",
-      "value": 84.92364721042316,
+      "value": -0.0003486120135163251,
       "exact": null
     }
   ],
-  "feasible_constraints_1e_4": false,
+  "feasible_constraints_1e_4": true,
   "scenario": {
     "Lx": 60.0,
     "Ly": 20.0,
@@ -109,12 +109,14 @@
       {
         "type": "minimum_length",
         "phase": "solid",
-        "min_length": 16.0
+        "min_length": 4.0,
+        "limit": 64.0
       },
       {
         "type": "minimum_length",
         "phase": "void",
-        "min_length": 16.0
+        "min_length": 4.0,
+        "limit": 64.0
       }
     ],
     "E0": 1.0,
@@ -123,7 +125,7 @@
     "point_springs": []
   },
   "solver": {
-    "method": "q4+pymoto_mma",
+    "method": "q4+mmapy_mma",
     "method_params": {},
     "interpolation": {
       "type": "simp"
@@ -133,14 +135,44 @@
     },
     "filter_specs": [
       {
-        "type": "density"
+        "type": "density",
+        "rmin": 3.0
+      },
+      {
+        "type": "heaviside",
+        "beta": 1.0
       }
     ],
-    "schedules": [],
+    "schedules": [
+      {
+        "path": "filters[1].beta",
+        "type": "geometric",
+        "start": 1.0,
+        "end": 16.0,
+        "factor": 2.0,
+        "every": 60
+      },
+      {
+        "path": "constraints[0].limit",
+        "type": "geometric",
+        "start": 64.0,
+        "end": 1.0,
+        "factor": 2.0,
+        "every": 40
+      },
+      {
+        "path": "constraints[1].limit",
+        "type": "geometric",
+        "start": 64.0,
+        "end": 1.0,
+        "factor": 2.0,
+        "every": 40
+      }
+    ],
     "variants": {},
-    "m": 0.4,
-    "max_iter": 60,
-    "tol": 0.0
+    "m": 2.0,
+    "max_iter": 600,
+    "tol": 0.01
   },
   "resolved_method_params": {
     "move": 0.2
@@ -156,7 +188,7 @@
     "nullspace_optimizer": "1.3.0"
   },
   "iteration_override": null,
-  "runtime_seconds": 3.635378100036178,
+  "runtime_seconds": 145.2742220999935,
   "protocol": "Existing engine loop; fresh final model evaluation after closing updater. Objective histories may be pre-update. Physical rows begin at y=0; 3D arrays are z,y,x. Diagnostic engine solves are additional to optimization. No source match implied.",
   "next_check": "Align the original three-field source example, or keep the current nodal-KS physical-field variant separate. Resolve the cone adequately and calibrate curved/diagonal features.",
   "primary_source_review": {

@@ -54,8 +54,10 @@ def field_plot(ax, field, title):
 #: near 1000 over 4800 cells; below 1e-5 the coarse saddle-point solve's round-off dominates
 #: (relative error 1.4e-3 at 1e-6, 7e-6 at 1e-4, 3e-8 at 1e-2), as its unit test also notes.
 #: The pyMOTO elastic network on 60 x 20 cells behaves the same way (2.1e-4 at 1e-6, 2.8e-6 at 1e-4,
-#: 1.7e-7 at 1e-3): round-off in the difference, not a wrong adjoint.
-PROBE_STEPS = {"multires": 1e-4, "elastic_pymoto": 1e-4}
+#: 1.7e-7 at 1e-3): round-off in the difference, not a wrong adjoint. So does minimum length on
+#: 120 x 40 cells, compliance 1028 against a directional derivative of 1.9 (4.3e-3 at 1e-7,
+#: 1.8e-3 at 1e-6, 2.5e-6 at 1e-4, 7.5e-7 at 1e-3, 2.0e-7 at 1e-2).
+PROBE_STEPS = {"multires": 1e-4, "elastic_pymoto": 1e-4, "minimum_length": 1e-3}
 
 
 def gradient_probe(name):

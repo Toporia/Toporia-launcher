@@ -66,11 +66,18 @@ def _relative(fd, adjoint):
     return float(abs(fd - adjoint) / max(1.0, abs(fd), abs(adjoint)))
 
 
+def at_schedule_end(method, solver):
+    """Set every scheduled parameter to its last value, as it was when the run ended."""
+    for spec in solver.schedules:
+        method.set_parameter(spec["path"], spec["end"])
+
+
 def probe(batch, name, recipe, path):
     """Errors of every response at the saved final design, per step."""
     scenario, solver = recipe(name)
     with contextlib.redirect_stdout(None):
         method = initialized_method(Run(_fixed_stress_scale(scenario), solver))
+        at_schedule_end(method, solver)
     try:
         if not isinstance(method, ComposedMethod):
             return dict(batch=batch, case=name, status="not_composed",

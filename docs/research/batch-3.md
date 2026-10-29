@@ -80,9 +80,12 @@ The important formulation gaps are concrete:
 
 ## Feasibility and stopping are separate from execution
 
-On the 60 by 20 showcases (28 October 2026) one companion exceeds the 0.5
+On the 60 by 20 showcases (28 October 2026) one companion exceeded the 0.5
 volume budget by more than the absolute tolerance 1e-4: variable-thickness MMC
-at 0.503301 (geometric-variable MMA overshoot). On the earlier 30 by 10 runs
+at 0.503301. Toporia's and pyMOTO's MMA both stayed 0.3-0.7% over for 600 steps,
+because the bar volume is strongly nonlinear in the bar parameters; since
+29 October 2026 it uses GCMMA, whose conservative approximation ends on the
+budget (0.50000) at lower compliance (237 against 241). On the earlier 30 by 10 runs
 Adam-AL, local-stress AL, both MMC variants, MMV and the RBF level set did.
 
 The multi-OC and local-stress companions use a stress limit of 1.5, 0.8 times
@@ -92,9 +95,11 @@ move 0.02 (it ends 0.3% over at move 0.05, as expected for OC with a sign-changi
 stress gradient), local-stress AL 0.16% under, at 3% more compliance. The earlier
 limit of 0.5 (0.27 times the peak) cannot be met with half the material at a
 point load. L-bracket (local stress) is a separate preset: it lowers the corner
-peak from 0.673 to 0.514 with 26% material and ends about 3% over its limit of
-0.5, whatever the step count, penalty or limit; its re-entrant corner stress is
-singular (14% over on a twice finer mesh).
+peak from 0.673 to 0.502 with 27% material, 0.4% over its limit of 0.5 and inside
+the run report's 1%. With a fixed move limit it stayed about 3% over whatever the
+step count or penalty; the excess was spread over some 80 elements, not at the
+corner, as MMA overshot the moving penalty. A move limit shrinking from 0.05 to
+0.001 lets the multipliers settle (29 October 2026).
 
 B-spline uses 40 by 14 quadratic coefficients with a Heaviside projection
 sharpened to beta 32 (greyness 0.0007, compliance 191; with 8 by 4 cubic

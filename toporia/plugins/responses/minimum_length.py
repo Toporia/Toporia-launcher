@@ -1,20 +1,31 @@
 """Geometric minimum-length constraint on a filtered physical density field.
 
 Zhou et al. (2015) indicators, using Dunning's (2018) standalone geometric
-filter adaptation. rho is the physical, normalised phase indicator; b=H rho
-uses a cone of radius half the requested feature length. Solid/void measures
-are rho exp(-c |G b|^2) (1-b)^2 and its phase complement. A conservative
-KS aggregate controls their nodal values against Dunning's 1-D tolerance
-scale, rather than diluting a small feature in a global average.
+filter adaptation. rho is the physical, normalised phase indicator and b=H rho
+its cone average. As in Zhou et al., a solid cell on a medial line (where
+|G b| is small) violates only when b falls below the erosion threshold eta:
+
+    I_s = rho exp(-c |G b|^2) max(eta - b, 0)^2
+    I_v = (1 - rho) exp(-c |G b|^2) max(b - (1 - eta), 0)^2
+
+The cone radius is chosen so that a straight bar exactly the requested length
+wide has b = eta on its centre line: wider bars and holes give zero, narrower
+ones a positive value. (Penalising every b < 1, as before 29 October 2026,
+also flagged the inside corners of every junction, so no truss satisfied it.)
+A conservative KS aggregate controls the nodal values against a tolerance:
+the centre-line value of a bar 10% thinner than requested, which leaves room
+for the one-cell discretisation of an edge.
 
 G differentiates in units of the minimum cell spacing; c=(R/h_min)^4 times
 a user scale. The complete discrete derivative includes H.T and G.T terms.
 This is an independent cell-centred variant, not a three-field Zhou port.
-Finite mesh resolution, gray fields and the 1-D nodal tolerance calibration
-prevent treating it as a universal certificate of geometric minimum size.
+Finite mesh resolution and gray fields prevent treating it as a universal
+certificate of geometric minimum size.
 """
 
 import numpy as np
+from scipy.integrate import quad
+from scipy.optimize import brentq
 from scipy.signal import convolve
 from scipy.sparse import coo_matrix, csc_matrix, eye
 from scipy.special import logsumexp
@@ -34,6 +45,25 @@ def cone_kernel(radius, spacings, shape):
     coordinates = np.meshgrid(*axes, indexing="ij")
     distance = np.sqrt(sum(axis*axis for axis in coordinates))
     return np.maximum(radius-distance, 0.0)
+
+
+def slab_fraction(s, dims):
+    """Share of a unit cone's weight (1 - r) lying in the slab |y| < s, in 2 or 3 dimensions."""
+    def section(y):     # the cone's weight over the line (2-D) or disk (3-D) at height y
+        if dims == 2:
+            return quad(lambda x: 1-np.hypot(x, y), 0, np.sqrt(1-y*y))[0]
+        return np.pi*((1-y*y)-2/3*(1-abs(y)**3))
+    return quad(section, 0, s)[0]/quad(section, 0, 1)[0]
+
+
+def calibration(threshold, dims):
+    """(cone radius per requested length, nodal tolerance) for an erosion threshold.
+
+    A bar exactly the requested length wide has its centre-line average at the
+    threshold; the tolerance is the deficit on the centre line of a bar 10% thinner.
+    """
+    half_width = brentq(lambda s: slab_fraction(s, dims)-threshold, 1e-6, 1.0)
+    return 0.5/half_width, (threshold-slab_fraction(0.9*half_width, dims))**2
 
 
 def difference_matrix(n, scale):
@@ -72,12 +102,18 @@ class MinimumLength(Response):
         Param("phase", "solid", "Controlled phase", "Add one constraint for each phase when both are required.",
               choices=(("solid", "Solid members"), ("void", "Void features"))),
         Param("min_length", 10.0, "Requested feature length",
-              "Physical feature length; the geometric cone radius is half this value. Resolve the radius over several cells.",
+              "Physical feature length. The cone radius follows from it and the threshold (about this length at 0.75); resolve it over several cells.",
               min=0.01, max=1000.0, decimals=3, units="mm"),
         Param("limit", 1.0, "Nodal tolerance multiplier",
-              "Multiplier of the paper's 1-D nodal tolerance scale. Larger values relax the constraint; calibrate on the actual mesh and geometry.",
+              "Multiplier of the tolerance (the centre-line deficit of a bar 10% thinner than requested). Larger values relax the constraint.",
               min=0.01, max=100.0, decimals=4),
-        Param("decay_scale", 1.0, "Indicator decay scale",
+        Param("threshold", 0.75, "Erosion threshold",
+              "Zhou et al.'s eta: a medial cell whose cone average is below this is too thin. 0.75 as in the paper; "
+              "a higher value needs a smaller cone.",
+              min=0.55, max=0.95, decimals=3),
+        # At 1 a short thin member between two solid regions escaped: the average rises along it, so its
+        # centre line is no stationary point. 0.3 flags it while a truss of wide members still passes.
+        Param("decay_scale", 0.3, "Indicator decay scale",
               "Multiplier of (radius/minimum-cell-spacing)^4. Excessive decay can miss discrete medial regions.",
               min=0.01, max=10.0, decimals=3),
         Param("sharpness", 10.0, "KS sharpness factor",
@@ -87,22 +123,20 @@ class MinimumLength(Response):
     # Generic model checks use 3.33 mm cells, coarser than the default mesh.
     gradient_check_settings = {"min_length": 16.0}
     schedulable = ("limit",)
+    #: "limit" multiplies the tolerance; the constraint is reported as g = KS - 1 itself.
+    limit_in_units = False
 
     def setup(self, physics, problem, settings):
         super().setup(physics, problem, settings)
         self.shape = problem.shape
         self.spacings = ((problem.dy, problem.dx) if len(self.shape) == 2
                          else (problem.dz, problem.dy, problem.dx))
-        radius = settings["min_length"]/2
-        self.kernel = cone_kernel(radius, self.spacings, self.shape)
+        factor, self.reference_tolerance = calibration(settings["threshold"], len(self.shape))
+        self.radius = factor*settings["min_length"]
+        self.kernel = cone_kernel(self.radius, self.spacings, self.shape)
         self.normaliser = convolve(np.ones(self.shape), self.kernel, mode="same", method="auto")
         h = min(self.spacings)
-        self.decay = settings["decay_scale"]*(radius/h)**4
-        # Maximum of t^4/(4*r^4)*exp(-c*t^2/r^4), 0 <= t <= r.
-        # The paper's interior critical point leaves that interval at low c.
-        r = radius/h
-        t = min(r, np.sqrt(2)*r*r/np.sqrt(self.decay))
-        self.reference_tolerance = t**4/(4*r**4)*np.exp(-self.decay*t*t/r**4)
+        self.decay = settings["decay_scale"]*(self.radius/h)**4
         self.ks_beta = settings["sharpness"]*max(float(np.log(np.prod(self.shape))), 1.0)
         self.derivatives = []
         for axis, spacing in enumerate(self.spacings):
@@ -123,7 +157,8 @@ class MinimumLength(Response):
         exponential = np.exp(-self.decay*sum(component*component for component in spatial)).reshape(self.shape)
         solid = self.settings["phase"] == "solid"
         phase = density if solid else 1-density
-        deficit = 1-filtered if solid else filtered
+        threshold = self.settings["threshold"]
+        deficit = np.maximum(threshold-filtered, 0) if solid else np.maximum(filtered-(1-threshold), 0)
         local = phase*exponential*deficit**2
         tolerance = self.settings["limit"]*self.reference_tolerance
         logits = self.ks_beta*local/tolerance

@@ -115,12 +115,12 @@ add("local_stress", "Local stress penalties and multiplier fields", "response:lo
     "https://doi.org/10.1007/s00158-020-02760-8", "PolyStress local-stress example: source polygonal mesh/relaxation/panel pending.",
     "The Q4 density-relaxed variant is not a PolyStress port. Finite penalties and a bounded solve do not certify local feasibility.")
 add("minimum_length", "Geometric solid and void length indicators", "response:minimum_length", [
-    (r"b=H\rho,\quad I_s=\rho e^{-c|Gb|^2}(1-b)^2,\quad I_v=(1-\rho)e^{-c|Gb|^2}b^2", "A physical cone average and discrete gradient identify small solid/void medial features."),
-    (r"\max_j a_j\leq {\rm KS}(a)\leq\max_j a_j+1/s", "The normalized nodal KS measure is conservative within its configured aggregation gap; it uses a mesh-dependent one-dimensional tolerance calibration.")],
-    "H: cone average; G: discrete gradient in minimum-cell-spacing units; c: radius-based scale; a: normalized nodal violations; s: KS sharpness.",
-    "Runs the existing cell-centred geometric constraints and tests straight bars against their calibrated nodal indicator.",
+    (r"b=H\rho,\quad I_s=\rho e^{-c|Gb|^2}\max(\eta-b,0)^2,\quad I_v=(1-\rho)e^{-c|Gb|^2}\max(b-1+\eta,0)^2", "A cone average and its discrete gradient find the medial lines of solid members and holes; there an average below the erosion threshold eta (above 1-eta for a hole) means the feature is too thin. The cone radius makes a bar exactly the requested length wide sit at eta."),
+    (r"\max_j a_j\leq {\rm KS}(a)\leq\max_j a_j+1/s", "The normalized nodal KS measure is conservative within its aggregation gap; the tolerance is the centre-line deficit of a bar 10% thinner than requested.")],
+    "H: cone average; G: discrete gradient in minimum-cell-spacing units; c: radius-based scale; eta: erosion threshold (0.75); a: normalized nodal violations; s: KS sharpness.",
+    "Minimises the MBB compliance with 4 mm solid and void length constraints on a 120 x 40 mesh (8 cells), and tests straight bars against the indicator.",
     "https://doi.org/10.1016/j.cma.2015.05.003", "Zhou/Dunning length constraints: exact source panel and projection conventions pending.",
-    "Own physical-field/KS variant is not the original three-field formulation. Gray fields, boundary stencils and mesh resolution prevent a universal minimum-feature certificate. In this bounded 24 x 8 example both length constraints remain violated and the field stays grey: on a grey field every cell violates the indicator (about 3800 times its tolerance at the uniform start), so MMA barely moves. With a Heaviside projection sharpened to beta 32 and the tolerance tightened from 100 to 1 on a 180 x 60 mm MBB (60 x 20 cells, mmapy MMA), the field becomes black and white, but 1-cell members and holes remain and the indicators stay about 5 times their tolerance; pyMOTO MMA's subproblem then takes about 30 s per step. The function does not yet show its intended behaviour; its edge stencils and KS calibration need checking against Zhou et al.")
+    "Own physical-field/KS variant, not the original three-field formulation; mesh resolution and grey fields prevent a universal minimum-size certificate. Until 29 October 2026 the indicator penalised every cone average below 1 instead of below the threshold: the inside corners of every junction then violated it, so even a truss of wide members was infeasible and the optimiser kept 1-cell members. The constraints are switched in gradually (tolerance 64 times larger at the start, halved every 40 steps) while a projection sharpens to beta 16 (doubled every 60), as in Zhou et al.; started at full strength on a grey field every cell violates and MMA barely moves. The medial-line detector uses a decay of 0.3 times (R/h)^4: at 1 a short thin member between two solid regions escaped, because the average rises along it. Without the constraints the same problem keeps members 1-2 mm wide.")
 add("phase_field", "Diffuse-interface energy and compliance", "response:phase_field", [
     (r"J=C/C_{\rm ref}+w\left\langle\frac{\epsilon}{2}|\nabla\rho|^2+\frac{\rho^2(1-\rho)^2}{\epsilon}\right\rangle", "The existing response adds domain-mean Modica-Mortola energy to normalized compliance; w controls the tradeoff."),
     (r"\rho(x)=\frac{1}{1+e^{-\sqrt{2}x/\epsilon}},\quad\gamma=\int_0^1\sqrt{2r^2(1-r)^2}\,dr=\frac{\sqrt{2}}{6}", "A resolved planar transition gives an independent interface-energy limit for this double-well convention.")],
@@ -195,17 +195,22 @@ def recipe(name):
             scenario = replace(scenario, constraints=[dict(type="local_stress", limit=3.)])
             solver = replace(solver, method="q4+augmented_lagrangian")
         elif name == "minimum_length":
-            scenario = replace(scenario, constraints=[dict(type="minimum_length", phase="solid", min_length=16.),
-                                                      dict(type="minimum_length", phase="void", min_length=16.)])
-            solver = replace(solver, method="q4+pymoto_mma")
+            # 4 mm members and holes on a 120 x 40 mesh (8 cells). The constraints start loose (tolerance
+            # x64) and tighten to 1 while a projection sharpens the design, as in Zhou et al.'s
+            # continuation; the filter of radius 3 cells keeps the early design free of 1-cell members.
+            scenario = replace(scenario, constraints=[dict(type="minimum_length", phase=phase, min_length=4., limit=64.)
+                                                      for phase in ("solid", "void")])
+            solver = replace(solver, method="q4+mmapy_mma", m=2.,
+                             filter_specs=[dict(type="density", rmin=3.), dict(type="heaviside", beta=1.)],
+                             schedules=[dict(path="filters[1].beta", type="geometric", start=1., end=16., factor=2., every=60)]
+                             + [dict(path=f"constraints[{i}].limit", type="geometric", start=64., end=1., factor=2., every=40)
+                                for i in (0, 1)])
         elif name == "phase_field":
             scenario = replace(scenario, objective=dict(type="phase_field", interface_width=2.5, perimeter_weight=5.))
             solver = replace(solver, filter_specs=[])
     # A showcase runs on a mesh that resolves the design until it settles (change below 0.01) or the cap.
     if name == "minimum_length":
-        # The geometric indicators are slow on fine meshes (60 x 20 takes over 20 minutes) and their MMA
-        # steps start tiny; this example stays small and bounded and its constraints are not met.
-        return scenario, replace(solver, m=.4, max_iter=60, tol=0.)
+        return scenario, replace(solver, max_iter=600, tol=.01)
     # Stress-volume stops at change 0.005: at 0.01 its stress is still 0.02 % over the limit.
     return scenario, replace(solver, max_iter={"nonlinear": 150, "multires": 150}.get(name, 300),
                              tol={"stress_volume": .005}.get(name, .01))

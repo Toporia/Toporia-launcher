@@ -11,7 +11,7 @@ does not have.
 import numpy as np
 import pytest
 
-from toporia.engine.loop import initialized_method
+from toporia.engine.loop import initialized_method, run_single_with_store
 from toporia.framework.params import resolve_params
 from toporia.framework.problem.mesh import make_problem
 from toporia.plugins.models.q4 import Q4Model
@@ -78,31 +78,32 @@ def _corner_density(density):
     return float(density[near & material].mean())
 
 
-def test_l_bracket_meets_the_limit_and_rounds_the_corner(capsys):
+def test_l_bracket_meets_the_limit_and_rounds_the_corner(capsys, tmp_path):
     reference = get_run("L-bracket")
     oc = initialized_method(reference)
     for i in range(1, 101):
         oc.step(i)
 
-    run = get_run("L-bracket (local stress)")
-    method = initialized_method(run)
-    for i in range(1, run.solver.max_iter + 1):
-        method.step(i)
-    responses = method.get_responses()
+    # Through the engine, so the preset's shrinking move limit applies as in the GUI.
+    run = get_run("L-bracket (local stress)").with_output_dir(tmp_path)
+    store, density = run_single_with_store(run)
+    responses = {name: values[-1] for name, values in store.responses.items()}
     limit = run.scenario.constraints[0]["limit"]
 
     # The stress of the compliance design, measured with the same constraint.
+    method = initialized_method(run)
     oc_stress = method._model.evaluate(oc.x, gradients=False).reported["max_stress"]
     ratio = responses["max_stress"] / limit
     print(f"\ncompliance design: volume {oc.get_density().mean():.3f}, max stress/limit {oc_stress / limit:.2f}, "
           f"corner density {_corner_density(oc.get_density()):.2f}")
-    print(f"local stress design: volume {method.get_density().mean():.3f}, max stress/limit {ratio:.3f}, "
-          f"corner density {_corner_density(method.get_density()):.2f}")
+    print(f"local stress design: volume {density.mean():.3f}, max stress/limit {ratio:.3f}, "
+          f"corner density {_corner_density(density):.2f}")
 
-    assert ratio <= 1.05
+    assert ratio <= 1.01                                  # the run report's limit tolerance
+    assert all(entry["satisfied"] for entry in store.limits)
     assert responses["constraint_0_local_stress_exact"] == pytest.approx(ratio - 1.0)
     assert oc_stress / limit > 1.2                        # the compliance design violates the limit
-    assert _corner_density(method.get_density()) < _corner_density(oc.get_density()) - 0.05   # corner relieved
+    assert _corner_density(density) < _corner_density(oc.get_density()) - 0.05   # corner relieved
 
 
 def test_local_stress_is_refused_with_an_updater_that_would_misread_its_penalty():

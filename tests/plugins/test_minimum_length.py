@@ -7,7 +7,7 @@ import numpy as np
 import pytest
 
 from toporia.framework.params import resolve_params
-from toporia.plugins.responses.minimum_length import MinimumLength, cone_kernel
+from toporia.plugins.responses.minimum_length import MinimumLength, calibration, cone_kernel
 
 
 def response(shape=(12, 16), spacing=None, **settings):
@@ -29,7 +29,7 @@ def test_filter_is_the_independent_truncated_physical_cone_and_has_exact_transpo
         denominator = 0.0
         for j in np.ndindex(shape):
             distance = np.sqrt(sum(((a-b)*h)**2 for a, b, h in zip(i, j, spacing, strict=True)))
-            weight = max(3-distance, 0)
+            weight = max(part.radius-distance, 0)
             expected[i] += weight*rho[j]
             denominator += weight
         expected[i] /= denominator
@@ -102,13 +102,30 @@ def test_three_dimensional_plate_or_slot_is_controlled(phase):
         assert (part.measure(rho)[0] <= 1) == feasible
 
 
-@pytest.mark.parametrize("scale", [0.01, 0.1, 1, 10])
-def test_reference_tolerance_is_the_actual_one_dimensional_profile_maximum(scale):
-    part = response(decay_scale=scale)
-    r = 3.0
-    t = np.linspace(0, r, 100001)
-    profile = t**4/(4*r**4)*np.exp(-part.decay*t*t/r**4)
-    assert part.reference_tolerance == pytest.approx(profile.max(), rel=1e-8)
+@pytest.mark.parametrize("threshold", [0.6, 0.75, 0.9])
+def test_a_bar_exactly_the_requested_length_wide_sits_at_the_threshold(threshold):
+    # Independent of the response's quadrature: a fine sampled 2-D cone of radius 1.
+    radius_per_length, tolerance = calibration(threshold, 2)
+    g = np.linspace(-1, 1, 2001)
+    y, x = np.meshgrid(g, g, indexing="ij")
+    weight = np.maximum(1-np.hypot(x, y), 0)
+    def centre_value(width):     # cone average on the centre line of a bar `width` lengths wide
+        return weight[np.abs(y) < width/2/radius_per_length].sum()/weight.sum()
+    assert centre_value(1.0) == pytest.approx(threshold, abs=2e-3)
+    assert threshold-np.sqrt(tolerance) == pytest.approx(centre_value(0.9), abs=2e-3)
+
+
+def test_junctions_of_a_truss_with_wide_members_are_not_flagged():
+    # Penalising every average below 1 flagged the inside corners of junctions.
+    part = response((40, 120), (0.5, 0.5), min_length=6)
+    y, x = (np.mgrid[0:40, 0:120]+0.5)*0.5
+    for phase, member, feasible in (("solid", 6, True), ("solid", 3, False), ("solid", 1, False)):
+        rho = ((y < member) | (y > 20-member)).astype(float)
+        for x0 in (0, 30, 60):
+            rho[np.abs(x-x0-y)/np.sqrt(2) < member/2] = 1
+            rho[np.abs(x-x0+y-20)/np.sqrt(2) < member/2] = 1
+        part.settings["phase"] = phase
+        assert (part.measure(rho, False)[0] <= 1) == feasible, member
 
 
 def test_constraint_reporting_and_tolerance_continuation():

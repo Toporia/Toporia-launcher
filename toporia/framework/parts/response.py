@@ -78,6 +78,10 @@ class Response:
     dims = None
     #: Parameters a schedule may change during a run (framework/parts/schedule.py).
     schedulable = ()
+    #: True when a "limit" parameter is the bound on the response's own value, so a
+    #: normalised constraint g = value / limit - 1 can be reported in those units.
+    #: False when "limit" only scales a tolerance: the run report then shows g itself.
+    limit_in_units = True
 
     @classmethod
     def computable_on(cls, physics):
