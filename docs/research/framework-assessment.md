@@ -1,6 +1,6 @@
 # Framework assessment after the four research batches
 
-[Computation guide](core.html) · [Variable/update guide](optimization.html) · [Batch 4 evidence](batch-4.md)
+[Computation guide](core.html) · [Variable/update guide](optimization.html) · [Batch 4 evidence](batch-4.md) · [The hard tasks in detail](hard-tasks-assessment.md)
 
 The current framework can accept more implementations of its existing numerical
 parts without a general rewrite. The hard boundary is **one structured physical

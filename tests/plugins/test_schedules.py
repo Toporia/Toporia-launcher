@@ -37,6 +37,9 @@ def test_each_kind_reaches_its_end_and_stays_there():
     assert [steps.value(c) for c in (0, 19, 20, 40, 80, 500)] == [1, 1, 1.5, 2, 3, 3]
     assert not steps.finished(79) and steps.finished(80)
     assert Steps(start=3, end=1, step=0.5, every=1).value(10) == 1        # downwards, same positive step
+    # top99neo's beta: +2 every 25 iterations from iteration 250 on, up to 16.
+    late = Steps(start=2, end=16, step=2, every=25, first=250)
+    assert [late.value(c) for c in (0, 249, 250, 274, 275, 374, 1000)] == [2, 2, 4, 4, 6, 12, 16]
 
     doubling = Geometric(start=1, end=64, factor=2, every=50)
     assert [doubling.value(c) for c in (0, 50, 100, 300, 1000)] == [1, 2, 4, 64, 64]
