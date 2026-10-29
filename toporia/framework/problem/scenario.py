@@ -185,6 +185,11 @@ class Scenario:
     # order for existing Scenario callers; unsupported models reject them.
     point_springs: list[PointSpring] = field(default_factory=list)
 
+    # None keeps the historical preset geometry/fallbacks. An explicit list,
+    # including [], uses only these physical objects (no implicit BCs or loads).
+    # Object definitions live in mm and are remeshed on every resolution change.
+    regions: list | None = None
+
 
 # Param declarations for the scenario fields the GUI and sweeps expose.
 SCENARIO_PARAMS = (

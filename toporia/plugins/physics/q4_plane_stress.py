@@ -126,9 +126,12 @@ class Q4DofLayout:
         self.ndof = 2 * problem.nn
         self.fixed_dofs = self._build_fixed_dofs()
         self.free_dofs = np.setdiff1d(np.arange(self.ndof), self.fixed_dofs)
-        self.forces = [
-            (lc.weight, self._force_vector(lc.Fmag, lc.Fa)) for lc in self.load_cases
-        ]
+        if hasattr(problem, "region_loads"):
+            from toporia.framework.problem.regions import regional_force
+            self.forces = [(lc.weight, regional_force(problem, self.node_ids, 2, i))
+                           for i, lc in enumerate(self.load_cases)]
+        else:
+            self.forces = [(lc.weight, self._force_vector(lc.Fmag, lc.Fa)) for lc in self.load_cases]
 
     def _build_fixed_dofs(self):
         """Assemble the sorted array of constrained DOF indices from all node masks."""

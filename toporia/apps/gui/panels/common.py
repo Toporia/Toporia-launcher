@@ -98,6 +98,10 @@ class CollapsibleSection(QWidget):
         self._title = title
         self._on_toggle(self._toggle.isChecked())
 
+    def set_expanded(self, expanded):
+        """Reveal a section when a canvas selection points to its controls."""
+        self._toggle.setChecked(expanded)
+
 
 # ── Sweep dropdown helpers ────────────────────────────────────────────────────
 

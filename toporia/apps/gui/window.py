@@ -1,21 +1,10 @@
 # apps/gui/window.py — the main application window
 #
-# MainWindow lays the app out like a slicer: you walk through numbered steps
-# along the top, the current step's settings sit in the sidebar, and the view
-# of the design is always in the middle.
-#
-#   ┌───────────────────────────────────────────────────────────────────────────┐
-#   │ Toporia  Preset [▼]   1 Problem › 2 Solver › 3 Study › 4 Post & Export [▶ Run] │
-#   ├──────────────────┬───────────────────────────────────────┬────────────────┤
-#   │ settings of the  │                                       │                │
-#   │ current step     │   LiveCanvas (density + convergence)  │  PipelineView  │
-#   │                  │                                       │  (what the run │
-#   │                  ├───────────────────────────────────────┤   is made of)  │
-#   │ [‹ Back][Next ›] │   Console log                         │                │
-#   └──────────────────┴───────────────────────────────────────┴────────────────┘
-#
-# This file contains no optimisation logic and no widget definitions.
-# It only wires together the pieces from panels/, canvas.py, and runner.py.
+# Home opens portable projects and the benchmark library. The persistent steps
+# switch both the left settings and the main workspace: physical editor, method
+# diagram, asynchronous runner, then post-processing. Numerical execution lives
+# in gui_worker.py, with the Qt lifecycle in execution.py. Plugin declarations
+# still generate controls; project_ui.py owns file actions and dirty tracking.
 
 import traceback  # for formatting Python exception messages into readable text
 
@@ -23,25 +12,35 @@ from PySide6.QtCore import Qt, QTimer
 from PySide6.QtGui import QFont, QTextCursor
 from PySide6.QtWidgets import (
     QAbstractSpinBox,
-    QApplication,
     QButtonGroup,
     QComboBox,
+    QDialog,
+    QDialogButtonBox,
+    QFileDialog,
     QFrame,
     QHBoxLayout,
     QLabel,
+    QListWidget,
     QMainWindow,
+    QProgressBar,
     QPushButton,
     QScrollArea,
     QSplitter,
     QStackedWidget,
+    QStyle,
     QTextEdit,
     QToolButton,
     QVBoxLayout,
     QWidget,
 )
 
+from .blank_setup import BlankSetup
 from .canvas import LiveCanvas
-from .help import problem_topic, text_topic, with_help
+from .editor import ProblemEditor
+from .execution import ExecutionActions
+from .help import text_topic, with_help
+from .home import HomePage
+from .method_view import MethodWorkspace
 from .panels import (
     CompareLoadCasesParamsGroup,
     CompareMethodsParamsGroup,
@@ -63,16 +62,20 @@ from .panels import (
     SweepParamsGroup,
     VariantsGroup,
 )
+from .project import Project
+from .project_ui import ProjectActions
+from .workflow_ui import WorkflowActions
 
 #: The steps along the top, in the order one walks through them before a run.
 STEPS = (
     ("Problem", "What is designed: the design space, the material budget, the loads and supports, "
                 "what is optimised and what must hold."),
-    ("Solver", "How it is optimised: the physics, the updater, the material law, the filters "
+    ("Method", "How it is optimised: the physics, the updater, the material law, the filters "
                "and anything that changes during the run."),
-    ("Study", "What kind of run: one design, a sweep, a comparison, a sensitivity study, "
+    ("Runner", "What kind of run: one design, a sweep, a comparison, a sensitivity study, "
               "or a check of every part."),
-    ("Post & Export", "What happens to the finished design: clean-up, measurements and files."),
+    ("Post-process", "Modify the finished design and inspect the updated result."),
+    ("Export", "Write the current result to files outside the project."),
 )
 
 #: Every kind of run, with what it does and where it comes from, for the Mode "?".
@@ -110,14 +113,8 @@ MODES = {
 }
 
 
-class _StopRequested(Exception):
-    """Custom exception type raised when the user clicks Stop.
-    Using a dedicated type lets us catch it separately from real errors."""
-
-
-class MainWindow(QMainWindow):
-    """The application window: steps and Run along the top, the current step's settings
-    on the left, the live canvas and the log in the middle, the pipeline on the right."""
+class MainWindow(WorkflowActions, ProjectActions, ExecutionActions, QMainWindow):
+    """A project desktop with separate physical, method, run and export workspaces."""
 
     def __init__(self):
         super().__init__()
@@ -126,6 +123,15 @@ class MainWindow(QMainWindow):
         self._base_cfg = None  # set by _on_config_changed; holds geometry from selected config
         self._stop = False     # flag checked inside on_iter to interrupt the loop
         self._running = False  # while a run draws on the canvas, the problem preview stays away
+        self._result_density = None
+        self._result_config = None
+        self._result_objectives = []
+        self._result_iteration = 0
+        self._pending_iteration = None
+        self._display_timer = QTimer(self)
+        self._display_timer.setInterval(33)
+        self._display_timer.setSingleShot(True)
+        self._display_timer.timeout.connect(self._draw_pending_iteration)
         self._preview_timer = QTimer(self)   # edits come in bursts: redraw once they settle
         self._preview_timer.setSingleShot(True)
         self._preview_timer.setInterval(150)
@@ -144,10 +150,14 @@ class MainWindow(QMainWindow):
         body = QSplitter(Qt.Horizontal)
         body.addWidget(self._build_sidebar())
         body.addWidget(self._build_view())
-        body.addWidget(self._build_overview())
         body.setStretchFactor(1, 1)
-        body.setSizes([390, 720, 330])
-        outer.addWidget(body, 1)
+        body.setSizes([350, 1090])
+        self.workspace = body
+        self.root_pages = QStackedWidget()
+        self.home = HomePage()
+        self.root_pages.addWidget(self.home)
+        self.root_pages.addWidget(body)
+        outer.addWidget(self.root_pages, 1)
 
         self._wire_panels()
 
@@ -158,6 +168,9 @@ class MainWindow(QMainWindow):
         self._on_mode("Run One")  # hide sweep-specific groups on startup
         self.go_to_step(0)
         self._report_plugin_errors()
+        self._setup_project_ui()
+        self.show_home()
+        self.refresh_appearance()
 
     # ── Layout ────────────────────────────────────────────────────────────────
 
@@ -200,6 +213,7 @@ class MainWindow(QMainWindow):
         from toporia.plugins.problems import DEFAULT_PROBLEM, problem_names
 
         bar = QFrame()
+        self.navigation_bar = bar
         bar.setObjectName("topBar")
         bar.setStyleSheet(
             "#topBar { border-bottom: 1px solid palette(mid); }"
@@ -216,12 +230,18 @@ class MainWindow(QMainWindow):
         row.addWidget(title)
         row.addSpacing(16)
 
-        row.addWidget(QLabel("Preset:"))
+        home_button = QPushButton("Home")
+        home_button.clicked.connect(self.show_home)
+        row.addWidget(home_button)
+        self.project_label = QLabel()
+        row.addWidget(self.project_label)
         self.config_combo = QComboBox()
         self.config_combo.addItems(problem_names())
         self.config_combo.setCurrentText(DEFAULT_PROBLEM)
         self.config_combo.setToolTip("A ready-made problem: loads every step below with its settings.")
-        row.addWidget(with_help(self.config_combo, lambda: problem_topic(self.config_combo.currentText())))
+        # Kept as the preset-loading adapter for callers; the library is the visible selector.
+        self.config_combo.setParent(bar)
+        self.config_combo.hide()
         row.addSpacing(24)
 
         self._step_buttons = QButtonGroup(self)
@@ -254,7 +274,8 @@ class MainWindow(QMainWindow):
     def _build_sidebar(self):
         """One scrollable page per step, and Back / Next under it."""
         side = QWidget()
-        side.setMinimumWidth(20)
+        self.sidebar = side
+        side.setMinimumWidth(300)
         side.setMaximumWidth(560)
         layout = QVBoxLayout(side)
         layout.setContentsMargins(8, 8, 4, 8)
@@ -264,20 +285,58 @@ class MainWindow(QMainWindow):
         layout.addWidget(self._step_title)
 
         mode_box = QWidget()
+        mode_box.setMaximumHeight(48)
         mode_row = QHBoxLayout(mode_box)
         mode_row.setContentsMargins(0, 0, 0, 0)
         mode_row.addWidget(QLabel("Mode:"))
         mode_row.addWidget(with_help(self.mode, self._mode_topic), 1)
 
+        self.run_history = QListWidget()
+        self.run_history.setMaximumHeight(220)
+        self.run_history.setToolTip("Saved runs for this project; select one to review its output.")
+        self.run_history.itemClicked.connect(self._open_history_result)
+        from .panels.common import CollapsibleSection
+        history_section = CollapsibleSection("Saved runs", expanded=False)
+        history_section.body_layout.addWidget(self.run_history)
         self._pages = QStackedWidget()
+        self.method_inspector = QWidget()
+        QVBoxLayout(self.method_inspector).setContentsMargins(0, 0, 0, 0)
+        self.method_inspector.hide()
+        self.parameter_dialog = QDialog(self)
+        self.parameter_dialog.setWindowTitle("Function settings")
+        self.parameter_dialog.resize(460, 560)
+        parameter_layout = QVBoxLayout(self.parameter_dialog)
+        parameter_scroll = QScrollArea()
+        parameter_scroll.setWidgetResizable(True)
+        parameter_scroll.setFrameShape(QFrame.NoFrame)
+        parameter_scroll.setWidget(self.method_inspector)
+        parameter_layout.addWidget(parameter_scroll, 1)
+        from .help import HelpButton
+        self._parameter_topic = text_topic("Function settings", "Select a function in the local network to view its parameters and sourced explanation.")
+        parameter_layout.addWidget(HelpButton(lambda: self._parameter_topic))
+        done = QDialogButtonBox(QDialogButtonBox.Close)
+        done.rejected.connect(self.parameter_dialog.close)
+        parameter_layout.addWidget(done)
+        self.parameter_dialog.finished.connect(lambda *_: self._restore_inspector())
+        self.method_settings = QWidget(self)
+        settings_layout = QVBoxLayout(self.method_settings)
+        for widget in (self.core, self.material, self.filters, self.schedules, self.variants):
+            settings_layout.addWidget(widget)
+        self.method_settings.hide()
+        self._inspected_widget = None
         pages = (
             (self.design, self.core.volume_box, self.lc, self.objective, self.constraints),
-            (self.core, self.material, self.filters, self.schedules, self.variants),
-            (mode_box, self.sg, self.sg2, self.cg, self.clcg, self.cmg, self.msg, self.sens, self.ssg, self.ssg2),
-            (self.post, self._build_export_box(), self.core.output_section),
+            (QLabel("Select a function to open its settings.\nEnter a block to work in its local network.\nUse the library to add compatible functions."),),
+            (mode_box, history_section, self.sg, self.sg2, self.cg, self.clcg, self.cmg, self.msg, self.sens, self.ssg, self.ssg2),
+            (self._build_post_box(),),
+            (self._build_file_export_box(), self.core.output_section),
         )
         for widgets in pages:
             self._pages.addWidget(self._scroll_page(widgets))
+        # Serialized legacy postprocessor lists remain readable without cluttering
+        # the initial fixed-threshold UI with future methods.
+        self.post.setParent(self)
+        self.post.hide()
         layout.addWidget(self._pages, 1)
 
         nav = QHBoxLayout()
@@ -291,19 +350,33 @@ class MainWindow(QMainWindow):
         layout.addLayout(nav)
         return side
 
-    def _build_export_box(self):
-        """Apply the post-processors to the last design now, and open the folder the files went to."""
+    def _build_post_box(self):
+        """The deliberately minimal v0.2.1 result operation."""
         box = QWidget()
         layout = QVBoxLayout(box)
         layout.setContentsMargins(0, 0, 0, 0)
-        self.export_btn = QPushButton("Apply to the last design now")
-        self.export_btn.clicked.connect(self._on_export)
+        layout.addWidget(QLabel("Binary threshold · 0.5\nBelow 0.5 → void; at or above 0.5 → solid."))
+        self.export_btn = QPushButton("Execute post-process step")
+        self.export_btn.setMinimumHeight(40)
+        self.export_btn.clicked.connect(self._apply_binary)
         layout.addWidget(with_help(self.export_btn, lambda: text_topic(
-            "Apply to the last design now",
-            "Runs the post-processors above on the design of the last Run One, without optimising "
-            "again: change a threshold or add an export after the run, like exporting again from a "
-            "slicer. Files go to the run's post/ folder and the results are added to its run.json.",
-            "Toporia's own (the same as `toporia post <folder>` on the command line).")))
+            "Binary threshold", "Convert the current result to 0 or 1 at density 0.5 and immediately update the figure. This changes the result used by export; it does not rerun optimization or re-evaluate the objective.")))
+        return box
+
+    def _build_file_export_box(self):
+        box = QWidget()
+        layout = QVBoxLayout(box)
+        layout.setContentsMargins(0, 0, 0, 0)
+        self.export_format = QComboBox()
+        for label, name in (("STL solid", "export_stl"), ("SVG outline (2D)", "export_svg"),
+                            ("DXF outline (2D)", "export_dxf"), ("NumPy density", "npy")):
+            self.export_format.addItem(label, name)
+        layout.addWidget(self.export_format)
+        self.write_export_btn = QPushButton("Export current result…")
+        self.write_export_btn.setMinimumHeight(40)
+        self.write_export_btn.clicked.connect(self._write_export)
+        layout.addWidget(with_help(self.write_export_btn, lambda: text_topic(
+            "Export", "Write the current processed result, or the original result if no post-processing was performed, to a chosen folder. File export does not modify the design. Export version control is future work.")))
         self.open_folder_btn = QPushButton("Open the last run's folder")
         self.open_folder_btn.clicked.connect(self._open_last_folder)
         layout.addWidget(self.open_folder_btn)
@@ -315,9 +388,69 @@ class MainWindow(QMainWindow):
         done = runner.last_run_folder is not None
         self.export_btn.setEnabled(done)
         self.open_folder_btn.setEnabled(done)
+        self.write_export_btn.setEnabled(done)
         tip = "" if done else "Available after a Run One has finished."
         self.export_btn.setToolTip(tip)
         self.open_folder_btn.setToolTip(tip)
+
+    def _apply_binary(self):
+        import numpy as np
+
+        from . import runner
+        if runner.last_run_folder is None or self._result_density is None:
+            return
+        self._result_density = (self._result_density >= .5).astype(float)
+        folder = runner.last_run_folder / "post"
+        folder.mkdir(exist_ok=True)
+        np.save(folder / "current_design.npy", self._result_density)
+        self._draw_current_result(processed=True)
+        self._log("[Post] Applied fixed 0.5 threshold; figure and export source updated. Objective has not been re-evaluated.")
+
+    def _draw_current_result(self, processed=False):
+        if self._result_density is None:
+            return
+        label = self._result_objective_label
+        if processed:
+            label += " (source run; not re-evaluated)"
+        self.post_canvas.reset()
+        self.post_canvas.set_display(self.display_options.values(), label)
+        self.post_canvas.refresh(self._result_density, self._result_objectives, self._result_iteration)
+        if self._result_density.ndim == 3:
+            self.post_canvas.show_3d(self._result_density, 1 / self._result_config.solver.m, self._log)
+
+    def _write_export(self):
+        from dataclasses import replace
+        from pathlib import Path
+
+        import numpy as np
+
+        from toporia.engine.postprocess import run_postprocessors
+        if self._result_density is None:
+            return
+        destination = QFileDialog.getExistingDirectory(self, "Export current result to folder")
+        if not destination:
+            return
+        kind = self.export_format.currentData()
+        try:
+            if kind == "npy":
+                np.save(Path(destination) / "design.npy", self._result_density)
+            else:
+                cfg = replace(self._result_config, output=replace(self._result_config.output, postprocess=[{"type": kind}]))
+                from toporia.framework.problem.mesh import make_problem
+                problem = make_problem(cfg.scenario, cfg.solver.m)
+                # Export the exact selected result. A Boolean difference may
+                # intentionally remove regions that were fixed in its inputs.
+                problem.passive_elements = np.zeros_like(problem.passive_elements)
+                problem.void_elements = np.zeros_like(problem.void_elements)
+                done = run_postprocessors(cfg, self._result_density, destination, problem=problem)
+                failures = [entry["error"] for entry in done.values() if "error" in entry]
+                if failures:
+                    raise ValueError("; ".join(failures))
+            self.statusBar().showMessage(f"Exported current result to {destination}", 10000)
+            self._log(f"[Export] {kind} → {destination}")
+        except (OSError, ValueError, ImportError) as error:
+            from PySide6.QtWidgets import QMessageBox
+            QMessageBox.warning(self, "Export failed", str(error))
 
     def _on_export(self):
         """Post-process the last design with the current list, and log what was made."""
@@ -367,7 +500,40 @@ class MainWindow(QMainWindow):
 
     def _build_view(self):
         """The live canvas, with the console under it."""
+        self.workspace_views = QStackedWidget()
+        from .display_options import DisplayOptions
+        self.display_options = DisplayOptions(self)
+        self.display_options.changed.connect(self._set_display_options)
+        self.problem_preview = LiveCanvas()
+        self.problem_editor = ProblemEditor()
+        self.problem_editor.changed.connect(self._on_scene_changed)
+        self.problem_editor.copy_requested.connect(self.copy_to_custom)
+        self.problem_editor.view_changed.connect(lambda values: self.project.view.update(values) if hasattr(self, "project") else None)
+        self.workspace_views.addWidget(self.problem_editor)
+        self.method_view = MethodWorkspace()
+        self.method_view.selected.connect(self._inspect_method_node)
+        self.method_view.arranged.connect(self._remember_diagram)
+        self.method_view.stage_requested.connect(self._select_stage)
+        self.method_view.add_requested.connect(self._add_function)
+        self.method_view.context_changed.connect(lambda *_: self._restore_inspector())
+        self.workspace_views.addWidget(self.method_view)
+        runner_page = QWidget()
+        runner_layout = QVBoxLayout(runner_page)
+        # The action belongs to Runner rather than the persistent navigation bar.
+        runner_layout.addWidget(self.run_btn, alignment=Qt.AlignLeft)
+        self.run_status = QLabel("Ready to run")
+        self.run_status.setWordWrap(True)
+        self.run_progress = QProgressBar()
+        self.run_progress.setFormat("%v / %m iterations")
+        self.run_progress.hide()
+        display_button = QPushButton("Display options…")
+        display_button.setIcon(self.style().standardIcon(QStyle.SP_ComputerIcon))
+        display_button.clicked.connect(self.display_options.show)
+        runner_layout.addWidget(display_button, alignment=Qt.AlignRight)
+        runner_layout.addWidget(self.run_status)
+        runner_layout.addWidget(self.run_progress)
         view = QSplitter(Qt.Vertical)
+        runner_layout.addWidget(view, 1)
         self.canvas = LiveCanvas()
         view.addWidget(self.canvas)
         log_box = QWidget()
@@ -381,7 +547,175 @@ class MainWindow(QMainWindow):
         view.addWidget(log_box)
         view.setStretchFactor(0, 1)
         view.setSizes([620, 180])
-        return view
+        self.workspace_views.addWidget(runner_page)
+        post_page = QWidget()
+        post_layout = QVBoxLayout(post_page)
+        post_display = QPushButton("Display options…")
+        post_display.clicked.connect(self.display_options.show)
+        post_layout.addWidget(post_display, alignment=Qt.AlignRight)
+        self.post_progress = QProgressBar()
+        self.post_progress.setFormat("%v / %m iterations")
+        self.post_progress.hide()
+        post_layout.addWidget(self.post_progress)
+        self.post_canvas = LiveCanvas()
+        post_layout.addWidget(self.post_canvas, 1)
+        self.workspace_views.addWidget(post_page)
+        export_page = QWidget()
+        export_layout = QVBoxLayout(export_page)
+        export_label = QLabel("Export the current result\nChoose a format and destination on the left.")
+        export_label.setAlignment(Qt.AlignCenter)
+        export_layout.addWidget(export_label)
+        self.workspace_views.addWidget(export_page)
+        self.blank_setup = BlankSetup()
+        self.blank_setup.changed.connect(self._remember_blank_setup)
+        self.blank_setup.completed.connect(self._complete_blank_setup)
+        self.workspace_views.addWidget(self.blank_setup)
+        self.pipeline.setParent(self)
+        self.pipeline.hide()
+        return self.workspace_views
+
+    def _set_display_options(self, options):
+        if hasattr(self, "project"):
+            self.project.view["display"] = options
+        self.run_progress.setVisible(options["iteration_graph"])
+        self.post_progress.setVisible(options["iteration_graph"])
+        for canvas in (self.canvas, self.post_canvas):
+            canvas.set_display(options)
+        if not options["live"]:
+            self._pending_iteration = None
+
+    def set_appearance(self, mode, *, persist=True):
+        from PySide6.QtWidgets import QApplication, QMessageBox
+
+        from .appearance import apply_appearance
+        try:
+            apply_appearance(QApplication.instance(), mode, persist=persist)
+        except OSError as error:
+            QMessageBox.warning(self, "Appearance preference", str(error))
+
+    def refresh_appearance(self):
+        from PySide6.QtWidgets import QApplication
+
+        from .appearance import refresh_icons
+        mode = QApplication.instance().property("appearance") or "basic"
+        for key, action in getattr(self, "appearance_actions", {}).items():
+            action.setChecked(key == mode)
+        if hasattr(self, "method_view"):
+            self.method_view.refresh_appearance()
+        if hasattr(self, "problem_editor"):
+            self.problem_editor.refresh_appearance()
+            self.problem_editor.spatial.refresh_appearance()
+        for name in ("canvas", "post_canvas", "problem_preview"):
+            if hasattr(self, name):
+                getattr(self, name).refresh_appearance()
+        if hasattr(self, "home"):
+            self.home.refresh_appearance()
+        if hasattr(self, "pipeline"):
+            self.pipeline.update()
+        refresh_icons(self)
+
+    @staticmethod
+    def _objective_label(cfg):
+        if cfg is None:
+            return "Objective"
+        from toporia.plugins.responses import RESPONSES
+        return RESPONSES.get(cfg.scenario.objective.get("type", "compliance")).label
+
+    def _on_scene_changed(self, scenario, objects):
+        """Preserve explicit geometry while updating generated domain/mesh controls."""
+        from dataclasses import replace
+        self.project.objects = objects
+        self._base_cfg = replace(self._base_cfg, scenario=replace(scenario, regions=objects))
+        self.design._Lx, self.design._Ly = scenario.Lx, scenario.Ly
+        self.design._show_counts()
+        self._refresh_pipeline()
+        self._preview_timer.start()
+
+    def _remember_diagram(self, positions):
+        """Persist presentation coordinates independently of the computation graph."""
+        if hasattr(self, "project"):
+            self.project.view["method_positions"] = positions
+
+    def _inspect_method_node(self, node):
+        """Reveal the existing generated controls for a selected diagram block."""
+        if node.kind == "domain":
+            self.go_to_step(0)
+            return
+        if node.kind == "export":
+            self.go_to_step(4)
+            return
+        widgets = {"design": self.design.representation, "filter": self.filters,
+                   "material": self.material, "physics": self.core._model_row, "updater": self.core._updater_row,
+                   "method": self.core, "objective": self.objective,
+                   "constraint": self.constraints, "budget": self.core.volume_box,
+                   "convergence": self.core._convergence, "schedule": self.schedules,
+                   "variants": self.variants, "postprocessor": self.post}
+        widget = widgets.get(node.kind)
+        if self._inspected_widget and self._inspected_widget[0] is widget:
+            self._restore_inspector()
+            return
+        self._restore_inspector()
+        if widget is not None:
+            if widget in (self.core._model_row, self.core._updater_row, self.material, self.core):
+                # Keep saved-project adapters while offering one representative
+                # method per stage in this deliberately minimal GUI release.
+                for combo in widget.findChildren(QComboBox):
+                    if hasattr(combo.view(), "setRowHidden"):
+                        for i in range(combo.count()):
+                            combo.view().setRowHidden(i, i != combo.currentIndex())
+            from .panels.common import CollapsibleSection
+            if not self._pages.widget(1).isAncestorOf(widget):
+                parent = widget.parentWidget()
+                original = parent.layout()
+                self._inspected_widget = (widget, original, original.indexOf(widget))
+                original.removeWidget(widget)
+                self.method_inspector.layout().addWidget(widget)
+                self.method_inspector.show()
+                widget.show()
+            for section in widget.findChildren(CollapsibleSection):
+                section.set_expanded(True)
+            from .help import plugin_topic
+            self._parameter_topic = plugin_topic(node.cls) if node.cls else text_topic(node.title, node.label)
+            self.parameter_dialog.setWindowTitle(node.title + " · " + node.label)
+            self.parameter_dialog.show()
+            self.parameter_dialog.raise_()
+            widget.setFocus()
+        else:
+            from .help import HelpWindow, plugin_topic
+            topic = plugin_topic(node.cls) if node.cls else text_topic(node.title, node.label)
+            HelpWindow.instance(self).show_topic(topic)
+
+    def _restore_inspector(self):
+        """Return borrowed settings to their workspace when leaving the Method step."""
+        if self._inspected_widget is not None:
+            widget, layout, index = self._inspected_widget
+            self.method_inspector.layout().removeWidget(widget)
+            layout.insertWidget(index, widget)
+            widget.show()
+            self._inspected_widget = None
+        self.method_inspector.hide()
+        self.parameter_dialog.hide()
+
+    def _on_filter_reordered(self, mapping):
+        """Schedules, variants and study paths continue to follow the same filter."""
+        import re
+
+        def remap(value):
+            if isinstance(value, str):
+                return re.sub(r"filters\[(\d+)\]", lambda m: f"filters[{mapping.get(int(m[1]), int(m[1]))}]", value)
+            if isinstance(value, dict):
+                return {key: remap(item) for key, item in value.items()}
+            if isinstance(value, list):
+                return [remap(item) for item in value]
+            return value
+
+        study = remap(self._capture_study())
+        schedules = remap(self.schedules.get_specs())
+        variants = remap(self.variants.get_spec())
+        self._refresh_parameter_paths()
+        self.schedules.load_specs(schedules)
+        self.variants.load_spec(variants)
+        self._restore_study(study)
 
     def _build_overview(self):
         """The pipeline, always in view, so every step's choices are visible together."""
@@ -408,11 +742,13 @@ class MainWindow(QMainWindow):
             group.changed.connect(self._refresh_parameter_paths)
         self.core.method_changed.connect(self._on_method_changed)
         self.design.dims_changed.connect(self._on_dims_changed)
+        self.filters.reordered.connect(self._on_filter_reordered)
         self.variants.changed.connect(self._refresh_pipeline)
         self.post.changed.connect(self._refresh_pipeline)
         self.variants.robust_requested.connect(self._use_robust_projection)
         # Any edit of the problem redraws its preview; rows added later are wired as they come.
         self.lc.cases_changed.connect(self._watch_problem_inputs)
+        self.lc.cases_changed.connect(lambda *_: self.lc.set_regional(self.project.objects is not None) if hasattr(self, "project") else None)
         self._watch_problem_inputs()
 
     def _watch_problem_inputs(self, *_):
@@ -431,6 +767,8 @@ class MainWindow(QMainWindow):
         """Draw the problem as currently set up, unless a run is drawing (slicer-style preview)."""
         if self._running:
             return
+        if self._blank_pending():
+            return
         from .config import build_config
 
         try:
@@ -438,7 +776,18 @@ class MainWindow(QMainWindow):
         except (ValueError, KeyError) as error:
             self._log(f"[Preview] {error}")
             return
-        self.canvas.show_problem(cfg.scenario, cfg.solver.m, self.config_combo.currentText())
+        title = self.project.name if hasattr(self, "project") else self.config_combo.currentText()
+        self.problem_editor.load(cfg.scenario, self.project.objects, self.project.benchmark is not None)
+        self._update_preflight()
+        if self.project.objects is None:
+            self.problem_preview.show_problem(cfg.scenario, cfg.solver.m, title)
+            self.canvas.show_problem(cfg.scenario, cfg.solver.m, title)
+
+    def _update_preflight(self):
+        """Explain definition/compatibility problems before starting an optimisation."""
+        from .preflight import problems
+        issues = problems(self.current_config(), check_mesh=True)
+        self.problem_editor.validation.setText("\n".join(issues) if issues else "Ready · physical definition and selected method are compatible.")
 
     # ── Steps ─────────────────────────────────────────────────────────────────
 
@@ -448,9 +797,24 @@ class MainWindow(QMainWindow):
 
     def go_to_step(self, index):
         """Show step `index`'s settings; out-of-range indices are ignored."""
+        if self._running and index != 2:
+            return
         if not 0 <= index < len(STEPS):
             return
+        if self._blank_pending() and index != 0:
+            return
+        if hasattr(self, "root_pages"):
+            self.root_pages.setCurrentIndex(1)
+            self.navigation_bar.show()
+        if index != 1:
+            self._restore_inspector()
         self._pages.setCurrentIndex(index)
+        self.sidebar.setVisible(index != 1 and not self._blank_pending())
+        self.workspace_views.setCurrentIndex(index)
+        if self._blank_pending():
+            self.workspace_views.setCurrentWidget(self.blank_setup)
+        if index == 1:
+            QTimer.singleShot(0, self.method_view.fit)
         self._step_buttons.button(index).setChecked(True)
         name, about = STEPS[index]
         self._step_title.setText(f"<b>{index + 1}. {name}</b><br><span style='color:gray'>{about}</span>")
@@ -470,7 +834,11 @@ class MainWindow(QMainWindow):
     def _show_run_label(self):
         """'▶  Run', naming the mode when it is not a single run."""
         mode = self.mode.currentText()
+        if hasattr(self.mode.view(), "setRowHidden"):
+            for i in range(self.mode.count()):
+                self.mode.view().setRowHidden(i, i != self.mode.currentIndex())
         self.run_btn.setText("▶  Run" if mode == "Run One" else f"▶  Run: {mode}")
+        self.run_btn.setEnabled(not self._blank_pending())
 
     def _report_plugin_errors(self):
         """Log every plugin that failed to load; the others are all usable."""
@@ -490,19 +858,19 @@ class MainWindow(QMainWindow):
         except Exception as e:
             self._log(f"[Config error] {e}")
             return
-        self._base_cfg = cfg
-        self.core.load_from_config(cfg)
-        self.design.load_from_config(cfg)
-        self.material.load_spec(cfg.solver.interpolation)
-        self.objective.load_spec(cfg.scenario.objective)
-        self.constraints.load_specs(cfg.scenario.constraints)
-        self.filters.load_specs(cfg.solver.filter_specs)
-        self.schedules.load_specs(cfg.solver.schedules)
-        self.variants.load_spec(cfg.solver.variants)
-        self.post.load_specs(cfg.output.postprocess)
-        self.lc.load_from_config(cfg)
-        self._on_method_changed(self.core.method_name())
-        self.msg.set_context(cfg, reset=True, problems=self.cmg.set_context(cfg, reset=True))
+        self.project = Project(name, cfg, benchmark=name)
+        self._loading_stage = True
+        try:
+            self._populate_run(cfg)
+        finally:
+            self._loading_stage = False
+        self._refresh_pipeline()
+        self._apply_problem_lock()
+        if hasattr(self, "notes"):
+            self.notes.clear()
+            self._saved_state = self._capture_project().payload()
+            self._clean_geometry = self.project.objects
+            self._show_blank_setup()
 
     def _on_method_changed(self, name):
         """Adapt the panels to what the selected method can do."""
@@ -575,6 +943,8 @@ class MainWindow(QMainWindow):
             schedules=self.schedules.get_specs(),
             **setup,
         )
+        if hasattr(self, "project") and self.project.objects is not None:
+            items = [(label, path) for label, path in items if not path.startswith("load_cases[") or path.endswith(".weight")]
         for group in self._sweep_groups:
             group.refresh(items)
         self.variants.set_paths(items)
@@ -593,26 +963,17 @@ class MainWindow(QMainWindow):
         """Show the chain the current selections describe, and why any part is unavailable."""
         from toporia.engine.pipeline import pipeline_graph, pipeline_notes, pipeline_stages
 
-        from .config import build_config
-
         try:
-            cfg = build_config(
-                self.core,
-                self.lc,
-                self.filters,
-                base_cfg=self._base_cfg,
-                objective=self.objective,
-                constraints=self.constraints,
-                interpolation=self.material,
-                representation=self.design,
-                schedules=self.schedules,
-                variants=self.variants,
-                postprocess=self.post,
-                design=self.design,
-            )
+            cfg = self.current_config()
+            tree = self._ensure_workflow()
+            self._store_active_stage(cfg)
+            self.method_view.set_workflow(tree, getattr(self, "_active_stage", None))
+            self.method_view.dimensions = 3 if cfg.scenario.Lz else 2
             self.pipeline.show_pipeline(pipeline_stages(cfg), pipeline_notes(cfg.solver.method, cfg),
                                         graph=pipeline_graph(cfg))
+            self.method_view.show_pipeline(pipeline_graph(cfg), pipeline_notes(cfg.solver.method, cfg))
             self.msg.set_context(cfg, problems=self.cmg.set_context(cfg))
+            self._preview_timer.start()
         except (ValueError, KeyError) as error:
             self.pipeline.show_pipeline([], [f"Cannot describe this selection: {error}"])
 
@@ -637,129 +998,14 @@ class MainWindow(QMainWindow):
         self.log.moveCursor(QTextCursor.End)
         self.log.insertPlainText(text + "\n")
         self.log.moveCursor(QTextCursor.End)
-        QApplication.processEvents()  # force Qt to repaint the log immediately
 
     def _on_stop(self):
-        """Called when the user clicks Stop — sets the flag that on_iter checks."""
-        self._stop = True
-        self._log("Stop requested…")
+        """Request a stop without blocking the Qt event loop."""
+        self.stop_execution()
 
     def _on_run(self):
-        """Called when Run is clicked.  Orchestrates the full run sequence."""
-        mode = self.mode.currentText()
-        self.log.clear()
-        self._log(f"=== {mode} ===")
-        self._stop = False
-        self._running = True
-
-        # Re-label the button as Stop and rewire it to _on_stop.
-        # The original connection is disconnected first to avoid double-firing.
-        self.run_btn.setText("⏹  Stop")
-        self.run_btn.clicked.disconnect()
-        self.run_btn.clicked.connect(self._on_stop)
-        QApplication.processEvents()
-
-        from . import runner  # imports SciPy-backed optimisation code only when needed
-
-        cfg = runner.build_config(
-            self.core,
-            self.lc,
-            self.filters,
-            base_cfg=self._base_cfg,
-            objective=self.objective,
-            constraints=self.constraints,
-            interpolation=self.material,
-            representation=self.design,
-            schedules=self.schedules,
-            variants=self.variants,
-            postprocess=self.post,
-            design=self.design,
-        )
-
-        # on_iter is the per-iteration callback passed into the optimisation scripts.
-        # It runs inside the optimisation loop after every solver step.
-        last_it = [0]  # list instead of plain int so the nested function can modify it
-
-        def on_iter(d, obj, it):
-            """Called after every iteration: honour Stop, redraw the canvas, keep the window responsive."""
-            if self._stop:
-                raise _StopRequested()  # breaks out of the optimisation loop cleanly
-            if it <= last_it[0]:
-                self.canvas.reset()  # new sweep cell started — clear the canvas
-            last_it[0] = it
-            self.canvas.refresh(d, obj, it)
-            QApplication.processEvents()  # keep the UI responsive between iterations
-
-        try:
-            self.canvas.reset()
-            if mode == "Run One":
-                density = runner.run_one(cfg, on_iter, self._log)
-                if density.ndim == 3:
-                    self.canvas.show_3d(density, 1.0 / cfg.solver.m, self._log)
-            elif mode == "Check Parts":
-                # The conformance test (toporia.checks) on every part of the
-                # pipeline above: interfaces, gradients, and the benchmark.
-                runner.run_check(cfg, self._log)
-            elif mode == "Sweep":
-                grid = runner.run_sweep(cfg, self.sg, on_iter, self._log)
-                self.canvas.show_grid(grid, f"Sweep: {self.sg.key()}")
-            elif mode == "Sweep 2D":
-                grid = runner.run_sweep_2d(cfg, self.sg2, on_iter, self._log)
-                self.canvas.show_grid(grid, f"Sweep 2D: {self.sg2.row_key()} vs {self.sg2.col_key()}")
-            elif mode == "Compare Two":
-                img = runner.run_compare_two(cfg, self.cg, on_iter, self._log)
-                self.canvas.show_grid(
-                    img,
-                    f"Compare: {self.cg.key()}  A={self.cg.value_a.value():.3g}"
-                    f"  vs  B={self.cg.value_b.value():.3g}",
-                )
-            elif mode == "Compare Methods":
-                grid = runner.run_compare_methods(cfg, self.cmg, on_iter, self._log)
-                if grid is not None:
-                    self.canvas.show_grid(
-                        grid,
-                        f"Compare Methods: {cfg.scenario.Lx:g} x {cfg.scenario.Ly:g} mm, "
-                        f"{len(self.cmg.selected())} methods",
-                    )
-            elif mode == "Sweep Methods":
-                grid = runner.run_sweep_methods(cfg, self.msg, on_iter, self._log)
-                if grid is not None:
-                    self.canvas.show_grid(grid, f"Sweep Methods: {len(self.msg.selected())} methods x {self.msg.key()}")
-            elif mode == "Compare Load Cases":
-                img = runner.run_compare_load_cases(cfg, self.clcg, on_iter, self._log)
-                self.canvas.show_grid(img, "Compare Load Cases  —  A vs B")
-            elif mode == "Sensitivity":
-                img = runner.run_sensitivity(cfg, self.sens, on_iter, self._log)
-                self.canvas.show_grid(
-                    img,
-                    f"Sensitivity: {self.sens.key()}"
-                    f"  base={self.sens.base_value.value():.3g}"
-                    f"  Δ={self.sens.gap.value():.3g}",
-                )
-            elif mode == "Sensitivity Sweep":
-                grid = runner.run_sensitivity_sweep(cfg, self.ssg, on_iter, self._log)
-                self.canvas.show_grid(
-                    grid,
-                    f"Sensitivity Sweep: {self.ssg.sweep_key()}  sens={self.ssg.sens_key()}",
-                )
-            else:
-                grid = runner.run_sensitivity_sweep_2d(cfg, self.ssg2, on_iter, self._log)
-                self.canvas.show_grid(
-                    grid,
-                    f"Sensitivity Sweep 2D:"
-                    f"  {self.ssg2.row_sweep_key()} vs {self.ssg2.col_sweep_key()}"
-                    f"  sens={self.ssg2.sens_key()}",
-                )
-        except _StopRequested:
-            self._log("— Stopped —")  # user-requested stop: no error shown
-        except Exception:
-            self._log("\n[ERROR]\n" + traceback.format_exc())  # unexpected error: full traceback
-        finally:
-            self._running = False
-            self._refresh_export_buttons()
-            # This block ALWAYS runs — even after an exception.
-            # Restore the button to its Run state regardless of how the run ended.
-            self.run_btn.clicked.disconnect()
-            self.run_btn.clicked.connect(self._on_run)
-            self._show_run_label()
-        self._log("— Done —")
+        """Start an immutable project snapshot, or stop the current worker."""
+        if self._running:
+            self.stop_execution()
+        else:
+            self.start_execution()

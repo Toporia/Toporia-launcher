@@ -1,0 +1,127 @@
+{
+  "kind": "project",
+  "format": 1,
+  "name": "Spatial H8 cantilever",
+  "scenario": {
+    "Lx": 20.0,
+    "Ly": 8.0,
+    "Lz": 8.0,
+    "holes": [],
+    "enforced_areas": [],
+    "edge_constraints": [],
+    "point_constraints": [],
+    "point_loads": [],
+    "load_cases": [
+      {
+        "Fmag": 1.0,
+        "Fa": 0.0,
+        "weight": 1.0,
+        "Fe": 0.0
+      }
+    ],
+    "volfrac": 0.5,
+    "objective": {
+      "type": "compliance"
+    },
+    "constraints": [],
+    "E0": 1.0,
+    "Emin": 1e-09,
+    "nu": 0.3
+  },
+  "solver": {
+    "method": "h8+oc",
+    "method_params": {},
+    "interpolation": {
+      "type": "simp"
+    },
+    "representation": {
+      "type": "element_density"
+    },
+    "filter_specs": [
+      {
+        "type": "density",
+        "rmin": 1.5
+      }
+    ],
+    "schedules": [],
+    "variants": {},
+    "m": 0.5,
+    "max_iter": 30,
+    "tol": 0.01
+  },
+  "output": {
+    "save_every": 10,
+    "postprocess": []
+  },
+  "benchmark": null,
+  "objects": [
+    {
+      "id": "aef985bf85ee435899129153f4ccb9ff",
+      "name": "Clamped left face",
+      "shape": "box",
+      "position": [
+        0,
+        0,
+        0
+      ],
+      "size": [
+        0,
+        8,
+        8
+      ],
+      "rotation": [
+        0.0,
+        0.0,
+        0.0
+      ],
+      "role": "support",
+      "axes": [
+        "x",
+        "y",
+        "z"
+      ],
+      "force": [
+        0.0,
+        -1.0,
+        0.0
+      ],
+      "case": 0
+    },
+    {
+      "id": "974d982d2aca4f8b8a6b9c7e7e17361f",
+      "name": "Spatial tip force",
+      "shape": "point",
+      "position": [
+        20,
+        4,
+        6
+      ],
+      "size": [
+        1.0,
+        1.0,
+        1.0
+      ],
+      "rotation": [
+        0.0,
+        0.0,
+        0.0
+      ],
+      "role": "load",
+      "axes": [
+        "x",
+        "y"
+      ],
+      "force": [
+        0,
+        0,
+        -1
+      ],
+      "case": 0
+    }
+  ],
+  "notes": "True 3D example. The left face fixes X/Y/Z. A single point at (20,4,6) carries a -Z force; it is not extruded through the depth. Use the local .venv interpreter for the VTK viewport.",
+  "study": {
+    "mode": "Run One"
+  },
+  "view": {}
+}

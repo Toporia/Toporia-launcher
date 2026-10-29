@@ -3,6 +3,20 @@
 Neither contains optimisation logic. Both turn what the person chose into a
 [`Run`](../framework/problem/run.py) and hand it to the [`engine`](../engine/README.md).
 
+On branch `GUI`, the desktop also has a portable project lifecycle and four
+separate main workspaces. `gui/home.py` provides the benchmark library;
+`gui/project.py` and `gui/project_ui.py` persist readable configuration and notes;
+`gui/editor.py` shares physical objects with the optional `gui/spatial_view.py`;
+`gui/method_view.py` arranges the supported pipeline without changing its topology.
+`gui/execution.py` launches `apps/gui_worker.py` as an isolated headless process,
+using an immutable input snapshot in a new project-local results directory.
+The older `gui/runner.py` adapters remain available to callers and tests.
+
+Physical objects are meshed by `framework/problem/regions.py` and `spatial.py`,
+so GUI and CLI use the same forces and boundary conditions. Legacy benchmark
+definitions keep their existing builder and numerical behaviour. See
+[the user workflow](../../docs/gui-workflow.md) for file and interaction details.
+
 ```
 apps/
 ├── cli.py            the command line; with no command, the GUI

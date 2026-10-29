@@ -382,4 +382,16 @@ def projection(field):
 
 def make_problem(scenario, m=1.0):
     """The meshed problem for a scenario: 2-D unless it has a depth (Scenario.Lz > 0)."""
+    if scenario.regions is not None:
+        from dataclasses import replace
+
+        from .regions import apply_regions, validate_scenario
+        validate_scenario(scenario, m)
+        # Legacy geometry must not leak into an explicit editor definition.
+        clean = replace(scenario, holes=[], enforced_areas=[], edge_constraints=[],
+                        point_constraints=[], point_loads=[])
+        problem = BoxProblem(clean, m) if scenario.Lz > 0 else RectangularProblem(clean, m)
+        problem.scenario = scenario
+        apply_regions(problem)
+        return problem
     return BoxProblem(scenario, m) if getattr(scenario, "Lz", 0.0) > 0 else RectangularProblem(scenario, m)

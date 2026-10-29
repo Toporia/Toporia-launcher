@@ -48,12 +48,14 @@ class _SpecRow(QWidget):
             remove.setFixedWidth(28)
             remove.clicked.connect(lambda: on_remove(self))
             header.addWidget(remove)
+        self.header = header
         outer.addLayout(header)
 
         self._wanted = self._classes[0].name if self._classes else None  # kept while it is not offered
         self._forms = {}
         for cls in self._classes:
             self._forms[cls.name] = ParamForm(cls.params, self, owner=cls)
+            self._forms[cls.name].changed.connect(self.changed.emit)
             outer.addWidget(self._forms[cls.name])
         self._fill_types([cls.name for cls in self._classes])
 
@@ -133,6 +135,7 @@ class SpecListGroup(QWidget):
     """
 
     changed = Signal()  # a row was added or removed, or changed type
+    reordered = Signal(object)  # old index -> new index, for schedules and variants
 
     def __init__(self, title, classes, initial=(), noun="entry", parent=None):
         super().__init__(parent)
@@ -185,9 +188,29 @@ class SpecListGroup(QWidget):
         row = self._make_row(spec)
         row.set_allowed(self._allowed)
         row.changed.connect(self.changed.emit)
+        if self._title == "Filters":
+            for label, delta in (("↑", -1), ("↓", 1)):
+                button = QPushButton(label)
+                button.setFixedWidth(28)
+                button.setToolTip("Change filter execution order")
+                button.clicked.connect(lambda _=False, r=row, d=delta: self.move_row(self._rows.index(r), d))
+                row.header.addWidget(button)
         self._rows.append(row)
         self._rows_box.addWidget(row)
         self._refresh_label()
+        self.changed.emit()
+
+    def move_row(self, index, delta):
+        """Reorder actual widgets, preserving their parameters and reference identity."""
+        target = index + delta
+        if not (0 <= index < len(self._rows) and 0 <= target < len(self._rows)):
+            return
+        before = list(self._rows)
+        row = self._rows.pop(index)
+        self._rows.insert(target, row)
+        self._rows_box.removeWidget(row)
+        self._rows_box.insertWidget(target, row)
+        self.reordered.emit({old: self._rows.index(item) for old, item in enumerate(before)})
         self.changed.emit()
 
     def _remove_row(self, row):
@@ -241,7 +264,6 @@ class ConstraintsGroup(SpecListGroup):
         budget.setWordWrap(True)
         self._note = QLabel()
         self._note.setWordWrap(True)
-        self._note.setStyleSheet("color: #a05a00;")
         layout.insertWidget(0, budget)
         layout.insertWidget(1, self._note)
         self._note.hide()

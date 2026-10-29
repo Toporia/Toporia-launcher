@@ -32,7 +32,7 @@ from .postprocess import check_postprocess, run_postprocessors, save_geometry
 from .records import ResultStore, check_limits, describe_violations, run_record
 
 
-def initialized_method(run):
+def initialized_method(run, *, problem=None):
     """Check the method can solve the scenario, then build the problem and the method.
 
     The check comes first, so a scenario asking for something the method cannot
@@ -65,7 +65,7 @@ def initialized_method(run):
         print(f"note: {representation.label}: {representation.advice}")
     print(f"  pipeline: {describe_pipeline(run)}")
 
-    problem = make_problem(run.scenario, run.solver.m)
+    problem = make_problem(run.scenario, run.solver.m) if problem is None else problem
     method = method_cls()
     method.initialize(problem, run.solver)
     view = method.describe_view() if hasattr(method, "describe_view") else None
@@ -83,7 +83,7 @@ def run_single(run, on_iteration=None):
     return run_single_with_store(run, on_iteration)[1]
 
 
-def run_single_with_store(run, on_iteration=None):
+def run_single_with_store(run, on_iteration=None, *, problem=None):
     """Run one topology-optimisation pass to convergence.
 
     Parameters
@@ -98,7 +98,7 @@ def run_single_with_store(run, on_iteration=None):
     (store, density) : (ResultStore, np.ndarray)
         The recorded history, and the final (nely, nelx) density field in [0, 1].
     """
-    method = initialized_method(run)
+    method = initialized_method(run, problem=problem)
     store = ResultStore(run.output.dir)
     try:
         iteration, stop_reason = _loop(run, method, store, on_iteration)
@@ -123,7 +123,7 @@ def run_single_with_store(run, on_iteration=None):
     if geometry:
         save_geometry(run.output.dir, geometry)
     store.postprocess = run_postprocessors(run, method.get_density(), run.output.dir, geometry,
-                                       history={"grey_level": store.grey_levels})
+                                           problem=problem, history={"grey_level": store.grey_levels})
     store.save_json("run.json", run_record(
         run, iterations=iteration, stop_reason=stop_reason, responses=final, limits=limits,
         optimiser=optimiser, postprocess=store.postprocess,

@@ -25,7 +25,7 @@ on a 3-D one, with the filters that can.
 | Filter | File | Registry name | Reference |
 | :-- | :-- | :-- | :-- |
 | ✅ Density filter | [`filter_density.py`](density.py) | `density` | Bruns & Tortorelli, *CMAME* 2001; Bourdin, *IJNME* 2001 |
-| ✅ Sensitivity filter | [`filter_sensitivity.py`](sensitivity.py) | `sensitivity` | Sigmund, *Struct. Optim.* 1997 |
+| ✅ Sensitivity filter | [`filter_sensitivity.py`](sensitivity.py) | `sensitivity` | Sigmund, *Mech. Struct. Mach.* 1997 |
 | ✅ Heaviside projection, free threshold η | [`filter_heaviside.py`](heaviside.py) | `heaviside` | Guest et al., *IJNME* 2004; `tanh` form from Wang, Lazarov & Sigmund, *SMO* 2011 |
 | ✅ PDE / Helmholtz filter (open code: top82.m) | [`pde.py`](pde.py) | `pde` | Lazarov & Sigmund, *IJNME* 86 (2011) 765–781; Andreassen et al., *SMO* 43 (2011) |
 | ✅ Anisotropic PDE / Helmholtz filter | [`pde_anisotropic.py`](pde_anisotropic.py) | `pde_anisotropic` | Axis-aligned directional extension of Lazarov & Sigmund 2011; conservative cell-centred finite volumes. |

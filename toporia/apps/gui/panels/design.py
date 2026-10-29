@@ -19,7 +19,7 @@ from .common import CollapsibleSection, add_tooltip_row, double_box
 from .specs import RepresentationGroup
 
 #: The resolution entered as elements per mm, or as one element's size.
-PER_MM, SIZE = "per_mm", "size"
+PER_MM, SIZE, TARGET = "per_mm", "size", "target"
 
 
 class DesignSection(QWidget):
@@ -40,10 +40,10 @@ class DesignSection(QWidget):
         form.setContentsMargins(0, 0, 0, 0)
         self.dims = QComboBox()
         self.dims.addItem("2-D (plane stress)", userData=2)
-        self.dims.addItem("3-D (extruded to a depth)", userData=3)
+        self.dims.addItem("3-D (spatial / H8)", userData=3)
         add_tooltip_row(form, "Dimensions", self.dims,
-                        "2-D solves the case's rectangle in plane stress. 3-D extrudes it to the depth "
-                        "below: holes go through, supports and loads act through the thickness.",
+                        "2-D solves a plane-stress domain. 3-D uses H8 bricks and spatial objects. "
+                        "Legacy benchmarks may define through-depth extrusions; custom objects use full XYZ coordinates.",
                         "2-D: four-node plane-stress elements as in top88 (Andreassen et al. 2011). "
                         "3-D: eight-node bricks as in top3d (Liu & Tovar, Struct. Multidisc. Optim. 50 (2014)).")
         self.depth = double_box(10.0, 0.1, 10000.0, dec=2, step=1.0)
@@ -57,6 +57,7 @@ class DesignSection(QWidget):
         self.mode = QComboBox()
         self.mode.addItem("Elements per mm", userData=PER_MM)
         self.mode.addItem("Element size (mm)", userData=SIZE)
+        self.mode.addItem("Target elements (approx.)", userData=TARGET)
         add_tooltip_row(form, "Resolution as", self.mode,
                         "Enter the mesh resolution as elements per mm, or as the edge length of one element.",
                         "Toporia's own: the mesh follows from the case's size in millimetres.")
@@ -128,7 +129,14 @@ class DesignSection(QWidget):
 
     def _show_resolution(self):
         self.resolution.blockSignals(True)
-        if self.mode.currentData() == SIZE:
+        target = self.mode.currentData() == TARGET
+        self.resolution.setDecimals(0 if target else 3)
+        self.resolution.setRange(1 if target else .001, 2_000_000 if target else 1000)
+        if target:
+            self.resolution.setSuffix(" elements")
+            volume = self._Lx * self._Ly * (self.depth.value() if self.is_3d() else 1)
+            self.resolution.setValue(max(1, round(volume * self._per_mm ** (3 if self.is_3d() else 2))))
+        elif self.mode.currentData() == SIZE:
             self.resolution.setSuffix(" mm")
             self.resolution.setValue(1.0 / self._per_mm)
         else:
@@ -153,7 +161,11 @@ class DesignSection(QWidget):
     def _on_value(self, *_):
         value = self.resolution.value()
         if value > 0:
-            self._per_mm = 1.0 / value if self.mode.currentData() == SIZE else value
+            if self.mode.currentData() == TARGET:
+                volume = self._Lx * self._Ly * (self.depth.value() if self.is_3d() else 1)
+                self._per_mm = (value / volume) ** (1 / (3 if self.is_3d() else 2))
+            else:
+                self._per_mm = 1.0 / value if self.mode.currentData() == SIZE else value
         self._show_counts()
         self.changed.emit()
 

@@ -29,7 +29,11 @@ _KIND_OF = {cls: kind for kind, cls in KINDS.items()}
 
 def to_dict(obj):
     """Return a dataclass as plain data (nested dataclasses become dicts)."""
-    return dataclasses.asdict(obj)
+    data = dataclasses.asdict(obj)
+    # Preserve historical scenario fingerprints and baseline provenance.
+    if isinstance(obj, Scenario) and data.get("regions") is None:
+        data.pop("regions", None)
+    return data
 
 
 def from_dict(cls, data):
@@ -89,6 +93,13 @@ def load(path, kind=None):
     passing a solver file where a scenario is expected fails with a clear message.
     """
     data = json.loads(Path(path).read_text(encoding="utf-8"))
+    if isinstance(data, dict) and data.get("kind") == "problem":
+        if kind not in (None, "scenario"):
+            raise ValueError(f"{path} is a problem/scenario file, but a {kind} file was expected")
+        if type(data.get("format")) is not int or data["format"] != FORMAT or set(data) - {"kind", "format", "scenario", "objects"}:
+            raise ValueError(f"{path}: unsupported problem document")
+        scenario = from_dict(Scenario, data["scenario"])
+        return dataclasses.replace(scenario, regions=data.get("objects", scenario.regions))
     found = data.pop("kind", None)
     version = data.pop("format", None)
     if found not in KINDS:

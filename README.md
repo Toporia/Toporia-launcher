@@ -8,7 +8,7 @@ differ in one part are a fair comparison.
 ## Getting started
 
 ```bash
-pip install -e ".[dev,3d]"
+pip install -e ".[dev,3d,gui3d]"
 ```
 
 Then `toporia` opens the desktop app, and `toporia run "MBB Beam"` runs from the command
