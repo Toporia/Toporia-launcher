@@ -24,7 +24,10 @@ def problems(run, check_mesh=False, mesh_limit=200_000):
             count = math.prod(max(1, round(size * run.solver.m)) for size in
                               (run.scenario.Lx, run.scenario.Ly, *([run.scenario.Lz] if run.scenario.Lz else [])))
             if check_mesh and (mesh_limit is None or count <= mesh_limit):
-                make_problem(run.scenario, run.solver.m)
+                from toporia.framework.problem.regions import validate_field
+                # What a support and a load mean depends on what the physics solves.
+                thermal = "thermal_compliance" in method.capabilities.objectives
+                validate_field(make_problem(run.scenario, run.solver.m), "temperature" if thermal else "displacement")
             elif check_mesh:
                 issues.append("Mesh exceeds 200,000 elements; full spatial validation runs when you press Run.")
         return issues

@@ -333,10 +333,6 @@ class MainWindow(WorkflowActions, ProjectActions, ExecutionActions, QMainWindow)
         )
         for widgets in pages:
             self._pages.addWidget(self._scroll_page(widgets))
-        # Serialized legacy postprocessor lists remain readable without cluttering
-        # the initial fixed-threshold UI with future methods.
-        self.post.setParent(self)
-        self.post.hide()
         layout.addWidget(self._pages, 1)
 
         nav = QHBoxLayout()
@@ -351,7 +347,7 @@ class MainWindow(WorkflowActions, ProjectActions, ExecutionActions, QMainWindow)
         return side
 
     def _build_post_box(self):
-        """The deliberately minimal v0.2.1 result operation."""
+        """The quick 0.5 threshold, then every registered post-processor as an ordered list."""
         box = QWidget()
         layout = QVBoxLayout(box)
         layout.setContentsMargins(0, 0, 0, 0)
@@ -361,16 +357,64 @@ class MainWindow(WorkflowActions, ProjectActions, ExecutionActions, QMainWindow)
         self.export_btn.clicked.connect(self._apply_binary)
         layout.addWidget(with_help(self.export_btn, lambda: text_topic(
             "Binary threshold", "Convert the current result to 0 or 1 at density 0.5 and immediately update the figure. This changes the result used by export; it does not rerun optimization or re-evaluate the objective.")))
+        # The list is also the run's output.postprocess: it runs after every Run One, and on demand here.
+        layout.addWidget(self.post)
+        self.post_list_btn = QPushButton("Apply the list to the current result")
+        self.post_list_btn.clicked.connect(self._apply_post_list)
+        layout.addWidget(with_help(self.post_list_btn, lambda: text_topic(
+            "Post-processing list", "Every post-processor in the list runs after each Run One and writes its numbers to run.json and its files to the run's post/ folder. This button applies the list to the result shown now, without optimising again. Each entry's own ? says what it measures or writes and where it comes from.")))
+        self.post_results = QLabel()
+        self.post_results.setWordWrap(True)
+        self.post_results.setTextInteractionFlags(Qt.TextSelectableByMouse)
+        layout.addWidget(self.post_results)
         return box
+
+    def _apply_post_list(self):
+        """Run the post-processing list on the displayed result and show each entry's numbers."""
+        from dataclasses import replace
+
+        from toporia.engine.postprocess import run_postprocessors
+        from toporia.framework.problem.mesh import make_problem
+
+        from . import runner
+        specs = self.post.get_specs()
+        if runner.last_run_folder is None or self._result_density is None or not specs:
+            self.post_results.setText("Add a post-processor first." if not specs else "Run One first.")
+            return
+        cfg = replace(self._result_config, output=replace(self._result_config.output, postprocess=specs))
+        try:
+            done = run_postprocessors(cfg, self._result_density, runner.last_run_folder,
+                                      problem=make_problem(cfg.scenario, cfg.solver.m))
+        except (OSError, ValueError, ImportError) as error:
+            self.post_results.setText(f"Failed: {error}")
+            return
+        lines = []
+        for key, entry in done.items():
+            if "error" in entry:
+                lines.append(f"<b>{key}</b>: failed ({entry['error']})")
+                continue
+            shown = ", ".join(f"{name} = {value:.4g}" if isinstance(value, float) else f"{name} = {value}"
+                              for name, value in entry["metrics"].items())
+            files = f"<br>&nbsp;&nbsp;→ {', '.join(entry['files'])}" if entry["files"] else ""
+            lines.append(f"<b>{key}</b>: {shown or 'done'}{files}")
+        self.post_results.setText("<br>".join(lines))
+        self._log(f"[Post] Applied {len(done)} post-processor(s) to the current result in {runner.last_run_folder}")
 
     def _build_file_export_box(self):
         box = QWidget()
         layout = QVBoxLayout(box)
         layout.setContentsMargins(0, 0, 0, 0)
+        from toporia.plugins.postprocessors import POSTPROCESSORS
+
+        from .panels.common import mark_availability
         self.export_format = QComboBox()
-        for label, name in (("STL solid", "export_stl"), ("SVG outline (2D)", "export_svg"),
-                            ("DXF outline (2D)", "export_dxf"), ("NumPy density", "npy")):
-            self.export_format.addItem(label, name)
+        # Every registered post-processor that writes a file, and the raw density array.
+        for cls in POSTPROCESSORS.classes():
+            if cls.name.startswith("export_") or cls.name == "smooth_outline":
+                dims = "" if cls.dims is None or set(cls.dims) == {2, 3} else f" ({'/'.join(map(str, cls.dims))}-D)"
+                self.export_format.addItem(cls.label + dims, cls.name)
+        self.export_format.addItem("NumPy density array (.npy)", "npy")
+        mark_availability(self.export_format, POSTPROCESSORS.classes())
         layout.addWidget(self.export_format)
         self.write_export_btn = QPushButton("Export current result…")
         self.write_export_btn.setMinimumHeight(40)
@@ -387,6 +431,7 @@ class MainWindow(WorkflowActions, ProjectActions, ExecutionActions, QMainWindow)
         from . import runner
         done = runner.last_run_folder is not None
         self.export_btn.setEnabled(done)
+        self.post_list_btn.setEnabled(done)
         self.open_folder_btn.setEnabled(done)
         self.write_export_btn.setEnabled(done)
         tip = "" if done else "Available after a Run One has finished."
@@ -515,6 +560,7 @@ class MainWindow(WorkflowActions, ProjectActions, ExecutionActions, QMainWindow)
         self.method_view.arranged.connect(self._remember_diagram)
         self.method_view.stage_requested.connect(self._select_stage)
         self.method_view.add_requested.connect(self._add_function)
+        self.method_view.offers = self._library_offers
         self.method_view.context_changed.connect(lambda *_: self._restore_inspector())
         self.workspace_views.addWidget(self.method_view)
         runner_page = QWidget()
@@ -656,13 +702,6 @@ class MainWindow(WorkflowActions, ProjectActions, ExecutionActions, QMainWindow)
             return
         self._restore_inspector()
         if widget is not None:
-            if widget in (self.core._model_row, self.core._updater_row, self.material, self.core):
-                # Keep saved-project adapters while offering one representative
-                # method per stage in this deliberately minimal GUI release.
-                for combo in widget.findChildren(QComboBox):
-                    if hasattr(combo.view(), "setRowHidden"):
-                        for i in range(combo.count()):
-                            combo.view().setRowHidden(i, i != combo.currentIndex())
             from .panels.common import CollapsibleSection
             if not self._pages.widget(1).isAncestorOf(widget):
                 parent = widget.parentWidget()
@@ -834,9 +873,6 @@ class MainWindow(WorkflowActions, ProjectActions, ExecutionActions, QMainWindow)
     def _show_run_label(self):
         """'▶  Run', naming the mode when it is not a single run."""
         mode = self.mode.currentText()
-        if hasattr(self.mode.view(), "setRowHidden"):
-            for i in range(self.mode.count()):
-                self.mode.view().setRowHidden(i, i != self.mode.currentIndex())
         self.run_btn.setText("▶  Run" if mode == "Run One" else f"▶  Run: {mode}")
         self.run_btn.setEnabled(not self._blank_pending())
 

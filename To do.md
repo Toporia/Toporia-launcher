@@ -11,8 +11,14 @@ Accepted requirements: [GUI v0.2.1 scope](docs/gui-v0.2.1-scope.md).
   extension interface first).
 - [ ] Future: coupled solving and combination within optimization iterations.
 - [ ] Future: export version control; additional stress and price statistics.
-- [ ] Future: expose additional integrated computational methods in the GUI library.
+- [x] Expose the integrated computational methods in the GUI library (branch `full-gui`).
 - [ ] Future: expand function explanations and references with researcher input.
+- [ ] Drone Arm presets: the legacy load holes spread their load over the empty
+  centre nodes too, so the load acts through Emin (first compliance ~2e7). A
+  custom copy (Copy to custom) loads only the ring and gives ~2e3. Decide whether
+  the preset should load only the ring; that changes its golden numbers.
+- [ ] Point springs (compliant-mechanism ports) are kept on a custom copy but
+  cannot be drawn or edited in the Problem editor yet; they need an object role.
 
 ## Earlier backlog
 
@@ -80,5 +86,5 @@ Rules:
 - [ ] Decide the import name: `toporia_core` instead of today's `toporia`.
 - [ ] One `pyproject.toml`; PySide6 becomes an optional GUI extra.
 - [ ] Ignore `results/` and cache folders in git; move the library PDFs into `docs/`.
-- [ ] Coordinate with the GUI workstream first: moving `apps/gui` clashes with its branch.
+- [x] Coordinate with the GUI workstream first: the GUI branch is merged into `full-gui`.
 - [ ] Pure moves first, then the import changes, then docs; full suite after each commit.

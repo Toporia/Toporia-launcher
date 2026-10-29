@@ -30,19 +30,31 @@ def objects_from_scenario(scenario):
         objects.append(make_object(position=(x, y, 0), axes=["x", "y"] if dof == "both" else [dof]))
     for hole in scenario.holes:
         pos = (hole.cx, hole.cy, 0)
-        objects.append(make_object("circle", pos, (2 * hole.r_passive,) * 3, "solid", inner_radius=hole.r_void))
-        objects.append(make_object("circle", pos, (2 * hole.r_void,) * 3, "void"))
+        # A ring without a hole (r_void = 0) is a solid disc; a hole without a ring has no solid.
+        if hole.r_passive > hole.r_void:
+            objects.append(make_object("circle", pos, (2 * hole.r_passive,) * 3, "solid", inner_radius=hole.r_void))
+        if hole.r_void > 0:
+            objects.append(make_object("circle", pos, (2 * hole.r_void,) * 3, "void"))
         if hole.kind == "fixed":
             objects.append(make_object("circle", pos, (2 * hole.r_passive,) * 3, "support"))
     for area in scenario.enforced_areas:
         objects.append(make_object("polygon", role="solid" if area.kind == "full" else "void",
                                    vertices=[list(p) for p in area.points]))
+    # A load hole is loaded on its solid ring (its centre is empty); every other load is a point.
+    rings = [hole for hole in scenario.holes if hole.kind == "load"]
+    centres = {(hole.cx, hole.cy) for hole in rings}
     for case_index, case in enumerate(scenario.load_cases):
+        if case.Fmag == 0:      # e.g. heat generated in the material only: nothing enters at a point
+            continue
         angle, elevation = math.radians(case.Fa), math.radians(case.Fe)
         force = [case.Fmag * math.cos(elevation) * math.cos(angle),
                  case.Fmag * math.cos(elevation) * math.sin(angle), case.Fmag * math.sin(elevation)]
         for x, y in loads:
-            objects.append(make_object(position=(x, y, 0), role="load", force=force, case=case_index))
+            if (x, y) not in centres:
+                objects.append(make_object(position=(x, y, 0), role="load", force=force, case=case_index))
+        for hole in rings:
+            objects.append(make_object("circle", (hole.cx, hole.cy, 0), (2 * hole.r_passive,) * 3, "load",
+                                       force=force, case=case_index))
     if scenario.Lz > 0:
         for obj in objects:
             obj["extrusion"] = scenario.Lz

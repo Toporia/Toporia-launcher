@@ -6,6 +6,7 @@ from PySide6.QtCore import Qt, Signal
 from PySide6.QtGui import QImage, QPixmap
 from PySide6.QtWidgets import (
     QApplication,
+    QComboBox,
     QFrame,
     QGridLayout,
     QHBoxLayout,
@@ -22,6 +23,14 @@ from PySide6.QtWidgets import (
 from toporia.plugins.problems import get_run, problem_info, problem_names
 
 from .preview import draw_problem
+
+#: Library sections, by the preset name's prefix; anything else is a benchmark.
+CATEGORIES = (("Paper: ", "Paper figures"), ("Research: ", "Research showcases"))
+
+
+def category(name):
+    """Which library section the preset `name` belongs to."""
+    return next((label for prefix, label in CATEGORIES if name.startswith(prefix)), "Benchmarks")
 
 
 class HomePage(QWidget):
@@ -77,15 +86,25 @@ class HomePage(QWidget):
         library_layout.addWidget(QLabel("Benchmark library — open a reference, or copy it to create your own problem."))
         self.search = QLineEdit()
         self.search.setPlaceholderText("Find a benchmark, feature or reference…")
-        library_layout.addWidget(self.search)
+        self.category = QComboBox()
+        names = problem_names()
+        for label in ("Benchmarks", *(label for _, label in CATEGORIES)):
+            self.category.addItem(f"{label} ({sum(category(n) == label for n in names)})", label)
+        self.category.addItem(f"All ({len(names)})", "")
+        self.category.setToolTip("Benchmarks are the classic problems; paper figures reproduce a published "
+                                 "result; research showcases demonstrate one function each.")
+        filters = QHBoxLayout()
+        filters.addWidget(self.category)
+        filters.addWidget(self.search, 1)
+        library_layout.addLayout(filters)
         scroll = QScrollArea()
         scroll.setWidgetResizable(True)
         scroll.setFrameShape(QFrame.NoFrame)
         holder = QWidget()
-        grid = QGridLayout(holder)
+        grid = self._grid = QGridLayout(holder)
         grid.setAlignment(Qt.AlignTop)
         self.cards = []
-        for i, name in enumerate(problem_names()):
+        for name in names:
             about, reference = problem_info(name)
             card = QFrame()
             card.setFrameShape(QFrame.StyledPanel)
@@ -109,11 +128,12 @@ class HomePage(QWidget):
             open_button = QPushButton("Explore benchmark")
             open_button.clicked.connect(lambda _=False, n=name: self.benchmark_requested.emit(n))
             box.addWidget(open_button)
-            grid.addWidget(card, i // 3, i % 3)
-            self.cards.append((card, f"{name} {about} {reference}".casefold()))
+            self.cards.append((card, category(name), f"{name} {about} {reference}".casefold()))
         scroll.setWidget(holder)
         library_layout.addWidget(scroll, 1)
         self.search.textChanged.connect(self._filter)
+        self.category.currentIndexChanged.connect(self._filter)
+        self._filter()
         from .function_library import FunctionExplorer
         functions = QWidget()
         functions_layout = QVBoxLayout(functions)
@@ -128,16 +148,26 @@ class HomePage(QWidget):
     def open_section(self, index):
         self.sections.setCurrentIndex(index)
         if index == 1 and not self._thumbnails_loaded:
-            for card, _ in self.cards:
+            for card, _, _ in self.cards:
                 for label in card.findChildren(QLabel):
                     if label.property("benchmark"):
                         label.setPixmap(_thumbnail(label.property("benchmark")))
             self._thumbnails_loaded = True
 
-    def _filter(self, text):
-        """Search descriptions and references as well as benchmark titles."""
-        for card, words in self.cards:
-            card.setVisible(text.casefold() in words)
+    def _filter(self, *_):
+        """Show the chosen section's cards that match the search, packed three to a row.
+
+        The search reads descriptions and references as well as titles.
+        """
+        text, wanted = self.search.text().casefold(), self.category.currentData()
+        shown = 0
+        for card, section, words in self.cards:
+            self._grid.removeWidget(card)
+            visible = (not wanted or section == wanted) and text in words
+            card.setVisible(visible)
+            if visible:
+                self._grid.addWidget(card, shown // 3, shown % 3)
+                shown += 1
 
     def refresh_appearance(self):
         # Qt style sheets can reset explicit widget minima when unpolished.

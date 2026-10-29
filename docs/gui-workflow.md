@@ -3,7 +3,10 @@
 Launch `python main.py` from this checkout. Home has two entry cards:
 **Benchmarks** (the sourced reference library) and **Functions** (the registry-backed
 encyclopedia). Open/new/import actions remain nearby; benchmark previews load
-only when their section is opened.
+only when their section is opened. The library is split into **Benchmarks** (the
+classic problems), **Paper figures** (a published result reproduced) and
+**Research showcases** (one function demonstrated each), with a search across
+titles, descriptions and references.
 Use `python main.py --project path/to/project.top` to open a project directly.
 The local `.venv` includes the optional spatial editor dependencies. On Windows,
 use `.venv\Scripts\python.exe main.py` for the full 3D viewport. For a fresh
@@ -74,7 +77,14 @@ nodes, so mesh refinement does not multiply the load. Load Cases controls the
 number and weights of cases. Magnitude/angle fields are only used by legacy
 presets. Every custom case must have a load.
 
-Preflight reports insufficient supports (a rigid-body rank test), invalid regions,
+What a support and a load mean follows the physics. For elasticity a support
+holds the chosen displacements and a load is a force. For heat conduction a
+support is a heat sink (temperature 0), a load object brings heat equal to its
+force's magnitude, and loads are optional when the heat is generated in the
+material (the physics parameter "Heat generation").
+
+Preflight reports insufficient supports (a rigid-body rank test for elasticity,
+at least one heat sink for heat conduction), invalid regions,
 zero-cell meshes, missing loads and material conflicts. Regions that sample no
 nodes/elements require a finer mesh or larger region. These checks do not prove
 stability for every disconnected topology or future physics model.
@@ -128,9 +138,14 @@ Double-click a library item or select it and press **Insert selected**. The
 filter-chain network offers installed filters compatible with the problem's
 dimension. Select a filter block to edit/reorder/remove filters. Schedules,
 variants and study paths continue to refer to the same reordered filter.
-Other method selectors show one representative current method for this release;
-existing saved method selections remain readable. The initial problem editor
-retains its available choices.
+Inside an optimization the library also lists every registered updater, whole
+method and design representation; inside Physics it lists every physics model,
+material law, objective and constraint. The current choice is marked
+"(selected)". An entry that cannot be used with the current problem and the other
+parts is greyed out, and its tooltip says why (the wrong dimension, an objective
+the model does not compute, a package that is not installed, ...). Choosing a
+physics model or method also switches to an objective it computes and keeps
+only the constraints it enforces.
 
 Dragging boxes changes their saved presentation, not computation. Arrowheads
 follow the terminal connector direction after movement. Wheel zooms, dragging
@@ -189,18 +204,24 @@ maximum iteration count rather than pretending early convergence reached that
 limit. Burst updates are coalesced into Qt frames. Volume fraction is measured
 against the original rectangular mesh, as in the existing numerical engine.
 
-**Post-process (step 4)** initially offers one manually executed operation:
+**Post-process (step 4)** offers a quick manually executed operation:
 density < 0.5 becomes 0, density >= 0.5 becomes 1. Executing it refreshes the figure
 immediately and saves `post/current_design.npy`. Objective values/curves are
 explicitly labeled as source-run values that have not been re-evaluated.
+Below it, the **Post-processing** list holds any of the registered
+post-processors (threshold at the same volume, connectivity, feature size, grey
+level, smoothed outlines, SVG/DXF/STL). The list is the run's
+`output.postprocess`: it runs after every Run One, and **Apply the list to the
+current result** runs it on the result shown now; each entry's numbers and files
+are listed under the button.
 
 **Export (step 5)** writes the current processed result (or the original result
-when no operation was applied) to a chosen folder. STL, 2D SVG/DXF and NumPy
-density exports are available. The format exporters put files under the chosen
+when no operation was applied) to a chosen folder. Every registered exporter
+(SVG and DXF outlines, smoothed outlines, STL) and the NumPy density array are
+offered; the 2-D-only ones say so. The format exporters put files under the chosen
 folder's `post/` subfolder; NumPy writes `design.npy` directly. Export preserves
 the displayed Boolean geometry even if it removed a region fixed in an input.
-Export version control is future work. Legacy saved automatic postprocessor lists
-remain compatible but are not the manual post-processing UI.
+Export version control is future work.
 
 Result ownership resets on project changes. Regional
 definitions cannot use the legacy Compare Load Cases editor yet: its shared
@@ -210,8 +231,9 @@ existing compatible studies remain available.
 ## Development handoff
 
 `docs/gui-v0.2.1-scope.md` is the current implementation checklist; `gui-plan.md`
-records the earlier GUI work. v0.2.1 lives on `gui-v0.2.1`. No integration or
-launcher checkout is modified, and numerical golden baselines are not regenerated.
+records the earlier GUI work. v0.2.1 was built on `gui-v0.2.1`; branch `full-gui`
+merges it with the integration work (every function, physics and research preset)
+and exposes all of it as described above. Numerical golden baselines are not regenerated.
 View > Appearance selects **Basic** or **Sleek monochrome**, and remembers the
 choice for the next launch. Basic uses plain Qt controls. Sleek uses black
 surfaces, white text/icons and thin borders, including network/editor backgrounds

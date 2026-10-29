@@ -270,6 +270,8 @@ class PymotoElasticModel(Model):
         load_cases = self.problem.scenario.load_cases
         forces = np.zeros((domain.nnodes * 2, len(load_cases)))
         if hasattr(self.problem, "region_loads"):
+            from toporia.framework.problem.regions import validate_field
+            validate_field(self.problem, "displacement")
             for index, mask, vector in self.problem.region_loads:
                 nodes = self._nodes(domain, mask)
                 for axis in range(2):

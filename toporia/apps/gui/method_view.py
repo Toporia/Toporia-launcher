@@ -170,6 +170,8 @@ class MethodWorkspace(QWidget):
         self.active_stage = None
         self._graph = ([], [])
         self._notes = []
+        #: The window's offers(where) -> [(label, kind, name, reason)]; a reason greys the entry out.
+        self.offers = None
 
     def set_workflow(self, tree, active_stage):
         self.tree, self.active_stage = tree, active_stage
@@ -230,6 +232,15 @@ class MethodWorkspace(QWidget):
             item.setData(Qt.UserRole, (kind, name))
             item.setToolTip(label)
             item.setSizeHint(QSize(150, 36))
+            return item
+
+        def offer_parts(where):
+            """Every registered part for this place; the incompatible ones greyed out, saying why."""
+            for label, kind, name, reason in (self.offers(where) if self.offers else ()):
+                item = offer(label, kind, name)
+                if reason:
+                    item.setFlags(item.flags() & ~Qt.ItemIsEnabled)
+                    item.setToolTip(f"{label}\nUnavailable here: {reason}")
 
         if self.tree is None:
             return graph
@@ -277,6 +288,7 @@ class MethodWorkspace(QWidget):
         self.input_contract.setText("Input · design variables and allowed domain")
         self.output_contract.setText("Output · updated density, objective and iteration statistics")
         if any(n.kind == "method" for n in flat):
+            offer_parts("loop")
             return loop, []
         if sub == "filters":
             from toporia.engine.pipeline import part_dims
@@ -292,6 +304,7 @@ class MethodWorkspace(QWidget):
         if sub == "physics":
             self.input_contract.setText("Input · physical density, material law and boundary conditions")
             self.output_contract.setText("Output · objective, constraints and sensitivities")
+            offer_parts("physics")
             return [[n for n in row if n.kind in {"physics", "material", "objective", "constraint", "budget"}] for row in loop
                     if any(n.kind in {"physics", "material", "objective", "constraint", "budget"} for n in row)], []
         offer("+ Filter (open filter chain)", "navigate", context + "/filters")
@@ -302,6 +315,7 @@ class MethodWorkspace(QWidget):
         rows.append([self._node("convergence", "Convergence", "Iteration limit and tolerance")])
         offer("Parameter schedules", "inspect", "schedule")
         offer("Design variants", "inspect", "variants")
+        offer_parts("loop")
         return rows, []
 
     def show_pipeline(self, graph, notes):

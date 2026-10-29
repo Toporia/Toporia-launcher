@@ -212,3 +212,90 @@ def test_appearance_preference_restores_the_saved_mode(window, tmp_path, monkeyp
         assert QApplication.instance().property("appearance") == "sleek"
     finally:
         window.set_appearance("basic", persist=False)
+
+
+# ── full-gui: every integrated function is reachable ─────────────────────────
+
+
+def _library(window, context):
+    from PySide6.QtCore import Qt
+    window.method_view.enter(context)
+    items = [window.method_view.library.item(i) for i in range(window.method_view.library.count())]
+    return {item.data(Qt.UserRole): item for item in items}
+
+
+def test_library_offers_every_registered_part_and_explains_what_cannot_be_used(window):
+    from PySide6.QtCore import Qt
+
+    from toporia.plugins.interpolations import INTERPOLATIONS
+    from toporia.plugins.methods import METHODS
+    from toporia.plugins.models import MODELS
+    from toporia.plugins.representations import REPRESENTATIONS
+    from toporia.plugins.responses import OBJECTIVE_ROLE, responses_for
+    from toporia.plugins.updaters import UPDATERS
+    window.go_to_step(1)
+    stage = window._active_stage
+    loop = _library(window, stage)
+    for kind, registry in (("updater", UPDATERS), ("method", METHODS), ("representation", REPRESENTATIONS)):
+        assert {(kind, cls.name) for cls in registry.classes()} <= set(loop)
+    physics = _library(window, stage + "/physics")
+    for kind, classes in (("model", MODELS.classes()), ("interpolation", INTERPOLATIONS.classes()),
+                          ("objective", responses_for(OBJECTIVE_ROLE))):
+        assert {(kind, cls.name) for cls in classes} <= set(physics)
+    assert "(selected)" in physics[("model", "q4")].text()
+    unavailable = [item for item in physics.values() if not item.flags() & Qt.ItemIsEnabled]
+    assert unavailable and all("Unavailable here:" in item.toolTip() for item in unavailable)
+    assert not physics[("model", "h8")].flags() & Qt.ItemIsEnabled        # 3-D bricks on a 2-D problem
+    # A heat model brings its own objective, so it can be chosen from an elastic problem.
+    assert physics[("model", "q4_heat")].flags() & Qt.ItemIsEnabled
+    window._add_function("model", "q4_heat")
+    cfg = window.current_config()
+    assert cfg.solver.method == "q4_heat+oc" and cfg.scenario.objective["type"] == "thermal_compliance"
+    window._add_function("updater", "mma")
+    assert window.current_config().solver.method == "q4_heat+mma"
+
+
+def test_every_study_mode_post_processor_and_exporter_is_offered(window):
+    from toporia.apps.gui.window import MODES
+    from toporia.plugins.postprocessors import POSTPROCESSORS
+    window.go_to_step(2)
+    assert [window.mode.itemText(i) for i in range(window.mode.count())] == list(MODES)
+    assert all(not window.mode.view().isRowHidden(i) for i in range(window.mode.count()))
+    window.go_to_step(3)
+    assert window.post.isVisible() and window.post_list_btn.isVisible()
+    formats = {window.export_format.itemData(i) for i in range(window.export_format.count())}
+    assert {cls.name for cls in POSTPROCESSORS.classes() if cls.name.startswith("export_")} <= formats
+    assert "npy" in formats
+
+
+def test_post_processing_list_runs_on_the_shown_result(window, tmp_path):
+    from toporia.apps.gui import runner
+    from toporia.framework.problem.mesh import make_problem
+    window._result_config = window.current_config()
+    window._result_density = np.full(make_problem(window._result_config.scenario, .3).shape, .6)
+    runner.last_run_folder = tmp_path
+    try:
+        window.post.load_specs([{"type": "threshold"}, {"type": "connectivity"}])
+        window._apply_post_list()
+        text = window.post_results.text()
+        assert "<b>threshold</b>" in text and "<b>connectivity</b>" in text and "failed" not in text
+        assert (tmp_path / "post" / "connectivity.png").exists()
+    finally:
+        runner.last_run_folder = None
+        window.post.load_specs([])
+
+
+def test_home_library_sections_pack_their_cards(window):
+    from toporia.apps.gui.home import category
+    window.show_home()
+    home = window.home
+    home.open_section(1)
+    home.category.setCurrentIndex(home.category.findData("Research showcases"))
+    QApplication.processEvents()
+    shown = [(card, section) for card, section, _ in home.cards if not card.isHidden()]
+    assert shown and all(section == "Research showcases" for _, section in shown)
+    assert [home._grid.indexOf(card) for card, _ in shown] == list(range(len(shown)))   # no gaps
+    assert category("Paper: top88 Fig. 3(a) - Density") == "Paper figures" and category("MBB Beam") == "Benchmarks"
+    home.category.setCurrentIndex(home.category.findData(""))
+    QApplication.processEvents()
+    assert all(not card.isHidden() for card, _, _ in home.cards)

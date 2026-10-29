@@ -127,7 +127,8 @@ class Q4DofLayout:
         self.fixed_dofs = self._build_fixed_dofs()
         self.free_dofs = np.setdiff1d(np.arange(self.ndof), self.fixed_dofs)
         if hasattr(problem, "region_loads"):
-            from toporia.framework.problem.regions import regional_force
+            from toporia.framework.problem.regions import regional_force, validate_field
+            validate_field(problem, "displacement")
             self.forces = [(lc.weight, regional_force(problem, self.node_ids, 2, i))
                            for i, lc in enumerate(self.load_cases)]
         else:

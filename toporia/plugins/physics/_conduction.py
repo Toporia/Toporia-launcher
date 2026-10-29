@@ -20,6 +20,7 @@
 #     supports (edge / point constraints, any dof)   fixed temperature T = 0
 #     point loads and load holes                     heat input; only the load case's
 #                                                    Fmag is used (the direction means nothing)
+#     load objects (explicit GUI regions)            heat input of their force's magnitude
 #     E0, Emin                                       conductivity of solid and of void
 #     the physics parameter `heat_source`            uniform generation over the whole domain
 #
@@ -39,6 +40,7 @@ from scipy.sparse.linalg import splu
 
 from toporia.framework.params import Param
 from toporia.framework.parts.physics import THERMAL_ENERGY, Physics
+from toporia.framework.problem.regions import heat_inputs, validate_field
 from toporia.plugins.interpolations.simp import SIMP
 
 HEAT_SOURCE = Param(
@@ -116,6 +118,7 @@ class Conduction(Physics):
             mask = getattr(problem, name, None)
             if mask is not None:
                 sinks |= mask
+        validate_field(problem, "temperature")
         self.fixed = np.unique(node_ids[sinks])
         self.free = np.setdiff1d(np.arange(self.n_nodes), self.fixed)
         if self.free.size == 0:
@@ -124,20 +127,22 @@ class Conduction(Physics):
         # Uniform generation: each element hands an equal share of Q·V to its nodes.
         generated = np.zeros(self.n_nodes)
         np.add.at(generated, self.enodes, self.heat_source * measure / n)
-        self.forces = [(case.weight, generated + self._heat_input(case, node_ids)) for case in scenario.load_cases]
+        self.forces = [(case.weight, generated + self._heat_input(index, case, node_ids))
+                       for index, case in enumerate(scenario.load_cases)]
 
-    def _heat_input(self, case, node_ids):
-        """The load case's Fmag as heat entering at the load nodes; each load region carries all of it."""
+    def _heat_input(self, index, case, node_ids):
+        """The heat entering at the load nodes in load case `index` (regions.heat_inputs)."""
         heat = np.zeros(self.n_nodes)
-        layers = getattr(self.problem, "layer_weights", None)   # 3-D: a load is a line through the depth
-        for mask in self.problem.load_node_sets:
+        # 3-D presets: a load is a line through the depth.  Explicit regions spread evenly.
+        layers = None if hasattr(self.problem, "region_loads") else getattr(self.problem, "layer_weights", None)
+        for mask, amount in heat_inputs(self.problem, index, case):
             nodes = node_ids[mask]
             if layers is not None:
                 share = layers[np.nonzero(mask)[0]]
                 share = share / share.sum()
             else:
                 share = np.full(len(nodes), 1.0 / max(len(nodes), 1))
-            np.add.at(heat, nodes, share * case.Fmag)
+            np.add.at(heat, nodes, share * amount)
         return heat
 
     # ── Solve ─────────────────────────────────────────────────────────────────

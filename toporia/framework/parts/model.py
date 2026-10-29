@@ -70,6 +70,8 @@ class Model(ABC):
     order = 100
     #: Tunable parameters (framework.params.Param); they become method parameters.
     params = ()
+    #: Model parameters a schedule may change during a run (framework/parts/schedule.py).
+    schedulable = ()
     #: Passed through to every method built on this model (see ComposedMethod).
     capabilities = Capabilities()
     #: Total material the design may use, comparable with Evaluation.volume.

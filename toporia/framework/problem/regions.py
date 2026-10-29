@@ -228,12 +228,33 @@ def apply_regions(problem):
         mask &= active_nodes
         if not np.any(mask):
             raise ValueError("A load region lies entirely in excluded material")
-    validate_supports(problem, node_coords)
-    if not problem.region_loads:
-        raise ValueError("Add at least one load object; custom problems have no implicit loads")
     cases = problem.scenario.load_cases
     if not cases or any(not math.isfinite(c.weight) or c.weight <= 0 for c in cases):
         raise ValueError("Every load case needs a positive finite weight")
+    problem.validate()
+
+
+def validate_field(problem, field):
+    """Check that the supports and loads mean something for what the physics solves.
+
+    "displacement": the supports remove every rigid-body motion, and every load
+    case has a load object with a component on a free displacement.
+    "temperature": at least one support, which is a heat sink (T = 0); load
+    objects are heat inputs of their force's magnitude, and may be absent when
+    the heat is generated in the material.
+    Problems without explicit regions (the presets) are left alone.
+    """
+    if getattr(problem.scenario, "regions", None) is None:
+        return
+    masks = [problem.fixed_nodes, *(getattr(problem, f"fixed_{axis}_nodes") for axis in "xyz"[:problem.dims])]
+    if field == "temperature":
+        if not any(np.any(mask) for mask in masks):
+            raise ValueError("Add a support: in heat conduction a support is a heat sink held at T = 0")
+        return
+    validate_supports(problem, _coordinates(problem, True))
+    if not problem.region_loads:
+        raise ValueError("Add at least one load object; custom problems have no implicit loads")
+    cases = problem.scenario.load_cases
     present = {index for index, _, _ in problem.region_loads}
     if present != set(range(len(cases))):
         raise ValueError("Every load case needs at least one load object")
@@ -244,14 +265,23 @@ def apply_regions(problem):
             force[(problem.fixed_nodes | getattr(problem, f"fixed_{name}_nodes")).ravel(), axis] = 0
         if not np.any(force):
             raise ValueError(f"Load case {index + 1} has no force on free displacement components")
-    problem.validate()
 
 
 def validate_supports(problem, coordinates):
-    """Check that prescribed components remove rigid-body translations and rotations."""
+    """Check that prescribed components remove rigid-body translations and rotations.
+
+    A positive ground spring (Scenario.point_springs, 2-D) restrains its component
+    as a support does.
+    """
     dims = problem.dims
-    coords = coordinates / max(problem.Lx, problem.Ly, getattr(problem, "Lz", 0), 1)
+    scale = max(problem.Lx, problem.Ly, getattr(problem, "Lz", 0), 1)
+    coords = coordinates / scale
     rows = []
+    if dims == 2:
+        for spring in getattr(problem.scenario, "point_springs", ()):
+            if spring.stiffness > 0:
+                x, y = spring.x / scale, spring.y / scale
+                rows.append([1, 0, -y] if spring.dof == "x" else [0, 1, x])
     for axis in range(dims):
         mask = problem.fixed_nodes | getattr(problem, f"fixed_{'xyz'[axis]}_nodes")
         xyz = coords[mask]
@@ -266,6 +296,18 @@ def validate_supports(problem, coordinates):
     rank = np.linalg.matrix_rank(rows) if rows else 0
     if rank < required:
         raise ValueError(f"Insufficient supports: {required - rank} rigid-body mode(s) remain; add or adjust supports")
+
+
+def heat_inputs(problem, case_index, case):
+    """The (node mask, heat) pairs entering in load case `case_index` of a heat-conduction problem.
+
+    With explicit regions each load object brings the magnitude of its force; a
+    preset's load regions each carry the load case's Fmag.
+    """
+    if hasattr(problem, "region_loads"):
+        return [(mask, float(np.linalg.norm(vector)))
+                for index, mask, vector in problem.region_loads if index == case_index]
+    return [(mask, case.Fmag) for mask in problem.load_node_sets]
 
 
 def regional_force(problem, node_ids, dims, case_index):

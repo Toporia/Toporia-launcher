@@ -26,6 +26,7 @@ import numpy as np
 from toporia.framework.parts.method import Capabilities
 from toporia.framework.parts.model import Evaluation, Model
 from toporia.framework.parts.response import OBJECTIVE_ROLE
+from toporia.framework.problem.regions import heat_inputs, validate_field
 from toporia.plugins.physics._conduction import HEAT_SOURCE
 from toporia.plugins.responses import resolve_response
 from toporia.plugins.shared_params import PENAL, RMIN
@@ -58,6 +59,7 @@ class PymotoHeatModel(Model):
 
     def initialize(self, problem, solver, settings):
         pym = import_pymoto()
+        validate_field(problem, "temperature")
         self.problem = problem
         scenario = problem.scenario
         self.objective_name = resolve_response(scenario.objective, OBJECTIVE_ROLE)[0].name
@@ -150,9 +152,9 @@ class PymotoHeatModel(Model):
         load_cases = problem.scenario.load_cases
         heat = np.tile(generated[:, None], (1, len(load_cases)))
         for k, case in enumerate(load_cases):
-            for mask in problem.load_node_sets:
+            for mask, amount in heat_inputs(problem, k, case):
                 nodes = np.flatnonzero(mask.ravel())
-                heat[nodes, k] += case.Fmag / max(nodes.size, 1)
+                heat[nodes, k] += amount / max(nodes.size, 1)
         # Heat entering a sink node leaves at once.  Zeroing it keeps qᵀT honest: pyMOTO solves the
         # constrained rows as T = q / (diagonal value), which would otherwise add a small spurious term.
         heat[self._sink_dofs(domain)] = 0.0

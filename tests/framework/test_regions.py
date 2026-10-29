@@ -50,8 +50,36 @@ def test_separate_load_objects_keep_their_own_vector_and_case():
     ([*beam_objects(), make_object("rectangle", (1, 1, 0), (4, 4, 1), "solid"),
       make_object("rectangle", (1, 1, 0), (4, 4, 1), "void")], "conflict")])
 def test_incomplete_or_ambiguous_regions_are_rejected_without_defaults(objects, message):
+    # Geometry is checked when meshing, supports and loads by the elastic engine that uses them.
     with pytest.raises(ValueError, match=message):
-        make_problem(replace(beam(), regions=objects))
+        Q4DofLayout(make_problem(replace(beam(), regions=objects)))
+
+
+def test_heat_regions_need_a_sink_but_no_load_and_take_the_force_magnitude_as_heat():
+    from toporia.plugins.physics.q4_heat import Q4Heat
+    sink = make_object("circle", (10, 0, 0), (4, 4, 4), "support")
+    heater = make_object("point", (10, 10, 0), role="load", force=[3, -4, 0])
+    generated = Q4Heat()
+    generated.initialize(make_problem(Scenario(Lx=20, Ly=10, regions=[sink])), {"heat_source": 1e-3})
+    heated = Q4Heat()
+    heated.initialize(make_problem(Scenario(Lx=20, Ly=10, regions=[sink, heater])), {"heat_source": 0.0})
+    assert heated.forces[0][1].sum() == pytest.approx(5.0)          # |(3, -4)| enters at the point
+    with pytest.raises(ValueError, match="heat sink"):
+        Q4Heat().initialize(make_problem(Scenario(Lx=20, Ly=10, regions=[heater])), {})
+
+
+def test_every_preset_copied_to_regions_keeps_its_problem():
+    """Copy to custom: the explicit objects reproduce the preset's supports, loads and passive regions."""
+    from toporia.plugins.problems import problem_names
+    for name in problem_names():
+        scenario = get_run(name).scenario
+        if scenario.Lz:
+            continue
+        legacy = make_problem(scenario, 1.0)
+        custom = make_problem(replace(scenario, regions=objects_from_scenario(scenario)), 1.0)
+        loaded = any(case.Fmag for case in scenario.load_cases)   # a zero load needs no load object
+        for mask in ("passive_elements", "void_elements", *(("load_nodes",) if loaded else ())):
+            assert np.array_equal(getattr(legacy, mask), getattr(custom, mask)), (name, mask)
 
 
 def test_custom_scenario_round_trip_and_legacy_serialization_remain_distinct():

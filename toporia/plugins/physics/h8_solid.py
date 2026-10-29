@@ -121,7 +121,8 @@ class H8DofLayout:
         self.fixed_dofs = np.unique(np.concatenate([p.ravel() for p in parts]).astype(int))
         self.free_dofs = np.setdiff1d(np.arange(self.ndof), self.fixed_dofs)
         if hasattr(problem, "region_loads"):
-            from toporia.framework.problem.regions import regional_force
+            from toporia.framework.problem.regions import regional_force, validate_field
+            validate_field(problem, "displacement")
             self.forces = [(case.weight, regional_force(problem, self.node_ids, 3, i))
                            for i, case in enumerate(problem.scenario.load_cases)]
         else:

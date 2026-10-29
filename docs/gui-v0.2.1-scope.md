@@ -100,6 +100,24 @@ gui-plan.md checkpoints describe v0.2 and remain historical context.
 - [x] Basic / Sleek monochrome appearance switch, persistence and verification.
 - [x] Persistence, documentation, regression and visual verification.
 
+## Merge with the integration work (branch `full-gui`, 29 October 2026)
+
+"Expose later" is now: the GUI shows every function the integration branch added.
+
+- [x] Merge `gui-v0.2.1` and `feature/research-presets-v022`; both sides' fields
+  (`Scenario.point_springs` and `regions`) and post-processing arguments kept.
+- [x] Method library lists every updater, whole method, representation, physics
+  model, material law, objective and constraint; incompatible ones greyed out
+  with the reason. Method inspectors no longer hide all but one entry.
+- [x] Runner offers every study mode (the worker already ran all of them).
+- [x] Post-process: the full post-processor list beside the 0.5 threshold, applied
+  after every run or on demand. Export lists every registered exporter.
+- [x] Home library split into Benchmarks, Paper figures and Research showcases.
+- [x] Copy to custom works for every preset: heat conduction reads custom
+  regions (sinks, heat inputs, no load needed); load holes load their ring.
+- [x] Every preset opens and walks all five steps without an error; custom copies
+  give the preset's first objective (except Drone Arm, see To do).
+
 ## Architecture review and implementation notes
 
 The earlier graph described a fixed Run rather than driving execution. v0.2.1
