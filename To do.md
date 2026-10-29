@@ -27,6 +27,10 @@
   About four hours for the three on one machine; stopped on 29 October 2026 for lack of time.
 - [ ] Machining filter, single tool at 180 degrees: 4.72 times the reference against the paper's 4.11.
 - [ ] SiMPL (arXiv 2411.19421) MBB comparison in ratios; needs the 768 x 256 mesh.
+- [ ] The full test suite at 372adc1 passed (3794 passed, 1 skipped) but its pytest process kept using one
+  core for over 30 minutes after printing its summary, and had to be stopped; the run at f9afed9 exited normally.
+  The tests added since exit promptly on their own. Find what is still computing at exit (py-spy dump or
+  faulthandler.dump_traceback_later in conftest); the optimiser threads are daemons, so likely something else.
 
 ## Split the repository into core, library and GUI (later in this batch)
 
