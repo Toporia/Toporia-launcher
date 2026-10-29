@@ -1,0 +1,50 @@
+{
+ "case_id": "machining_180",
+ "functions": [
+  "filter:machining"
+ ],
+ "source_url": "https://arxiv.org/abs/2102.12999",
+ "target": "Hoghoj & Traff (2021) Fig. 5f: one tool at 180 degrees, 4.11 times the reference compliance",
+ "published": 4.11,
+ "compliance": 327.8131019093046,
+ "iterations": 400,
+ "stop_reason": "iteration limit (400)",
+ "volume_fraction": 0.49999996275579217,
+ "grayness": 0.015225930080615407,
+ "runtime_seconds": 1213.9,
+ "solver": {
+  "method": "q4+mma",
+  "m": 3.3333333333333335,
+  "max_iter": 400,
+  "tol": 0.001,
+  "filter_specs": [
+   {
+    "type": "density",
+    "rmin": 3.0
+   },
+   {
+    "type": "machining",
+    "from_pos_y": false,
+    "power": -3.0,
+    "peclet": 10000.0,
+    "from_neg_x": true
+   }
+  ],
+  "schedules": [],
+  "method_params": {
+   "move": 0.01
+  },
+  "interpolation": {
+   "type": "simp",
+   "penal": 5.0
+  }
+ },
+ "measured": 4.719491409696904,
+ "kind": "ratio to machining_reference",
+ "relative_difference": 0.1482947468848912,
+ "paper_status": "paper_reproduction_to_fix",
+ "checks": {
+  "checks_passed": true,
+  "match_tolerance": 0.05
+ }
+}

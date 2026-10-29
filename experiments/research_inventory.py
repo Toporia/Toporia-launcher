@@ -109,6 +109,19 @@ def inventory():
                 row["status"] = "research_example_verified" if matched else "engineering_example" if engineering else "paper_reproduction_to_fix"
                 row["citation_review"] = "See per-case primary sources and explicit comparison scope; other citations remain unreviewed."
                 row["evidence"] = [item["evidence"] for item in row["research_cases"]]
+    # Published numbers reproduced from open papers (experiments/research_papers.py) only add
+    # evidence: a match marks the function verified, a miss leaves its batch status as it was.
+    for evidence in sorted((ROOT / "docs/research/evidence/papers").glob("*/report.json")):
+        record = json.loads(evidence.read_text(encoding="utf-8"))
+        for row in functions:
+            if row["id"] in record["functions"]:
+                row.setdefault("paper_cases", []).append({
+                    "case_id": record["case_id"], "paper_status": record["paper_status"], "target": record["target"],
+                    "relative_difference": record["relative_difference"],
+                    "evidence": evidence.relative_to(ROOT / "docs/research").as_posix()})
+                if record["paper_status"] == "published_value_match":
+                    row["status"] = "research_example_verified"
+                    row["evidence"] = row.get("evidence", []) + [row["paper_cases"][-1]["evidence"]]
     defined_in = {}
     for row in functions:
         defined_in.setdefault(row["source_file"], []).append(row["id"])

@@ -342,7 +342,7 @@ def _built(window):
 def test_a_schedule_offers_only_what_can_change_and_reaches_the_run(window):
     window._on_config_changed("MBB Beam")
     window.core.select_method("q4+oc")
-    penal = {"path": "interpolation.penal", "type": "steps", "start": 1.0, "end": 3.0, "step": 0.5, "every": 20}
+    penal = {"path": "interpolation.penal", "type": "steps", "start": 1.0, "end": 3.0, "step": 0.5, "every": 20, "first": 0}
     window.schedules.load_specs([penal])
     assert _built(window).solver.schedules == [penal]
     row = window.schedules._rows[0]
@@ -709,6 +709,7 @@ def test_every_presets_default_method_comparison_runs_from_the_gui(window, tmp_p
     from toporia.apps.gui import runner
     from toporia.engine.modes.methods import comparison_problems
     from toporia.plugins.responses import RESPONSES
+    from toporia.plugins.responses.minimum_length import calibration
 
     def expanded(scenario):
         # GUI rows spell out defaults that a preset may omit; compare their
@@ -740,6 +741,11 @@ def test_every_presets_default_method_comparison_runs_from_the_gui(window, tmp_p
     resolution = min(run.solver.m, max(0.1, 6/short_side))
     if run.scenario.Lz > 0:
         resolution = min(resolution, 0.2)
+    # A minimum-length cone must span two cells (responses/minimum_length.py refuses less), so keep it resolved.
+    for spec in run.scenario.constraints:
+        if spec.get("type") == "minimum_length":
+            radius = calibration(spec.get("threshold", 0.75), 2)[0] * spec["min_length"]
+            resolution = max(resolution, 2.05 / radius)
     run = run.updated(m=resolution, max_iter=3, tol=0, save_every=0).with_output_dir(tmp_path)
     lines = []
     grid = runner.run_compare_methods(run, window.cmg, None, lines.append)

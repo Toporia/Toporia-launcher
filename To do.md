@@ -20,6 +20,14 @@
   - [o] make a library of all the content in this field
   - [ ] Have a well tought through universal tests and do run the tests
   - [o] Make much more general how to interact with toporia. And for the programs that cannot return every run, dont force them.
+## Paper comparisons still to run
+
+- [ ] top99neo Table 2 T1-T3 (docs/research/papers.md): `python -m experiments.research_papers --case top99neo_t1`
+  (and t2, t3), then `--publish-only` and drop them from PENDING in tests/plugins/test_research_papers.py.
+  About four hours for the three on one machine; stopped on 29 October 2026 for lack of time.
+- [ ] Machining filter, single tool at 180 degrees: 4.72 times the reference against the paper's 4.11.
+- [ ] SiMPL (arXiv 2411.19421) MBB comparison in ratios; needs the 768 x 256 mesh.
+
 ## Split the repository into core, library and GUI (later in this batch)
 
 Agreed 28 October 2026; not started. Target top level, next to `docs/`, `tests/`,

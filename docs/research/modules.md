@@ -166,9 +166,11 @@ Generated from every Python module under `toporia/`. A supporting module defines
 | [toporia/plugins/problems/mbb_beam_robust.py](../../toporia/plugins/problems/mbb_beam_robust.py) | preset recipe | - |
 | [toporia/plugins/problems/michell_cantilever.py](../../toporia/plugins/problems/michell_cantilever.py) | preset recipe | - |
 | [toporia/plugins/problems/nonlinear_cantilever.py](../../toporia/plugins/problems/nonlinear_cantilever.py) | preset recipe | - |
+| [toporia/plugins/problems/paper_machining_cantilever.py](../../toporia/plugins/problems/paper_machining_cantilever.py) | preset recipe | - |
 | [toporia/plugins/problems/paper_ptoc_mbb.py](../../toporia/plugins/problems/paper_ptoc_mbb.py) | preset recipe | - |
 | [toporia/plugins/problems/paper_top88_density.py](../../toporia/plugins/problems/paper_top88_density.py) | preset recipe | - |
 | [toporia/plugins/problems/paper_top88_sensitivity.py](../../toporia/plugins/problems/paper_top88_sensitivity.py) | preset recipe | - |
+| [toporia/plugins/problems/paper_top99neo_mbb.py](../../toporia/plugins/problems/paper_top99neo_mbb.py) | preset recipe | - |
 | [toporia/plugins/problems/research_am.py](../../toporia/plugins/problems/research_am.py) | preset recipe | - |
 | [toporia/plugins/problems/research_b3_adam.py](../../toporia/plugins/problems/research_b3_adam.py) | preset recipe | - |
 | [toporia/plugins/problems/research_b3_augmented_lagrangian.py](../../toporia/plugins/problems/research_b3_augmented_lagrangian.py) | preset recipe | - |

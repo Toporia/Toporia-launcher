@@ -166,9 +166,12 @@
       "target_figure": "machining",
       "target_type": "input/output density field and relevant manufacturing metric",
       "batch": 2,
-      "status": "paper_reproduction_to_fix",
+      "status": "research_example_verified",
       "evidence": [
-        "evidence/batch2/machining/report.json"
+        "evidence/batch2/machining/report.json",
+        "evidence/papers/machining_0/report.json",
+        "evidence/papers/machining_m90_0/report.json",
+        "evidence/papers/machining_m90_0_180/report.json"
       ],
       "notes": "",
       "research_cases": [
@@ -179,6 +182,36 @@
           "source_url": "https://doi.org/10.1016/j.cma.2021.114488",
           "checks_passed": true,
           "evidence": "evidence/batch2/machining/report.json"
+        }
+      ],
+      "paper_cases": [
+        {
+          "case_id": "machining_0",
+          "paper_status": "published_value_match",
+          "target": "Hoghoj & Traff (2021) Fig. 5b: one tool at 0 degrees, 2.57 times the reference compliance",
+          "relative_difference": 0.03913797187661561,
+          "evidence": "evidence/papers/machining_0/report.json"
+        },
+        {
+          "case_id": "machining_180",
+          "paper_status": "paper_reproduction_to_fix",
+          "target": "Hoghoj & Traff (2021) Fig. 5f: one tool at 180 degrees, 4.11 times the reference compliance",
+          "relative_difference": 0.1482947468848912,
+          "evidence": "evidence/papers/machining_180/report.json"
+        },
+        {
+          "case_id": "machining_m90_0",
+          "paper_status": "published_value_match",
+          "target": "Hoghoj & Traff (2021) Fig. 6a: tools at -90 and 0 degrees, 3.15 times the reference",
+          "relative_difference": 0.03058349552380979,
+          "evidence": "evidence/papers/machining_m90_0/report.json"
+        },
+        {
+          "case_id": "machining_m90_0_180",
+          "paper_status": "published_value_match",
+          "target": "Hoghoj & Traff (2021) Fig. 6b: tools at -90, 0 and 180 degrees, 1.24 times the reference",
+          "relative_difference": 0.01722528543428381,
+          "evidence": "evidence/papers/machining_m90_0_180/report.json"
         }
       ]
     },
@@ -2855,7 +2888,7 @@
       "about": "A 60 x 20 mm column clamped at one end and compressed axially at the other: minimise compliance while the buckling load factor stays above a limit.",
       "reference": "Linearised buckling in topology optimisation: F. Ferrari, O. Sigmund and J. K. Guest, Struct. Multidisc. Optim. 63 (2021) 3045-3066. Geometry is Toporia's own. Papers: https://doi.org/10.1007/s00158-021-02854-x",
       "research_description": true,
-      "target_figure": "General-purpose preset: it shows a typical use, not a reproduced paper figure. To try its parts on their own, open these presets: model:q4_buckling: Research: Linearized buckling factors; updater:pymoto_mma: Research: MMA through pyMOTO; response:buckling_load: Research: Linearized buckling factors; filter:heaviside: Research: Heaviside projection curves, Research: Volume-preserving projection; schedule:geometric: Research: Geometric beta continuation.",
+      "target_figure": "General-purpose preset: it shows a typical use, not a reproduced paper figure. To try its parts on their own, open these presets: model:q4_buckling: Research: Linearized buckling factors; updater:pymoto_mma: Research: MMA through pyMOTO; response:buckling_load: Research: Linearized buckling factors; filter:heaviside: Paper: top99neo Table 2 T3 (MBB), Research: Heaviside projection curves, Research: Volume-preserving projection; schedule:geometric: Research: Geometric beta continuation.",
       "functions": [
         "model:q4_buckling",
         "physics:q4_buckling",
@@ -2926,7 +2959,7 @@
       "about": "A square mechanism held at the two left corners: a rightward input force should move the right output port leftward. Ground springs represent both ports.",
       "reference": "O. Sigmund, \"On the Design of Compliant Mechanisms Using Topology Optimization\", Mechanics of Structures and Machines 25 (1997) 493-524. Toporia uses its own dimensions and spring/load values, not a paper replication. Papers: https://doi.org/10.1080/08905459708945415",
       "research_description": true,
-      "target_figure": "General-purpose preset: it shows a typical use, not a reproduced paper figure. To try its parts on their own, open these presets: model:q4_mechanism: Research: Compliant force inverter and port adjoint; updater:mma: Research: MMA: local one-budget variant; response:output_displacement: Research: Compliant force inverter and port adjoint.",
+      "target_figure": "General-purpose preset: it shows a typical use, not a reproduced paper figure. To try its parts on their own, open these presets: model:q4_mechanism: Research: Compliant force inverter and port adjoint; updater:mma: Paper: Machining Fig. 6b (cantilever), Research: MMA: local one-budget variant; response:output_displacement: Research: Compliant force inverter and port adjoint.",
       "functions": [
         "model:q4_mechanism",
         "physics:q4_mechanism",
@@ -2974,10 +3007,10 @@
     {
       "name": "L-bracket (local stress)",
       "source_file": "toporia/plugins/problems/l_bracket_stress.py",
-      "about": "The L-bracket again, now minimising volume under a von Mises limit in every element with the augmented Lagrangian method: the re-entrant corner has to round off to meet the limit. It cuts the corner peak from 0.67 to 0.51 with 26 % material, ending about 3 % over the limit: the corner stress is singular, so the limit is approached rather than met.",
+      "about": "The L-bracket again, now minimising volume under a von Mises limit in every element with the augmented Lagrangian method: the re-entrant corner has to round off to meet the limit. It cuts the corner peak from 0.67 to 0.50 with 27 % material, ending 0.4 % over the limit (within the run report's 1 %): a shrinking move limit lets the multipliers settle.",
       "reference": "O. Giraldo-Londono and G. H. Paulino, Struct. Multidisc. Optim. 63 (2021) 2065-2097 (PolyStress). Geometry as in the L-bracket preset; the limit is chosen here. Papers: https://doi.org/10.1007/s00158-020-02760-8",
       "research_description": true,
-      "target_figure": "General-purpose preset: it shows a typical use, not a reproduced paper figure. To try its parts on their own, open these presets: updater:augmented_lagrangian: Research: Local-stress augmented Lagrangian; response:volume: Research: Minimum volume with aggregate stress; response:local_stress: Research: Local stress penalties and multiplier fields.",
+      "target_figure": "General-purpose preset: it shows a typical use, not a reproduced paper figure. To try its parts on their own, open these presets: updater:augmented_lagrangian: Research: Local-stress augmented Lagrangian; response:volume: Research: Minimum volume with aggregate stress; response:local_stress: Research: Local stress penalties and multiplier fields; schedule:geometric: Research: Geometric beta continuation.",
       "functions": [
         "model:q4",
         "physics:q4_plane_stress",
@@ -2986,7 +3019,8 @@
         "interpolation:simp",
         "response:volume",
         "response:local_stress",
-        "filter:density"
+        "filter:density",
+        "schedule:geometric"
       ]
     },
     {
@@ -3012,7 +3046,7 @@
       "about": "MBB beam with fixed beta=16 projection and conservative MMA asymptotes. No beta continuation; sharpness and optimizer tuning remain problem dependent.",
       "reference": "Independent fixed-projection recipe. MMA parameter recipe: Høghøj & Träff (2021), section 3.1, equation (11); continuation-free motivation: Guest, Asadpoure & Ha (2011). Papers: https://arxiv.org/abs/2102.12999 https://doi.org/10.1007/s00158-011-0676-1",
       "research_description": true,
-      "target_figure": "General-purpose preset: it shows a typical use, not a reproduced paper figure. To try its parts on their own, open these presets: updater:mma: Research: MMA: local one-budget variant; filter:heaviside: Research: Heaviside projection curves, Research: Volume-preserving projection.",
+      "target_figure": "General-purpose preset: it shows a typical use, not a reproduced paper figure. To try its parts on their own, open these presets: updater:mma: Paper: Machining Fig. 6b (cantilever), Research: MMA: local one-budget variant; filter:heaviside: Paper: top99neo Table 2 T3 (MBB), Research: Heaviside projection curves, Research: Volume-preserving projection.",
       "functions": [
         "model:q4",
         "physics:q4_plane_stress",
@@ -3030,7 +3064,7 @@
       "about": "The MBB beam solved robustly: the worst of the eroded, intermediate and dilated designs (Heaviside thresholds 0.75 / 0.5 / 0.25), with a doubling continuation of the sharpness.",
       "reference": "F. Wang, B. S. Lazarov and O. Sigmund, \"On projection methods, convergence and robust formulations in topology optimization\", Struct. Multidisc. Optim. 43 (2011) 767-784. Independent recipe; thresholds match Fig. 6, but volume, aggregation and continuation differ. Papers: https://doi.org/10.1007/s00158-010-0602-y Correction: https://doi.org/10.1007/s00158-022-03326-6",
       "research_description": true,
-      "target_figure": "General-purpose preset: it shows a typical use, not a reproduced paper figure. To try its parts on their own, open these presets: updater:mma: Research: MMA: local one-budget variant; filter:heaviside: Research: Heaviside projection curves, Research: Volume-preserving projection; schedule:geometric: Research: Geometric beta continuation.",
+      "target_figure": "General-purpose preset: it shows a typical use, not a reproduced paper figure. To try its parts on their own, open these presets: updater:mma: Paper: Machining Fig. 6b (cantilever), Research: MMA: local one-budget variant; filter:heaviside: Paper: top99neo Table 2 T3 (MBB), Research: Heaviside projection curves, Research: Volume-preserving projection; schedule:geometric: Research: Geometric beta continuation.",
       "functions": [
         "model:q4",
         "physics:q4_plane_stress",
@@ -3066,7 +3100,7 @@
       "about": "A cantilever with a large tip load, designed with geometrically non-linear elasticity (large displacements, Newton–Raphson with load steps) so the design accounts for how the beam bends.",
       "reference": "Stiffness design of geometrically non-linear structures, T. Buhl, C. B. W. Pedersen, O. Sigmund, Struct. Multidisc. Optim. 19 (2000) 93-104; void by energy interpolation after Wang, Lazarov, Sigmund & Jensen, CMAME 276 (2014) 453-472. Papers: https://doi.org/10.1007/s001580050089 https://doi.org/10.1016/j.cma.2014.03.021",
       "research_description": true,
-      "target_figure": "General-purpose preset: it shows a typical use, not a reproduced paper figure. To try its parts on their own, open these presets: model:q4_nonlinear: Research: Large-displacement elasticity and end compliance; updater:mma: Research: MMA: local one-budget variant; response:end_compliance: Research: Large-displacement elasticity and end compliance.",
+      "target_figure": "General-purpose preset: it shows a typical use, not a reproduced paper figure. To try its parts on their own, open these presets: model:q4_nonlinear: Research: Large-displacement elasticity and end compliance; updater:mma: Paper: Machining Fig. 6b (cantilever), Research: MMA: local one-budget variant; response:end_compliance: Research: Large-displacement elasticity and end compliance.",
       "functions": [
         "model:q4_nonlinear",
         "physics:q4_nonlinear",
@@ -3075,6 +3109,24 @@
         "interpolation:simp",
         "response:end_compliance",
         "filter:density"
+      ]
+    },
+    {
+      "name": "Paper: Machining Fig. 6b (cantilever)",
+      "source_file": "toporia/plugins/problems/paper_machining_cantilever.py",
+      "about": "The 2 x 1 cantilever of Hoghoj & Traff's advection-diffusion machining filter (2021), milled from the top and both ends (their Fig. 6b): every surface must be reachable by a tool from one of those sides.",
+      "reference": "L. C. Hoghoj, E. A. Traff, \"An advection-diffusion based filter for machinable designs in topology optimization\", Comput. Methods Appl. Mech. Engrg. 391 (2022) 114488. Papers: https://arxiv.org/abs/2102.12999",
+      "research_description": true,
+      "target_figure": "Hoghoj & Traff (2021), Table 2 and Figs. 5-6: reference c = 69.98; 0 deg 2.57, 180 deg 4.11, {-90, 0} 3.15 and {-90, 0, 180} 1.24 times the reference.",
+      "functions": [
+        "filter:machining",
+        "filter:density",
+        "updater:mma",
+        "model:q4",
+        "physics:q4_plane_stress",
+        "representation:element_density",
+        "interpolation:simp",
+        "response:compliance"
       ]
     },
     {
@@ -3125,6 +3177,25 @@
         "interpolation:simp",
         "response:compliance",
         "updater:oc"
+      ]
+    },
+    {
+      "name": "Paper: top99neo Table 2 T3 (MBB)",
+      "source_file": "toporia/plugins/problems/paper_top99neo_mbb.py",
+      "about": "The 300 x 100 half-MBB beam of Ferrari & Sigmund's top99neo (2020), Table 2 case T3: a density filter, a projection whose threshold keeps the volume, and beta raised by 2 every 25 steps from step 250.",
+      "reference": "F. Ferrari, O. Sigmund, \"A new generation 99 line Matlab code for compliance topology optimization and its extension to 3D\", Struct. Multidisc. Optim. 62 (2020) 2211-2228. Papers: https://arxiv.org/abs/2005.05436",
+      "research_description": true,
+      "target_figure": "Ferrari & Sigmund (2020), Table 2: T1 c = 252.7, T2 c = 246.1, T3 c = 199.6 after 2500 steps.",
+      "functions": [
+        "filter:density",
+        "filter:heaviside",
+        "schedule:steps",
+        "updater:oc",
+        "model:q4",
+        "physics:q4_plane_stress",
+        "representation:element_density",
+        "interpolation:simp",
+        "response:compliance"
       ]
     },
     {
@@ -3968,7 +4039,7 @@
       "about": "A beam clamped at both ends, carrying a payload at its centre: maximise its lowest natural frequency with the volume fixed.",
       "reference": "After J. Du, N. Olhoff, \"Topological design of freely vibrating continuum structures for maximum values of simple and multiple eigenfrequencies and frequency gaps\", Struct. Multidisc. Optim. 34 (2007) 91-110, with the mass interpolation of N. L. Pedersen, Struct. Multidisc. Optim. 20 (2000) 2-11. Papers: https://doi.org/10.1007/s00158-007-0101-y https://doi.org/10.1007/s001580050130",
       "research_description": true,
-      "target_figure": "General-purpose preset: it shows a typical use, not a reproduced paper figure. To try its parts on their own, open these presets: model:q4_dynamic: Research: Natural frequencies and mode aggregation; updater:mma: Research: MMA: local one-budget variant; response:eigenfrequency: Research: Natural frequencies and mode aggregation.",
+      "target_figure": "General-purpose preset: it shows a typical use, not a reproduced paper figure. To try its parts on their own, open these presets: model:q4_dynamic: Research: Natural frequencies and mode aggregation; updater:mma: Paper: Machining Fig. 6b (cantilever), Research: MMA: local one-budget variant; response:eigenfrequency: Research: Natural frequencies and mode aggregation.",
       "functions": [
         "model:q4_dynamic",
         "physics:q4_dynamic",
@@ -5218,6 +5289,13 @@
       "source_summary": "nonlinear_cantilever.py — a cantilever whose tip load is large enough to bend it visibly.  The geometry of the Cantilever preset (clamped left edge, point load at mid-height of the free end, 60 × 30, 40 % material) but with the load chosen for the material (E0 = 1) so that the uniform beam's tip moves by a good fraction of the beam depth and the lever arm shortens as it bends.  The linear theory ignores that; the non-linear solve (q4_nonlinear) follows it and designs for the stiffness the struct"
     },
     {
+      "source_file": "toporia/plugins/problems/paper_machining_cantilever.py",
+      "defines_functions": [],
+      "is_preset": true,
+      "classification": "preset recipe",
+      "source_summary": "Hoghoj & Traff (2021) Table 2: the 200 x 100 cantilever milled from three sides (Fig. 6b)."
+    },
+    {
       "source_file": "toporia/plugins/problems/paper_ptoc_mbb.py",
       "defines_functions": [],
       "is_preset": true,
@@ -5237,6 +5315,13 @@
       "is_preset": true,
       "classification": "preset recipe",
       "source_summary": "Figure 3(a), top panel: sensitivity filtering with the paper's radius."
+    },
+    {
+      "source_file": "toporia/plugins/problems/paper_top99neo_mbb.py",
+      "defines_functions": [],
+      "is_preset": true,
+      "classification": "preset recipe",
+      "source_summary": "Ferrari & Sigmund (2020) Table 2: the 300 x 100 half-MBB beam of top99neo, case T3."
     },
     {
       "source_file": "toporia/plugins/problems/research_am.py",
@@ -5981,7 +6066,7 @@
       ],
       "is_preset": false,
       "classification": "numerical function implementation",
-      "source_summary": "plugins/schedules/steps.py — equal steps every so many iterations.  The classic SIMP continuation: p = 1, 1.5, 2, ... 3, raised by 0.5 every 20 iterations, so each penalty is solved before the next is applied.  The step is taken towards `end`, so a decreasing schedule needs no negative step."
+      "source_summary": "plugins/schedules/steps.py — equal steps every so many iterations.  The classic SIMP continuation: p = 1, 1.5, 2, ... 3, raised by 0.5 every 20 iterations, so each penalty is solved before the next is applied.  The step is taken towards `end`, so a decreasing schedule needs no negative step. `first` delays the first step, as top99neo's continuation does (beta raised from iteration 250 on); 0 means the first step comes after `every` iterations."
     },
     {
       "source_file": "toporia/plugins/shared_params.py",

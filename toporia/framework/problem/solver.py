@@ -83,7 +83,7 @@ SOLVER_PARAMS = (
           source="Toporia's own: the mesh follows from a size in millimetres, where top88 "
                  "sets the element counts nelx and nely directly."),
     Param("max_iter", 100, "Max iters",
-          "Maximum number of optimisation iterations before stopping.", min=1, max=2000,
+          "Maximum number of optimisation iterations before stopping.", min=1, max=10000,
           source="A safety cap on the loop; top88 has none and relies on the tolerance alone."),
     Param("tol", 0.01, "Tolerance",
           "Stop when the design change reported by the method falls below this value.",

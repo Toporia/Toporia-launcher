@@ -1,0 +1,51 @@
+{
+ "case_id": "machining_m90_0",
+ "functions": [
+  "filter:machining"
+ ],
+ "source_url": "https://arxiv.org/abs/2102.12999",
+ "target": "Hoghoj & Traff (2021) Fig. 6a: tools at -90 and 0 degrees, 3.15 times the reference",
+ "published": 3.15,
+ "compliance": 225.4887319029056,
+ "iterations": 400,
+ "stop_reason": "iteration limit (400)",
+ "volume_fraction": 0.49999995979077105,
+ "grayness": 0.009882788247649639,
+ "runtime_seconds": 1320.6,
+ "solver": {
+  "method": "q4+mma",
+  "m": 3.3333333333333335,
+  "max_iter": 400,
+  "tol": 0.001,
+  "filter_specs": [
+   {
+    "type": "density",
+    "rmin": 3.0
+   },
+   {
+    "type": "machining",
+    "from_pos_y": false,
+    "power": -3.0,
+    "peclet": 10000.0,
+    "from_neg_y": true,
+    "from_pos_x": true
+   }
+  ],
+  "schedules": [],
+  "method_params": {
+   "move": 0.01
+  },
+  "interpolation": {
+   "type": "simp",
+   "penal": 5.0
+  }
+ },
+ "measured": 3.246338010900001,
+ "kind": "ratio to machining_reference",
+ "relative_difference": 0.03058349552380979,
+ "paper_status": "published_value_match",
+ "checks": {
+  "checks_passed": true,
+  "match_tolerance": 0.05
+ }
+}

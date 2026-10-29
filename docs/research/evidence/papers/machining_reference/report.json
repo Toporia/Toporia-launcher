@@ -1,0 +1,47 @@
+{
+ "case_id": "machining_reference",
+ "functions": [],
+ "source_url": "https://arxiv.org/abs/2102.12999",
+ "target": "Hoghoj & Traff (2021) Table 2 / Fig. 5a: no milling constraint, c = 69.98",
+ "published": 69.98,
+ "compliance": 69.4594127739619,
+ "iterations": 400,
+ "stop_reason": "iteration limit (400)",
+ "volume_fraction": 0.4999999274638292,
+ "grayness": 0.003259059946357829,
+ "runtime_seconds": 1312.4,
+ "solver": {
+  "method": "q4+mma",
+  "m": 3.3333333333333335,
+  "max_iter": 400,
+  "tol": 0.001,
+  "filter_specs": [
+   {
+    "type": "density",
+    "rmin": 3.0
+   },
+   {
+    "type": "heaviside",
+    "beta": 1.0,
+    "beta_max": 32.0,
+    "beta_interval": 40
+   }
+  ],
+  "schedules": [],
+  "method_params": {
+   "move": 0.2
+  },
+  "interpolation": {
+   "type": "simp",
+   "penal": 3.0
+  }
+ },
+ "measured": 69.4594127739619,
+ "kind": "compliance",
+ "relative_difference": -0.007439085825065805,
+ "paper_status": "published_value_match",
+ "checks": {
+  "checks_passed": true,
+  "match_tolerance": 0.05
+ }
+}
