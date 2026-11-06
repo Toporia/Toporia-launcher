@@ -11,8 +11,9 @@ pip install -e ".[dev,3d]"
 ```
 
 `dev` brings the test tools. `3d` brings the fast 3-D solver (pyamg) and the 3-D view
-(scikit-image). Add `pymoto` for the pyMOTO models and optimisers. Then check that
-everything works:
+(scikit-image). Add `pymoto` for the pyMOTO models and optimisers. For a virtual
+environment, the other extras, and fixes when an install fails, see
+[installation.md](installation.md). Then check that everything works:
 
 ```bash
 toporia

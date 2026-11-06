@@ -12,7 +12,8 @@ pip install -e ".[dev,3d,gui3d]"
 ```
 
 Then `toporia` opens the desktop app, and `toporia run "MBB Beam"` runs from the command
-line.
+line. New to Python, or the install fails? [docs/installation.md](docs/installation.md)
+walks through it step by step.
 
 ## Comparing methods
 
@@ -34,6 +35,7 @@ not part of the source library.
 
 | You want to… | Read |
 | :-- | :-- |
+| install it, step by step, with fixes for common problems | [docs/installation.md](docs/installation.md) |
 | change or extend Toporia, starting today | [docs/quickstart.md](docs/quickstart.md) |
 | understand how the code fits together | [toporia/README.md](toporia/README.md) |
 | add any kind of part, with a worked example of each | [docs/writing-plugins.md](docs/writing-plugins.md) |
