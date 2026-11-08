@@ -1,0 +1,138 @@
+{
+  "kind": "project",
+  "format": 1,
+  "name": "Drone Arm",
+  "scenario": {
+    "Lx": 200.0,
+    "Ly": 85.0,
+    "Lz": 0.0,
+    "holes": [
+      {
+        "cx": 85.1,
+        "cy": 75.0,
+        "r_void": 3.0,
+        "r_passive": 6.0,
+        "kind": "fixed"
+      },
+      {
+        "cx": 115.6,
+        "cy": 75.0,
+        "r_void": 3.0,
+        "r_passive": 6.0,
+        "kind": "fixed"
+      },
+      {
+        "cx": 7.9,
+        "cy": 17.6,
+        "r_void": 3.0,
+        "r_passive": 6.0,
+        "kind": "load"
+      },
+      {
+        "cx": 15.2,
+        "cy": 8.9,
+        "r_void": 3.0,
+        "r_passive": 6.0,
+        "kind": "load"
+      },
+      {
+        "cx": 16.6,
+        "cy": 24.9,
+        "r_void": 3.0,
+        "r_passive": 6.0,
+        "kind": "load"
+      },
+      {
+        "cx": 23.8,
+        "cy": 16.2,
+        "r_void": 3.0,
+        "r_passive": 6.0,
+        "kind": "load"
+      },
+      {
+        "cx": 192.8,
+        "cy": 17.6,
+        "r_void": 3.0,
+        "r_passive": 6.0,
+        "kind": "load"
+      },
+      {
+        "cx": 185.6,
+        "cy": 8.9,
+        "r_void": 3.0,
+        "r_passive": 6.0,
+        "kind": "load"
+      },
+      {
+        "cx": 184.2,
+        "cy": 24.9,
+        "r_void": 3.0,
+        "r_passive": 6.0,
+        "kind": "load"
+      },
+      {
+        "cx": 176.9,
+        "cy": 16.2,
+        "r_void": 3.0,
+        "r_passive": 6.0,
+        "kind": "load"
+      }
+    ],
+    "enforced_areas": [],
+    "edge_constraints": [],
+    "point_constraints": [],
+    "point_loads": [],
+    "load_cases": [
+      {
+        "Fmag": 1.0,
+        "Fa": 0.0,
+        "weight": 0.5,
+        "Fe": 0.0
+      },
+      {
+        "Fmag": 1.0,
+        "Fa": 90.0,
+        "weight": 0.5,
+        "Fe": 0.0
+      }
+    ],
+    "volfrac": 0.5,
+    "objective": {
+      "type": "compliance"
+    },
+    "constraints": [],
+    "E0": 1.0,
+    "Emin": 1e-09,
+    "nu": 0.3,
+    "point_springs": []
+  },
+  "solver": {
+    "method": "q4+oc",
+    "method_params": {},
+    "interpolation": {
+      "type": "simp"
+    },
+    "representation": {
+      "type": "element_density"
+    },
+    "filter_specs": [
+      {
+        "type": "density"
+      }
+    ],
+    "schedules": [],
+    "variants": {},
+    "m": 1.0,
+    "max_iter": 200,
+    "tol": 0.01
+  },
+  "output": {
+    "save_every": 10,
+    "postprocess": []
+  },
+  "benchmark": null,
+  "objects": null,
+  "notes": "",
+  "study": {},
+  "view": {}
+}

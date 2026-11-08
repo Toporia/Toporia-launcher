@@ -110,7 +110,7 @@ def test_mmapy_gcmma_agrees_and_its_inner_iterations_are_counted():
 
 @requires_mmapy
 def test_mmapy_respects_the_bounds_on_a_problem_with_holes():
-    method = _optimise("mmapy_gcmma", iterations=4, problem="Drone Arm", m=0.3, volfrac=0.4)
+    method = _optimise("mmapy_gcmma", iterations=4, problem="Holes and Rings (test)", m=0.3, volfrac=0.4)
     problem = method.problem
     density = method.get_density()
     assert np.all(density[problem.void_elements] < 1e-6)
@@ -130,7 +130,7 @@ def test_nullspace_reaches_the_mma_compliance_within_the_budget():
 
 @requires_nullspace
 def test_nullspace_respects_the_bounds_on_a_problem_with_holes():
-    method = _optimise("nullspace", iterations=4, problem="Drone Arm", m=0.3, volfrac=0.4)
+    method = _optimise("nullspace", iterations=4, problem="Holes and Rings (test)", m=0.3, volfrac=0.4)
     problem = method.problem
     density = method.get_density()
     assert np.all(density[problem.void_elements] < 1e-6)

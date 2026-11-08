@@ -153,7 +153,7 @@ def test_oc_survives_elements_whose_volume_gradient_is_zero():
     case that used to produce NaNs.
     """
     _require_pymoto()
-    method = _run(_compose(PymotoElasticModel, OCUpdater), problem="Drone Arm", volfrac=0.4)
+    method = _run(_compose(PymotoElasticModel, OCUpdater), problem="Holes and Rings (test)", volfrac=0.4)
     assert np.all(np.isfinite(method.get_density()))
 
 
@@ -166,7 +166,7 @@ def test_pyMOTO_is_given_only_the_free_variables():
     _require_pymoto()
     with warnings.catch_warnings():
         warnings.simplefilter("error", RuntimeWarning)
-        method = _run(method_class("pymoto"), problem="Drone Arm", volfrac=0.4)
+        method = _run(method_class("pymoto"), problem="Holes and Rings (test)", volfrac=0.4)
     problem = method.problem
     density = method.get_density()
     assert np.all(density[problem.void_elements] < 1e-6)
@@ -178,7 +178,7 @@ def test_simpl_keeps_every_iterate_inside_the_bounds_without_clipping():
 
     Checked on a problem with holes, where the bounds are not 0 and 1 everywhere.
     """
-    method = _run(method_class("density_simpl"), problem="Drone Arm", iterations=5, volfrac=0.4)
+    method = _run(method_class("density_simpl"), problem="Holes and Rings (test)", iterations=5, volfrac=0.4)
     problem = method.problem
     assert np.all(method.x >= problem.lower_bound - 1e-12)
     assert np.all(method.x <= problem.upper_bound + 1e-12)

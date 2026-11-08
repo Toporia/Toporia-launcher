@@ -1,16 +1,24 @@
-# drone_arm.py — topology optimisation problem for the drone arm bracket
+# holes_and_rings.py — the test suite's plate with holes, solid rings and two load cases
+#
+# Not a benchmark: it is unlisted, so the GUI, the command line and the catalogue do not
+# offer it.  The contract checks (`toporia check`) and the tests use it for what no listed
+# preset has together: forced-void holes inside forced-solid rings, supports and loads on
+# those rings, and a weighted pair of load cases.  The layout is that of the former Drone
+# Arm preset, kept so the stored baselines still hold; the drone arm itself is an example
+# project in examples/drone-arm/.
 #
 # Domain:  200 mm × 85 mm rectangular plate
-# Fixed:   two central mounting holes (bolted to the frame)
-# Load:    eight motor-attachment holes, equal +x and +y load cases
+# Fixed:   two central holes
+# Load:    eight holes near the ends, equal +x and +y load cases
 
 from toporia.framework import HoleConfig, LoadCase, Scenario, Solver
 
-NAME = "Drone Arm"
-ORDER = 50
-ABOUT = ('A 200 x 85 mm drone arm bracket: bolted to the frame at two holes, loaded at eight motor'
-         ' holes in two load cases.')
-REFERENCE = "Toporia's own application case."
+NAME = "Holes and Rings (test)"
+ORDER = 1000
+LISTED = False      # for the checks and tests only
+ABOUT = ('A 200 x 85 mm plate fixed at two holes and loaded at eight, each hole inside a solid ring,'
+         ' in two load cases. Used by the checks and tests.')
+REFERENCE = "Toporia's own test geometry."
 
 
 def scenario() -> Scenario:
@@ -19,10 +27,10 @@ def scenario() -> Scenario:
         Lx=200.0,
         Ly=85.0,
         holes=[
-            # Frame-mount holes — clamped (all DOFs fixed)
+            # Support holes — clamped (all DOFs fixed)
             HoleConfig(cx=85.1,  cy=75.0, r_void=3.0, r_passive=6.0, kind="fixed"),
             HoleConfig(cx=115.6, cy=75.0, r_void=3.0, r_passive=6.0, kind="fixed"),
-            # Motor-attachment holes — load applied here
+            # Load holes
             HoleConfig(cx=7.9,   cy=17.6, r_void=3.0, r_passive=6.0, kind="load"),
             HoleConfig(cx=15.2,  cy=8.9,  r_void=3.0, r_passive=6.0, kind="load"),
             HoleConfig(cx=16.6,  cy=24.9, r_void=3.0, r_passive=6.0, kind="load"),

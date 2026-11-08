@@ -1,6 +1,6 @@
 # checks/updater.py — is an updater sound, and does it optimise?
 #
-# A short run on the Drone Arm (holes and solid rings) must stay finite and
+# A short run on the holes-and-rings test plate (holes inside solid rings) must stay finite and
 # inside the bounds and leave no thread behind; then the MBB benchmark, under
 # the engine's stopping rule, must end within the volume budget and within
 # `tolerance` of optimality criteria's compliance.

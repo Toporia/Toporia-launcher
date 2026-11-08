@@ -31,7 +31,7 @@ checks/
 | Plugin | What is checked |
 | :--- | :--- |
 | every plugin | name, label, parameters that resolve to their defaults |
-| updater | a short run on the Drone Arm (holes, solid rings): finite, inside the bounds, no thread left behind; the MBB benchmark under the engine's stopping rule, within the volume budget and within 10 % of optimality criteria's compliance |
+| updater | a short run on the holes-and-rings test plate (holes inside solid rings, two load cases): finite, inside the bounds, no thread left behind; the MBB benchmark under the engine's stopping rule, within the volume budget and within 10 % of optimality criteria's compliance |
 | model, physics engine | shapes and bounds, `volume_of` against `evaluate`, values with and without gradients, every gradient against central finite differences |
 | representation | the field's shape and range, the start design within the bounds, `backward` against finite differences, a short run with MMA |
 | filter | shape and range; the adjoint against finite differences, unless the filter declares `exact_adjoint = False` |

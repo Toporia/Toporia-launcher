@@ -44,7 +44,7 @@ def test_all_are_registered_and_element_densities_are_the_default():
 
 
 def test_element_densities_start_uniform_or_full_within_the_bounds():
-    problem = _problem("Drone Arm")
+    problem = _problem("Holes and Rings (test)")
     uniform, full = ElementDensity(), ElementDensity(start="full")
     uniform.setup(problem)
     full.setup(problem)
@@ -93,7 +93,7 @@ def test_bars_are_optimised_by_mma_through_the_same_model():
 
 
 def test_holes_stay_void_whatever_the_bars_do():
-    run = get_run("Drone Arm").updated(m=0.3, max_iter=2, tol=0.0, save_every=0, method="q4+mma",
+    run = get_run("Holes and Rings (test)").updated(m=0.3, max_iter=2, tol=0.0, save_every=0, method="q4+mma",
                                        representation=MMC, method_params={"move": 0.02})
     method = initialized_method(run)
     method.step(1)

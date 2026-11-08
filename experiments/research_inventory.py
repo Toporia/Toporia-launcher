@@ -81,6 +81,8 @@ def inventory():
                 functions.append(_row("physics", cls.name, cls))
     presets = []
     for name, module in sorted(_modules().items()):
+        if not getattr(module, "LISTED", True):
+            continue                 # a test problem, not a preset
         description = problem_description(name)
         presets.append({"name": name, "source_file": Path(module.__file__).relative_to(ROOT).as_posix(),
                         "about": getattr(module, "ABOUT", ""), "reference": getattr(module, "REFERENCE", ""),

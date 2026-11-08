@@ -36,7 +36,7 @@ works in its dimension applies to it unchanged.
 **How H8 is checked.** With Poisson's ratio 0, a design that does not vary through the depth
 must behave exactly as the 2-D design in plane stress. Its 3-D compliance is then the Q4
 compliance divided by the depth, which holds to 1e-12 on the cantilever, the MBB beam and
-the drone arm (holes and solid rings included). A test asserts it in
+the holes-and-rings test plate (holes and solid rings included). A test asserts it in
 `tests/plugins/test_3d.py`. The finite-difference gradient checks of `toporia check
 model:h8` and `toporia check response:stress` cover its compliance and 3-D stress
 sensitivities.

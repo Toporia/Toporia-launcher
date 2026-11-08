@@ -18,7 +18,7 @@ from toporia.plugins.problems import get_run
 STRESS = {"type": "stress", "limit": 5.0}
 
 
-def _model(problem="Drone Arm", **values):
+def _model(problem="Holes and Rings (test)", **values):
     run = get_run(problem).updated(m=0.3, volfrac=0.4, **values)
     model = Q4Model()
     model.initialize(RectangularProblem(run.scenario, run.solver.m), run.solver, {"penal": 3.0})
@@ -46,7 +46,7 @@ def test_only_the_free_variables_are_handed_over_and_fixed_ones_come_back_at_the
     flat = FlatProblem(model)
     lower, upper = model.bounds()
     fixed = upper <= lower
-    assert fixed.any()                                  # the drone arm has holes and rings
+    assert fixed.any()                                  # the test plate has holes and rings
     assert flat.n == int(np.sum(~fixed)) and flat.n_fixed == int(np.sum(fixed))
     assert np.all(flat.upper > flat.lower)              # no zero-width bounds reach the optimiser
 
@@ -137,7 +137,7 @@ def test_a_remembered_evaluation_is_reused():
 # ── Seen from a run ───────────────────────────────────────────────────────────
 
 def test_a_run_counts_its_solves_and_says_what_the_optimiser_sees(capsys):
-    run = get_run("Drone Arm").updated(method="q4+mma", m=0.3, max_iter=3, tol=0.0)
+    run = get_run("Holes and Rings (test)").updated(method="q4+mma", m=0.3, max_iter=3, tol=0.0)
     method = initialized_method(run)
     for iteration in range(1, 4):
         method.step(iteration)

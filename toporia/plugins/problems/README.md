@@ -25,9 +25,6 @@ Toporia exists to make.
 | ✅ Cantilever 3D | [`cantilever_3d.py`](cantilever_3d.py) | `Cantilever 3D` |
 | ✅ Three-point bending | [`three_point_bending.py`](three_point_bending.py) | `Three-Point Bending` |
 | ✅ Standard bar | [`standard_bar.py`](standard_bar.py) | `Standard Bar` |
-| ✅ Drone arm | [`drone_arm.py`](drone_arm.py) | `Drone Arm` |
-| ✅ Drone arm, camera view | [`drone_arm_camera_view.py`](drone_arm_camera_view.py) | `Drone Arm (Camera View)` |
-| ✅ Drone arm, point loads | [`drone_arm_point_loads.py`](drone_arm_point_loads.py) | `Drone Arm (Point Loads)` |
 | ✅ Michell cantilever | [`michell_cantilever.py`](michell_cantilever.py) | `Michell Cantilever` |
 | ✅ L-bracket | [`l_bracket.py`](l_bracket.py) | `L-bracket` |
 | ✅ L-bracket (local stress) | [`l_bracket_stress.py`](l_bracket_stress.py) | `L-bracket (local stress)` |

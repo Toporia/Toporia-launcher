@@ -116,7 +116,7 @@ gui-plan.md checkpoints describe v0.2 and remain historical context.
 - [x] Copy to custom works for every preset: heat conduction reads custom
   regions (sinks, heat inputs, no load needed); load holes load their ring.
 - [x] Every preset opens and walks all five steps without an error; custom copies
-  give the preset's first objective (except Drone Arm, see To do).
+  give the preset's first objective (the former Drone Arm presets were removed in 0.3.0).
 
 ## Architecture review and implementation notes
 

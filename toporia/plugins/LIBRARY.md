@@ -24,7 +24,7 @@ A test (`tests/apps/test_gui.py`) fails if a part ever stops being reachable fro
 | **Wraps** | Calls an outside Python package. That package is installed separately. Parts whose package is missing are greyed out in the app, with the install command. |
 | **Own** | Toporia's own idea or standard practice. |
 
-## In the library today: 89 selectable parts and 92 benchmark/research presets
+## In the library today: 89 selectable parts and 91 benchmark/research presets
 
 The selectable parts include models and whole methods; their nine underlying
 physics engines are counted separately in the [catalogue totals](README.md).
@@ -184,7 +184,6 @@ and the preset *MBB Beam (Robust)*.
 | Three-Point Bending | [three_point_bending.py](problems/three_point_bending.py) | the materials test |
 | Heat Sink | [heat_sink.py](problems/heat_sink.py) | Bendsøe & Sigmund 2003, section 1.5; Gersborg-Hansen et al. 2006 · [paper](https://doi.org/10.1007/s00158-005-0584-3) |
 | Standard Bar | [standard_bar.py](problems/standard_bar.py) | Toporia's own |
-| Drone Arm, Drone Arm (Camera View), Drone Arm (Point Loads) | [drone_arm.py](problems/drone_arm.py), [drone_arm_camera_view.py](problems/drone_arm_camera_view.py), [drone_arm_point_loads.py](problems/drone_arm_point_loads.py) | Toporia's own application case |
 | Force Inverter | [force_inverter.py](problems/force_inverter.py) | Own 40 × 40 geometry and port values following Sigmund 1997; signed output and input/output ground springs · [paper](https://doi.org/10.1080/08905459708945415) |
 
 ---

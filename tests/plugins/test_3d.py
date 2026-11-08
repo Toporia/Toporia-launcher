@@ -46,8 +46,8 @@ def test_a_depth_makes_the_problem_three_dimensional():
 
 
 def test_holes_go_through_the_depth():
-    scenario = replace(get_run("Drone Arm").scenario, Lz=6.0)
-    box, section = make_problem(scenario, 0.3), make_problem(get_run("Drone Arm").scenario, 0.3)
+    scenario = replace(get_run("Holes and Rings (test)").scenario, Lz=6.0)
+    box, section = make_problem(scenario, 0.3), make_problem(get_run("Holes and Rings (test)").scenario, 0.3)
     for layer in box.void_elements:
         assert np.array_equal(layer, section.void_elements)
 
@@ -59,7 +59,7 @@ def test_the_brick_moves_freely_in_exactly_six_ways():
     assert np.sum(np.abs(values) < 1e-10) == 6 and values[6] > 0
 
 
-@pytest.mark.parametrize("name", ["Cantilever", "MBB Beam", "Drone Arm"])
+@pytest.mark.parametrize("name", ["Cantilever", "MBB Beam", "Holes and Rings (test)"])
 def test_an_extruded_design_is_the_plane_design_divided_by_the_depth(name):
     plane = replace(get_run(name).scenario, nu=0.0)
     p2, p3 = make_problem(plane, 0.4), make_problem(replace(plane, Lz=7.0), 0.4)

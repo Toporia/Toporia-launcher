@@ -68,7 +68,7 @@ def test_cancel_keeps_unsaved_project_and_failed_open_keeps_inputs(window, tmp_p
 
 def test_problem_export_import_keeps_geometry_independent_of_solver(window, tmp_path, monkeypatch):
     monkeypatch.setattr(QMessageBox, "question", lambda *_: QMessageBox.Discard)
-    window._activate_project(Project("Experiment", get_run("Drone Arm")))
+    window._activate_project(Project("Experiment", get_run("Holes and Rings (test)")))
     path = tmp_path / "arm.pro"
     assert window.export_problem(path)
     scenario = window.current_config().scenario

@@ -39,7 +39,7 @@ CASES = {
     "cantilever_oc": lambda: _base("Cantilever", method="density"),
 
     # Holes, passive rings and void regions — the mask-enforcement path.
-    "drone_arm_oc":  lambda: _base("Drone Arm", method="density", m=0.3, max_iter=10),
+    "holes_and_rings_oc": lambda: _base("Holes and Rings (test)", method="density", m=0.3, max_iter=10),
 
     # RBF level-set: a completely different design-variable representation.
     "mbb_levelset":  lambda: _base("MBB Beam", method="levelset", max_iter=10),

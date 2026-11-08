@@ -129,7 +129,7 @@ def _peak_stress(run, design=None):
 
 
 @requires_pymoto
-@pytest.mark.parametrize("problem", ["MBB Beam", "Drone Arm"])   # one and two load cases
+@pytest.mark.parametrize("problem", ["MBB Beam", "Holes and Rings (test)"])   # one and two load cases
 def test_the_stress_gradient_matches_finite_differences(problem):
     from toporia.plugins.models.pymoto_elastic import PymotoElasticModel
     # Fixed scaling: the adaptive factor is recomputed at every evaluation but

@@ -2903,57 +2903,6 @@
       ]
     },
     {
-      "name": "Drone Arm",
-      "source_file": "toporia/plugins/problems/drone_arm.py",
-      "about": "A 200 x 85 mm drone arm bracket: bolted to the frame at two holes, loaded at eight motor holes in two load cases.",
-      "reference": "Toporia's own application case.",
-      "research_description": true,
-      "target_figure": "General-purpose preset: it shows a typical use, not a reproduced paper figure.",
-      "functions": [
-        "model:q4",
-        "physics:q4_plane_stress",
-        "updater:oc",
-        "representation:element_density",
-        "interpolation:simp",
-        "response:compliance",
-        "filter:density"
-      ]
-    },
-    {
-      "name": "Drone Arm (Camera View)",
-      "source_file": "toporia/plugins/problems/drone_arm_camera_view.py",
-      "about": "The drone arm with an area near the bottom centre that must stay empty for a camera's view.",
-      "reference": "Toporia's own application case.",
-      "research_description": true,
-      "target_figure": "General-purpose preset: it shows a typical use, not a reproduced paper figure.",
-      "functions": [
-        "model:q4",
-        "physics:q4_plane_stress",
-        "updater:oc",
-        "representation:element_density",
-        "interpolation:simp",
-        "response:compliance",
-        "filter:density"
-      ]
-    },
-    {
-      "name": "Drone Arm (Point Loads)",
-      "source_file": "toporia/plugins/problems/drone_arm_point_loads.py",
-      "about": "The drone arm's layout with point supports and point loads instead of holes and rings.",
-      "reference": "Toporia's own application case.",
-      "research_description": true,
-      "target_figure": "General-purpose preset: it shows a typical use, not a reproduced paper figure.",
-      "functions": [
-        "model:q4",
-        "physics:q4_plane_stress",
-        "updater:oc",
-        "representation:element_density",
-        "interpolation:simp",
-        "response:compliance",
-        "filter:density"
-      ]
-    },
-    {
       "name": "Force Inverter",
       "source_file": "toporia/plugins/problems/force_inverter.py",
       "about": "A square mechanism held at the two left corners: a rightward input force should move the right output port leftward. Ground springs represent both ports.",
@@ -4102,6 +4051,20 @@
       "source_summary": "Application bootstrap — the first Qt code that runs.  Responsibilities: 1. Tell matplotlib to use the Qt drawing backend (must happen before any matplotlib import elsewhere, so it lives here at the very top) 2. Create the QApplication (Qt requires exactly one per process) 3. Apply visual style and locale settings 4. Create and show the main window, then start the event loop"
     },
     {
+      "source_file": "toporia/apps/gui/appearance.py",
+      "defines_functions": [],
+      "is_preset": false,
+      "classification": "supporting module",
+      "source_summary": "Application-wide Basic and Sleek themes, using inexpensive Qt styling."
+    },
+    {
+      "source_file": "toporia/apps/gui/blank_setup.py",
+      "defines_functions": [],
+      "is_preset": false,
+      "classification": "supporting module",
+      "source_summary": "Progressive, resumable setup for a deliberately empty custom problem."
+    },
+    {
       "source_file": "toporia/apps/gui/canvas.py",
       "defines_functions": [],
       "is_preset": false,
@@ -4116,11 +4079,67 @@
       "source_summary": "apps/gui/config.py — turn the widgets' values into a Run.  Kept apart from runner.py, which imports every optimisation routine: the window rebuilds the Run whenever a selection changes, to show the pipeline it describes, and that must stay cheap."
     },
     {
+      "source_file": "toporia/apps/gui/display_options.py",
+      "defines_functions": [],
+      "is_preset": false,
+      "classification": "supporting module",
+      "source_summary": "Presentation settings shared by the runner and post-processor."
+    },
+    {
+      "source_file": "toporia/apps/gui/editor.py",
+      "defines_functions": [],
+      "is_preset": false,
+      "classification": "supporting module",
+      "source_summary": "apps/gui/editor.py — 2D problem workspace: tools, geometry scene, object list and inspector. All edits update physical definitions together; scene selection and list selection share object IDs. Undo stores definitions, never mesh indices or screenshots."
+    },
+    {
+      "source_file": "toporia/apps/gui/execution.py",
+      "defines_functions": [],
+      "is_preset": false,
+      "classification": "supporting module",
+      "source_summary": "apps/gui/execution.py — Qt process lifecycle and result ownership for MainWindow. Immutable input snapshots and terminal session records make interrupted work reviewable. A separate headless process keeps editing/plotting in the Qt thread."
+    },
+    {
+      "source_file": "toporia/apps/gui/function_library.py",
+      "defines_functions": [],
+      "is_preset": false,
+      "classification": "supporting module",
+      "source_summary": "Registry-backed function information shared by Home and nested workspaces."
+    },
+    {
+      "source_file": "toporia/apps/gui/geometry.py",
+      "defines_functions": [],
+      "is_preset": false,
+      "classification": "supporting module",
+      "source_summary": "apps/gui/geometry.py — editor objects in physical coordinates, independent of pixels/mesh. Each shape has an identity, transform and physical role. The solver adapter consumes these definitions; the viewport and inspector never own numerical state."
+    },
+    {
+      "source_file": "toporia/apps/gui/geometry_import.py",
+      "defines_functions": [],
+      "is_preset": false,
+      "classification": "supporting module",
+      "source_summary": "apps/gui/geometry_import.py — geometry-only imports into portable editor objects. Imported triangle coordinates are embedded; no runtime dependency on source paths."
+    },
+    {
       "source_file": "toporia/apps/gui/help.py",
       "defines_functions": [],
       "is_preset": false,
       "classification": "supporting module",
       "source_summary": "apps/gui/help.py — the \"?\" next to every option, and the window it opens.  Every option in the GUI has a small \"?\" button.  Clicking it opens one help window (reused, so the screen does not fill with them) that says what the option is, where it comes from or what inspired it, and its details:  ┌ Help — Density filter ─────────────────────────────┐ │ Density filter                                     │"
+    },
+    {
+      "source_file": "toporia/apps/gui/home.py",
+      "defines_functions": [],
+      "is_preset": false,
+      "classification": "supporting module",
+      "source_summary": "apps/gui/home.py — project entry points and an illustrated, sourced benchmark library."
+    },
+    {
+      "source_file": "toporia/apps/gui/method_view.py",
+      "defines_functions": [],
+      "is_preset": false,
+      "classification": "supporting module",
+      "source_summary": "apps/gui/method_view.py — an interactive view of the supported solver pipeline. Moving boxes changes presentation only. The Run remains the execution contract; filter ordering is edited explicitly inside the filter chain, never by wiring."
     },
     {
       "source_file": "toporia/apps/gui/panels/__init__.py",
@@ -4193,11 +4212,32 @@
       "source_summary": "apps/gui/panels/variants.py — evaluate every design in several versions (solver.variants).  One parameter path, a list of values, and how the versions are joined: the worst case (robust design) or the mean (an expected value).  The button fills in the classic robust formulation — eroded, intermediate and dilated projections, Wang, Lazarov & Sigmund 2011 — on the first Heaviside filter. See framework/parts/variants.py."
     },
     {
+      "source_file": "toporia/apps/gui/preflight.py",
+      "defines_functions": [],
+      "is_preset": false,
+      "classification": "supporting module",
+      "source_summary": "apps/gui/preflight.py — actionable checks for a physical definition and method. A rigid-body rank test diagnoses missing supports; it does not claim that every disconnected design or future physics problem is well posed."
+    },
+    {
       "source_file": "toporia/apps/gui/preview.py",
       "defines_functions": [],
       "is_preset": false,
       "classification": "supporting module",
       "source_summary": "apps/gui/preview.py — the problem drawn before anything is solved.  Like a slicer that shows the part on the build plate before slicing, the view shows the problem as it is set up: the design domain, the holes and their solid rings, areas forced full or empty, the supports, and the loads of every load case as arrows.  It is drawn from the Scenario alone, so what is seen is exactly what a run will be given. "
+    },
+    {
+      "source_file": "toporia/apps/gui/project.py",
+      "defines_functions": [],
+      "is_preset": false,
+      "classification": "supporting module",
+      "source_summary": "apps/gui/project.py — portable project documents, independent of run results.  Project -> readable .top JSON (scenario + solver + output settings + notes). ProblemDocument -> readable .pro JSON (scenario + editor objects only). Writes replace the destination atomically; a failed save leaves the old file."
+    },
+    {
+      "source_file": "toporia/apps/gui/project_ui.py",
+      "defines_functions": [],
+      "is_preset": false,
+      "classification": "supporting module",
+      "source_summary": "apps/gui/project_ui.py — file actions and project lifecycle for MainWindow. Keeps persistence, prompts and notes out of the optimisation/preview wiring."
     },
     {
       "source_file": "toporia/apps/gui/research_help.py",
@@ -4214,11 +4254,32 @@
       "source_summary": "apps/gui/runner.py — the bridge between the GUI and the engine's analysis modes.  This is the only file in the gui/ package that RUNS optimisation code.  The panels import plugin declarations (Param lists, capabilities) to build themselves, but never start a computation.  Each function here: 1. routes the engine's printed output into the GUI's log box, and"
     },
     {
+      "source_file": "toporia/apps/gui/spatial_view.py",
+      "defines_functions": [],
+      "is_preset": false,
+      "classification": "supporting module",
+      "source_summary": "apps/gui/spatial_view.py — optional VTK/Qt viewport over the shared physical objects. Numerical geometry remains in framework/problem/regions.py; this view only renders, picks and emits edits. QtInteractor is created lazily when shown."
+    },
+    {
       "source_file": "toporia/apps/gui/window.py",
       "defines_functions": [],
       "is_preset": false,
       "classification": "supporting module",
-      "source_summary": "apps/gui/window.py — the main application window  MainWindow lays the app out like a slicer: you walk through numbered steps along the top, the current step's settings sit in the sidebar, and the view of the design is always in the middle.  ┌───────────────────────────────────────────────────────────────────────────┐ │ Toporia  Preset [▼]   1 Problem › 2 Solver › 3 Study › 4 Post & Export [▶ Run] │"
+      "source_summary": "apps/gui/window.py — the main application window  Home opens portable projects and the benchmark library. The persistent steps switch both the left settings and the main workspace: physical editor, method diagram, asynchronous runner, then post-processing. Numerical execution lives in gui_worker.py, with the Qt lifecycle in execution.py. Plugin declarations still generate controls; project_ui.py owns file actions and dirty tracking."
+    },
+    {
+      "source_file": "toporia/apps/gui/workflow_ui.py",
+      "defines_functions": [],
+      "is_preset": false,
+      "classification": "supporting module",
+      "source_summary": "Coordinate local function networks with the existing generated parameter forms."
+    },
+    {
+      "source_file": "toporia/apps/gui_worker.py",
+      "defines_functions": [],
+      "is_preset": false,
+      "classification": "supporting module",
+      "source_summary": "apps/gui_worker.py — headless process for an immutable GUI run snapshot. Qt stays in the parent process; numerical work and Matplotlib file rendering run here. Newline-delimited JSON carries logs/progress/results over stdout."
     },
     {
       "source_file": "toporia/apps/research_render.py",
@@ -4309,7 +4370,7 @@
       "defines_functions": [],
       "is_preset": false,
       "classification": "supporting module",
-      "source_summary": "checks/updater.py — is an updater sound, and does it optimise?  A short run on the Drone Arm (holes and solid rings) must stay finite and inside the bounds and leave no thread behind; then the MBB benchmark, under the engine's stopping rule, must end within the volume budget and within `tolerance` of optimality criteria's compliance."
+      "source_summary": "checks/updater.py — is an updater sound, and does it optimise?  A short run on the holes-and-rings test plate (holes inside solid rings) must stay finite and inside the bounds and leave no thread behind; then the MBB benchmark, under the engine's stopping rule, must end within the volume budget and within `tolerance` of optimality criteria's compliance."
     },
     {
       "source_file": "toporia/engine/__init__.py",
@@ -4401,6 +4462,13 @@
       "is_preset": false,
       "classification": "supporting module",
       "source_summary": "engine/records.py — what every run leaves behind.  Three things, in the order the loop uses them:  ResultStore     the history while the run goes (objective, volume, every reported response, per iteration), density snapshots, and at the end final_density.png, final_density.csv and, for an interactive run, history.png"
+    },
+    {
+      "source_file": "toporia/engine/workflow.py",
+      "defines_functions": [],
+      "is_preset": false,
+      "classification": "supporting module",
+      "source_summary": "Execute nested workflows; parallel describes dependency, not thread scheduling."
     },
     {
       "source_file": "toporia/framework/__init__.py",
@@ -4550,6 +4618,13 @@
       "source_summary": "framework/problem/mesh.py — finite element mesh and boundary conditions  Defines two things:  BaseProblem — the interface contract that every topology-optimisation problem must fulfill.  The FEA solver and all optimizers read the attributes listed on this class.  To define a new problem, subclass BaseProblem and set every listed attribute in __post_init__"
     },
     {
+      "source_file": "toporia/framework/problem/regions.py",
+      "defines_functions": [],
+      "is_preset": false,
+      "classification": "supporting module",
+      "source_summary": "framework/problem/regions.py — explicit physical regions to structured-mesh masks.  This adapter is shared by GUI and CLI. It never invents supports or loads. Regional forces are total vectors, distributed equally across selected nodes; every load owns its own vector and load case. Legacy presets bypass this file."
+    },
+    {
       "source_file": "toporia/framework/problem/run.py",
       "defines_functions": [],
       "is_preset": false,
@@ -4569,6 +4644,20 @@
       "is_preset": false,
       "classification": "supporting module",
       "source_summary": "framework/problem/solver.py — HOW a scenario is solved.  A Solver names the method and holds everything that belongs to solving rather than to the physical problem: the method's own parameters, the filter pipeline, the mesh resolution and the stopping rule.  Two runs that share a scenario and differ only in their solver are a benchmark — the comparison Toporia exists to make.  Solvers round-trip"
+    },
+    {
+      "source_file": "toporia/framework/problem/spatial.py",
+      "defines_functions": [],
+      "is_preset": false,
+      "classification": "supporting module",
+      "source_summary": "framework/problem/spatial.py — physical transforms and portable triangular regions. STL triangles are embedded as plain vertices/faces, so .pro/.top files remain self-contained. VTK supplies geometry queries; it is imported only for STL work."
+    },
+    {
+      "source_file": "toporia/framework/problem/workflow.py",
+      "defines_functions": [],
+      "is_preset": false,
+      "classification": "supporting module",
+      "source_summary": "Portable, typed nested workflow contract for GUI composition."
     },
     {
       "source_file": "toporia/framework/registry.py",
@@ -5205,27 +5294,6 @@
       "source_summary": "column_buckling.py — a compressed column with a buckling constraint  A slender block lying along x: clamped along its left edge, loaded by an axial compressive force at the middle of its free (right) end.  A compliance design of a block under axial load is simply a thick bar, which is cheap in compliance and says nothing about buckling; the load factor of the design (the multiple of the load at which it buckles) is what this problem limits. "
     },
     {
-      "source_file": "toporia/plugins/problems/drone_arm.py",
-      "defines_functions": [],
-      "is_preset": true,
-      "classification": "preset recipe",
-      "source_summary": "drone_arm.py — topology optimisation problem for the drone arm bracket  Domain:  200 mm × 85 mm rectangular plate Fixed:   two central mounting holes (bolted to the frame) Load:    eight motor-attachment holes, equal +x and +y load cases"
-    },
-    {
-      "source_file": "toporia/plugins/problems/drone_arm_camera_view.py",
-      "defines_functions": [],
-      "is_preset": true,
-      "classification": "preset recipe",
-      "source_summary": "drone_arm_camera_view.py - drone arm with an enforced empty camera-view area  This starts from the regular drone arm setup and adds a symmetric empty polygon near the bottom center, representing the camera view that should stay unobstructed.  Coordinate convention: xy origin is the bottom-left corner, matching the displayed density fields."
-    },
-    {
-      "source_file": "toporia/plugins/problems/drone_arm_point_loads.py",
-      "defines_functions": [],
-      "is_preset": true,
-      "classification": "preset recipe",
-      "source_summary": "drone_arm_point_loads.py - drone arm geometry using point constraints/loads  This mirrors the original drone arm coordinate layout, but does not prescribe any void holes or passive solid rings. The frame mounts are point constraints, and the motor mount locations are point loads.  Coordinate convention: xy origin is the bottom-left corner, matching the displayed density fields."
-    },
-    {
       "source_file": "toporia/plugins/problems/force_inverter.py",
       "defines_functions": [],
       "is_preset": true,
@@ -5238,6 +5306,13 @@
       "is_preset": true,
       "classification": "preset recipe",
       "source_summary": "heat_sink.py — the heat-sink benchmark: cool a uniformly heated plate through a small sink.  ┌─────────────────────────────┐ │   Q Q Q Q Q Q Q Q Q Q Q Q   │  every element generates heat uniformly, also the void ones │   Q Q Q Q Q Q Q Q Q Q Q Q   │ │   Q Q Q Q Q Q Q Q Q Q Q Q   │  keep 40 % of the plate as conductor and lay it out so the │   Q Q Q Q Q Q Q Q Q Q Q Q   │  heat reaches the sink with the lowest mean temperature └──────────────(▪)────────────┘"
+    },
+    {
+      "source_file": "toporia/plugins/problems/holes_and_rings.py",
+      "defines_functions": [],
+      "is_preset": false,
+      "classification": "supporting module",
+      "source_summary": "holes_and_rings.py — the test suite's plate with holes, solid rings and two load cases  Not a benchmark: it is unlisted, so the GUI, the command line and the catalogue do not offer it.  The contract checks (`toporia check`) and the tests use it for what no listed preset has together: forced-void holes inside forced-solid rings, supports and loads on those rings, and a weighted pair of load cases.  The layout is that of the former Drone Arm preset, kept so the stored baselines still hold; the dro"
     },
     {
       "source_file": "toporia/plugins/problems/l_bracket.py",

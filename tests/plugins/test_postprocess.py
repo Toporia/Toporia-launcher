@@ -53,7 +53,7 @@ def test_all_six_are_registered():
 # ── Threshold ─────────────────────────────────────────────────────────────────
 
 def test_the_threshold_keeps_the_volume_and_the_holes(tmp_path):
-    run = _run("Drone Arm", m=0.3)
+    run = _run("Holes and Rings (test)", m=0.3)
     problem = RectangularProblem(run.scenario, 0.3)
     density = np.random.default_rng(0).uniform(0, 1, _shape(problem))
     result = Result(density=density, problem=problem, run=run, folder=tmp_path)

@@ -1,0 +1,111 @@
+{
+  "kind": "project",
+  "format": 1,
+  "name": "Drone Arm (Point Loads)",
+  "scenario": {
+    "Lx": 200.0,
+    "Ly": 85.0,
+    "Lz": 0.0,
+    "holes": [],
+    "enforced_areas": [],
+    "edge_constraints": [],
+    "point_constraints": [
+      {
+        "x": 85.1,
+        "y": 75.0,
+        "dof": "both"
+      },
+      {
+        "x": 115.6,
+        "y": 75.0,
+        "dof": "both"
+      }
+    ],
+    "point_loads": [
+      {
+        "x": 7.9,
+        "y": 17.6
+      },
+      {
+        "x": 15.2,
+        "y": 8.9
+      },
+      {
+        "x": 16.6,
+        "y": 24.9
+      },
+      {
+        "x": 23.8,
+        "y": 16.2
+      },
+      {
+        "x": 192.8,
+        "y": 17.6
+      },
+      {
+        "x": 185.6,
+        "y": 8.9
+      },
+      {
+        "x": 184.2,
+        "y": 24.9
+      },
+      {
+        "x": 176.9,
+        "y": 16.2
+      }
+    ],
+    "load_cases": [
+      {
+        "Fmag": 1.0,
+        "Fa": 0.0,
+        "weight": 0.5,
+        "Fe": 0.0
+      },
+      {
+        "Fmag": 1.0,
+        "Fa": 90.0,
+        "weight": 0.5,
+        "Fe": 0.0
+      }
+    ],
+    "volfrac": 0.5,
+    "objective": {
+      "type": "compliance"
+    },
+    "constraints": [],
+    "E0": 1.0,
+    "Emin": 1e-09,
+    "nu": 0.3,
+    "point_springs": []
+  },
+  "solver": {
+    "method": "q4+oc",
+    "method_params": {},
+    "interpolation": {
+      "type": "simp"
+    },
+    "representation": {
+      "type": "element_density"
+    },
+    "filter_specs": [
+      {
+        "type": "density"
+      }
+    ],
+    "schedules": [],
+    "variants": {},
+    "m": 1.0,
+    "max_iter": 200,
+    "tol": 0.01
+  },
+  "output": {
+    "save_every": 10,
+    "postprocess": []
+  },
+  "benchmark": null,
+  "objects": null,
+  "notes": "",
+  "study": {},
+  "view": {}
+}

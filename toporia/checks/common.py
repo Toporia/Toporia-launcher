@@ -14,7 +14,7 @@ from toporia.framework.params import resolve_params
 from .report import Skip
 
 #: Problems the checks run on: the classic benchmark, and one with holes and solid rings.
-BENCHMARK, WITH_HOLES = "MBB Beam", "Drone Arm"
+BENCHMARK, WITH_HOLES = "MBB Beam", "Holes and Rings (test)"
 
 
 

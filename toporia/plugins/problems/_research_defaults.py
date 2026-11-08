@@ -15,8 +15,8 @@ from toporia.framework.problem.solver import Solver
 from ._research import Equation, ResearchDescription
 
 ORIGINALS = {
-    "cantilever", "cantilever_3d", "column_buckling", "drone_arm", "drone_arm_camera_view",
-    "drone_arm_point_loads", "force_inverter", "heat_sink", "l_bracket", "l_bracket_stress",
+    "cantilever", "cantilever_3d", "column_buckling",
+    "force_inverter", "heat_sink", "l_bracket", "l_bracket_stress",
     "mbb_beam", "mbb_beam_fixed_projection", "mbb_beam_robust", "michell_cantilever",
     "nonlinear_cantilever", "standard_bar", "three_point_bending", "vibrating_beam",
 }

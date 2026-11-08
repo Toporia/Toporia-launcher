@@ -9,6 +9,8 @@ Each module in this package defines:
     scenario()  -> Scenario   what is being solved
     solver()    -> Solver     recommended settings (optional; defaults otherwise)
 
+    LISTED      False for a problem only the checks and tests use (optional)
+
 Modules are found automatically: adding a file adds a preset.  Modules whose
 name starts with an underscore are skipped.
 
@@ -39,8 +41,12 @@ def _modules():
 
 
 def problem_names():
-    """Display names of every problem, in menu order."""
-    modules = _modules()
+    """Display names of every listed problem, in menu order.
+
+    A module with LISTED = False (a test problem) is left out here, so the GUI, the command
+    line and the catalogue never offer it, but get_run() still finds it by name.
+    """
+    modules = {name: module for name, module in _modules().items() if getattr(module, "LISTED", True)}
     return sorted(modules, key=lambda name: (getattr(modules[name], "ORDER", 100), name))
 
 

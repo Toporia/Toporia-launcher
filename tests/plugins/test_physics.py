@@ -53,10 +53,10 @@ def _check_gradient(value, gradient, x, free, n=8, h=1e-5, seed=2):
 
 # ── Gradients through the physics interface ───────────────────────────────────
 
-@pytest.mark.parametrize("problem", ["MBB Beam", "Drone Arm"])       # one and two load cases
+@pytest.mark.parametrize("problem", ["MBB Beam", "Holes and Rings (test)"])       # one and two load cases
 @pytest.mark.parametrize("filters", [(), ({"type": "density"},)], ids=["raw", "filtered"])
 def test_compliance_and_stress_gradients_match_finite_differences(problem, filters):
-    # "filtered-Drone Arm" is the case that caught the filter adjoint passing the
+    # "filtered-Holes and Rings (test)" is the case that caught the filter adjoint passing the
     # sensitivity of pinned elements on to their free neighbours (6 % off near holes).
     model = _model(problem, filters=filters, constraints=[dict(STRESS)])
     x = _perturbed_design(model)

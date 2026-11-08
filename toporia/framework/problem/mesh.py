@@ -13,7 +13,7 @@
 #                        bilinear elements with holes, edge constraints, point
 #                        loads, and enforced passive/void regions, all driven by
 #                        a Scenario.  This is the entry point for the bundled
-#                        benchmark problems and the drone-arm example.
+#                        benchmark problems and the holes-and-rings test plate.
 #
 #   BoxProblem         — the same scenario in 3-D: the rectangle extruded to a
 #                        depth Lz (Scenario.Lz > 0) and divided into

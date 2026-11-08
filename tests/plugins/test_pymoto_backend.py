@@ -66,10 +66,10 @@ def test_agrees_with_the_native_solver():
 def test_honours_passive_and_void_bounds():
     """The bounds from problem.lower_bound / upper_bound must be respected exactly.
 
-    The drone arm has both forced-solid rings and forced-void holes, so this
+    The holes-and-rings test plate has both forced-solid rings and forced-void holes, so this
     checks that the mask-to-bounds translation survives the trip through pyMOTO.
     """
-    method = _run("pymoto", problem_name="Drone Arm", iterations=4, m=0.3, volfrac=0.4)
+    method = _run("pymoto", problem_name="Holes and Rings (test)", iterations=4, m=0.3, volfrac=0.4)
     problem = method.problem
     density = method.get_density()
     assert np.all(density[problem.void_elements] < 1e-6)

@@ -102,7 +102,7 @@ def test_invalid_penalty(penal):
 
 
 def test_sinh_initialisation_respects_passive_material_and_resource_budget():
-    run = get_run("Drone Arm").updated(m=.2, interpolation={"type": "sinh"})
+    run = get_run("Holes and Rings (test)").updated(m=.2, interpolation={"type": "sinh"})
     method = initialized_method(run)
     problem = make_problem(run.scenario, run.solver.m)
     rho = method.get_density()
