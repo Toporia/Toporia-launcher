@@ -34,6 +34,27 @@ def test_home_starts_with_library_and_benchmarks_are_protected(window):
     assert window._is_dirty()
 
 
+def test_the_steps_stay_on_home_and_start_a_project_when_none_is_open():
+    app = QApplication.instance() or QApplication([])
+    fresh = MainWindow()
+    try:
+        assert fresh.root_pages.currentWidget() is fresh.home
+        assert not fresh.navigation_bar.isHidden()                  # Home is no dead end
+        assert fresh._step_buttons.checkedId() == -1
+        assert fresh.project_label.text() == "No project open"
+        fresh._step_buttons.button(1).click()                         # nothing open: a new project
+        assert fresh._project_open and fresh.project.name == "Untitled"
+        assert fresh.root_pages.currentWidget() is fresh.workspace
+        fresh.show_home()
+        assert not fresh.navigation_bar.isHidden() and fresh._step_buttons.checkedId() == -1
+        fresh._step_buttons.button(0).click()                         # back to the same project
+        assert fresh.root_pages.currentWidget() is fresh.workspace and fresh.project.name == "Untitled"
+    finally:
+        fresh._dirty_timer.stop()
+        fresh.deleteLater()
+        app.processEvents()
+
+
 def test_save_reopen_restores_notes_and_study_settings(window, tmp_path, monkeypatch):
     monkeypatch.setattr(QMessageBox, "question", lambda *_: QMessageBox.Discard)
     window._activate_project(Project("Experiment", get_run("Cantilever")))
@@ -181,3 +202,65 @@ def test_numeric_schedule_edits_refresh_the_graph_without_changing_filters(windo
     form._editors["end"].setValue(4)
     material = next(block.node for block in window.method_view.blocks.values() if block.node.kind == "material")
     assert "4" in material.badges[0]
+
+
+def test_saved_projects_appear_under_recent_and_open_from_home(window, tmp_path, monkeypatch):
+    from toporia.apps.gui.appearance import recent_projects
+    monkeypatch.setattr(QMessageBox, "question", lambda *_: QMessageBox.Discard)
+    window._activate_project(Project("Recent one", get_run("Cantilever")))
+    path = tmp_path / "recent" / "project.top"
+    assert window.save_project(path)
+    assert recent_projects()[0] == str(path.resolve())
+    window.new_blank()
+    window.show_home()
+    item = window.home.recent.item(0)
+    assert item.data(0x0100) == str(path.resolve())           # Qt.UserRole
+    window.home.recent.itemActivated.emit(item)
+    assert window.project.name == "Recent one"
+
+
+def test_renaming_a_saved_project_renames_its_results_and_keeps_other_edits_unsaved(window, tmp_path, monkeypatch):
+    monkeypatch.setattr(QMessageBox, "question", lambda *_: QMessageBox.Discard)
+    window._activate_project(Project("Old name", get_run("Cantilever")))
+    path = tmp_path / "project.top"
+    assert window.save_project(path)
+    (tmp_path / "result_Old name" / "run-1").mkdir(parents=True)
+    window.notes.setPlainText("an unsaved note")
+    assert window.rename_project("New name")
+    assert window.project.name == "New name"
+    assert (tmp_path / "result_New name" / "run-1").is_dir() and not (tmp_path / "result_Old name").exists()
+    reopened = Project.load(path)
+    assert reopened.name == "New name" and reopened.notes == ""       # the note was not saved with it
+    assert window._is_dirty()                                          # ... and is still pending
+    assert window.project_label.text().startswith("New name")
+
+
+def test_run_explains_in_a_pop_up_why_the_setup_cannot_run(window, monkeypatch):
+    from toporia.apps.gui import execution
+    monkeypatch.setattr(QMessageBox, "question", lambda *_: QMessageBox.Discard)
+    window._activate_project(Project("Refused", get_run("MBB Beam")))
+    monkeypatch.setattr(execution, "problems", lambda *a, **k: ["the updater needs a missing package"])
+    shown = []
+    monkeypatch.setattr(QMessageBox, "exec", lambda box: shown.append((box.windowTitle(), box.informativeText())))
+    window.start_execution()
+    assert not window._running
+    assert shown == [("Cannot run yet", "• the updater needs a missing package")]
+    assert window.method_view.notes.parentWidget() is None or window.method_view.notes.isHidden() \
+        or not window.method_view.notes.isVisibleTo(window.method_view)     # no notes bar in the Method tab
+
+
+def test_the_problem_page_imports_and_exports_problems(window, tmp_path, monkeypatch):
+    from PySide6.QtWidgets import QFileDialog
+    monkeypatch.setattr(QMessageBox, "question", lambda *_: QMessageBox.Discard)
+    window._activate_project(Project("Exported", get_run("Cantilever")))
+    window.go_to_step(0)
+    assert window.problem_export_btn.isVisibleTo(window._pages.widget(0))
+    path = tmp_path / "cantilever.pro"
+    monkeypatch.setattr(QFileDialog, "getSaveFileName", lambda *a, **k: (str(path), ""))
+    window.problem_export_btn.click()
+    assert path.is_file()
+    scenario = window.current_config().scenario
+    window.new_blank()
+    monkeypatch.setattr(QFileDialog, "getOpenFileName", lambda *a, **k: (str(path), ""))
+    window.problem_import_btn.click()
+    assert window.current_config().scenario == scenario and window.project.name == "cantilever"

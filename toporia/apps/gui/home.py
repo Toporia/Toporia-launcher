@@ -12,6 +12,8 @@ from PySide6.QtWidgets import (
     QHBoxLayout,
     QLabel,
     QLineEdit,
+    QListWidget,
+    QListWidgetItem,
     QPushButton,
     QScrollArea,
     QStackedWidget,
@@ -40,6 +42,7 @@ class HomePage(QWidget):
     blank_requested = Signal()
     import_requested = Signal()
     benchmark_requested = Signal(str)
+    recent_requested = Signal(str)
 
     def __init__(self, parent=None):
         super().__init__(parent)
@@ -64,8 +67,11 @@ class HomePage(QWidget):
         self.sections = QStackedWidget()
         layout.addWidget(self.sections, 1)
         landing = QWidget()
-        landing_layout = QHBoxLayout(landing)
+        landing_column = QVBoxLayout(landing)
+        landing_column.setAlignment(Qt.AlignCenter)
+        landing_layout = QHBoxLayout()
         landing_layout.setAlignment(Qt.AlignCenter)
+        landing_column.addLayout(landing_layout)
         self.sections.addWidget(landing)
         self.section_buttons = []
         for text, icon, index in (("Benchmarks", QStyle.SP_DirIcon, 1),
@@ -77,6 +83,17 @@ class HomePage(QWidget):
             button.clicked.connect(lambda _=False, i=index: self.open_section(i))
             landing_layout.addWidget(button)
             self.section_buttons.append(button)
+        # Recent projects, so switching between them is one click.
+        landing_column.addSpacing(18)
+        self.recent_title = QLabel("<b>Recent projects</b>")
+        landing_column.addWidget(self.recent_title, alignment=Qt.AlignHCenter)
+        self.recent = QListWidget()
+        self.recent.setMinimumWidth(460)
+        self.recent.setMaximumHeight(200)
+        self.recent.setToolTip("Double-click or press Enter to open.")
+        self.recent.itemActivated.connect(self._open_recent)
+        landing_column.addWidget(self.recent, alignment=Qt.AlignHCenter)
+        self.refresh_recent()
         library = QWidget()
         self.sections.addWidget(library)
         library_layout = QVBoxLayout(library)
@@ -145,8 +162,32 @@ class HomePage(QWidget):
         self.sections.addWidget(functions)
         self._thumbnails_loaded = False
 
+    def refresh_recent(self):
+        """List the recent project files; a moved or deleted one is shown but cannot be opened."""
+        from pathlib import Path
+
+        from .appearance import recent_projects
+        self.recent.clear()
+        paths = recent_projects()
+        for path in paths:
+            exists = Path(path).is_file()
+            item = QListWidgetItem(f"{Path(path).parent.name}   ·   {path}" if exists else f"(missing)   {path}")
+            item.setData(Qt.UserRole, path)
+            item.setToolTip(path)
+            if not exists:
+                item.setFlags(item.flags() & ~Qt.ItemIsEnabled)
+            self.recent.addItem(item)
+        self.recent_title.setVisible(bool(paths))
+        self.recent.setVisible(bool(paths))
+
+    def _open_recent(self, item):
+        if item.flags() & Qt.ItemIsEnabled:
+            self.recent_requested.emit(item.data(Qt.UserRole))
+
     def open_section(self, index):
         self.sections.setCurrentIndex(index)
+        if index == 0:
+            self.refresh_recent()
         if index == 1 and not self._thumbnails_loaded:
             for card, _, _ in self.cards:
                 for label in card.findChildren(QLabel):

@@ -37,7 +37,10 @@ class ExecutionActions:
         if cfg.scenario.regions is not None and self.mode.currentText() == "Compare Load Cases":
             issues.append("Regional loads own their vectors. Compare Load Cases currently edits legacy shared vectors; use separate projects or cases for regional loads.")
         if issues:
-            QMessageBox.warning(self, "Problem needs attention", "\n".join(issues))
+            box = QMessageBox(QMessageBox.Warning, "Cannot run yet", "This setup cannot run yet. Why:",
+                              QMessageBox.Ok, self)
+            box.setInformativeText("\n".join(f"• {issue}" for issue in issues))
+            box.exec()
             return
         if not self.save_project():
             return
@@ -246,11 +249,13 @@ class ExecutionActions:
     def _refresh_run_history(self):
         """Discover project-local sessions after reopening without embedding results in .top."""
         self.run_history.clear()
-        if self.project.path is None or not self.project.results_dir.exists():
+        folders = self.project.result_dirs()
+        if not folders:
             return
         from PySide6.QtCore import Qt
         from PySide6.QtWidgets import QListWidgetItem
-        for path in sorted(self.project.results_dir.glob("*/session.json"), reverse=True):
+        sessions = [path for folder in folders for path in folder.glob("*/session.json")]
+        for path in sorted(sessions, key=lambda p: p.parent.name, reverse=True):
             try:
                 record = json.loads(path.read_text(encoding="utf-8"))
                 status = record.get("status", "unknown")

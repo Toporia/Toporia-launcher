@@ -299,3 +299,25 @@ def test_home_library_sections_pack_their_cards(window):
     home.category.setCurrentIndex(home.category.findData(""))
     QApplication.processEvents()
     assert all(not card.isHidden() for card, _, _ in home.cards)
+
+
+def test_a_conflicting_part_stays_selectable_and_its_choice_replaces_what_conflicts(window):
+    from PySide6.QtCore import Qt
+    window.core.select_method("q4+oc")
+    window._on_method_changed("q4+oc")
+    window._refresh_pipeline()
+    window.go_to_step(1)
+    physics = _library(window, window._active_stage + "/physics")
+    stress = physics[("constraint", "stress")]
+    assert stress.flags() & Qt.ItemIsEnabled                      # greyed, but it can be chosen
+    assert stress.data(Qt.UserRole + 1) and "changes the parts" in stress.toolTip()
+    window._add_function("constraint", "stress")
+    cfg = window.current_config()
+    assert [c["type"] for c in cfg.scenario.constraints] == ["stress"]
+    assert cfg.solver.method.startswith("q4+") and cfg.solver.method != "q4+oc"   # an updater that enforces it
+    assert any(change.startswith("updater:") for change in window._last_adaptation)
+    # Choosing an updater that cannot enforce the constraint clears the constraint instead.
+    window._add_function("updater", "oc")
+    assert window.current_config().solver.method == "q4+oc"
+    assert window.current_config().scenario.constraints == []
+    assert any(change.startswith("constraints:") for change in window._last_adaptation)

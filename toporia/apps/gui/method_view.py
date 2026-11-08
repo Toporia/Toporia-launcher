@@ -5,7 +5,7 @@
 import math
 
 from PySide6.QtCore import QPointF, QSize, Qt, QTimer, Signal
-from PySide6.QtGui import QBrush, QColor, QFont, QPainter, QPen
+from PySide6.QtGui import QBrush, QColor, QFont, QPainter, QPalette, QPen
 from PySide6.QtWidgets import (
     QApplication,
     QGraphicsItem,
@@ -155,12 +155,10 @@ class MethodWorkspace(QWidget):
         self.output_contract = QLabel()
         self.output_contract.setWordWrap(True)
         layout.addWidget(self.output_contract)
+        # The computation notes are not shown as a bar: the "?" help carries them, and Run explains
+        # in a pop-up why a selection cannot run.
         self.notes = QLabel()
         self.notes.setWordWrap(True)
-        from .panels.common import CollapsibleSection
-        note_section = CollapsibleSection("Computation notes", expanded=False)
-        note_section.body_layout.addWidget(self.notes)
-        layout.addWidget(note_section)
         self.blocks, self.edges, self.positions = {}, [], {}
         self.filter_frame = None
         self._building = False
@@ -236,11 +234,19 @@ class MethodWorkspace(QWidget):
 
         def offer_parts(where):
             """Every registered part for this place; the incompatible ones greyed out, saying why."""
+            from .workflow_ui import FIXED
             for label, kind, name, reason in (self.offers(where) if self.offers else ()):
                 item = offer(label, kind, name)
-                if reason:
+                if not reason:
+                    continue
+                if reason.startswith(FIXED):      # nothing in this step can make it fit
                     item.setFlags(item.flags() & ~Qt.ItemIsEnabled)
                     item.setToolTip(f"{label}\nUnavailable here: {reason}")
+                else:                             # selectable; choosing it changes what conflicts with it
+                    item.setForeground(self.palette().brush(QPalette.Disabled, QPalette.Text))
+                    item.setData(Qt.UserRole + 1, reason)
+                    item.setToolTip(f"{label}\nDoes not fit the current selection: {reason}.\n"
+                                    "Choosing it changes the parts that conflict with it.")
 
         if self.tree is None:
             return graph

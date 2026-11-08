@@ -20,6 +20,12 @@ from toporia.framework.problem.solver import Solver
 FORMAT = 1
 
 
+def results_folder_name(project_name):
+    """result_<project name>, with the characters Windows forbids in file names replaced by '_'."""
+    safe = "".join("_" if c in '<>:"/\\|?*' or ord(c) < 32 else c for c in project_name).strip(" .")
+    return f"result_{safe or 'project'}"
+
+
 def _validate_objects(objects):
     """Validate file structure before handing imported objects to graphics widgets."""
     if objects is None:
@@ -161,10 +167,16 @@ class Project:
 
     @property
     def results_dir(self):
-        """Resolve output relative to the project, never relative to another checkout."""
+        """result_<project name>, next to the project file; never relative to another checkout."""
         if self.path is None:
             raise ValueError("Save the project before creating a results directory")
-        return self.path.parent / "results"
+        return self.path.parent / results_folder_name(self.name)
+
+    def result_dirs(self):
+        """Every folder that may hold this project's runs: its own, then the legacy "results"."""
+        if self.path is None:
+            return []
+        return [folder for folder in (self.results_dir, self.path.parent / "results") if folder.is_dir()]
 
     def payload(self, include_geometry=True):
         """Serialize configuration and UI state, excluding paths and computed results."""
@@ -248,8 +260,9 @@ class Project:
         output = data.get("output", {})
         if set(output) - {"save_every", "postprocess"}:
             raise ValueError("Project output contains unknown settings")
+        name = data.get("name", path.stem)
         run = Run(scenario=from_dict(Scenario, data["scenario"]), solver=from_dict(Solver, data["solver"]),
-                  output=Output(dir=path.parent / "results", **output))
-        return cls(name=data.get("name", path.stem), run=run, benchmark=data.get("benchmark"),
+                  output=Output(dir=path.parent / results_folder_name(name), **output))
+        return cls(name=name, run=run, benchmark=data.get("benchmark"),
                    objects=objects, notes=data.get("notes", ""), study=data.get("study", {}),
                    view=view, path=path, workflow=workflow)

@@ -136,6 +136,9 @@ class MainWindow(WorkflowActions, ProjectActions, ExecutionActions, QMainWindow)
         self._preview_timer.setSingleShot(True)
         self._preview_timer.setInterval(150)
         self._preview_timer.timeout.connect(self.show_problem)
+        # False until the user opens, creates or imports a project; the default problem
+        # loaded at startup only fills the forms.  A step clicked before then starts a project.
+        self._project_open = False
 
         central = QWidget()
         self.setCentralWidget(central)
@@ -235,6 +238,12 @@ class MainWindow(WorkflowActions, ProjectActions, ExecutionActions, QMainWindow)
         row.addWidget(home_button)
         self.project_label = QLabel()
         row.addWidget(self.project_label)
+        self.rename_button = QToolButton()
+        self.rename_button.setText("✎")
+        self.rename_button.setAutoRaise(True)
+        self.rename_button.setToolTip("Rename the project")
+        self.rename_button.clicked.connect(lambda: self.rename_project())
+        row.addWidget(self.rename_button)
         self.config_combo = QComboBox()
         self.config_combo.addItems(problem_names())
         self.config_combo.setCurrentText(DEFAULT_PROBLEM)
@@ -256,7 +265,7 @@ class MainWindow(WorkflowActions, ProjectActions, ExecutionActions, QMainWindow)
             button.setProperty("step", True)
             self._step_buttons.addButton(button, index)
             row.addWidget(button)
-        self._step_buttons.idClicked.connect(self.go_to_step)
+        self._step_buttons.idClicked.connect(self._on_step_clicked)
         row.addStretch(1)
 
         self.run_btn = QPushButton()
@@ -324,8 +333,21 @@ class MainWindow(WorkflowActions, ProjectActions, ExecutionActions, QMainWindow)
             settings_layout.addWidget(widget)
         self.method_settings.hide()
         self._inspected_widget = None
+        problem_files = QWidget()
+        problem_row = QHBoxLayout(problem_files)
+        problem_row.setContentsMargins(0, 0, 0, 0)
+        self.problem_import_btn = QPushButton("Import problem…")
+        self.problem_import_btn.setToolTip("Replace the physical definition with a saved problem (.pro); "
+                                           "the method starts from its defaults.")
+        self.problem_import_btn.clicked.connect(lambda: self.import_problem())
+        self.problem_export_btn = QPushButton("Export problem…")
+        self.problem_export_btn.setToolTip("Save only the physical definition (.pro): design space, "
+                                           "loads, supports and material; no method, no results.")
+        self.problem_export_btn.clicked.connect(lambda: self.export_problem())
+        problem_row.addWidget(self.problem_import_btn)
+        problem_row.addWidget(self.problem_export_btn)
         pages = (
-            (self.design, self.core.volume_box, self.lc, self.objective, self.constraints),
+            (problem_files, self.design, self.core.volume_box, self.lc, self.objective, self.constraints),
             (QLabel("Select a function to open its settings.\nEnter a block to work in its local network.\nUse the library to add compatible functions."),),
             (mode_box, history_section, self.sg, self.sg2, self.cg, self.clcg, self.cmg, self.msg, self.sens, self.ssg, self.ssg2),
             (self._build_post_box(),),
@@ -833,6 +855,22 @@ class MainWindow(WorkflowActions, ProjectActions, ExecutionActions, QMainWindow)
     def current_step(self):
         """Index of the step whose settings are shown (0 = Problem)."""
         return self._pages.currentIndex()
+
+    def _on_step_clicked(self, index):
+        """A step in the top bar: back to the open project, or a new project when none is open."""
+        if not self._project_open:
+            self.new_blank()
+            if not self._project_open:          # cancelled
+                self._uncheck_steps()
+            return
+        self.go_to_step(index)
+
+    def _uncheck_steps(self):
+        """No step is current while Home is shown."""
+        self._step_buttons.setExclusive(False)
+        for button in self._step_buttons.buttons():
+            button.setChecked(False)
+        self._step_buttons.setExclusive(True)
 
     def go_to_step(self, index):
         """Show step `index`'s settings; out-of-range indices are ignored."""

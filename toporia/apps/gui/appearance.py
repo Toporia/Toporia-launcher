@@ -46,7 +46,29 @@ QToolTip { background: #111111; color: #ffffff; border: 1px solid #aaaaaa; }
 
 
 def preference_store():
-    return QSettings("Toporia", "GUI")
+    """The user's GUI preferences; TOPORIA_SETTINGS=<file.ini> keeps them elsewhere (the tests do)."""
+    import os
+    path = os.environ.get("TOPORIA_SETTINGS")
+    return QSettings(path, QSettings.IniFormat) if path else QSettings("Toporia", "GUI")
+
+
+RECENT_LIMIT = 8
+
+
+def recent_projects():
+    """Recently opened or saved project files, newest first."""
+    value = preference_store().value("recent_projects", [])
+    paths = [value] if isinstance(value, str) else list(value or [])
+    return [p for p in paths if isinstance(p, str)][:RECENT_LIMIT]
+
+
+def remember_project(path):
+    """Put `path` at the top of the recent projects."""
+    path = str(path)
+    paths = [path, *(p for p in recent_projects() if p != path)][:RECENT_LIMIT]
+    settings = preference_store()
+    settings.setValue("recent_projects", paths)
+    settings.sync()
 
 
 def saved_appearance():

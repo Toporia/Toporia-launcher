@@ -4,7 +4,7 @@ import json
 
 import pytest
 
-from toporia.apps.gui.project import ProblemDocument, Project
+from toporia.apps.gui.project import ProblemDocument, Project, results_folder_name
 from toporia.framework.problem.files import save
 from toporia.plugins.problems import get_run, problem_names
 
@@ -17,7 +17,8 @@ def test_projects_round_trip_every_benchmark_without_output_paths(tmp_path, name
     assert loaded.payload() == project.payload()
     assert loaded.run.scenario == project.run.scenario
     assert loaded.run.solver == project.run.solver
-    assert loaded.results_dir == tmp_path / "results"
+    assert loaded.results_dir == tmp_path / results_folder_name(name)
+    assert loaded.results_dir.name.startswith("result_")
     assert "dir" not in json.loads(path.read_text(encoding="utf-8"))["output"]
     assert list(tmp_path.iterdir()) == [path]
 
@@ -105,3 +106,16 @@ def test_invalid_view_state_is_rejected_before_graphics_widgets(tmp_path, view):
     path.write_text(json.dumps(data))
     with pytest.raises(ValueError):
         Project.load(path)
+
+
+def test_the_results_folder_is_named_after_the_project_and_safe_on_windows(tmp_path):
+    assert results_folder_name("Bracket v2") == "result_Bracket v2"
+    assert results_folder_name('a/b:c*?"<>|') == "result_a_b_c______"
+    assert results_folder_name("  ") == "result_project"
+    project = Project("Bracket v2", get_run("MBB Beam"))
+    path = project.save(tmp_path / "project.top")
+    assert Project.load(path).results_dir == tmp_path / "result_Bracket v2"
+    assert Project.load(path).run.output.dir == tmp_path / "result_Bracket v2"
+    legacy = tmp_path / "results"
+    legacy.mkdir()
+    assert Project.load(path).result_dirs() == [legacy]       # older runs are still found

@@ -19,7 +19,7 @@ from PySide6.QtWidgets import (
 from toporia.framework.problem.run import Run
 from toporia.framework.problem.scenario import Scenario
 
-from .project import ProblemDocument, Project
+from .project import ProblemDocument, Project, results_folder_name
 
 STUDY_GROUPS = ("sg", "sg2", "cg", "clcg", "cmg", "msg", "sens", "ssg", "ssg2")
 
@@ -43,6 +43,7 @@ class ProjectActions:
             ("Open project…", QKeySequence.Open, self.open_project),
             ("Save project", QKeySequence.Save, self.save_project),
             ("Save project as…", QKeySequence.SaveAs, lambda: self.save_project(save_as=True)),
+            ("Rename project…", "F2", self.rename_project),
             ("Import problem…", "Ctrl+I", self.import_problem),
             ("Export problem…", "Ctrl+E", self.export_problem),
             ("Copy benchmark to custom problem", "", self.copy_to_custom),
@@ -61,6 +62,7 @@ class ProjectActions:
         self.home.blank_requested.connect(self.new_blank)
         self.home.import_requested.connect(self.import_problem)
         self.home.benchmark_requested.connect(self.open_benchmark)
+        self.home.recent_requested.connect(self.open_project)
         self._saved_state = self._capture_project().payload()
         self._clean_geometry = self.project.objects
         self._dirty_timer = QTimer(self)
@@ -185,6 +187,7 @@ class ProjectActions:
         self._result_objectives = []
         self._result_iteration = 0
         self.project = project
+        self._project_open = True
         self._active_stage = project.view.get("active_stage")
         self.display_options.load(project.view.get("display", {}))
         self._set_display_options(self.display_options.values())
@@ -279,11 +282,13 @@ class ProjectActions:
             self.project_label.setText(self.project.name + (" · benchmark" if locked else " · custom"))
 
     def show_home(self):
-        """Keep the current project in memory while browsing the library."""
+        """Keep the current project in memory while browsing the library; the steps stay in reach."""
         if not self._running:
             self.home.open_section(0)
             self.root_pages.setCurrentIndex(0)
-            self.navigation_bar.hide()
+            self._uncheck_steps()
+            if not self._project_open:
+                self.project_label.setText("No project open")
 
     def open_benchmark(self, name):
         """Open an immutable reference; existing custom work gets a save prompt."""
@@ -330,6 +335,7 @@ class ProjectActions:
         except (OSError, ValueError, KeyError, TypeError) as error:
             QMessageBox.warning(self, "Cannot open project", str(error))
             return False
+        self._remember_recent(project.path)
         return True
 
     def save_project(self, path=None, save_as=False):
@@ -349,7 +355,60 @@ class ProjectActions:
         self._saved_state = project.payload()
         self._clean_geometry = self.project.objects
         self._update_project_title()
+        self._remember_recent(project.path)
         self.statusBar().showMessage(f"Saved {project.path}", 6000)
+        return True
+
+    def _remember_recent(self, path):
+        """Recent projects on Home; a preference that cannot be written is not worth an error."""
+        from .appearance import remember_project
+        try:
+            remember_project(path)
+        except OSError:
+            pass
+        self.home.refresh_recent()
+
+    def rename_project(self, name=None):
+        """Rename the open project; a saved project's result_<name> folder is renamed with it."""
+        if self._running or not self._project_open:
+            return False
+        if name is None:
+            from PySide6.QtWidgets import QInputDialog
+            name, ok = QInputDialog.getText(self, "Rename project", "Project name:", text=self.project.name)
+            if not ok:
+                return False
+        name = name.strip()
+        if not name or name == self.project.name:
+            return False
+        if self.project.path is not None:
+            old_dir = self.project.results_dir
+            new_dir = old_dir.parent / results_folder_name(name)
+            if old_dir.is_dir() and new_dir.exists():
+                QMessageBox.warning(self, "Cannot rename project", f"{new_dir} already exists.")
+                return False
+            if old_dir.is_dir():
+                try:
+                    old_dir.rename(new_dir)
+                except OSError as error:
+                    QMessageBox.warning(self, "Cannot rename project", f"The results folder could not be renamed: {error}")
+                    return False
+        self.project = replace(self.project, name=name)
+        self._apply_problem_lock()
+        self._update_project_title()
+        self._refresh_run_history()
+        if self.project.path is not None:
+            # The name lives in the file: change only the name there, so other unsaved edits stay unsaved
+            # while the file and the renamed results folder stay in step.
+            from .project import _atomic_json
+            saved = {**self._saved_state, "name": name}
+            try:
+                _atomic_json(self.project.path, saved)
+            except OSError as error:
+                QMessageBox.warning(self, "Project renamed, file not updated", str(error))
+                return True
+            self._saved_state = saved
+            self._update_project_title()
+            self._remember_recent(self.project.path)
         return True
 
     def import_problem(self, path=None):

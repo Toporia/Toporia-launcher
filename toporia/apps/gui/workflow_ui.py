@@ -27,6 +27,78 @@ def _adapted(cfg, method_cls):
     return replace(cfg, scenario=replace(scenario, objective=objective, constraints=constraints))
 
 
+def _fit(cfg, name):
+    """Why the method `name` cannot run `cfg` once adapted to it ("" when it can)."""
+    from toporia.engine.pipeline import solver_problems
+    from toporia.plugins.methods import method_class
+    try:
+        candidate = method_class(name)
+        dims = 3 if cfg.scenario.Lz else 2
+        if dims not in candidate.capabilities.dims:
+            shown = " or ".join(f"{d}-D" for d in candidate.capabilities.dims)
+            return f"it works in {shown}; this problem is {dims}-D (Problem step, Dimensions)"
+        if not candidate.capabilities.objectives:
+            return f"{candidate.label} has nothing it can minimise; choose another updater first"
+        run = _adapted(cfg, candidate)
+        reasons = candidate.capabilities.problems_with(run.scenario) or solver_problems(candidate, run)
+    except (ValueError, KeyError) as error:
+        reasons = [str(error)]
+    return reasons[0] if reasons else ""
+
+
+#: Reasons no other choice in the Method step can fix: these entries stay disabled.
+FIXED = ("it works in ", "not installed:")
+
+
+def _resolve(cfg, kind, name):
+    """The method to use so that the chosen part fits, keeping as much of the current one as possible.
+
+    Returns the method name, or None when nothing in the Method step can make the part fit.
+    The objective and constraints then follow the method (_adapted), so a choice the method
+    cannot honour is cleared rather than silently ignored.
+    """
+    from toporia.framework.parts.composition import SEPARATOR, ComposedMethod
+    from toporia.plugins.methods import method_class
+    from toporia.plugins.models import MODELS
+    from toporia.plugins.updaters import UPDATERS
+
+    method = method_class(cfg.solver.method)
+    composed = issubclass(method, ComposedMethod)
+    model = method.model.name if composed else "q4"
+    updater = method.updater.name if composed else "mma"
+    models = [model, *(m.name for m in MODELS.classes() if m.name != model)]
+    updaters = [updater, *(u.name for u in UPDATERS.classes() if u.name != updater)]
+
+    def wanted(candidate):
+        caps = method_class(candidate).capabilities
+        if kind == "objective":
+            return name in caps.objectives
+        if kind == "constraint":
+            return name in caps.constraints and caps.max_constraints != 0
+        if kind == "interpolation":
+            return caps.accepts_interpolation
+        if kind == "representation":
+            return caps.accepts_representation
+        return True
+
+    if kind == "model":
+        candidates = [f"{name}{SEPARATOR}{u}" for u in updaters]
+    elif kind == "updater":
+        candidates = [f"{m}{SEPARATOR}{name}" for m in models]
+    elif kind == "method":
+        candidates = [name]
+    else:   # keep the method if it already fits; else change the updater first, then the physics
+        candidates = [cfg.solver.method, *(f"{model}{SEPARATOR}{u}" for u in updaters),
+                      *(f"{m}{SEPARATOR}{u}" for m in models for u in updaters)]
+    for candidate in dict.fromkeys(candidates):
+        try:
+            if wanted(candidate) and not _fit(cfg, candidate):
+                return candidate
+        except (ValueError, KeyError):
+            continue
+    return None
+
+
 class WorkflowActions:
     def _ensure_workflow(self):
         if not hasattr(self, "project"):
@@ -93,21 +165,8 @@ class WorkflowActions:
             offers.append((f"{prefix}: {cls.label}" + ("  (selected)" if current else ""), kind, cls.name, reason))
 
         def method_reason(name):
-            from toporia.engine.pipeline import solver_problems
-            try:
-                candidate = method_class(name)
-                dims = 3 if cfg.scenario.Lz else 2
-                if dims not in candidate.capabilities.dims:
-                    shown = " or ".join(f"{d}-D" for d in candidate.capabilities.dims)
-                    return f"it works in {shown}; this problem is {dims}-D (Problem step, Dimensions)"
-                if not candidate.capabilities.objectives:
-                    return f"{candidate.label} has nothing it can minimise; choose another updater first"
-                # Switching brings the candidate's own objective along (see _add_part).
-                run = _adapted(cfg, candidate)
-                reasons = candidate.capabilities.problems_with(run.scenario) or solver_problems(candidate, run)
-            except (ValueError, KeyError) as error:
-                reasons = [str(error)]
-            return reasons[0] if reasons else ""
+            # Switching brings the candidate's own objective along (see _add_part).
+            return _fit(cfg, name)
 
         updater = method.updater.name if composed else "mma"
         if where == "physics":
@@ -149,15 +208,21 @@ class WorkflowActions:
 
         method = method_class(self.core.method_name())
         composed = issubclass(method, ComposedMethod)
+        before = self._selection_summary()
+        cfg = self.current_config()
         if kind in {"model", "updater", "method"}:
-            chosen = {"model": f"{name}{SEPARATOR}{method.updater.name if composed else 'mma'}",
-                      "updater": f"{method.model.name}{SEPARATOR}{name}" if composed else name,
-                      "method": name}[kind]
+            preferred = {"model": f"{name}{SEPARATOR}{method.updater.name if composed else 'mma'}",
+                         "updater": f"{method.model.name}{SEPARATOR}{name}" if composed else name,
+                         "method": name}[kind]
+            chosen = preferred if not _fit(cfg, preferred) else (_resolve(cfg, kind, name) or preferred)
+        else:
+            chosen = _resolve(cfg, kind, name) or self.core.method_name()
+        if chosen != self.core.method_name() or kind in {"model", "updater", "method"}:
             self.core.select_method(chosen)
             adapted = _adapted(self.current_config(), method_class(chosen)).scenario
             self.objective.load_spec(adapted.objective)
             self.constraints.load_specs(adapted.constraints)
-        elif kind == "interpolation":
+        if kind == "interpolation":
             self.material.load_spec({"type": name})
         elif kind == "objective":
             self.objective.load_spec({"type": name})
@@ -168,6 +233,32 @@ class WorkflowActions:
         self._on_method_changed(self.core.method_name())
         self.method_view._signature = None
         self._refresh_pipeline()
+        self._report_adaptation(before, kind)
+
+    def _selection_summary(self):
+        """The parts a choice can displace, by role, as labels."""
+        from toporia.framework.parts.composition import ComposedMethod
+        from toporia.plugins.methods import method_class
+        method = method_class(self.core.method_name())
+        summary = {"objective": self.objective.get_spec().get("type", ""),
+                   "constraints": ", ".join(s["type"] for s in self.constraints.get_specs()) or "none"}
+        if issubclass(method, ComposedMethod):
+            summary["physics"], summary["updater"] = method.model.label, method.updater.label
+        else:
+            summary["method"] = method.label
+        return summary
+
+    def _report_adaptation(self, before, kind):
+        """Say which other parts a choice changed, so nothing is replaced silently."""
+        after = self._selection_summary()
+        chosen_role = {"model": "physics", "updater": "updater", "method": "method",
+                       "objective": "objective", "constraint": "constraints"}.get(kind)
+        changes = [f"{key}: {before[key]} → {after[key]}" for key in after
+                   if key in before and before[key] != after[key] and key != chosen_role]
+        changes += [f"{key}: {after[key]}" for key in after if key not in before and key != chosen_role]
+        self._last_adaptation = changes
+        if changes and hasattr(self, "statusBar"):
+            self.statusBar().showMessage("Changed to fit your choice: " + "; ".join(changes), 12000)
 
     def _add_function(self, kind, name):
         if self._running:
