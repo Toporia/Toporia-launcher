@@ -4,7 +4,7 @@ Research snapshot: 27 October 2026.
 
 - [Interactive world map and publication timeline](index.html): open in a browser. Country boundaries and reference data are embedded; D3 and TopoJSON load from jsDelivr, so the visualization requires an internet connection.
 - [Source data (CSV)](research-sources.csv) for spreadsheets and [JSON](research-sources.json) for reuse.
-- [Source PDF](../../Toporia-library-with-links.pdf), 21 pages, updated 27 October 2026. The latest front-page total is 115 implementations. Earlier pages are dated snapshots, not extra implementations.
+- [Source PDF](../library/Toporia-library-with-links.pdf), 21 pages, updated 27 October 2026. The latest front-page total is 115 implementations. Earlier pages are dated snapshots, not extra implementations.
 
 The map and timeline are a documentation snapshot, not a live view of plugin discovery. Update the data, embedded visualization data and audit together when revising the research catalogue.
 

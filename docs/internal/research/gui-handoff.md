@@ -56,7 +56,7 @@ Thirty-one more presets provide mathematical descriptions for 30 functions:
 22 remaining updaters, five further representations (MMC also has a separate
 variable-thickness example), and three standalone level sets. OC and element
 densities reuse Batch 1. All new paper reproductions are unresolved; the
-[gallery](evidence/batch3/index.html) and structured reports record this explicitly.
+[gallery](../../research/evidence/batch3/index.html) and structured reports record this explicitly.
 
 Later GUI cards should display execution, feasibility, convergence, source
 review and paper matching as separate facts. A finite run or a library success
@@ -72,7 +72,7 @@ operations and STL export; GUI Run is the documented ordinary optimization
 companion. The existing Post-processing panel selects actual output operations.
 No preset-to-Output adapter or new GUI execution mode was introduced.
 
-The [framework assessment](framework-assessment.html) lists concrete contracts
+The [framework assessment](../../research/framework-assessment.html) lists concrete contracts
 for future typed ports, shared variables, transfers, derivative joins and cache/
 worker lifetimes, with estimates in hours of agent execution. The GUI can reuse
 the delivered knowledge now; execution of a general network remains separate.

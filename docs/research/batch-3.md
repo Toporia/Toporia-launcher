@@ -162,7 +162,7 @@ The 97-function/engine count is unchanged. The new GUI framework can reuse
 stable IDs, parameters, compatibility checks and plain descriptions. General
 nested execution still needs explicit variable/field ownership, branch-gradient
 combination and cache/lifecycle rules; no replacement graph executor, new
-objectives or physics adapters were added. See the [GUI handoff](gui-handoff.md).
+objectives or physics adapters were added. See the [GUI handoff](../internal/research/gui-handoff.md).
 
 ## Reproduction and verification
 

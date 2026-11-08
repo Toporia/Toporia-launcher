@@ -230,7 +230,7 @@ existing compatible studies remain available.
 
 ## Development handoff
 
-`docs/gui-v0.2.1-scope.md` is the current implementation checklist; `gui-plan.md`
+`docs/internal/gui-v0.2.1-scope.md` is the current implementation checklist; `internal/gui-plan.md`
 records the earlier GUI work. v0.2.1 was built on `gui-v0.2.1`; branch `full-gui`
 merges it with the integration work (every function, physics and research preset)
 and exposes all of it as described above. Numerical golden baselines are not regenerated.

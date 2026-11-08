@@ -3,6 +3,22 @@
 From nothing to the GUI running, on Windows, macOS or Linux. Once it runs, continue with
 [quickstart.md](quickstart.md).
 
+## On Windows, without Python
+
+1. Download `Toporia-0.3.0-windows.zip` from the release page.
+2. Unzip it anywhere you can write to (your Documents folder, a USB stick). Unzipping into
+   `C:\Program Files` also works, but keep your projects elsewhere.
+3. Start `Toporia\Toporia.exe`. The program is not code-signed, so Windows SmartScreen may
+   say the publisher is unknown: choose *More info → Run anyway*. The first start takes a
+   little longer while Windows checks the files.
+
+Nothing is installed or registered; to remove Toporia, delete the folder. To check that
+everything works, run `Toporia.exe --smoke-test` from a terminal in that folder: it
+builds the window and runs a small optimisation, and says *smoke test passed*.
+
+Everything below is for running Toporia from its sources, on any system, and for
+changing it.
+
 ## 1. What you need
 
 | | |
@@ -148,3 +164,16 @@ PySide6 needs a few system libraries for Qt. On Debian or Ubuntu:
 ```bash
 sudo apt install libgl1 libegl1 libxkbcommon-x11-0 libxcb-cursor0
 ```
+
+## Building the Windows zip
+
+On Windows, from the sources:
+
+```bash
+pip install -e ".[dev,3d,gui3d,build]"
+python packaging/build_windows.py
+```
+
+It writes `dist/Toporia/` and `dist/Toporia-<version>-windows.zip`, and ends by running
+the built program's `--smoke-test`. The optional packages installed when you build
+(pyvista, scikit-image, …) go into the program; those that are not installed stay out.

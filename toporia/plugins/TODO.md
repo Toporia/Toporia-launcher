@@ -20,7 +20,7 @@ survey (wave 0).
 ---
 
 The agreed small/medium round is complete within its documented variant scopes.
-[Current status and limitations](../../docs/INTEGRATION-progress.md) takes precedence
+[Current status and limitations](../../docs/internal/INTEGRATION-progress.md) takes precedence
 over this broader research backlog. Open package/bridge/framework rows are not part
 of a promise to implement every external code in this round.
 

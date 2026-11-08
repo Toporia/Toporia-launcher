@@ -5,7 +5,15 @@ filters and other approaches from the literature can be implemented, compared fa
 brought to the world. Every choice in a method is a swappable part, so two runs that
 differ in one part are a fair comparison.
 
+*Version 0.3.0.*
+
 ## Getting started
+
+**On Windows, without Python:** unzip `Toporia-0.3.0-windows.zip` and start
+`Toporia\Toporia.exe`. (Windows may say the publisher is unknown: the program is not
+code-signed. Choose *More info → Run anyway*.)
+
+**From the sources, on any system:**
 
 ```bash
 pip install -e ".[dev,3d,gui3d]"
@@ -15,12 +23,24 @@ Then `toporia` opens the desktop app, and `toporia run "MBB Beam"` runs from the
 line. New to Python, or the install fails? [docs/installation.md](docs/installation.md)
 walks through it step by step.
 
+## The desktop app
+
+Five steps along the top, always in reach: **Problem** (design space, loads, supports,
+material in MPa with presets, physics, objective and constraints, the volume budget among
+them), **Method** (the whole computation as one collapsible tree, with one *Add function*
+button), **Runner** (one run, sweeps, comparisons; a run can show in its own window while
+you keep working), **Post-process** (every run of a study, and its stress, displacement,
+strain-energy or temperature field in colour) and **Export** (with a preview of what the
+file holds). Home opens recent projects, the benchmark library, the function explorer
+(each function with its showcase) and the documentation.
+
 ## Comparing methods
 
-Load a preset and choose **Compare Methods**. Compatible methods are selected for
-that preset's physics and objective; the preset's recommended method is retained.
-Other entries are disabled with an explanation on hover. You can change the
-checked methods without changing the problem, mesh or stopping rule.
+Load a preset and choose **Compare Methods**. Choose the physics once; the list then holds
+its updaters and the whole methods. Compatible methods are selected for that preset's
+physics and objective; the preset's recommended method is retained. Other entries are
+disabled with an explanation on hover. You can change the checked methods without changing
+the problem, mesh or stopping rule.
 
 The study saves a design grid and `methods.csv` under `results/compare_methods/`.
 It reports the objective, volume, stopping reason and constraint feasibility.

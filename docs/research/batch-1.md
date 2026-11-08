@@ -15,7 +15,7 @@ objective/constraint semantics or executable workflow framework were introduced.
 - Two GUI-selectable Figure 3(a) presets with explanations, equations, symbols,
   limits and rerun instructions, opened by the existing preset **?**.
 - An unchanged-author-code capture, reproducible Python comparison driver,
-  regression checks and [GUI handoff](gui-handoff.md).
+  regression checks and [GUI handoff](../internal/research/gui-handoff.md).
 
 ## First paper targets
 

@@ -30,11 +30,11 @@ relaxed to hide it. Do not translate “no pending census rows” into “nothin
 
 ## Read first
 
-1. [Research overview](README.md), [coverage](coverage.md), [inventory](inventory.json).
-2. [Core computation](core.md), [variable/update guide](optimization.md).
-3. [Batch 4 report](batch-4.md), then earlier batch reports for provenance.
-4. [To-fix index](to-fix/README.md) and each relevant case's `report.json`/README.
-5. [GUI handoff](gui-handoff.md) and [framework assessment](framework-assessment.md).
+1. [Research overview](../../research/README.md), [coverage](../../research/coverage.md), [inventory](../../research/inventory.json).
+2. [Core computation](../../research/core.md), [variable/update guide](../../research/optimization.md).
+3. [Batch 4 report](../../research/batch-4.md), then earlier batch reports for provenance.
+4. [To-fix index](../../research/to-fix/README.md) and each relevant case's `report.json`/README.
+5. [GUI handoff](gui-handoff.md) and [framework assessment](../../research/framework-assessment.md).
 
 ## Priority 1: audit the last additions and keep readiness claims honest
 
@@ -106,7 +106,7 @@ next actions and preserve prior valid evidence.
   gradient at every saved *final* design of Batch 3 and 4 (nearly 0/1 fields, sharp
   projections, stress beside void, final eigenvalues), perturbing only variables
   inside their bounds, at three steps. All 42 gradient-based showcases agree within
-  6e-6 ([report](evidence/gradients/report.json), pinned by
+  6e-6 ([report](../../research/evidence/gradients/report.json), pinned by
   `tests/plugins/test_research_gradients.py`). BESO, hard-kill BESO and TOBS end
   with every element at a bound, so only one-sided derivatives exist there; floating
   projection has a single interior variable. Kinks themselves (a variable exactly

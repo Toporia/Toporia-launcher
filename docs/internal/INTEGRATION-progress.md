@@ -3,7 +3,7 @@
 Work stays in `toporia-integration` on `integration/physics`. The GUI and launcher
 checkouts are separate. The owner reviews and merges; no push or merge is implied.
 Current handoff: 27 October 2026. Detailed historical measurements remain in Git
-and the [experiment recipes](../experiments/README.md).
+and the [experiment recipes](../../experiments/README.md).
 
 ## Scope
 
@@ -14,7 +14,7 @@ Hashin-Shtrikman laws. Large framework bridges and datasets remain outside it.
 `Toporia-library-with-links.pdf` preserves the linked catalogue and opens with
 a current-round update containing additions, validation and limitations.
 
-The [research origins audit](research-origins/README.md) records the cited
+The [research origins audit](../research-origins/README.md) records the cited
 literature's geography and publication history as of 27 October 2026. It includes
 an interactive map and timeline, 82 reference records in CSV/JSON, connections to
 the implemented features, and citation caveats. The map locates 54 references
@@ -125,7 +125,7 @@ installation or MATLAB change.
   author source. Paper transcriptions would not be unchanged original oracles.
 
 Reference commands, source hashes, captured fields and scope live in
-[experiments/README.md](../experiments/README.md) and `tests/references/matlab.json`.
+[experiments/README.md](../../experiments/README.md) and `tests/references/matlab.json`.
 Generic whole-method MATLAB Engine wrappers remain a separate framework project.
 
 ## Verification and cleanup

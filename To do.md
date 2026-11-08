@@ -198,7 +198,7 @@ waves 3 and 4 are complete. Open:
 
 ## Done earlier
 
-- [x] 🧑 GUI v0.2.1 scope ([docs/gui-v0.2.1-scope.md](docs/gui-v0.2.1-scope.md)), including the
+- [x] 🧑 GUI v0.2.1 scope ([docs/internal/gui-v0.2.1-scope.md](docs/internal/gui-v0.2.1-scope.md)), including the
       Basic / Sleek appearance selector.
 - [x] 🤖 Every integrated computational method reachable in the GUI library (`full-gui`).
 - [x] 🧑 A slicer-like GUI: steps one goes through before running, options on the side and top,

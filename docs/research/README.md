@@ -80,5 +80,5 @@ The existing `problem_info(name)` tuple stays compatible.
 
 For later integration, the GUI owner can link benchmark cards and Function
 Explorer to those descriptions, show target/evidence status, and navigate to
-comparison figures. See [GUI handoff](gui-handoff.md) for file ownership and
+comparison figures. See [GUI handoff](../internal/research/gui-handoff.md) for file ownership and
 follow-up tasks. Nested network design remains with that effort.
