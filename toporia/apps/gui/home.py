@@ -68,7 +68,7 @@ class HomePage(QWidget):
         layout.addWidget(self.sections, 1)
         landing = QWidget()
         landing_column = QVBoxLayout(landing)
-        landing_column.setAlignment(Qt.AlignCenter)
+        landing_column.addStretch(1)
         landing_layout = QHBoxLayout()
         landing_layout.setAlignment(Qt.AlignCenter)
         landing_column.addLayout(landing_layout)
@@ -88,11 +88,13 @@ class HomePage(QWidget):
         self.recent_title = QLabel("<b>Recent projects</b>")
         landing_column.addWidget(self.recent_title, alignment=Qt.AlignHCenter)
         self.recent = QListWidget()
-        self.recent.setMinimumWidth(460)
-        self.recent.setMaximumHeight(200)
+        self.recent.setFixedWidth(560)
+        self.recent.setTextElideMode(Qt.ElideMiddle)
+        self.recent.setHorizontalScrollBarPolicy(Qt.ScrollBarAlwaysOff)
         self.recent.setToolTip("Double-click or press Enter to open.")
         self.recent.itemActivated.connect(self._open_recent)
         landing_column.addWidget(self.recent, alignment=Qt.AlignHCenter)
+        landing_column.addStretch(2)
         self.refresh_recent()
         library = QWidget()
         self.sections.addWidget(library)
@@ -171,7 +173,8 @@ class HomePage(QWidget):
         paths = recent_projects()
         for path in paths:
             exists = Path(path).is_file()
-            item = QListWidgetItem(f"{Path(path).parent.name}   ·   {path}" if exists else f"(missing)   {path}")
+            item = QListWidgetItem(f"{Path(path).parent.name}   —   {Path(path).parent.parent}" if exists
+                                   else f"(missing)   {path}")
             item.setData(Qt.UserRole, path)
             item.setToolTip(path)
             if not exists:
@@ -179,6 +182,9 @@ class HomePage(QWidget):
             self.recent.addItem(item)
         self.recent_title.setVisible(bool(paths))
         self.recent.setVisible(bool(paths))
+        rows = max(1, len(paths))
+        self.recent.setFixedHeight(min(200, rows * self.recent.sizeHintForRow(0) + 2 * self.recent.frameWidth() + 4)
+                                   if paths else 0)
 
     def _open_recent(self, item):
         if item.flags() & Qt.ItemIsEnabled:

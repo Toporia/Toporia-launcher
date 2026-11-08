@@ -111,6 +111,11 @@ class ProblemView(QGraphicsView):
         event.accept()
 
     def mousePressEvent(self, event):
+        if event.button() == Qt.MiddleButton:          # pan with any tool
+            self._pan_from = event.position().toPoint()
+            self.viewport().setCursor(Qt.ClosedHandCursor)
+            event.accept()
+            return
         if self.tool not in {"select", "pan"} and event.button() == Qt.LeftButton:
             point = self.mapToScene(event.position().toPoint())
             self.placed.emit(point.x(), -point.y())
@@ -118,9 +123,25 @@ class ProblemView(QGraphicsView):
         super().mousePressEvent(event)
 
     def mouseMoveEvent(self, event):
+        start = getattr(self, "_pan_from", None)
+        if start is not None:
+            now = event.position().toPoint()
+            self.horizontalScrollBar().setValue(self.horizontalScrollBar().value() - (now.x() - start.x()))
+            self.verticalScrollBar().setValue(self.verticalScrollBar().value() - (now.y() - start.y()))
+            self._pan_from = now
+            event.accept()
+            return
         point = self.mapToScene(event.position().toPoint())
         self.cursor_position.emit(point.x(), -point.y())
         super().mouseMoveEvent(event)
+
+    def mouseReleaseEvent(self, event):
+        if event.button() == Qt.MiddleButton and getattr(self, "_pan_from", None) is not None:
+            self._pan_from = None
+            self.viewport().unsetCursor()
+            event.accept()
+            return
+        super().mouseReleaseEvent(event)
 
 
 class ProblemEditor(QWidget):

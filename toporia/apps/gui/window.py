@@ -437,6 +437,7 @@ class MainWindow(WorkflowActions, ProjectActions, ExecutionActions, QMainWindow)
                 self.export_format.addItem(cls.label + dims, cls.name)
         self.export_format.addItem("NumPy density array (.npy)", "npy")
         mark_availability(self.export_format, POSTPROCESSORS.classes())
+        self.export_format.currentIndexChanged.connect(lambda *_: self._refresh_export_preview())
         layout.addWidget(self.export_format)
         self.write_export_btn = QPushButton("Export current result…")
         self.write_export_btn.setMinimumHeight(40)
@@ -476,6 +477,7 @@ class MainWindow(WorkflowActions, ProjectActions, ExecutionActions, QMainWindow)
     def _draw_current_result(self, processed=False):
         if self._result_density is None:
             return
+        self._result_processed = processed
         label = self._result_objective_label
         if processed:
             label += " (source run; not re-evaluated)"
@@ -484,6 +486,35 @@ class MainWindow(WorkflowActions, ProjectActions, ExecutionActions, QMainWindow)
         self.post_canvas.refresh(self._result_density, self._result_objectives, self._result_iteration)
         if self._result_density.ndim == 3:
             self.post_canvas.show_3d(self._result_density, 1 / self._result_config.solver.m, self._log)
+
+    #: What each export format writes, for the preview.
+    EXPORT_FILES = {"export_svg": "an SVG outline", "export_dxf": "a DXF outline",
+                    "export_stl": "an STL surface", "smooth_outline": "a smoothed outline",
+                    "npy": "design.npy, the raw density array"}
+
+    def _refresh_export_preview(self):
+        """Show what Export would write now: the shown result at real size, with what each format keeps."""
+        if not hasattr(self, "export_canvas"):
+            return
+        if self._result_density is None or self._result_config is None:
+            self.export_info.setText("")
+            self.export_canvas.show_message("No result yet.\nRun One first; the result to export appears here.")
+            return
+        import numpy as np
+        density = np.asarray(self._result_density, dtype=float)
+        h = 1 / self._result_config.solver.m
+        kind = self.export_format.currentData()
+        label = self.export_format.currentText()
+        size = " × ".join(f"{n * h:g}" for n in density.shape[::-1]) + " mm"
+        solid = float(np.mean(density >= 0.5))
+        processed = "post-processed result" if getattr(self, "_result_processed", False) else "result of the last run"
+        writes = self.EXPORT_FILES.get(kind, label)
+        traced = kind not in {"npy", "export_stl"} and density.ndim == 2
+        self.export_info.setText(
+            f"<b>{label}</b> · writes {writes}<br>The {processed}: {size}, "
+            f"{density.size:,} elements, {solid:.1%} solid at the 0.5 threshold."
+            + ("<br>The coloured line is the outline the file traces." if traced else ""))
+        self.export_canvas.show_export_preview(density, h, f"{label} · {size}", outline=traced)
 
     def _write_export(self):
         from dataclasses import replace
@@ -630,9 +661,12 @@ class MainWindow(WorkflowActions, ProjectActions, ExecutionActions, QMainWindow)
         self.workspace_views.addWidget(post_page)
         export_page = QWidget()
         export_layout = QVBoxLayout(export_page)
-        export_label = QLabel("Export the current result\nChoose a format and destination on the left.")
-        export_label.setAlignment(Qt.AlignCenter)
-        export_layout.addWidget(export_label)
+        self.export_info = QLabel()
+        self.export_info.setWordWrap(True)
+        self.export_info.setTextInteractionFlags(Qt.TextSelectableByMouse)
+        export_layout.addWidget(self.export_info)
+        self.export_canvas = LiveCanvas()
+        export_layout.addWidget(self.export_canvas, 1)
         self.workspace_views.addWidget(export_page)
         self.blank_setup = BlankSetup()
         self.blank_setup.changed.connect(self._remember_blank_setup)
@@ -892,6 +926,8 @@ class MainWindow(WorkflowActions, ProjectActions, ExecutionActions, QMainWindow)
             self.workspace_views.setCurrentWidget(self.blank_setup)
         if index == 1:
             QTimer.singleShot(0, self.method_view.fit)
+        if index == 4:
+            self._refresh_export_preview()
         self._step_buttons.button(index).setChecked(True)
         name, about = STEPS[index]
         self._step_title.setText(f"<b>{index + 1}. {name}</b><br><span style='color:gray'>{about}</span>")

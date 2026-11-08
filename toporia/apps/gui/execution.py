@@ -188,6 +188,7 @@ class ExecutionActions:
             self._result_config = Run(scenario=from_dict(Scenario, record["scenario"]["definition"]),
                                       solver=from_dict(Solver, record["solver"]["definition"]))
             self._result_density = density.copy()
+            self._result_processed = False
             self._result_objectives = result.get("objectives", [])
             self._result_iteration = result.get("iteration", 0)
             self.post_progress.setMaximum(result.get("max_iterations", self._result_config.solver.max_iter))

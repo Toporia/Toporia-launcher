@@ -241,6 +241,10 @@ class MethodWorkspace(QWidget):
                     continue
                 if reason.startswith(FIXED):      # nothing in this step can make it fit
                     item.setFlags(item.flags() & ~Qt.ItemIsEnabled)
+                    if reason.startswith("not installed"):
+                        item.setText(f"{label}  (not installed)")
+                    else:                         # "it works in 3-D; this problem is 2-D ..."
+                        item.setText(f"{label}  ({reason.split(';')[0].removeprefix('it works in ')} only)")
                     item.setToolTip(f"{label}\nUnavailable here: {reason}")
                 else:                             # selectable; choosing it changes what conflicts with it
                     item.setForeground(self.palette().brush(QPalette.Disabled, QPalette.Text))

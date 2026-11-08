@@ -46,6 +46,75 @@ class LiveCanvas(FigureCanvas):
         self._latest = None
         self._volumes = {}
         self._setup()
+        self._install_pan_zoom()
+
+    # ── Pan and zoom (2-D axes; 3-D axes keep matplotlib's own rotate and zoom) ──
+
+    def _install_pan_zoom(self):
+        """Wheel zooms about the cursor, dragging pans, a double-click restores the full view.
+
+        Connected to the canvas, so it survives every clf(). A zoomed axis turns its
+        autoscaling off, so a running optimisation keeps the chosen view.
+        """
+        self._drag = None
+        self.mpl_connect("scroll_event", self._on_scroll)
+        self.mpl_connect("button_press_event", self._on_press)
+        self.mpl_connect("motion_notify_event", self._on_motion)
+        self.mpl_connect("button_release_event", self._on_release)
+
+    @staticmethod
+    def _flat(ax):
+        return ax is not None and getattr(ax, "name", "") != "3d"
+
+    def _on_scroll(self, event):
+        ax = event.inaxes
+        if not self._flat(ax) or event.xdata is None:
+            return
+        factor = 1 / 1.2 if event.button == "up" else 1.2
+        x0, x1 = ax.get_xlim()
+        y0, y1 = ax.get_ylim()
+        ax.set_xlim(event.xdata + (x0 - event.xdata) * factor, event.xdata + (x1 - event.xdata) * factor)
+        ax.set_ylim(event.ydata + (y0 - event.ydata) * factor, event.ydata + (y1 - event.ydata) * factor)
+        self.draw_idle()
+
+    def _on_press(self, event):
+        ax = event.inaxes
+        if not self._flat(ax) or event.button not in (1, 2):
+            return
+        if event.dblclick:
+            self.reset_view(ax)
+            return
+        self._drag = (ax, event.x, event.y, ax.get_xlim(), ax.get_ylim())
+
+    def _on_motion(self, event):
+        if self._drag is None or event.x is None:
+            return
+        ax, x, y, (x0, x1), (y0, y1) = self._drag
+        box = ax.get_window_extent()
+        dx = (event.x - x) * (x1 - x0) / max(box.width, 1)
+        dy = (event.y - y) * (y1 - y0) / max(box.height, 1)
+        ax.set_xlim(x0 - dx, x1 - dx)
+        ax.set_ylim(y0 - dy, y1 - dy)
+        self.draw_idle()
+
+    def _on_release(self, event):
+        self._drag = None
+
+    def reset_view(self, ax=None):
+        """The whole field, or every point of the curve, again."""
+        for axis in ([ax] if ax is not None else self._fig.axes):
+            if not self._flat(axis):
+                continue
+            images = axis.get_images()
+            if images:
+                left, right, bottom, top = images[0].get_extent()
+                axis.set_xlim(left, right)
+                axis.set_ylim(bottom, top)
+            else:
+                axis.set_autoscale_on(True)
+                axis.relim()
+                axis.autoscale_view()
+        self.draw_idle()
 
     # ── Internal colour helpers ───────────────────────────────────────────────
 
@@ -211,6 +280,8 @@ class LiveCanvas(FigureCanvas):
             self.draw_idle()
 
     def _apply_graph_visibility(self):
+        if self._line is None:            # a single-panel view: no curve to show or hide
+            return
         objective = self.options["objective_graph"]
         volume = self.options["volume_graph"]
         self._ax_c.set_visible(objective or volume)
@@ -256,6 +327,52 @@ class LiveCanvas(FigureCanvas):
         ax.set_title(self._stat_title(*self._latest) if self._latest is not None else "3-D design", color=tc, fontsize=10)
         self._ax_d, self._im = ax, None
         self._apply_graph_visibility()
+        self.draw_idle()
+
+    def show_export_preview(self, density, element_size, title, outline=True):
+        """What an export writes: the design at its real size, and the 0.5 outline vector formats trace.
+
+        A 3-D design is shown as the density = 0.5 surface an STL holds.
+        """
+        bg, tc, lc = self._colours()
+        density = np.asarray(density, dtype=float)
+        self.showing_problem = False
+        self._fig.clf()
+        self._fig.patch.set_facecolor(bg)
+        ax = self._fig.add_subplot(1, 1, 1)
+        ax.set_facecolor(bg)
+        self._ax_d, self._ax_c, self._im, self._line = ax, ax, None, None
+        if density.ndim == 3:
+            self._latest = None
+            self.show_3d(density, element_size, log=lambda *_: None)
+            self._ax_d.set_title(title, color=tc, fontsize=10)
+            self.draw_idle()
+            return
+        ny, nx = density.shape
+        extent = [0, nx * element_size, 0, ny * element_size]
+        ax.imshow(np.flipud(1.0 - density), cmap="gray_r" if bg == "#000000" else "gray", vmin=0, vmax=1,
+                  interpolation="nearest", extent=extent, aspect="equal")
+        if outline and density.min() < 0.5 <= density.max():
+            xs = (np.arange(nx) + 0.5) * element_size
+            ys = (np.arange(ny) + 0.5) * element_size
+            ax.contour(xs, ys, density, levels=[0.5], colors=[lc], linewidths=1.4)   # row 0 is the bottom
+        ax.set_xlabel("x (mm)", color=tc, fontsize=9)
+        ax.set_ylabel("y (mm)", color=tc, fontsize=9)
+        ax.tick_params(colors=tc)
+        for spine in ax.spines.values():
+            spine.set_edgecolor(tc)
+        ax.set_title(title, color=tc, fontsize=10)
+        self._fig.tight_layout(pad=1.2)
+        self.draw_idle()
+
+    def show_message(self, text):
+        """An empty canvas with one centred line, e.g. before there is a result."""
+        bg, tc, _ = self._colours()
+        self._fig.clf()
+        self._fig.patch.set_facecolor(bg)
+        self._fig.text(0.5, 0.5, text, ha="center", va="center", color=tc, fontsize=11, wrap=True)
+        self._ax_d = self._ax_c = None
+        self._im = self._line = None
         self.draw_idle()
 
     def show_grid(self, path, title=""):
