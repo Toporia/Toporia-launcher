@@ -22,8 +22,10 @@ Numbers are the note's own.
 
 - [x] 🧑 Combine the To do, the methods to-do and the survey into one overview (this file).
 - [x] 🤖 A GUI test assumed the optional pyMOTO is installed; it now ignores the "not installed" note.
-- [~] 🤖 The full suite's process did not exit after passing (found at `372adc1`, 🤖). Opt-in
-      exit tracer in `conftest.py` (`TOPORIA_EXIT_TRACE=<seconds>`).
+- [x] 🤖 The full suite's process did not exit after passing (found at `372adc1`, 🤖). Not
+      reproduced on 8 November 2026: with the opt-in exit tracer in `conftest.py`
+      (`TOPORIA_EXIT_TRACE=<seconds>`) the run ended with no thread left and exited. Use the
+      tracer if it comes back.
 - [x] 🧑 Remove the Drone Arm presets: a project, not a benchmark. (Replaces 🤖's question
       about loading only the ring.) They are example projects in `examples/drone-arm/`; the
       checks and tests keep their geometry as the unlisted `Holes and Rings (test)`.
@@ -45,14 +47,14 @@ Numbers are the note's own.
 
 ### Step 3: constraints and the method tree
 
-- [ ] 🧑 6 The material budget is a constraint like the others: it can be added or removed. A
+- [x] 🧑 6 The material budget is a constraint like the others: it can be added or removed. A
       part that needs a volume fraction creates it; removing it sets that part back to blank.
-- [ ] 🧑 7 The Method tab shows the whole tree of components, with collapsible branches. The
+- [x] 🧑 7 The Method tab shows the whole tree of components, with collapsible branches. The
       side has one "+" button that opens a pop-up of all functions and asks where to place
       one when there is more than one possible place.
-- [ ] 🧑 14 The top level of the graph is the optimisers and how they relate (opt 1, rules in
+- [x] 🧑 14 The top level of the graph is the optimisers and how they relate (opt 1, rules in
       between, opt 2), sequential or parallel; it cannot collapse further than that.
-- [ ] 🧑 19 The running mode (single, sweep, compare) is shown in the tree, just above the
+- [x] 🧑 19 The running mode (single, sweep, compare) is shown in the tree, just above the
       optimisation loop.
 
 ### Step 4: inspect and materials
