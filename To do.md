@@ -30,18 +30,18 @@ Numbers are the note's own.
 
 ### Step 2: GUI quick wins
 
-- [ ] 🧑 4.5 Problem, Method, Run, Post and Export tabs always visible; clicking one with no
+- [x] 🧑 4.5 Problem, Method, Run, Post and Export tabs always visible; clicking one with no
       project open makes a new project. Today Home is a dead end.
-- [ ] 🧑 22 Result folders are named `result_<projectname>` and sit next to the project file.
-- [ ] 🧑 23 Home has Benchmark and Function buttons, and lists recent projects.
-- [ ] 🧑 26 Rename a project from inside it.
-- [ ] 🧑 12 Remove the computation-notes bar at the bottom of the Method tab; if the method
+- [x] 🧑 22 Result folders are named `result_<projectname>` and sit next to the project file.
+- [x] 🧑 23 Home has Benchmark and Function buttons, and lists recent projects.
+- [x] 🧑 26 Rename a project from inside it.
+- [x] 🧑 12 Remove the computation-notes bar at the bottom of the Method tab; if the method
       cannot run, Run shows a pop-up saying why.
-- [ ] 🧑 5 Export and import a problem directly from the Problem page.
-- [ ] 🧑 13 Selecting a part clears the parts that are incompatible with it. Every option stays
+- [x] 🧑 5 Export and import a problem directly from the Problem page.
+- [x] 🧑 13 Selecting a part clears the parts that are incompatible with it. Every option stays
       selectable; those that would clear another part are greyed out.
-- [ ] 🧑 17 Pan and zoom in every view.
-- [ ] 🧑 21 A good preview on Export.
+- [x] 🧑 17 Pan and zoom in every view.
+- [x] 🧑 21 A good preview on Export.
 
 ### Step 3: constraints and the method tree
 
