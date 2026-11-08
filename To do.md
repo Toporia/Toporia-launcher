@@ -69,12 +69,14 @@ Numbers are the note's own.
 
 ### Step 5: speed
 
-- [ ] 🧑 8 Faster startup and Method tab; a loading screen with a progress bar counting down
+- [x] 🧑 8 Faster startup and Method tab; a loading screen with a progress bar counting down
       the average start time.
-- [ ] 🧑 8 Running opens a pop-out window, so the main GUI stays responsive and usable.
-- [ ] 🧑 8 Use more of the hardware. 🤖 The finite-element solve is the bottleneck and runs on
+- [x] 🧑 8 Running opens a pop-out window, so the main GUI stays responsive and usable.
+- [x] 🧑 8 Use more of the hardware. 🤖 The finite-element solve is the bottleneck and runs on
       one core: an optional multithreaded solver (PARDISO) and parallel sweep and comparison
       runs. A GPU updater would not help, since the updater is not the slow part.
+      Done: sweeps run in parallel processes. Still open: a multithreaded direct solver
+      (PARDISO, optional) for single large runs.
 
 ### Step 6: appearance and help
 
