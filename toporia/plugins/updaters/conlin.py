@@ -41,7 +41,6 @@
 #   K. Svanberg, "The method of moving asymptotes", IJNME 24 (1987) 359–373.
 
 import numpy as np
-from scipy.optimize import minimize
 
 from toporia.framework.params import Param
 from toporia.framework.parts.updater import Updater
@@ -83,6 +82,7 @@ class ConlinUpdater(Updater):
         self.multipliers = None       # warm start for the dual between iterations
 
     def update(self, x, evaluation, completed):
+        from scipy.optimize import minimize
         flat = self.flat
         flat.remember(x, evaluation)
         x0 = flat.reduce(x)

@@ -20,7 +20,6 @@ import colorsys
 from pathlib import Path
 
 import matplotlib.patches as mpatches
-import matplotlib.pyplot as plt
 import numpy as np
 from matplotlib.gridspec import GridSpec
 
@@ -95,6 +94,7 @@ def _overlay(density_a, density_b):
 
 def _save_figure(density_a, density_b, label_a, label_b, output_dir):
     """The overlay on top (twice the height), the two designs below; returns the PNG's path."""
+    import matplotlib.pyplot as plt
     fig = plt.figure(figsize=(10, 7))
     grid = GridSpec(2, 2, figure=fig, height_ratios=[2, 1], hspace=0.30, wspace=0.05)
     ax_both, ax_a, ax_b = fig.add_subplot(grid[0, :]), fig.add_subplot(grid[1, 0]), fig.add_subplot(grid[1, 1])

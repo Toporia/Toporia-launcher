@@ -28,7 +28,6 @@
 # https://docs.scipy.org/doc/scipy/reference/optimize.minimize-trustconstr.html
 
 import numpy as np
-from scipy.optimize import BFGS, SR1, Bounds, NonlinearConstraint, minimize
 
 from toporia.framework.optimisers.external_loop import ExternalOptimizer, Verdict
 from toporia.framework.params import Param
@@ -111,6 +110,7 @@ class ScipyTrustConstr(ExternalOptimizer):
 
     def run(self, flat, x0, iterate):
         # NonlinearConstraint takes lb <= g(x) <= ub; Toporia's g <= 0 is (-inf, 0].
+        from scipy.optimize import BFGS, SR1, Bounds, NonlinearConstraint, minimize
         constraint = NonlinearConstraint(flat.g, -np.inf, 0.0, jac=flat.dg)
         result = minimize(
             flat.f, x0, jac=flat.df, method="trust-constr",

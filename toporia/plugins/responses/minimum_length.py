@@ -24,11 +24,7 @@ certificate of geometric minimum size.
 """
 
 import numpy as np
-from scipy.integrate import quad
-from scipy.optimize import brentq
-from scipy.signal import convolve
 from scipy.sparse import coo_matrix, csc_matrix, eye
-from scipy.special import logsumexp
 
 from toporia.framework.params import Param
 from toporia.framework.parts.response import CONSTRAINT_ROLE, Response, ResponseValue
@@ -49,7 +45,9 @@ def cone_kernel(radius, spacings, shape):
 
 def slab_fraction(s, dims):
     """Share of a unit cone's weight (1 - r) lying in the slab |y| < s, in 2 or 3 dimensions."""
+    from scipy.integrate import quad
     def section(y):     # the cone's weight over the line (2-D) or disk (3-D) at height y
+        from scipy.integrate import quad
         if dims == 2:
             return quad(lambda x: 1-np.hypot(x, y), 0, np.sqrt(1-y*y))[0]
         return np.pi*((1-y*y)-2/3*(1-abs(y)**3))
@@ -62,6 +60,7 @@ def calibration(threshold, dims):
     A bar exactly the requested length wide has its centre-line average at the
     threshold; the tolerance is the deficit on the centre line of a bar 10% thinner.
     """
+    from scipy.optimize import brentq
     half_width = brentq(lambda s: slab_fraction(s, dims)-threshold, 1e-6, 1.0)
     return 0.5/half_width, (threshold-slab_fraction(0.9*half_width, dims))**2
 
@@ -127,6 +126,7 @@ class MinimumLength(Response):
     limit_in_units = False
 
     def setup(self, physics, problem, settings):
+        from scipy.signal import convolve
         super().setup(physics, problem, settings)
         self.shape = problem.shape
         self.spacings = ((problem.dy, problem.dx) if len(self.shape) == 2
@@ -145,13 +145,16 @@ class MinimumLength(Response):
             self.derivatives.append(_chain(factors))
 
     def _filter(self, density):
+        from scipy.signal import convolve
         return convolve(density, self.kernel, mode="same", method="auto")/self.normaliser
 
     def _filter_adjoint(self, sensitivity):
+        from scipy.signal import convolve
         return convolve(sensitivity/self.normaliser, self.kernel, mode="same", method="auto")
 
     def measure(self, density, gradient=True):
         """Conservative normalised KS measure, full derivative and nodal values."""
+        from scipy.special import logsumexp
         filtered = self._filter(density)
         spatial = [matrix @ filtered.ravel() for matrix in self.derivatives]
         exponential = np.exp(-self.decay*sum(component*component for component in spatial)).reshape(self.shape)

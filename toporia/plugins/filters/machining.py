@@ -22,7 +22,6 @@ all-solid start (the source paper likewise uses small initial design values).
 import numpy as np
 from scipy.sparse import coo_matrix
 from scipy.sparse.linalg import splu
-from scipy.special import logsumexp
 
 from toporia.framework.params import Param
 from toporia.framework.parts.filter import Filter
@@ -151,6 +150,7 @@ class MachiningFilter(Filter):
         return splu(matrix), rhs
 
     def _fields(self, x):
+        from scipy.special import logsumexp
         source = self._source * np.asarray(x, dtype=float).ravel()
         shadows = np.stack([lu.solve(source + rhs) for lu, rhs in self._systems])
         # A tiny offset makes the negative mean differentiable even at all-void.

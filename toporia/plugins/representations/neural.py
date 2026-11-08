@@ -9,7 +9,6 @@ No training dataset, pretrained weights or third-party neural code is used.
 """
 
 import numpy as np
-from scipy.special import expit, logit
 
 from toporia.framework.params import Param
 from toporia.framework.parts.representation import Representation
@@ -61,6 +60,7 @@ class NeuralField(Representation):
         self.weight_bound = float(weight_bound)
 
     def setup(self, problem):
+        from scipy.special import expit, logit
         self.problem = problem
         axes = [(problem.elem_x, problem.scenario.Lx), (problem.elem_y, problem.scenario.Ly)]
         if len(problem.shape) == 3:
@@ -92,6 +92,7 @@ class NeuralField(Representation):
         return np.full_like(self._start, -self.weight_bound), np.full_like(self._start, self.weight_bound)
 
     def _forward(self, z):
+        from scipy.special import expit
         z = np.asarray(z)
         if z.shape != self._start.shape:
             raise ValueError(f"Expected {self._start.size} neural weights/biases")

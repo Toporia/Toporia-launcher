@@ -34,7 +34,6 @@
 # Methods in Applied Mechanics and Engineering 265 (2013) 15-35.
 
 import numpy as np
-from scipy.interpolate import BSpline
 
 from toporia.framework.params import Param
 from toporia.framework.parts.representation import Representation
@@ -45,6 +44,7 @@ def basis_matrix(n_points, n_coefficients, degree):
 
     Returns an (n_points, n_coefficients) array; each row is non-negative and sums to one.
     """
+    from scipy.interpolate import BSpline
     if n_coefficients <= degree:
         raise ValueError(f"a degree-{degree} B-spline needs more than {degree} control points per axis, "
                          f"got {n_coefficients}")

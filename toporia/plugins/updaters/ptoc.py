@@ -28,7 +28,6 @@
 # problems and its implementation in MATLAB", PLoS ONE 10 (2015) e0145041.
 
 import numpy as np
-from scipy.ndimage import correlate
 
 from toporia.framework.params import Param
 from toporia.framework.parts.updater import Updater
@@ -84,6 +83,7 @@ class PTOcUpdater(Updater):
         self.model, self.q, self.alpha = model, settings["q"], settings["alpha"]
         self.lb, self.ub = model.bounds()
         self.lower = np.maximum(self.lb, X_MIN)
+        from scipy.ndimage import correlate  # here, not at import: keeps the program's start fast
         kernel = ptoc_kernel(settings["filter_radius"], self.lb.ndim)
         self._filter = lambda field: correlate(field, kernel, mode="constant") / self._weights
         self._weights = correlate(np.ones_like(self.lb), kernel, mode="constant")

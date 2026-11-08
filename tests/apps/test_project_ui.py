@@ -145,6 +145,7 @@ def test_real_qt_worker_completes_without_blocking_setup_or_overwriting_runs(win
     run = get_run("MBB Beam").updated(m=.3, max_iter=2, save_every=0)
     window._activate_project(Project("Async experiment", run))
     assert window.save_project(tmp_path / "project.top")
+    window.run_popout.setChecked(False)                 # the run in the main window, which is then locked
     folders = []
     for _ in range(2):
         window._on_run()
@@ -284,3 +285,31 @@ def test_the_volume_budget_is_a_constraint_that_can_be_removed_and_comes_back_wh
     window.constraints.remove_budget()
     window.constraints.add_budget()
     assert window.current_config().scenario.volfrac == 0.35                    # with its last value
+
+
+def test_a_run_in_its_own_window_leaves_the_main_window_usable(window, tmp_path, monkeypatch):
+    import time
+    monkeypatch.setattr(QMessageBox, "question", lambda *_: QMessageBox.Discard)
+    window._activate_project(Project("Pop-out", get_run("MBB Beam").updated(m=.3, max_iter=3, save_every=0)))
+    assert window.save_project(tmp_path / "project.top")
+    window.run_popout.setChecked(True)
+    window._on_run()
+    try:
+        assert window._running and window._run_window is not None
+        assert window.run_view.window() is window._run_window          # the live view moved out
+        window.go_to_step(1)                                            # ... and the steps stay in reach
+        assert window.current_step() == 1 and window._pages.isEnabled()
+        assert not any(action.isEnabled() for action in window.file_actions)
+        deadline = time.monotonic() + 40
+        while window._running and time.monotonic() < deadline:
+            QApplication.processEvents()
+            time.sleep(.01)
+        assert not window._running and window.run_status.text().startswith("Finished")
+    finally:
+        if window._running:
+            window.stop_execution()
+    run_window = window._run_window
+    run_window.close()
+    assert window.run_view.window() is window and window._run_window is None   # back in the Runner step
+    assert all(action.isEnabled() for action in window.file_actions)
+    window.run_popout.setChecked(False)

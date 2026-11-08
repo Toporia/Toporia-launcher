@@ -21,7 +21,6 @@ and void regions are refused rather than overwritten after manufacturing.
 
 import numpy as np
 from scipy.sparse import coo_matrix
-from scipy.spatial import cKDTree
 
 from toporia.framework.params import Param
 from toporia.framework.parts.filter import Filter
@@ -98,6 +97,7 @@ class SelfSupportProjection(Filter):
         return np.ascontiguousarray(np.moveaxis(layers, 0, self._axis))
 
     def setup(self, problem, solver):
+        from scipy.spatial import cKDTree
         if len(problem.shape) != 2:
             raise ValueError("Gaynor–Guest self-support currently requires a 2-D problem")
         if np.any(getattr(problem, "passive_elements", False)) or np.any(getattr(problem, "void_elements", False)):

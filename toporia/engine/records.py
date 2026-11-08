@@ -21,7 +21,6 @@ import subprocess
 from datetime import datetime, timezone
 from pathlib import Path
 
-import matplotlib.pyplot as plt
 import numpy as np
 import scipy
 from PIL import Image  # writes the greyscale PNGs
@@ -118,6 +117,7 @@ class ResultStore:
 
     def save_history(self):
         """Write a two-panel PNG: objective (top) and volume fraction (bottom)."""
+        import matplotlib.pyplot as plt
         fig, axes = plt.subplots(2, 1, figsize=(6, 5), sharex=True)  # shared x-axis
         axes[0].plot(self.objectives)
         axes[0].set_ylabel("Objective")

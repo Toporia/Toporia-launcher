@@ -10,7 +10,6 @@ for its joint volume/objective stopping criterion. No original code is copied.
 """
 
 import numpy as np
-from scipy.ndimage import convolve, distance_transform_edt
 
 from toporia.framework.params import Param
 from toporia.framework.parts.method import OBJECTIVE, Capabilities, OptimizationMethod
@@ -40,6 +39,7 @@ def signed_distance(solid, dx, dy):
 The half-minimum-cell offset approximates an interface between opposite cells.
 It is exact for an axis-aligned interface on square cells, not a subcell cut FE.
 """
+    from scipy.ndimage import distance_transform_edt
     solid = np.asarray(solid, dtype=bool)
     h = min(dx, dy)
     if not solid.any():
@@ -197,6 +197,7 @@ topological forcing itself is applied only in initially solid cells.
         return phi
 
     def step(self, iteration):
+        from scipy.ndimage import convolve
         self.iteration = iteration
         shape, topological = self.sensitivities()
         area = self.problem.dx*self.problem.dy

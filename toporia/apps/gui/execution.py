@@ -64,11 +64,17 @@ class ExecutionActions:
         self._pending_iteration = None
         self._stage_objective_label = self._objective_label(cfg)
         self.canvas.set_display(self.display_options.values(), self._objective_label(cfg))
-        self.go_to_step(2)
         self.run_status.setText("Starting…")
         self.run_progress.setMaximum(cfg.solver.max_iter)
         self.run_progress.setValue(0)
-        self._set_execution_controls(False)
+        if self.run_popout.isChecked():
+            self._open_run_window()
+            self._set_execution_controls(True)
+            for action in self.file_actions:       # no other project while this one runs
+                action.setEnabled(False)
+        else:
+            self.go_to_step(2)
+            self._set_execution_controls(False)
         self.run_btn.setText("Stop")
         self.process = QProcess(self)
         self.process.setWorkingDirectory(str(Path(__file__).resolve().parents[3]))
@@ -84,6 +90,23 @@ class ExecutionActions:
         if executable.name.lower() == "pythonw.exe":
             executable = executable.with_name("python.exe")
         self.process.start(str(executable), ["-u", "-m", "toporia.apps.gui_worker", str(folder / "input.top")])
+
+    def _open_run_window(self):
+        """Show the run in its own window; its live widgets come back when that window closes."""
+        from .run_window import RunWindow
+        if getattr(self, "_run_window", None) is not None:
+            self._run_window.give_back()
+            self._run_window.deleteLater()
+        window = RunWindow(self)
+        window.stop_requested.connect(self.stop_execution)
+        window.closed.connect(self._run_window_closed)
+        window.borrow([(self.run_status, 0), (self.run_progress, 0), (self.run_view, 1)])
+        window.set_running(True)
+        window.show()
+        self._run_window = window
+
+    def _run_window_closed(self):
+        self._run_window = None
 
     def _set_execution_controls(self, enabled):
         """Freeze mutable setup; keep the log, plot and Stop button responsive."""
@@ -252,6 +275,10 @@ class ExecutionActions:
             # Actual iteration count remains comparable with the configured limit.
             self.run_progress.setValue(self._result_iteration or self.run_progress.value())
         self.run_status.setText(status + " · " + str(self._run_folder))
+        if getattr(self, "_run_window", None) is not None:
+            self._run_window.set_running(False, status)
+            for action in self.file_actions:
+                action.setEnabled(True)
         self._refresh_export_buttons()
         self._refresh_run_history()
         self.process.deleteLater()

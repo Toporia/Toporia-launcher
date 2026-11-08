@@ -15,7 +15,6 @@ import time
 from pathlib import Path
 
 import matplotlib.image as mpimg
-import matplotlib.pyplot as plt
 
 from toporia.engine.loop import run_single
 from toporia.framework import apply_param
@@ -69,6 +68,7 @@ def save_grid(images, n_rows, n_cols, path, look, fontsize):
     An image path of None leaves its cell empty but for the title, written across the
     middle of the cell (a run that was skipped, and why).
     """
+    import matplotlib.pyplot as plt
     first = next(image for image, _ in images if image is not None)
     height, width = mpimg.imread(str(first)).shape[:2]
     cell_w = max(look["smallest_cell"][0], width / look["pixels_per_inch"])

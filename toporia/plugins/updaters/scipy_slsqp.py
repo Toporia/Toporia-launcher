@@ -25,7 +25,6 @@
 # DFVLR-FB 88-28, 1988.  scipy.optimize.minimize(method="SLSQP").
 
 import numpy as np
-from scipy.optimize import Bounds, minimize
 
 from toporia.framework.optimisers.external_loop import ExternalOptimizer, Verdict
 from toporia.framework.params import Param
@@ -59,6 +58,7 @@ class ScipySLSQP(ExternalOptimizer):
     reports = "iteration"           # SciPy calls back once per iteration
 
     def run(self, flat, x0, iterate):
+        from scipy.optimize import Bounds, minimize
         result = minimize(
             flat.f, x0, jac=flat.df, method="SLSQP",
             bounds=Bounds(flat.lower, flat.upper),

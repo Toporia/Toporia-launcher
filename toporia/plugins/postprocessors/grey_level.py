@@ -18,7 +18,6 @@
 
 import csv
 
-import matplotlib.pyplot as plt
 import numpy as np
 
 from toporia.framework.parts.postprocess import PostProcessor
@@ -43,6 +42,7 @@ class GreyLevel(PostProcessor):
     params = ()
 
     def process(self, result):
+        import matplotlib.pyplot as plt
         final = 100.0 * grey_level(np.asarray(result.density, dtype=float))
         series = (result.history or {}).get("grey_level") or []
         if not series:                       # a saved run keeps no per-iteration densities

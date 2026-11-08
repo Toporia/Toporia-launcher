@@ -52,7 +52,6 @@
 from collections import deque
 
 import numpy as np
-from scipy.optimize import Bounds, LinearConstraint, milp
 from scipy.sparse import csr_matrix
 
 from toporia.framework.params import Param
@@ -156,6 +155,7 @@ class TOBSUpdater(Updater):
         so a solid element may only go to −1 and a void one to +1.  Gradients
         are converted from design units with the element's own (ub − lb).
         """
+        from scipy.optimize import Bounds, LinearConstraint, milp
         span = (ub - lb).reshape(-1)
         s = solid.reshape(-1)
         c = df.reshape(-1) * span

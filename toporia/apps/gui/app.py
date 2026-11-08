@@ -19,8 +19,6 @@ matplotlib.use("QtAgg")
 from PySide6.QtCore import QLocale
 from PySide6.QtWidgets import QApplication
 
-from .window import MainWindow
-
 
 def launch(project_path=None):
     """Start the desktop app and block until its window is closed."""
@@ -33,8 +31,16 @@ def launch(project_path=None):
     # separator regardless of the operating system's regional settings.
     QLocale.setDefault(QLocale(QLocale.Language.English, QLocale.Country.UnitedStates))
 
+    # The loading screen first: importing the plugins and building the window takes a few seconds.
+    from . import GUI_VERSION
+    from .splash import finish_splash, progress, show_splash
+    show_splash(GUI_VERSION)
+    progress("Loading the function library…")
+    from .window import MainWindow
+    progress("Building the window…")
     win = MainWindow()
     win.show()
+    finish_splash()
     if project_path is not None:
         win.open_project(project_path)
     sys.exit(app.exec())

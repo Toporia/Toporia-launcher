@@ -262,7 +262,7 @@ class WorkflowActions:
             self.statusBar().showMessage("Changed to fit your choice: " + "; ".join(changes), 12000)
 
     def _add_function(self, kind, name):
-        if self._running:
+        if self._running and not self._popped_out():
             return
         if kind in {"model", "updater", "method", "interpolation", "objective", "constraint", "representation"}:
             self._add_part(kind, name)

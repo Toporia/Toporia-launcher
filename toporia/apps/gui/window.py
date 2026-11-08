@@ -147,8 +147,11 @@ class MainWindow(WorkflowActions, ProjectActions, ExecutionActions, QMainWindow)
         outer.setContentsMargins(0, 0, 0, 0)
         outer.setSpacing(0)
 
+        from .splash import progress
+        progress("Creating the settings panels…")
         self._build_panels()
         outer.addWidget(self._build_top_bar())
+        progress("Creating the workspaces…")
 
         # Sidebar | view + log | pipeline — every divider can be dragged.
         body = QSplitter(Qt.Horizontal)
@@ -164,6 +167,7 @@ class MainWindow(WorkflowActions, ProjectActions, ExecutionActions, QMainWindow)
         outer.addWidget(self.root_pages, 1)
 
         self._wire_panels()
+        progress("Loading the default problem…")
 
         # Wire the configuration dropdown now that self.log exists so error messages work.
         self.config_combo.currentTextChanged.connect(self._on_config_changed)
@@ -172,6 +176,7 @@ class MainWindow(WorkflowActions, ProjectActions, ExecutionActions, QMainWindow)
         self._on_mode("Run One")  # hide sweep-specific groups on startup
         self.go_to_step(0)
         self._report_plugin_errors()
+        progress("Preparing Home…")
         self._setup_project_ui()
         self.show_home()
         self.refresh_appearance()
@@ -634,7 +639,19 @@ class MainWindow(WorkflowActions, ProjectActions, ExecutionActions, QMainWindow)
         runner_page = QWidget()
         runner_layout = QVBoxLayout(runner_page)
         # The action belongs to Runner rather than the persistent navigation bar.
-        runner_layout.addWidget(self.run_btn, alignment=Qt.AlignLeft)
+        run_row = QHBoxLayout()
+        run_row.addWidget(self.run_btn)
+        from PySide6.QtWidgets import QCheckBox
+
+        from .appearance import preference_store
+        self.run_popout = QCheckBox("Run in a separate window")
+        self.run_popout.setToolTip("The run shows in its own window and this one stays usable: the run works on "
+                                   "a snapshot of the project, so you can keep editing while it runs.")
+        self.run_popout.setChecked(str(preference_store().value("run_popout", "true")).lower() == "true")
+        self.run_popout.toggled.connect(lambda on: preference_store().setValue("run_popout", on))
+        run_row.addWidget(self.run_popout)
+        run_row.addStretch(1)
+        runner_layout.addLayout(run_row)
         self.run_status = QLabel("Ready to run")
         self.run_status.setWordWrap(True)
         self.run_progress = QProgressBar()
@@ -647,6 +664,7 @@ class MainWindow(WorkflowActions, ProjectActions, ExecutionActions, QMainWindow)
         runner_layout.addWidget(self.run_status)
         runner_layout.addWidget(self.run_progress)
         view = QSplitter(Qt.Vertical)
+        self.run_view = view
         runner_layout.addWidget(view, 1)
         self.canvas = LiveCanvas()
         view.addWidget(self.canvas)
@@ -879,9 +897,13 @@ class MainWindow(WorkflowActions, ProjectActions, ExecutionActions, QMainWindow)
             widget.setProperty("previewWired", True)
         self._preview_timer.start()
 
+    def _popped_out(self):
+        """A run is showing in its own window, so the main window stays fully usable."""
+        return self._running and getattr(self, "_run_window", None) is not None
+
     def show_problem(self):
         """Draw the problem as currently set up, unless a run is drawing (slicer-style preview)."""
-        if self._running:
+        if self._running and not self._popped_out():
             return
         if self._blank_pending():
             return
@@ -897,7 +919,8 @@ class MainWindow(WorkflowActions, ProjectActions, ExecutionActions, QMainWindow)
         self._update_preflight()
         if self.project.objects is None:
             self.problem_preview.show_problem(cfg.scenario, cfg.solver.m, title)
-            self.canvas.show_problem(cfg.scenario, cfg.solver.m, title)
+            if not self._running:                 # the run draws on this canvas
+                self.canvas.show_problem(cfg.scenario, cfg.solver.m, title)
 
     def _update_preflight(self):
         """Explain definition/compatibility problems before starting an optimisation."""
@@ -929,7 +952,7 @@ class MainWindow(WorkflowActions, ProjectActions, ExecutionActions, QMainWindow)
 
     def go_to_step(self, index):
         """Show step `index`'s settings; out-of-range indices are ignored."""
-        if self._running and index != 2:
+        if self._running and index != 2 and not self._popped_out():
             return
         if not 0 <= index < len(STEPS):
             return

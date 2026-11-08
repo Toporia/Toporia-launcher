@@ -22,7 +22,6 @@
 # needs a mesh smoother rather than a curve fit.
 
 import numpy as np
-from scipy.interpolate import splev, splprep
 
 from toporia.framework.params import Param
 from toporia.framework.parts.postprocess import PostProcessor
@@ -50,6 +49,7 @@ def spline(polygon, tolerance, per_segment):
     `tolerance` is the length (mm) a point may be moved: splprep's s is the
     summed squared distance, so s = n tolerance².  Loops too short to fit are returned unchanged.
     """
+    from scipy.interpolate import splev, splprep
     points = np.asarray(polygon, dtype=float)
     keep = np.r_[True, np.any(np.diff(points, axis=0) != 0.0, axis=1)]      # drop repeated points
     points = points[keep]

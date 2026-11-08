@@ -32,6 +32,7 @@
 # Discovery happens on the first lookup, so core never imports the library
 # when core itself is imported.
 
+import functools
 import importlib
 import importlib.metadata
 import importlib.util
@@ -50,15 +51,16 @@ def missing_dependencies(cls):
     declared = list(getattr(cls, "dependencies", ()))
     for part in ("model", "updater"):
         declared += list(getattr(getattr(cls, part, None), "dependencies", ()))
-    missing = []
-    for name in dict.fromkeys(declared):
-        try:
-            found = importlib.util.find_spec(name) is not None
-        except (ImportError, ValueError):
-            found = False
-        if not found:
-            missing.append(name)
-    return missing
+    return [name for name in dict.fromkeys(declared) if not _installed(name)]
+
+
+@functools.cache
+def _installed(name):
+    """Whether package `name` can be imported here; asked once per program run (the GUI asks often)."""
+    try:
+        return importlib.util.find_spec(name) is not None
+    except (ImportError, ValueError):
+        return False
 
 
 def install_hint(missing):

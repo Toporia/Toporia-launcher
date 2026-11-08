@@ -23,7 +23,6 @@
 import csv
 import time
 
-import matplotlib.pyplot as plt
 import numpy as np
 from matplotlib.colors import TwoSlopeNorm
 
@@ -126,6 +125,7 @@ def _save_csv(sensitivity, param_key, base_value, gap, folder):
 
 def _save_figure(density_base, sensitivity, param_key, base_value, gap, folder):
     """The sensitivity over a faint image of the base design, with a colour bar; returns the PNG's path."""
+    import matplotlib.pyplot as plt
     density_base, sensitivity = projection(density_base), projection(sensitivity)   # 3-D: depth averages
     max_abs = float(np.max(np.abs(sensitivity)))
     if max_abs < 1e-9:
