@@ -80,10 +80,10 @@ Numbers are the note's own.
 
 ### Step 6: appearance and help
 
-- [ ] 🧑 29 Two or three new styles, and a style maker.
-- [ ] 🧑 24 Each function has its own explainer text with an explanatory figure and its linked
+- [x] 🧑 29 Two or three new styles, and a style maker.
+- [x] 🧑 24 Each function has its own explainer text with an explanatory figure and its linked
       showcase, so not only in the benchmark tab.
-- [ ] 🧑 25 Home has a docs section: start guide, explanation of the structure, how to add things.
+- [x] 🧑 25 Home has a docs section: start guide, explanation of the structure, how to add things.
 
 ### Step 7: sync, 3D, compare, clean-up, release
 
