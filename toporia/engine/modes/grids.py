@@ -10,6 +10,9 @@
 # Keeping them here means each mode file only says what it varies and what it
 # draws, and every mode prints and saves the same way.
 
+import contextlib
+import io
+import os
 import textwrap
 import time
 from pathlib import Path
@@ -34,13 +37,50 @@ def with_values(run, assignments):
     return run
 
 
+#: Below this many cells a grid runs one cell after another: starting processes costs more.
+PARALLEL_FROM = 3
+
+#: Environment variables that make numerical libraries use one thread, so parallel cells
+#: share the cores instead of fighting over them.
+ONE_THREAD = ("OMP_NUM_THREADS", "OPENBLAS_NUM_THREADS", "MKL_NUM_THREADS", "NUMEXPR_NUM_THREADS")
+
+
+def workers_for(cells):
+    """How many processes to run `cells` cells in: TOPORIA_WORKERS, else one fewer than the cores."""
+    setting = os.environ.get("TOPORIA_WORKERS")
+    if setting:
+        return max(1, min(int(setting), cells))
+    if cells < PARALLEL_FROM:
+        return 1
+    return max(1, min((os.cpu_count() or 1) - 1, cells))
+
+
+def _run_cell(run):
+    """One cell in a worker process; its console output is returned, not interleaved."""
+    output = io.StringIO()
+    t0 = time.perf_counter()
+    with contextlib.redirect_stdout(output):
+        run_single(run)
+    return time.perf_counter() - t0, output.getvalue()
+
+
 def run_cells(base_run, cells, on_iteration=None):
     """Run one optimisation per cell and print progress.
 
     `cells` is a list of (assignments, folder): the parameter values to set,
     and where that cell's results go.  `on_iteration` is the GUI's live
     callback, passed through to every run.
+
+    Cells are independent, so a grid of PARALLEL_FROM or more runs them in
+    parallel processes (one fewer than the cores; TOPORIA_WORKERS=n to choose,
+    1 for one after another).  Each cell writes its own folder as it would
+    alone, so the results are the same; only the live view of every
+    iteration is given up for a line per finished cell.
     """
+    workers = workers_for(len(cells))
+    if workers > 1:
+        _run_cells_parallel(base_run, cells, workers)
+        return
     start = time.perf_counter()
     for k, (assignments, folder) in enumerate(cells, 1):
         run = with_values(base_run.with_output_dir(folder), assignments)
@@ -50,6 +90,33 @@ def run_cells(base_run, cells, on_iteration=None):
         run_single(run, on_iteration)
         print(f"[{k}/{len(cells)}] done"
               f"  run {time.perf_counter() - t0:.1f}s  total {time.perf_counter() - start:.1f}s")
+    print(f"total: {time.perf_counter() - start:.1f}s")
+
+
+def _run_cells_parallel(base_run, cells, workers):
+    from concurrent.futures import ProcessPoolExecutor, as_completed
+    start = time.perf_counter()
+    print(f"{len(cells)} runs in {workers} parallel processes")
+    saved = {name: os.environ.get(name) for name in ONE_THREAD}
+    os.environ.update(dict.fromkeys(ONE_THREAD, "1"))     # inherited by the worker processes
+    try:
+        with ProcessPoolExecutor(max_workers=workers) as pool:
+            jobs = {}
+            for k, (assignments, folder) in enumerate(cells, 1):
+                run = with_values(base_run.with_output_dir(folder), assignments)
+                label = " ".join(f"{path}={value:.3g}" for path, value in assignments)
+                jobs[pool.submit(_run_cell, run)] = (k, label)
+            for done, job in enumerate(as_completed(jobs), 1):
+                k, label = jobs[job]
+                seconds, _ = job.result()             # an error in a cell stops the grid here
+                print(f"[{done}/{len(cells)}] {label} done  run {seconds:.1f}s"
+                      f"  total {time.perf_counter() - start:.1f}s", flush=True)
+    finally:
+        for name, value in saved.items():
+            if value is None:
+                os.environ.pop(name, None)
+            else:
+                os.environ[name] = value
     print(f"total: {time.perf_counter() - start:.1f}s")
 
 

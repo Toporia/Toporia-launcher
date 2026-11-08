@@ -122,3 +122,23 @@ def test_a_grid_leaves_a_skipped_run_empty_but_titled(tmp_path):
     grid = save_grid([(image, "ran"), (None, "skipped: cannot enforce stress")], 1, 2,
                      tmp_path / "grid.png", DESIGNS, fontsize=7)
     assert grid.exists()
+
+
+def test_a_sweep_in_parallel_processes_gives_the_same_designs(tmp_path, monkeypatch):
+    import numpy as np
+
+    from toporia.engine.modes.grids import workers_for
+    base = get_run("MBB Beam").updated(m=0.25, max_iter=3, tol=0.0, save_every=0)
+    monkeypatch.setenv("TOPORIA_WORKERS", "1")
+    sweep("volfrac", 0.3, 0.5, 1, 3, base.with_output_dir(tmp_path / "one"))
+    monkeypatch.setenv("TOPORIA_WORKERS", "3")
+    assert workers_for(3) == 3
+    sweep("volfrac", 0.3, 0.5, 1, 3, base.with_output_dir(tmp_path / "three"))
+    one = sorted((tmp_path / "one").rglob("final_density.npy"))
+    three = sorted((tmp_path / "three").rglob("final_density.npy"))
+    assert len(one) == len(three) == 3
+    for a, b in zip(one, three, strict=True):
+        assert a.relative_to(tmp_path / "one") == b.relative_to(tmp_path / "three")
+        np.testing.assert_array_equal(np.load(a), np.load(b))
+    monkeypatch.delenv("TOPORIA_WORKERS")
+    assert workers_for(2) == 1                      # two cells: not worth starting processes

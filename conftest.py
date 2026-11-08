@@ -15,6 +15,10 @@ from pathlib import Path
 
 sys.path.insert(0, str(Path(__file__).resolve().parent))
 
+# Grids run one cell after another in the tests (fast for tiny runs, and the same results);
+# tests/engine/test_modes.py checks the parallel path itself.
+os.environ.setdefault("TOPORIA_WORKERS", "1")
+
 
 def pytest_unconfigure(config):
     delay = os.environ.get("TOPORIA_EXIT_TRACE")
