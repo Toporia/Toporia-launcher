@@ -86,3 +86,19 @@ def test_the_export_step_previews_what_the_file_will_hold(tmp_path):
         window._dirty_timer.stop()
         window.deleteLater()
         app.processEvents()
+
+
+def test_a_3d_design_shows_as_a_density_cloud_or_its_surface():
+    from toporia.apps.gui.canvas import LiveCanvas
+    QtWidgets.QApplication.instance() or QtWidgets.QApplication([])
+    density = np.zeros((4, 6, 10))
+    density[:, 2:4, :] = 1.0
+    density[:, 0, 0] = 0.3
+    canvas = LiveCanvas()
+    canvas.refresh(density, [1.0], 1)
+    canvas.show_3d(density, 1.0, cloud=True)
+    assert canvas._ax_d.name == "3d" and len(canvas._ax_d.collections) == 1
+    points = canvas._ax_d.collections[0]
+    assert len(points.get_offsets()) == int((density > 0.05).sum())      # every element with material
+    alphas = points.get_facecolor()[:, 3]
+    assert alphas.max() > 0.6 > alphas.min()                              # solid opaque, faint material clear

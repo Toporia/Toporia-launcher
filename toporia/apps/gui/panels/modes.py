@@ -339,8 +339,10 @@ class SensitivitySweep2DParamsGroup(QGroupBox):
 class CompareMethodsParamsGroup(QGroupBox):
     """Which methods to compare on the current problem (visible only in Compare Methods mode).
 
-    Every selectable method is listed — every physics model with every updater,
-    and the whole methods. Context checks disable incompatible entries and
+    The physics is chosen once, above the list; the list then holds that physics'
+    updaters and the whole methods, instead of every updater again for every
+    physics. Changing the physics keeps the same updaters ticked where they fit.
+    Context checks disable incompatible entries and
     choose defaults for the current model and objective. Each ticked
     method runs on the same scenario, mesh, filters and stopping rule; the
     results are one image of the designs and one table, also in the log.
@@ -361,12 +363,20 @@ class CompareMethodsParamsGroup(QGroupBox):
         )
         hint.setWordWrap(True)
         layout.addWidget(hint)
+        from toporia.plugins.models import MODELS
+        physics_row = QHBoxLayout()
+        physics_row.addWidget(QLabel("Physics"))
+        self.physics = QComboBox()
+        for model_cls in MODELS.classes():
+            self.physics.addItem(model_cls.label, model_cls.name)
+        self.physics.setToolTip("Every updater below runs on this physics; whole methods bring their own.")
+        physics_row.addWidget(self.physics, 1)
+        layout.addLayout(physics_row)
         self.methods = QListWidget()
         self._missing_dependencies = {}
         for cls in method_classes():
-            # The updater first: in a long list of pairings it is what tells them apart.
             model, updater = getattr(cls, "model", None), getattr(cls, "updater", None)
-            text = f"{updater.label}  ·  on {model.name}" if model else f"{cls.label}  (whole method)"
+            text = updater.label if model else f"{cls.label}  (whole method)"
             item = QListWidgetItem(text)
             item.setData(Qt.UserRole, cls.name)
             item.setToolTip(f"{cls.label}   [{cls.name}]")
@@ -379,6 +389,9 @@ class CompareMethodsParamsGroup(QGroupBox):
             item.setCheckState(Qt.Checked if cls.name in self.DEFAULT and not missing else Qt.Unchecked)
             self.methods.addItem(item)
         self.methods.setMinimumHeight(180)
+        self.physics.currentIndexChanged.connect(lambda *_: self._physics_changed())
+        self._shown_physics = None
+        self._show_physics()
         self._context = None
         self._context_signature = None
         self._context_problems = None
@@ -397,16 +410,45 @@ class CompareMethodsParamsGroup(QGroupBox):
         item = self.methods.currentItem() or self.methods.item(0)
         return plugin_topic(method_class(item.data(Qt.UserRole)), "method")
 
+    @staticmethod
+    def _model_of(name):
+        """The physics a method name pairs with, or None for a whole method."""
+        return name.split("+", 1)[0] if "+" in name else None
+
+    def _show_physics(self):
+        """Show the chosen physics' pairings and the whole methods; hide every other pairing."""
+        chosen = self.physics.currentData()
+        for i in range(self.methods.count()):
+            item = self.methods.item(i)
+            model = self._model_of(item.data(Qt.UserRole))
+            item.setHidden(model is not None and model != chosen)
+        self._shown_physics = chosen
+
+    def _physics_changed(self):
+        """Keep the same updaters (and whole methods) ticked on the new physics, where they fit."""
+        before, ticked = self._shown_physics, self.selected()
+        self._show_physics()
+        chosen = self.physics.currentData()
+        moved = [f"{chosen}+{name.split('+', 1)[1]}" if self._model_of(name) == before else name for name in ticked]
+        self.set_selected(moved)
+
     def selected(self):
-        """The ticked methods' names, in list order."""
+        """The ticked methods' names, in list order (only those shown: the chosen physics, whole methods)."""
         return [
             self.methods.item(i).data(Qt.UserRole)
             for i in range(self.methods.count())
             if self.methods.item(i).checkState() == Qt.Checked and self.methods.item(i).flags() & Qt.ItemIsEnabled
+            and not self.methods.item(i).isHidden()
         ]
 
     def set_selected(self, names):
-        """Tick exactly these methods."""
+        """Tick exactly these methods; the physics follows the first paired one."""
+        model = next((self._model_of(n) for n in names if self._model_of(n)), None)
+        if model is not None and model != self.physics.currentData() and self.physics.findData(model) >= 0:
+            blocked = self.physics.blockSignals(True)
+            self.physics.setCurrentIndex(self.physics.findData(model))
+            self.physics.blockSignals(blocked)
+            self._show_physics()
         for i in range(self.methods.count()):
             item = self.methods.item(i)
             item.setCheckState(Qt.Checked if item.data(Qt.UserRole) in names and item.flags() & Qt.ItemIsEnabled

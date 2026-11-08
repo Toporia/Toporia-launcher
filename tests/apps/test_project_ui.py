@@ -313,3 +313,22 @@ def test_a_run_in_its_own_window_leaves_the_main_window_usable(window, tmp_path,
     assert window.run_view.window() is window and window._run_window is None   # back in the Runner step
     assert all(action.isEnabled() for action in window.file_actions)
     window.run_popout.setChecked(False)
+
+
+def test_physics_objective_and_constraints_are_the_same_choice_in_problem_and_method(window, monkeypatch):
+    monkeypatch.setattr(QMessageBox, "question", lambda *_: QMessageBox.Discard)
+    window._activate_project(Project("Synced", get_run("MBB Beam")))
+    window.copy_to_custom()
+    index = window.problem_physics.findData("q4_heat")
+    window.problem_physics.setCurrentIndex(index)
+    window.problem_physics.activated.emit(index)                       # chosen on the Problem page
+    cfg = window.current_config()
+    assert cfg.solver.method.startswith("q4_heat+") and cfg.scenario.objective["type"] == "thermal_compliance"
+    window._add_function("model", "q4")                                  # chosen in the Method step
+    assert window.problem_physics.currentData() == "q4"
+    window.go_to_step(1)
+    node = next(b.node for b in window.method_view.blocks.values() if b.node.kind == "objective")
+    window._inspect_method_node(node)
+    assert window.objective.parentWidget() is window.method_inspector  # the very same panel
+    window.go_to_step(0)
+    assert window.objective.isVisibleTo(window._pages.widget(0))

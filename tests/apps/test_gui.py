@@ -765,3 +765,18 @@ def test_every_presets_default_method_comparison_runs_from_the_gui(window, tmp_p
         assert all(float(row["thermal_compliance"]) > 0 for row in rows)
     elif run.scenario.objective["type"] == "eigenfrequency":
         assert all(float(row["omega_1"]) > 0 for row in rows)
+
+
+def test_compare_methods_chooses_the_physics_once(window):
+    window._on_config_changed("MBB Beam")
+    cmg = window.cmg
+    assert cmg.physics.currentData() == "q4"
+    shown = [cmg.methods.item(i).data(0x0100) for i in range(cmg.methods.count()) if not cmg.methods.item(i).isHidden()]
+    assert all(name.startswith("q4+") or "+" not in name for name in shown)     # one physics, no copies
+    before = [name.split("+", 1)[1] for name in cmg.selected() if "+" in name]
+    cmg.physics.setCurrentIndex(cmg.physics.findData("q4_multiresolution"))
+    after = cmg.selected()
+    assert all(name.startswith("q4_multiresolution+") or "+" not in name for name in after)
+    assert {name.split("+", 1)[1] for name in after if "+" in name} <= set(before)   # same updaters kept
+    window._on_config_changed("MBB Beam")
+    assert cmg.physics.currentData() == "q4"

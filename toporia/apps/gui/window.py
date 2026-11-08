@@ -355,8 +355,23 @@ class MainWindow(WorkflowActions, ProjectActions, ExecutionActions, QMainWindow)
         self.problem_export_btn.clicked.connect(lambda: self.export_problem())
         problem_row.addWidget(self.problem_import_btn)
         problem_row.addWidget(self.problem_export_btn)
+        # The physics, also chosen here: what is solved belongs to the problem as much as to the method.
+        from toporia.plugins.models import MODELS
+        physics_box = QWidget()
+        physics_row = QHBoxLayout(physics_box)
+        physics_row.setContentsMargins(0, 0, 0, 0)
+        physics_row.addWidget(QLabel("Physics"))
+        self.problem_physics = QComboBox()
+        for cls in MODELS.classes():
+            self.problem_physics.addItem(cls.label, cls.name)
+        self.problem_physics.setToolTip("What is solved. The same choice as the Physics block of the Method "
+                                        "step; changing it here changes it there, and the other way round.")
+        self.problem_physics.activated.connect(lambda index: self._add_function(
+            "model", self.problem_physics.itemData(index)))
+        physics_row.addWidget(self.problem_physics, 1)
+        self.problem_physics_box = physics_box
         pages = (
-            (problem_files, self.design, self.lc, self.objective, self.constraints),
+            (problem_files, self.design, self.lc, physics_box, self.objective, self.constraints),
             (QLabel("Select a function to open its settings.\nEnter a block to work in its local network.\nUse the library to add compatible functions."),),
             (mode_box, history_section, self.sg, self.sg2, self.cg, self.clcg, self.cmg, self.msg, self.sens, self.ssg, self.ssg2),
             (self._build_post_box(),),
@@ -717,10 +732,18 @@ class MainWindow(WorkflowActions, ProjectActions, ExecutionActions, QMainWindow)
             self.project.view["display"] = options
         self.run_progress.setVisible(options["iteration_graph"])
         self.post_progress.setVisible(options["iteration_graph"])
+        cloud_changed = any(canvas.options.get("cloud3d", True) != options["cloud3d"]
+                            for canvas in (self.canvas, self.post_canvas))
         for canvas in (self.canvas, self.post_canvas):
             canvas.set_display(options)
         if not options["live"]:
             self._pending_iteration = None
+        density = getattr(self, "_result_density", None)
+        if cloud_changed and density is not None and density.ndim == 3 and not self._running:
+            for canvas in (self.canvas, self.post_canvas):      # redraw the finished 3-D design the new way
+                if canvas._latest is not None:
+                    canvas.refresh(*canvas._latest)
+                    canvas.show_3d(canvas._latest[0], 1 / self._result_config.solver.m, self._log)
 
     def set_appearance(self, mode, *, persist=True):
         from PySide6.QtWidgets import QApplication, QMessageBox
@@ -1032,6 +1055,7 @@ class MainWindow(WorkflowActions, ProjectActions, ExecutionActions, QMainWindow)
         from toporia.plugins.methods import method_class
 
         capabilities = method_class(name).capabilities
+        self._show_problem_physics(name)
         self.filters.set_allowed(FILTERS.names() if capabilities.accepts_filters else [])
         self.design.set_representation_available(capabilities.accepts_representation)
         from toporia.framework.parts.composition import ComposedMethod
@@ -1081,6 +1105,21 @@ class MainWindow(WorkflowActions, ProjectActions, ExecutionActions, QMainWindow)
     def _on_budget_changed(self):
         self._refresh_parameter_paths()
         self._preview_timer.start()
+
+    def _show_problem_physics(self, name):
+        """The Problem step's Physics follows the method; a whole method brings its own physics."""
+        from toporia.plugins.methods import method_class
+        if not hasattr(self, "problem_physics"):
+            return
+        model = getattr(method_class(name), "model", None)
+        blocked = self.problem_physics.blockSignals(True)
+        if model is not None:
+            self.problem_physics.setCurrentIndex(max(0, self.problem_physics.findData(model.name)))
+        self.problem_physics.setEnabled(model is not None and not getattr(self, "_problem_locked", False))
+        self.problem_physics.setToolTip(
+            "What is solved; the same choice as the Physics block of the Method step." if model is not None
+            else f"{method_class(name).label} is a whole method and brings its own physics.")
+        self.problem_physics.blockSignals(blocked)
 
     def _why_no_constraints(self, name):
         """In words: why the method enforces nothing besides the volume budget, and what would."""

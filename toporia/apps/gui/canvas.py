@@ -302,12 +302,21 @@ class LiveCanvas(PanZoom, FigureCanvas):
         self._ax_c.set_position([.71, .17, .2, .65])
         self._volume_axis.set_position(self._ax_c.get_position())
 
-    def show_3d(self, density, element_size=1.0, log=print, level=0.5):
-        """Replace the density image by a shaded 3-D surface of the final design (the density = `level` surface).
+    #: At most this many elements are drawn in a density cloud; the densest are kept.
+    CLOUD_LIMIT = 40_000
 
-        Uses scikit-image's marching cubes; without it the depth average stays
-        and `log` says how to get the 3-D view.
+    def show_3d(self, density, element_size=1.0, log=print, level=0.5, cloud=None):
+        """Replace the depth-averaged image by a 3-D view of the final design.
+
+        A density cloud by default (display option "3-D designs as a cloud"): every
+        element with some material, more opaque and darker the denser it is, so the
+        whole field shows, not one average.  Otherwise the density = `level`
+        surface, with scikit-image's marching cubes; without it the depth average
+        stays and `log` says how to get the 3-D view.
         """
+        if cloud if cloud is not None else self.options.get("cloud3d", True):
+            self._show_cloud(np.asarray(density, dtype=float), element_size)
+            return
         try:
             from skimage.measure import marching_cubes
         except ImportError:
@@ -336,6 +345,44 @@ class LiveCanvas(PanZoom, FigureCanvas):
         self._apply_graph_visibility()
         self.draw_idle()
 
+    def _three_d_axes(self, shape, element_size):
+        """Replace the design panel by 3-D axes for a (nz, ny, nx) field; x across, depth back, y up."""
+        spec = self._ax_d.get_subplotspec()
+        self._ax_d.remove()
+        ax = self._fig.add_subplot(spec, projection="3d")
+        ax.set_facecolor(self._colours()[0])
+        nz, ny, nx = shape
+        ax.set_box_aspect((nx, nz, ny))
+        ax.set_xlim(0, nx * element_size)
+        ax.set_ylim(0, nz * element_size)
+        ax.set_zlim(0, ny * element_size)
+        ax.view_init(elev=22, azim=-62)
+        ax.set_axis_off()
+        return ax
+
+    def _show_cloud(self, density, element_size):
+        bg, tc, _ = self._colours()
+        ax = self._three_d_axes(density.shape, element_size)
+        z, y, x = np.nonzero(density > 0.05)
+        values = density[z, y, x]
+        if values.size > self.CLOUD_LIMIT:                          # keep the densest elements
+            keep = np.argsort(values)[-self.CLOUD_LIMIT:]
+            z, y, x, values = z[keep], y[keep], x[keep], values[keep]
+        colours = np.zeros((values.size, 4))
+        ink = 0.85 if is_dark(bg) else 0.1                          # solid is light on a dark background
+        shade = ink + (0.6 - ink) * (1 - values)                    # faint material drifts to mid grey
+        colours[:, :3] = shade[:, None]
+        colours[:, 3] = 0.03 + 0.62 * values ** 2                   # near-void almost clear, solid opaque
+        size = max(2.0, (260.0 / max(density.shape)) ** 2 * 0.6)
+        h = element_size
+        ax.scatter((x + 0.5) * h, (z + 0.5) * h, (y + 0.5) * h, c=colours, s=size, marker="s",
+                   depthshade=False, edgecolors="none")
+        title = self._stat_title(*self._latest) if self._latest is not None else "3-D design"
+        ax.set_title(title + "\n(density cloud: drag to rotate)", color=tc, fontsize=10)
+        self._ax_d, self._im = ax, None
+        self._apply_graph_visibility()
+        self.draw_idle()
+
     def show_export_preview(self, density, element_size, title, outline=True):
         """What an export writes: the design at its real size, and the 0.5 outline vector formats trace.
 
@@ -351,7 +398,7 @@ class LiveCanvas(PanZoom, FigureCanvas):
         self._ax_d, self._ax_c, self._im, self._line = ax, ax, None, None
         if density.ndim == 3:
             self._latest = None
-            self.show_3d(density, element_size, log=lambda *_: None)
+            self.show_3d(density, element_size, log=lambda *_: None, cloud=False)   # the surface an STL holds
             self._ax_d.set_title(title, color=tc, fontsize=10)
             self.draw_idle()
             return
