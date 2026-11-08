@@ -47,7 +47,7 @@ def test_every_method_runs_on_the_same_problem_and_lands_in_one_table(tmp_path):
 
 def test_a_method_that_cannot_take_part_is_listed_with_its_reason(tmp_path):
     run = _small(constraints=[{"type": "stress", "limit": 50.0}], max_iter=3).with_output_dir(tmp_path)
-    _, rows = compare_methods(["q4+oc", "q4+pymoto_mma"], run)
+    _, rows = compare_methods(["q4+oc", "q4+conlin"], run)
     skipped, ran = rows
     assert skipped["status"] == "skipped" and "cannot enforce" in skipped["stop_reason"]
     assert ran["status"] == "ran"

@@ -98,7 +98,7 @@ def test_minimising_volume_without_a_constraint_is_refused():
 
 
 def test_a_misspelt_response_parameter_fails_before_any_computation():
-    run = get_run("MBB Beam").updated(method="pymoto", constraints=[{"type": "stress", "limt": 5.0}])
+    run = get_run("MBB Beam").updated(method="q4+conlin", constraints=[{"type": "stress", "limt": 5.0}])
     with pytest.raises(ValueError, match="limt"):
         initialized_method(run)
 
@@ -235,12 +235,9 @@ def test_limits_are_judged_on_the_exact_value_when_one_is_reported():
 
 def test_minimising_volume_prints_its_advice(capsys):
     """The failure mode is silent (the design just empties), so the guidance is printed up front."""
-    run = get_run("MBB Beam").updated(method="pymoto", objective={"type": "volume"},
+    run = get_run("MBB Beam").updated(method="q4+conlin", objective={"type": "volume"},
                                       constraints=[dict(STRESS)], m=0.3)
-    try:
-        initialized_method(run)
-    except ImportError:
-        pass   # without pyMOTO the method cannot be built, but the advice comes first
+    initialized_method(run)
     assert "set the volume fraction to 1.0" in capsys.readouterr().out
 
 

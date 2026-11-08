@@ -21,6 +21,7 @@ from toporia.framework.parts.composition import ComposedMethod, compose
 from toporia.framework.parts.method import OBJECTIVE
 from toporia.framework.parts.model import Model
 from toporia.framework.problem.mesh import make_problem
+from toporia.framework.registry import missing_dependencies
 from toporia.plugins.methods import method_class, method_classes
 from toporia.plugins.models import MODELS
 from toporia.plugins.models.pymoto_elastic import PymotoElasticModel
@@ -110,6 +111,9 @@ def test_a_parameter_clash_between_model_and_updater_is_rejected():
 def test_every_model_works_with_every_updater(model_cls, updater_cls):
     if _needs_pymoto(model_cls, updater_cls):
         _require_pymoto()
+    missing = missing_dependencies(model_cls) + missing_dependencies(updater_cls)
+    if missing:                                   # NLopt, mmapy, the null-space optimiser: optional
+        pytest.skip(f"optional dependency: pip install {' '.join(missing)}")
     cls = _compose(model_cls, updater_cls)
     if not cls.capabilities.objectives:
         run = _model_run(model_cls, "MBB Beam").updated(
