@@ -266,8 +266,11 @@ class ProblemEditor(QWidget):
         self.domain_form = QWidget()
         domain = QFormLayout(self.domain_form)
         self.domain_fields = {}
+        from .materials import material_combo
+        self.material_preset = material_combo(self._pick_material)
+        domain.addRow("Material", self.material_preset)
         for label, key, value in (("Width [mm]", "Lx", 100), ("Height [mm]", "Ly", 50),
-                                   ("Young's modulus", "E0", 1), ("Poisson ratio", "nu", .3)):
+                                   ("Young's modulus [MPa]", "E0", 1), ("Poisson ratio", "nu", .3)):
             field = _number(value)
             if key != "nu":
                 field.setMinimum(0.000001)
@@ -343,6 +346,11 @@ class ProblemEditor(QWidget):
             origin.setPos(0, 0)
             for key, field in self.domain_fields.items():
                 field.setValue(getattr(self.scenario, key))
+            from .materials import matching_material
+            name = matching_material(self.scenario.E0, self.scenario.nu)
+            blocked = self.material_preset.blockSignals(True)
+            self.material_preset.setCurrentIndex(max(0, self.material_preset.findData(name)))
+            self.material_preset.blockSignals(blocked)
         for obj in self.objects:
             item = GeometryItem(obj, self.move_object, self.readonly)
             scene.addItem(item)
@@ -563,11 +571,19 @@ class ProblemEditor(QWidget):
         obj["case"] = self.case.value() - 1
         self._commit(before, obj["id"])
 
+    def _pick_material(self, E0, nu):
+        """A material preset fills in E and ν; Apply makes it part of the problem."""
+        self.domain_fields["E0"].setValue(E0)
+        self.domain_fields["nu"].setValue(nu)
+
     def apply_domain(self):
         """Change domain dimensions and material without moving physical objects."""
         if not self.readonly:
+            from .materials import VOID_RATIO
             before = self._snapshot()
-            self.scenario = replace(self.scenario, **{key: field.value() for key, field in self.domain_fields.items()})
+            values = {key: field.value() for key, field in self.domain_fields.items()}
+            # Void stiffness follows the solid's, so the design does not depend on E's units.
+            self.scenario = replace(self.scenario, **values, Emin=VOID_RATIO * values["E0"])
             self._commit(before)
             self.fit()
 

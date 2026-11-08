@@ -87,3 +87,22 @@ def test_empty_custom_problem_stays_empty_and_domain_edits_do_not_move_objects(e
     editor.apply_domain()
     assert editor.scenario.Lx == 200
     assert editor.objects == [obj]
+
+
+def test_material_presets_fill_real_moduli_and_keep_the_void_relative():
+    from PySide6.QtWidgets import QApplication
+
+    from toporia.apps.gui.editor import ProblemEditor
+    from toporia.apps.gui.geometry import objects_from_scenario
+    from toporia.apps.gui.materials import MATERIALS, VOID_RATIO, matching_material
+    from toporia.plugins.problems import get_run
+    QApplication.instance() or QApplication([])
+    editor = ProblemEditor()
+    scenario = get_run("Cantilever").scenario
+    editor.load(scenario, objects_from_scenario(scenario), False)
+    assert editor.material_preset.currentData() is None                    # E = 1: a custom material
+    editor.material_preset.setCurrentIndex(editor.material_preset.findData("Aluminium alloy"))
+    editor.apply_domain()
+    assert (editor.scenario.E0, editor.scenario.nu) == MATERIALS["Aluminium alloy"][:2]
+    assert editor.scenario.Emin == VOID_RATIO * editor.scenario.E0
+    assert matching_material(70_000.0, 0.33) == "Aluminium alloy"

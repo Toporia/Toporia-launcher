@@ -253,7 +253,7 @@ class ProjectActions:
             return
         from toporia.framework.problem.solver import Solver
         scenario = Scenario(Lx=state["Lx"], Ly=state["Ly"], Lz=state["Lz"] if state["dimension"] == 3 else 0,
-                            E0=state["E0"], nu=state["nu"], volfrac=state["volfrac"],
+                            E0=state["E0"], Emin=1e-9 * state["E0"], nu=state["nu"], volfrac=state["volfrac"],
                             objective={"type": state["objective"]}, regions=[])
         solver = Solver(method=self.blank_setup.method_name(), m=1 / state["element_size"],
                         representation={"type": state["representation"]},

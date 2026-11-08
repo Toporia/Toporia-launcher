@@ -66,7 +66,10 @@ class BlankSetup(QScrollArea):
         domain.addRow(self.mesh)
         self.physics = self._choice(layout, "physics", "4 · Physics and material", "Choose physics…")
         material = self.groups["physics"].layout()
-        self._number(material, "E0", "Young's modulus [N/mm²]", 0, 1e7)
+        from .materials import material_combo
+        self.material_preset = material_combo(self._pick_material)
+        material.addRow("Material", self.material_preset)
+        self._number(material, "E0", "Young's modulus [MPa]", 0, 1e7)
         self._number(material, "nu", "Poisson ratio", -.99, .499)
         self.objective = self._choice(layout, "objective", "5 · Objective and budget", "Choose an objective…")
         self._number(self.groups["objective"].layout(), "volfrac", "Maximum volume fraction [0–1]", 0, 1)
@@ -103,6 +106,11 @@ class BlankSetup(QScrollArea):
         combo.addItem(placeholder, None)
         form.addRow(combo)
         return combo
+
+    def _pick_material(self, E0, nu):
+        """A material preset fills in Young's modulus and Poisson's ratio."""
+        self.fields["E0"].setValue(E0)
+        self.fields["nu"].setValue(nu)
 
     def _number(self, form, key, label, minimum, maximum):
         field = _Number()
