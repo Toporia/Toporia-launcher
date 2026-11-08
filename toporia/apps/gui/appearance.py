@@ -1,16 +1,83 @@
-"""Application-wide Basic and Sleek themes, using inexpensive Qt styling."""
+"""Application-wide styles: the system look, four colour schemes and a custom one, via inexpensive Qt styling."""
 
 from PySide6.QtCore import QSettings, QSize
 from PySide6.QtGui import QAction, QActionGroup, QColor, QIcon, QImage, QPalette, QPixmap
 from PySide6.QtWidgets import QAbstractButton, QApplication, QListWidget
 
-MODES = {"basic": "Basic", "sleek": "Sleek monochrome"}
+#: Appearance modes, in menu order. "basic" is the system look; "custom" is made with the style maker.
+MODES = {"basic": "Basic", "sleek": "Sleek monochrome", "graphite": "Graphite (dark)",
+         "paper": "Paper (light)", "blueprint": "Blueprint", "custom": "Custom (style maker)"}
 
-SLEEK_STYLE = """
-QWidget { background-color: #000000; color: #ffffff; }
+#: Each styled mode as colours; every other chrome colour derives from these.
+SCHEMES = {
+    "sleek": {"background": "#000000", "surface": "#000000", "text": "#ffffff", "accent": "#ffffff"},
+    "graphite": {"background": "#1e2329", "surface": "#262c33", "text": "#e6e9ee", "accent": "#4fa3e0"},
+    "paper": {"background": "#f7f5f0", "surface": "#ffffff", "text": "#1f2328", "accent": "#c0572b"},
+    "blueprint": {"background": "#0f2a4a", "surface": "#123257", "text": "#e8f1ff", "accent": "#ffd166"},
+}
+#: The style maker's starting point.
+CUSTOM_DEFAULT = SCHEMES["graphite"]
+
+
+def _mix(a, b, t):
+    """Colour a moved a fraction t towards colour b, as #rrggbb."""
+    a, b = QColor(a), QColor(b)
+    return QColor(round(a.red() + (b.red() - a.red()) * t), round(a.green() + (b.green() - a.green()) * t),
+                  round(a.blue() + (b.blue() - a.blue()) * t)).name()
+
+
+def is_dark(colour):
+    colour = QColor(colour)
+    return 0.299 * colour.redF() + 0.587 * colour.greenF() + 0.114 * colour.blueF() < 0.5
+
+
+def full_scheme(base):
+    """The four chosen colours plus the ones derived from them: muted, border, hover, checked, …"""
+    bg, surface, text, accent = base["background"], base["surface"], base["text"], base["accent"]
+    return {**base,
+            "muted": _mix(text, bg, 0.35), "border": _mix(text, bg, 0.65), "disabled": _mix(text, bg, 0.55),
+            "hover": _mix(surface, text, 0.08), "checked": _mix(surface, text, 0.16),
+            "selected": _mix(surface, accent, 0.30), "accent_text": "#000000" if not is_dark(accent) else "#ffffff"}
+
+
+def custom_scheme():
+    """The style maker's colours, from the preferences."""
+    import json
+    try:
+        saved = json.loads(preference_store().value("custom_scheme", "") or "{}")
+    except (TypeError, ValueError):
+        saved = {}
+    return {key: saved.get(key, value) if QColor(str(saved.get(key, value))).isValid() else value
+            for key, value in CUSTOM_DEFAULT.items()}
+
+
+def save_custom_scheme(scheme):
+    import json
+    store = preference_store()
+    store.setValue("custom_scheme", json.dumps({key: QColor(scheme[key]).name() for key in CUSTOM_DEFAULT}))
+    store.sync()
+
+
+def scheme_for(mode):
+    """The full colour scheme of a styled mode; None for the system look."""
+    if mode == "custom":
+        return full_scheme(custom_scheme())
+    return full_scheme(SCHEMES[mode]) if mode in SCHEMES else None
+
+
+def current_scheme():
+    app = QApplication.instance()
+    return scheme_for(app.property("appearance")) if app is not None else None
+
+
+STYLE_TEMPLATE = """
+QWidget { background-color: $background; color: $text; }
+QLineEdit, QComboBox, QAbstractSpinBox, QTextEdit, QTextBrowser, QListWidget, QTreeWidget, QTableWidget {
+    background-color: $surface;
+}
 QPushButton, QToolButton, QLineEdit, QComboBox, QAbstractSpinBox,
 QTextEdit, QTextBrowser, QListWidget, QTreeWidget, QGroupBox {
-    border: 1px solid #555555; border-radius: 0px;
+    border: 1px solid $border; border-radius: 0px;
 }
 QPushButton, QToolButton { padding: 6px 10px; min-height: 22px; }
 QGroupBox { margin-top: 10px; padding-top: 8px; }
@@ -22,27 +89,36 @@ QToolButton[helpButton=true] {
     padding: 0px; min-width: 20px; min-height: 20px;
     max-width: 20px; max-height: 20px;
 }
-QPushButton:hover, QToolButton:hover { border-color: #ffffff; background: #161616; }
-QPushButton:checked, QToolButton:checked { border-color: #ffffff; background: #242424; }
-QWidget:disabled { color: #777777; }
-QPushButton:disabled, QToolButton:disabled { border-color: #303030; }
+QPushButton:hover, QToolButton:hover { border-color: $accent; background: $hover; }
+QPushButton:checked, QToolButton:checked { border-color: $accent; background: $checked; }
+QWidget:disabled { color: $disabled; }
+QPushButton:disabled, QToolButton:disabled { border-color: $hover; }
 QLineEdit:focus, QComboBox:focus, QAbstractSpinBox:focus,
-QTextEdit:focus, QListWidget:focus, QTreeWidget:focus { border-color: #ffffff; }
-QMenu::item:selected, QMenuBar::item:selected { background: #242424; }
-QAbstractItemView::item:selected { background: #292929; color: #ffffff; }
-QAbstractItemView::item:hover { background: #171717; }
+QTextEdit:focus, QListWidget:focus, QTreeWidget:focus { border-color: $accent; }
+QMenu::item:selected, QMenuBar::item:selected { background: $checked; }
+QAbstractItemView::item:selected { background: $selected; color: $text; }
+QAbstractItemView::item:hover { background: $hover; }
 QCheckBox::indicator, QRadioButton::indicator {
-    width: 14px; height: 14px; border: 1px solid #bbbbbb; background: #000000;
+    width: 14px; height: 14px; border: 1px solid $muted; background: $surface;
 }
-QCheckBox::indicator:checked, QRadioButton::indicator:checked { background: #ffffff; }
+QCheckBox::indicator:checked, QRadioButton::indicator:checked { background: $accent; }
 QRadioButton::indicator { border-radius: 7px; }
-QCheckBox::indicator:disabled, QRadioButton::indicator:disabled { border-color: #555555; }
-QProgressBar { border: 1px solid #777777; text-align: center; }
-QProgressBar::chunk { background-color: #ffffff; }
-QHeaderView::section { background: #000000; color: #ffffff; border: 1px solid #555555; }
-QSplitter::handle { background: #292929; }
-QToolTip { background: #111111; color: #ffffff; border: 1px solid #aaaaaa; }
+QCheckBox::indicator:disabled, QRadioButton::indicator:disabled { border-color: $border; }
+QProgressBar { border: 1px solid $border; text-align: center; }
+QProgressBar::chunk { background-color: $accent; }
+QHeaderView::section { background: $background; color: $text; border: 1px solid $border; }
+QSplitter::handle { background: $hover; }
+QToolTip { background: $surface; color: $text; border: 1px solid $muted; }
 """
+
+
+def style_sheet(scheme):
+    from string import Template
+    return Template(STYLE_TEMPLATE).substitute(scheme)
+
+
+#: The original monochrome sheet, kept under its old name for anything that imported it.
+SLEEK_STYLE = style_sheet(full_scheme(SCHEMES["sleek"]))
 
 
 def preference_store():
@@ -109,10 +185,9 @@ def refresh_icons(window):
 def colours(widget):
     """Chrome colors only; scientific support/load/result colors stay meaningful."""
     app = QApplication.instance()
-    if app is not None and app.property("appearance") == "sleek":
-        return {"background": QColor("#000000"), "surface": QColor("#000000"),
-                "text": QColor("#ffffff"), "muted": QColor("#b0b0b0"),
-                "border": QColor("#777777"), "accent": QColor("#ffffff")}
+    scheme = current_scheme()
+    if scheme is not None:
+        return {key: QColor(scheme[key]) for key in ("background", "surface", "text", "muted", "border", "accent")}
     palette = app.palette() if app is not None else widget.palette()
     return {"background": palette.color(QPalette.Window), "surface": palette.color(QPalette.Base),
             "text": palette.color(QPalette.Text), "muted": palette.color(QPalette.PlaceholderText),
@@ -127,22 +202,25 @@ def apply_appearance(app, mode, *, persist=False):
     app.setProperty("appearance", mode)
     app.setStyleSheet("")
     palette = QPalette(app._toporia_basic_palette)
-    if mode == "sleek":
-        for role in (QPalette.Window, QPalette.Base, QPalette.AlternateBase, QPalette.Button,
-                     QPalette.ToolTipBase):
-            palette.setColor(role, QColor("#000000"))
+    scheme = scheme_for(mode)
+    if scheme is not None:
+        for role in (QPalette.Window, QPalette.Button, QPalette.ToolTipBase):
+            palette.setColor(role, QColor(scheme["background"]))
+        for role in (QPalette.Base, QPalette.AlternateBase):
+            palette.setColor(role, QColor(scheme["surface"]))
         for role in (QPalette.WindowText, QPalette.Text, QPalette.ButtonText, QPalette.ToolTipText,
                      QPalette.BrightText):
-            palette.setColor(role, QColor("#ffffff"))
-            palette.setColor(QPalette.Disabled, role, QColor("#777777"))
-        palette.setColor(QPalette.Highlight, QColor("#ffffff"))
-        palette.setColor(QPalette.HighlightedText, QColor("#000000"))
-        palette.setColor(QPalette.PlaceholderText, QColor("#999999"))
-        palette.setColor(QPalette.Link, QColor("#ffffff"))
-        palette.setColor(QPalette.LinkVisited, QColor("#bbbbbb"))
+            palette.setColor(role, QColor(scheme["text"]))
+            palette.setColor(QPalette.Disabled, role, QColor(scheme["disabled"]))
+        palette.setColor(QPalette.Highlight, QColor(scheme["accent"]))
+        palette.setColor(QPalette.HighlightedText, QColor(scheme["accent_text"]))
+        palette.setColor(QPalette.PlaceholderText, QColor(scheme["muted"]))
+        palette.setColor(QPalette.Mid, QColor(scheme["border"]))
+        palette.setColor(QPalette.Link, QColor(scheme["accent"]))
+        palette.setColor(QPalette.LinkVisited, QColor(scheme["muted"]))
     app.setPalette(palette)
-    if mode == "sleek":
-        app.setStyleSheet(SLEEK_STYLE)
+    if scheme is not None:
+        app.setStyleSheet(style_sheet(scheme))
     # Font-only local style sheets can retain an inherited dark palette after
     # the application sheet is removed. Reset chrome palettes explicitly.
     for widget in app.allWidgets():
@@ -173,3 +251,18 @@ def add_appearance_menu(window, view_menu):
         action.triggered.connect(lambda _=False, value=mode: window.set_appearance(value))
         menu.addAction(action)
         window.appearance_actions[mode] = action
+    menu.addSeparator()
+    maker = QAction("Style maker…", window)
+    maker.triggered.connect(lambda: open_style_maker(window))
+    menu.addAction(maker)
+    window.style_maker_action = maker
+
+
+def open_style_maker(window):
+    """Pick four colours, see them at once, and keep them as the Custom style."""
+    from .style_maker import StyleMaker
+    dialog = StyleMaker(custom_scheme(), window)
+    if dialog.exec():
+        save_custom_scheme(dialog.scheme)
+        window.set_appearance("custom")
+        window.appearance_actions["custom"].setChecked(True)

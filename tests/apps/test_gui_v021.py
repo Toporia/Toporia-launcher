@@ -376,3 +376,30 @@ def test_one_add_button_offers_every_function_and_asks_where_when_there_is_a_cho
     window.method_view._add_at("filter", "heaviside", second)
     assert window._active_stage == second[1]
     assert len(window.current_config().solver.filter_specs) == before + 1
+
+
+def test_every_style_applies_and_the_style_maker_keeps_a_custom_one(window):
+    from PySide6.QtGui import QColor
+
+    from toporia.apps.gui import appearance
+    from toporia.apps.gui.style_maker import StyleMaker
+    app = QApplication.instance()
+    try:
+        for mode in appearance.MODES:
+            window.set_appearance(mode, persist=False)
+            assert app.property("appearance") == mode
+            if mode != "basic":
+                scheme = appearance.scheme_for(mode)
+                assert appearance.colours(window)["background"] == QColor(scheme["background"])
+                assert scheme["background"] in app.styleSheet()
+        maker = StyleMaker(appearance.custom_scheme())
+        maker.set_colour("accent", "#ff00aa")
+        maker.start.setCurrentIndex(maker.start.findData("paper"))
+        assert maker.scheme["background"] == appearance.SCHEMES["paper"]["background"]
+        maker.set_colour("accent", "#ff00aa")
+        appearance.save_custom_scheme(maker.scheme)
+        window.set_appearance("custom", persist=False)
+        assert appearance.current_scheme()["accent"] == "#ff00aa"
+        assert window.style_maker_action is not None
+    finally:
+        window.set_appearance("basic", persist=False)

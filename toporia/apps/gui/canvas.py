@@ -20,6 +20,8 @@ from PySide6.QtWidgets import QSizePolicy
 
 from toporia.framework.problem.mesh import projection
 
+from .appearance import is_dark
+
 
 class PanZoom:
     """Pan and zoom for a matplotlib canvas whose figure is `self._fig` (2-D axes only)."""
@@ -122,8 +124,11 @@ class LiveCanvas(PanZoom, FigureCanvas):
 
     def _colours(self):
         from PySide6.QtWidgets import QApplication
-        if QApplication.instance().property("appearance") == "sleek":
-            return "#000000", "#ffffff", "#ffffff"
+
+        from .appearance import current_scheme
+        scheme = current_scheme()
+        if scheme is not None:
+            return scheme["background"], scheme["text"], scheme["accent"]
         # Read the Qt window background colour from the widget's own palette.
         # This ensures the canvas blends in regardless of system theme.
         qc  = QApplication.instance().palette().color(QPalette.ColorRole.Window)
@@ -183,9 +188,9 @@ class LiveCanvas(PanZoom, FigureCanvas):
         if self._line is not None:
             self._line.set_color(lc)
         if hasattr(self, "_volume_line"):
-            self._volume_line.set_color("#aaaaaa" if bg == "#000000" else "#777777")
+            self._volume_line.set_color("#aaaaaa" if is_dark(bg) else "#777777")
         if self._im is not None:
-            self._im.set_cmap("gray_r" if bg == "#000000" else "gray")
+            self._im.set_cmap("gray_r" if is_dark(bg) else "gray")
         self.draw_idle()
 
     def show_problem(self, scenario, m, name=""):
@@ -235,7 +240,7 @@ class LiveCanvas(PanZoom, FigureCanvas):
         if self._im is None:
             # First call: create the image object inside the axis.
             # aspect="equal" ensures pixels are square regardless of window size.
-            self._im = self._ax_d.imshow(disp, cmap="gray_r" if self._colours()[0] == "#000000" else "gray", vmin=0, vmax=1,
+            self._im = self._ax_d.imshow(disp, cmap="gray_r" if is_dark(self._colours()[0]) else "gray", vmin=0, vmax=1,
                                           interpolation="nearest", aspect="equal")
         else:
             # Subsequent calls: update the existing image data in place (faster than
@@ -352,7 +357,7 @@ class LiveCanvas(PanZoom, FigureCanvas):
             return
         ny, nx = density.shape
         extent = [0, nx * element_size, 0, ny * element_size]
-        ax.imshow(np.flipud(1.0 - density), cmap="gray_r" if bg == "#000000" else "gray", vmin=0, vmax=1,
+        ax.imshow(np.flipud(1.0 - density), cmap="gray_r" if is_dark(bg) else "gray", vmin=0, vmax=1,
                   interpolation="nearest", extent=extent, aspect="equal")
         if outline and density.min() < 0.5 <= density.max():
             xs = (np.arange(nx) + 0.5) * element_size
