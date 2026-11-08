@@ -3,13 +3,13 @@
 import numpy as np
 import pytest
 
-from toporia.checks import conformance
-from toporia.engine.loop import initialized_method
-from toporia.engine.pipeline import solver_problems
-from toporia.framework.problem.mesh import make_problem
-from toporia.plugins.methods import method_class
-from toporia.plugins.problems import get_run
-from toporia.plugins.representations.neural import NeuralField
+from toporia_core.checks import conformance
+from toporia_core.engine.loop import initialized_method
+from toporia_core.engine.pipeline import solver_problems
+from toporia_core.framework.problem.mesh import make_problem
+from toporia_library.methods import method_class
+from toporia_library.problems import get_run
+from toporia_library.representations.neural import NeuralField
 
 
 def field(depth=2, three_d=False, mesh=0.2):

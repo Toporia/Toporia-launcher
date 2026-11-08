@@ -6,7 +6,7 @@ import numpy as np
 import pytest
 
 from experiments.simulated_annealing import anneal
-from toporia.plugins.updaters import UPDATERS
+from toporia_library.updaters import UPDATERS
 
 
 class _Model:

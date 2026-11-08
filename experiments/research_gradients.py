@@ -27,11 +27,11 @@ from pathlib import Path
 
 import numpy as np
 
-from toporia.engine.loop import initialized_method
-from toporia.framework import Run
-from toporia.framework.parts.composition import ComposedMethod
-from toporia.plugins.problems import _research_batch3 as batch3
-from toporia.plugins.problems import _research_batch4 as batch4
+from toporia_core.engine.loop import initialized_method
+from toporia_core.framework import Run
+from toporia_core.framework.parts.composition import ComposedMethod
+from toporia_library.problems import _research_batch3 as batch3
+from toporia_library.problems import _research_batch4 as batch4
 
 ROOT = Path(__file__).resolve().parents[1]
 EVIDENCE = ROOT / "docs/research/evidence"

@@ -3,8 +3,8 @@
 import ast
 from pathlib import Path
 
-FRAMEWORK = Path(__file__).resolve().parents[2] / "toporia" / "framework"
-FORBIDDEN = ("toporia.engine", "toporia.plugins", "toporia.apps")
+FRAMEWORK = Path(__file__).resolve().parents[2] / "toporia_core" / "framework"
+FORBIDDEN = ("toporia_core.engine", "toporia_library", "toporia.apps")
 
 
 def test_framework_imports_only_itself_and_libraries():

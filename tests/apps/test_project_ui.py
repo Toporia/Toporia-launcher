@@ -7,9 +7,9 @@ import pytest
 os.environ.setdefault("QT_QPA_PLATFORM", "offscreen")
 from PySide6.QtWidgets import QApplication, QMessageBox
 
-from toporia.apps.gui.project import Project
-from toporia.apps.gui.window import MainWindow
-from toporia.plugins.problems import get_run
+from toporia_gui.project import Project
+from toporia_gui.window import MainWindow
+from toporia_library.problems import get_run
 
 
 @pytest.fixture(scope="module")
@@ -140,7 +140,7 @@ def test_filter_reordering_keeps_parameter_references_and_changes_solver_order(w
 def test_real_qt_worker_completes_without_blocking_setup_or_overwriting_runs(window, tmp_path, monkeypatch):
     import time
 
-    from toporia.apps.gui import runner
+    from toporia_gui import runner
     monkeypatch.setattr(QMessageBox, "question", lambda *_: QMessageBox.Discard)
     run = get_run("MBB Beam").updated(m=.3, max_iter=2, save_every=0)
     window._activate_project(Project("Async experiment", run))
@@ -206,7 +206,7 @@ def test_numeric_schedule_edits_refresh_the_graph_without_changing_filters(windo
 
 
 def test_saved_projects_appear_under_recent_and_open_from_home(window, tmp_path, monkeypatch):
-    from toporia.apps.gui.appearance import recent_projects
+    from toporia_gui.appearance import recent_projects
     monkeypatch.setattr(QMessageBox, "question", lambda *_: QMessageBox.Discard)
     window._activate_project(Project("Recent one", get_run("Cantilever")))
     path = tmp_path / "recent" / "project.top"
@@ -237,7 +237,7 @@ def test_renaming_a_saved_project_renames_its_results_and_keeps_other_edits_unsa
 
 
 def test_run_explains_in_a_pop_up_why_the_setup_cannot_run(window, monkeypatch):
-    from toporia.apps.gui import execution
+    from toporia_gui import execution
     monkeypatch.setattr(QMessageBox, "question", lambda *_: QMessageBox.Discard)
     window._activate_project(Project("Refused", get_run("MBB Beam")))
     monkeypatch.setattr(execution, "problems", lambda *a, **k: ["the updater needs a missing package"])
@@ -268,7 +268,7 @@ def test_the_problem_page_imports_and_exports_problems(window, tmp_path, monkeyp
 
 
 def test_the_volume_budget_is_a_constraint_that_can_be_removed_and_comes_back_when_needed(window, monkeypatch):
-    from toporia.apps.gui.preflight import problems
+    from toporia_gui.preflight import problems
     monkeypatch.setattr(QMessageBox, "question", lambda *_: QMessageBox.Discard)
     window._activate_project(Project("Budget", get_run("Cantilever").updated(volfrac=0.35)))
     window.copy_to_custom()

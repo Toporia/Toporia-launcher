@@ -5,8 +5,8 @@ from types import SimpleNamespace
 import numpy as np
 import pytest
 
-from toporia.checks import conformance
-from toporia.plugins.filters.pde_anisotropic import AnisotropicPdeFilter
+from toporia_core.checks import conformance
+from toporia_library.filters.pde_anisotropic import AnisotropicPdeFilter
 
 
 def _filter(shape, **radii):

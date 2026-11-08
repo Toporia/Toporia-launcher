@@ -6,8 +6,8 @@ test_golden.py and regenerate_baselines.py can never diverge.
 
 import numpy as np
 
-from toporia.engine.loop import initialized_method
-from toporia.framework.parts.method import OBJECTIVE
+from toporia_core.engine.loop import initialized_method
+from toporia_core.framework.parts.method import OBJECTIVE
 
 # Everything the golden test compares.  Deliberately small: the density field
 # is the universal output of every method, and the objective plus iteration

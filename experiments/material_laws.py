@@ -9,8 +9,8 @@ import json
 
 import numpy as np
 
-from toporia.engine.loop import initialized_method
-from toporia.plugins.problems import get_run
+from toporia_core.engine.loop import initialized_method
+from toporia_library.problems import get_run
 
 
 def validate(preset, iterations=300, mesh=1., law="sinh"):

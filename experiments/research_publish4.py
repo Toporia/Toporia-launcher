@@ -6,8 +6,8 @@ import json
 import shutil
 from pathlib import Path
 
-from toporia.apps.research_render import description_page
-from toporia.plugins.problems._research_batch4 import CASES, POSTS, description, metadata
+from toporia_gui.research_render import description_page
+from toporia_library.problems._research_batch4 import CASES, POSTS, description, metadata
 
 ROOT = Path(__file__).resolve().parents[1]
 CASE_IDS = [k for k in CASES if not k.startswith("post")] + list(POSTS)

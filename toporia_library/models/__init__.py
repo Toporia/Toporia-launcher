@@ -1,0 +1,39 @@
+"""plugins.models — what is optimised.
+
+A model turns a design into an objective, a material volume, the scenario's
+constraints and the gradients of all of them (see framework.parts.model.Model).  It
+owns the physics, the filters and the sensitivity analysis; it knows nothing
+about how the design is then updated.
+
+There are two ways to write one:
+
+  * assembled from parts (assembled.py): name a physics engine (framework/parts/physics.py)
+    and the filters and responses come for free — every response the engine
+    provides features for, every filter in the pipeline;
+  * by hand, as a whole, when the physics brings its own filters and gradients
+    (pyMOTO's network, which backpropagates).
+
+Every Model subclass in this package with a non-empty `name` is found by the
+MODELS registry.  Modules starting with an underscore are not scanned.
+
+    assembled.py          the generic model: filters + physics engine + responses
+    q4.py                 Toporia's 2-D Q4 solver: compliance, volume, stress
+    q4_mechanism.py        the same with fixed port springs and signed point-output adjoints
+    q4_buckling.py        the same with linearised buckling load factors and sensitivities
+    q4_nonlinear.py       the same with large displacements (Newton–Raphson): end compliance, volume
+    pymoto_elastic.py     linear elasticity on a pyMOTO network: compliance, volume,
+                          stress constraints (optional dependency)
+    h8.py                 Toporia's 3-D H8 solver
+    q4_heat.py, h8_heat.py   steady heat conduction (2-D, 3-D): thermal compliance, volume
+    pymoto_heat.py        heat conduction on a pyMOTO network (optional dependency)
+    q4_dynamic.py         the same with a mass matrix: eigenfrequency, harmonic response
+    pymoto_elastic.py     linear elasticity on a pyMOTO network: compliance, volume,
+                          stress constraints (optional dependency)
+    pymoto_dynamic.py     natural frequencies on a pyMOTO network (optional dependency)
+"""
+
+
+# The registry lives in the core; this package is one of its sources (pyproject entry points).
+from toporia_core.framework.registries import MODELS  # noqa: E402
+
+__all__ = ["MODELS"]

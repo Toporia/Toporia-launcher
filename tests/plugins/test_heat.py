@@ -12,17 +12,17 @@ from dataclasses import replace
 import numpy as np
 import pytest
 
-from toporia.checks import conformance
-from toporia.engine.loop import initialized_method
-from toporia.framework import EdgeConstraint, LoadCase, PointLoad, Scenario, Solver
-from toporia.framework.params import resolve_params
-from toporia.framework.problem.mesh import make_problem
-from toporia.plugins.models.h8_heat import H8HeatModel
-from toporia.plugins.models.q4_heat import Q4HeatModel
-from toporia.plugins.physics.h8_heat import H8Heat
-from toporia.plugins.physics.q4_heat import Q4Heat, element_conductivity
-from toporia.plugins.problems import get_run
-from toporia.plugins.responses.thermal_compliance import ThermalCompliance
+from toporia_core.checks import conformance
+from toporia_core.engine.loop import initialized_method
+from toporia_core.framework import EdgeConstraint, LoadCase, PointLoad, Scenario, Solver
+from toporia_core.framework.params import resolve_params
+from toporia_core.framework.problem.mesh import make_problem
+from toporia_library.models.h8_heat import H8HeatModel
+from toporia_library.models.q4_heat import Q4HeatModel
+from toporia_library.physics.h8_heat import H8Heat
+from toporia_library.physics.q4_heat import Q4Heat, element_conductivity
+from toporia_library.problems import get_run
+from toporia_library.responses.thermal_compliance import ThermalCompliance
 
 SOURCE = 0.5
 
@@ -118,7 +118,7 @@ def test_the_response_is_offered_only_where_the_physics_provides_it():
     assert "thermal_compliance" in Q4HeatModel.capabilities.objectives
     assert "thermal_compliance" in H8HeatModel.capabilities.objectives
     assert "compliance" not in Q4HeatModel.capabilities.objectives
-    from toporia.plugins.models.q4 import Q4Model
+    from toporia_library.models.q4 import Q4Model
     assert "thermal_compliance" not in Q4Model.capabilities.objectives
 
 
@@ -134,7 +134,7 @@ def _model(cls, run, settings=None):
 @pytest.mark.skipif(importlib.util.find_spec("pymoto") is None, reason="optional dependency: pip install pymoto")
 def test_pymoto_gives_the_same_thermal_compliance():
     """A different code (pyMOTO's AssemblePoisson, its own load vector and sensitivities) on one design."""
-    from toporia.plugins.models.pymoto_heat import PymotoHeatModel
+    from toporia_library.models.pymoto_heat import PymotoHeatModel
     base = get_run("Heat Sink")
     scenario = replace(base.scenario, point_loads=[PointLoad(90.0, 90.0)],
                        load_cases=[LoadCase(Fmag=0.7, weight=0.6), LoadCase(Fmag=0.2, weight=0.4)])

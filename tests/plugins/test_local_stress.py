@@ -11,12 +11,12 @@ does not have.
 import numpy as np
 import pytest
 
-from toporia.engine.loop import initialized_method, run_single_with_store
-from toporia.framework.params import resolve_params
-from toporia.framework.problem.mesh import make_problem
-from toporia.plugins.models.q4 import Q4Model
-from toporia.plugins.problems import get_run
-from toporia.plugins.responses.local_stress import LocalStress
+from toporia_core.engine.loop import initialized_method, run_single_with_store
+from toporia_core.framework.params import resolve_params
+from toporia_core.framework.problem.mesh import make_problem
+from toporia_library.models.q4 import Q4Model
+from toporia_library.problems import get_run
+from toporia_library.responses.local_stress import LocalStress
 
 
 def _response(problem="MBB Beam", m=0.3, **values):
@@ -107,7 +107,7 @@ def test_l_bracket_meets_the_limit_and_rounds_the_corner(capsys, tmp_path):
 
 
 def test_local_stress_is_refused_with_an_updater_that_would_misread_its_penalty():
-    from toporia.framework.problem.run import apply_param
+    from toporia_core.framework.problem.run import apply_param
     run = apply_param(apply_param(get_run("L-bracket (local stress)"), "method", "q4+mma"), "method_params", {})
     with pytest.raises(ValueError, match=r"cannot enforce \['local_stress'\].*q4\+augmented_lagrangian"):
         initialized_method(run)

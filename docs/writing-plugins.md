@@ -38,7 +38,7 @@ sees the updater. A run names its method as `"<model>+<updater>"`, e.g. `"q4+mma
 new updater is immediately usable with every model, and a new response or filter with
 every updater.
 
-Import everything from **`toporia.api`** — it is the stable surface; the internal modules
+Import everything from **`toporia_core.api`** — it is the stable surface; the internal modules
 may move.
 
 ## Five steps
@@ -88,7 +88,7 @@ bisection. A projected-gradient update with a bisection on the volume multiplier
 # example: updater
 import numpy as np
 
-from toporia.api import Param, Updater
+from toporia_core.api import Param, Updater
 
 
 class ProjectedGradient(Updater):
@@ -149,7 +149,7 @@ done. Subclass `ExternalOptimizer` and write one method, `run(flat, x0, iterate)
 Toporia runs your `run` in a background thread and takes one design per `iterate`, so the
 live display, the stopping rule and the Stop button work as for any other updater, and
 the library's verdict is written to `run.json`. The complete SciPy SLSQP adapter,
-[`plugins/updaters/scipy_slsqp.py`](../toporia/plugins/updaters/scipy_slsqp.py), is the
+[`plugins/updaters/scipy_slsqp.py`](../toporia_library/updaters/scipy_slsqp.py), is the
 template:
 
 ```python
@@ -157,7 +157,7 @@ template:
 import numpy as np
 from scipy.optimize import Bounds, minimize
 
-from toporia.api import ExternalOptimizer, Param, Verdict
+from toporia_core.api import ExternalOptimizer, Param, Verdict
 
 
 class TrustConstr(ExternalOptimizer):
@@ -221,7 +221,7 @@ average, normalised at the edges:
 import numpy as np
 from scipy.ndimage import uniform_filter
 
-from toporia.api import Filter
+from toporia_core.api import Filter
 
 
 class BoxAverage(Filter):
@@ -258,7 +258,7 @@ had a name — is the baseline every penalised law is measured against:
 
 ```python
 # example: interpolation
-from toporia.api import Interpolation
+from toporia_core.api import Interpolation
 
 
 class Linear(Interpolation):
@@ -293,7 +293,7 @@ The symmetry filter gets the same designs, but it keeps all the variables.
 # example: representation
 import numpy as np
 
-from toporia.api import Representation
+from toporia_core.api import Representation
 
 
 class Mirror(Representation):
@@ -353,7 +353,7 @@ The example is a ramp that starts and ends gently, a smooth alternative to equal
 # example: schedule
 import math
 
-from toporia.api import Param, Schedule
+from toporia_core.api import Param, Schedule
 
 
 class CosineRamp(Schedule):
@@ -389,7 +389,7 @@ finishes and then stays put, and a short run.
 are a solver setting:
 `{"path": "filters[1].eta", "values": [0.75, 0.5, 0.25], "combine": "worst"}`
 evaluates every design eroded, intermediate and dilated, and minimises the worst. See
-[`framework/parts/variants.py`](../toporia/framework/parts/variants.py).
+[`framework/parts/variants.py`](../toporia_core/framework/parts/variants.py).
 
 ## A post-processor
 
@@ -409,7 +409,7 @@ black-and-white design, a common measure of how intricate a design is:
 # example: postprocessor
 import numpy as np
 
-from toporia.api import PostProcessor
+from toporia_core.api import PostProcessor
 
 
 class Perimeter(PostProcessor):
@@ -443,7 +443,7 @@ grey material:
 # example: response
 import numpy as np
 
-from toporia.api import CONSTRAINT_ROLE, Param, Response, ResponseValue
+from toporia_core.api import CONSTRAINT_ROLE, Param, Response, ResponseValue
 
 
 class GreyLevel(Response):
@@ -485,7 +485,7 @@ one engine method to another — so no response depends on your degree-of-freedo
 numbering. Turn the engine into a model with one declaration:
 
 ```python
-from toporia.api import AssembledModel
+from toporia_core.api import AssembledModel
 from my_package.fe import MyEngine
 
 
@@ -495,11 +495,11 @@ class MyModel(AssembledModel):
 ```
 
 The filters, the responses and every updater then work with it.
-[`plugins/physics/q4_plane_stress.py`](../toporia/plugins/physics/q4_plane_stress.py) is the
-reference engine in 2-D, [`plugins/physics/h8_solid.py`](../toporia/plugins/physics/h8_solid.py)
+[`plugins/physics/q4_plane_stress.py`](../toporia_library/physics/q4_plane_stress.py) is the
+reference engine in 2-D, [`plugins/physics/h8_solid.py`](../toporia_library/physics/h8_solid.py)
 in 3-D. A physics that brings its own gradients (a pyMOTO network, an AD
 framework) can instead be a whole `Model` — see
-[`plugins/models/pymoto_elastic.py`](../toporia/plugins/models/pymoto_elastic.py).
+[`plugins/models/pymoto_elastic.py`](../toporia_library/models/pymoto_elastic.py).
 
 ## 2-D, 3-D, or both
 
@@ -541,7 +541,7 @@ use_when = "For cast or moulded parts: no undercuts along the draw direction, so
 
 The help window shows it as "When to use it". Below it, "Works with" is written for you
 from the declarations above (dimensions, objectives and constraints, `needs_element_densities`,
-`accepts_filters` and so on; see [`plugins/compatibility.py`](../toporia/plugins/compatibility.py)),
+`accepts_filters` and so on; see [`plugins/compatibility.py`](../toporia_library/compatibility.py)),
 so keep those honest and the help stays right. "Try it in these presets" lists the presets
 whose description names your plugin; add a preset that exercises it, since
 `tests/plugins/test_compatibility.py` requires one for every plugin.
@@ -575,11 +575,11 @@ must be usable as a virtual load in `adjoint`. Together with `STRESS`'s existing
 `mutual_energy`, this supports output-displacement gradients without a response
 indexing backend DOFs. See `plugins/physics/q4_mechanism.py` and
 `plugins/responses/output_displacement.py`. Both feature/interface names are
-exported through `toporia.api`.
+exported through `toporia_core.api`.
 
 ## Packaging, outside this repository
 
-Put the plugin in your own package, import only from `toporia.api`, and declare it in your
+Put the plugin in your own package, import only from `toporia_core.api`, and declare it in your
 `pyproject.toml`:
 
 ```toml

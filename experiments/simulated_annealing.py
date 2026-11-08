@@ -88,9 +88,9 @@ def anneal(model, budget=200, seed=0, step=0.2, temperature=0.05, final_temperat
 
 
 def main():
-    from toporia.checks.common import iterate
-    from toporia.engine.loop import initialized_method
-    from toporia.plugins.problems import get_run
+    from toporia_core.checks.common import iterate
+    from toporia_core.engine.loop import initialized_method
+    from toporia_library.problems import get_run
 
     parser = argparse.ArgumentParser(description=__doc__)
     parser.add_argument("--budgets", nargs="+", type=int, default=[200, 2000])

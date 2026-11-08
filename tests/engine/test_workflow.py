@@ -6,11 +6,11 @@ from dataclasses import replace
 import numpy as np
 import pytest
 
-from toporia.engine.workflow import combine, execute_workflow, restrict_problem
-from toporia.framework.problem.run import Run
-from toporia.framework.problem.scenario import Scenario
-from toporia.framework.problem.solver import Solver
-from toporia.framework.problem.workflow import optimization, stage_settings, validate_workflow
+from toporia_core.engine.workflow import combine, execute_workflow, restrict_problem
+from toporia_core.framework.problem.run import Run
+from toporia_core.framework.problem.scenario import Scenario
+from toporia_core.framework.problem.solver import Solver
+from toporia_core.framework.problem.workflow import optimization, stage_settings, validate_workflow
 
 
 def basic_run():

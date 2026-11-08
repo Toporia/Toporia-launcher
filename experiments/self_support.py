@@ -12,8 +12,8 @@ import json
 
 import numpy as np
 
-from toporia.engine.loop import initialized_method, make_schedules
-from toporia.plugins.problems import get_run
+from toporia_core.engine.loop import initialized_method, make_schedules
+from toporia_library.problems import get_run
 
 
 def binary_diagnostic(density, model, threshold):

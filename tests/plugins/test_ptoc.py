@@ -6,9 +6,9 @@ from pathlib import Path
 import numpy as np
 import pytest
 
-from toporia.engine.loop import initialized_method, run_single_with_store
-from toporia.plugins.problems import get_run
-from toporia.plugins.updaters.ptoc import ptoc_kernel
+from toporia_core.engine.loop import initialized_method, run_single_with_store
+from toporia_library.problems import get_run
+from toporia_library.updaters.ptoc import ptoc_kernel
 
 REFERENCE = Path(__file__).resolve().parents[1] / "references/paper_ptoc.json"
 

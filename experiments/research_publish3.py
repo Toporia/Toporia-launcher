@@ -11,8 +11,8 @@ import shutil
 from pathlib import Path
 
 from experiments.research_batch3 import NEXT_CHECKS
-from toporia.apps.research_render import description_page
-from toporia.plugins.problems._research_batch3 import CASES, description, metadata
+from toporia_gui.research_render import description_page
+from toporia_library.problems._research_batch3 import CASES, description, metadata
 
 ROOT = Path(__file__).resolve().parents[1]
 FILES = ("figure.png", "initial-density.csv", "final-density.csv", "final-variables.csv", "history.csv",

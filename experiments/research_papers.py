@@ -23,10 +23,10 @@ matplotlib.use("Agg")
 import matplotlib.pyplot as plt  # noqa: E402
 import numpy as np  # noqa: E402
 
-from toporia.engine.loop import run_single_with_store  # noqa: E402
-from toporia.framework import Run  # noqa: E402
-from toporia.plugins.problems import paper_machining_cantilever as machining  # noqa: E402
-from toporia.plugins.problems import paper_top99neo_mbb as top99neo  # noqa: E402
+from toporia_core.engine.loop import run_single_with_store  # noqa: E402
+from toporia_core.framework import Run  # noqa: E402
+from toporia_library.problems import paper_machining_cantilever as machining  # noqa: E402
+from toporia_library.problems import paper_top99neo_mbb as top99neo  # noqa: E402
 
 ROOT = Path(__file__).resolve().parents[1]
 EVIDENCE = ROOT / "docs/research/evidence/papers"

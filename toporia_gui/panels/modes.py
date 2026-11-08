@@ -1,0 +1,545 @@
+# apps/gui/panels/modes.py — the settings of each analysis mode.
+#
+# One group per entry in the Mode menu (sweep, compare, sensitivity, ...);
+# the window shows only the selected mode's group.  Every parameter dropdown
+# lists the setup's parameter paths (plugins/catalog.py), so anything numeric
+# can be swept, compared or perturbed.
+#
+# Every group offers the same small interface to the window:
+#   refresh(items)   refill its parameter dropdowns from (label, path) pairs
+#   key(), row_key(), sens_key(), ...   the parameter path currently selected
+
+
+from PySide6.QtCore import Qt
+from PySide6.QtWidgets import (
+    QComboBox,
+    QFormLayout,
+    QGroupBox,
+    QHBoxLayout,
+    QLabel,
+    QListWidget,
+    QListWidgetItem,
+    QVBoxLayout,
+)
+
+from ..help import HelpButton, plugin_topic, text_topic, with_help
+from .common import (
+    double_box,
+    fill_combo,
+    fill_sens_sweep_combo,
+    int_box,
+    section_label,
+)
+from .loads import LoadCasesGroup
+
+#: Where the study tools come from, for every row's "?".
+STUDY_SOURCE = ("Toporia's own study tools: whole optimisations repeated at different settings, and "
+                "finite-difference sensitivities of the final design to a setting.")
+
+_PARAMETER = ("Which setting is varied. Every numeric setting of the current setup is offered, by its "
+              "path, e.g. volfrac or filters[0].rmin.")
+_RANGE = "The first and last value; the values in between are evenly spaced."
+_GRID = "How many designs: rows x cols evenly spaced values, optimised one by one and shown as a grid."
+_COUNT = "How many values along this direction of the grid."
+_BASE = "The setting's value for the reference design."
+_GAP = ("How far the second design's value lies from the base. Each element's change in density, "
+        "divided by this gap, is the finite-difference sensitivity shown.")
+
+#: What each row label means, for its "?".
+FIELD_HELP = {
+    "Parameter": _PARAMETER, "Sens. parameter": _PARAMETER, "Sweep parameter": _PARAMETER,
+    "Row param": _PARAMETER, "Col param": _PARAMETER, "Row parameter": _PARAMETER, "Col parameter": _PARAMETER,
+    "Value A": "The setting's value for the first design.",
+    "Value B": "The setting's value for the second design, optimised and shown beside the first.",
+    "Min": _RANGE, "Max": _RANGE, "Row min": _RANGE, "Row max": _RANGE, "Col min": _RANGE, "Col max": _RANGE,
+    "Rows": _GRID, "Cols": _GRID, "N rows": _COUNT, "N cols": _COUNT,
+    "Base value": _BASE, "Gap (Δ)": _GAP,
+    "Values": "How many evenly spaced values of the setting: one column of the grid each.",
+}
+
+
+def _add_row(form, label, widget):
+    """A form row with a "?" that explains it."""
+    form.addRow(label, with_help(widget, lambda: text_topic(label, FIELD_HELP.get(label, ""), STUDY_SOURCE)))
+
+
+class CompareLoadCasesParamsGroup(QGroupBox):
+    """Two independent load-case sets for a head-to-head structural comparison.
+
+    Both sets share all Core Parameters (volfrac, mesh, material, …).
+    Each set has its own Fmag / Angle / Weight rows and its own +Add button,
+    exactly like the main Load Cases group.
+
+    The global Load Cases panel is hidden while this mode is active so the
+    screen is uncluttered.
+    """
+
+    def __init__(self, parent=None):
+        super().__init__("Compare Load Cases", parent)
+        v = QVBoxLayout(self)
+        v.setSpacing(6)
+
+        self.lc_a = LoadCasesGroup()
+        self.lc_a.setTitle("Load Cases — Design A")
+        v.addWidget(self.lc_a)
+
+        self.lc_b = LoadCasesGroup()
+        self.lc_b.setTitle("Load Cases — Design B")
+        v.addWidget(self.lc_b)
+
+    def get_load_cases_a(self):
+        """Design A's load cases."""
+        return self.lc_a.get_load_cases()
+
+    def get_load_cases_b(self):
+        """Design B's load cases."""
+        return self.lc_b.get_load_cases()
+
+
+class SensitivityParamsGroup(QGroupBox):
+    """Settings for a sensitivity field analysis (visible only in Sensitivity mode).
+
+    Runs two optimisations at `base_value` and `base_value + gap`, then shows
+    the per-element finite-difference sensitivity as a blue–white–red overlay.
+    """
+
+    def __init__(self, parent=None):
+        super().__init__("Sensitivity Parameters", parent)
+        f = QFormLayout(self)
+        self.param = QComboBox()
+        self.base_value = double_box(0.30, -1e6, 1e6, dec=4, step=0.05)
+        self.gap = double_box(0.05, 1e-6, 1e6, dec=4, step=0.01)
+        for lbl, w in [("Parameter", self.param), ("Base value", self.base_value), ("Gap (Δ)", self.gap)]:
+            _add_row(f, lbl, w)
+
+    def refresh(self, items):
+        """Rebuild the parameter menu from (label, path) items."""
+        fill_combo(self.param, items, prefer="volfrac")
+
+    def key(self):
+        """The parameter path chosen."""
+        return self.param.currentData() or self.param.currentText()
+
+
+class CompareTwoParamsGroup(QGroupBox):
+    """Settings for a two-run comparison (visible only in Compare Two mode).
+
+    The user picks one parameter to vary, sets two values (A and B), and
+    optionally adjusts the density threshold used to classify solid vs void.
+    """
+
+    def __init__(self, parent=None):
+        super().__init__("Compare Two Parameters", parent)
+        f = QFormLayout(self)
+        self.param = QComboBox()
+        self.value_a = double_box(0.20, -1e6, 1e6, dec=4, step=0.05)
+        self.value_b = double_box(0.40, -1e6, 1e6, dec=4, step=0.05)
+        for lbl, w in [("Parameter", self.param), ("Value A", self.value_a), ("Value B", self.value_b)]:
+            _add_row(f, lbl, w)
+
+    def refresh(self, items):
+        """Rebuild the parameter menu from (label, path) items."""
+        fill_combo(self.param, items, prefer="volfrac")
+
+    def key(self):
+        """The parameter path chosen."""
+        return self.param.currentData() or self.param.currentText()
+
+
+class SweepParamsGroup(QGroupBox):
+    """Settings for a 1-D parameter sweep (visible only in Sweep mode)."""
+
+    def __init__(self, parent=None):
+        super().__init__("Sweep Parameters", parent)
+        f = QFormLayout(self)
+        self.param = QComboBox()
+        self.min_val = double_box(0.08, -1e6, 1e6, dec=4, step=0.05)
+        self.max_val = double_box(0.60, -1e6, 1e6, dec=4, step=0.05)
+        self.n_rows = int_box(3, 1, 20)
+        self.n_cols = int_box(3, 1, 20)
+        for lbl, w in [
+            ("Parameter", self.param),
+            ("Min", self.min_val),
+            ("Max", self.max_val),
+            ("Rows", self.n_rows),
+            ("Cols", self.n_cols),
+        ]:
+            _add_row(f, lbl, w)
+
+    def refresh(self, items):
+        """Rebuild the parameter menu from (label, path) items."""
+        fill_combo(self.param, items, prefer="volfrac")
+
+    def key(self):
+        """The parameter path chosen."""
+        return self.param.currentData() or self.param.currentText()
+
+
+class Sweep2DParamsGroup(QGroupBox):
+    """Settings for a 2-D parameter sweep (visible only in Sweep 2D mode)."""
+
+    def __init__(self, parent=None):
+        super().__init__("2D Sweep Parameters", parent)
+        f = QFormLayout(self)
+        self.row_param = QComboBox()
+        self.row_min = double_box(0.10, -1e6, 1e6, dec=4, step=0.05)
+        self.row_max = double_box(0.40, -1e6, 1e6, dec=4, step=0.05)
+        self.n_rows = int_box(2, 1, 20)
+        self.col_param = QComboBox()
+        self.col_min = double_box(0.40, -1e6, 1e6, dec=4, step=0.05)
+        self.col_max = double_box(0.75, -1e6, 1e6, dec=4, step=0.05)
+        self.n_cols = int_box(2, 1, 20)
+        for lbl, w in [
+            ("Row param", self.row_param),
+            ("Row min", self.row_min),
+            ("Row max", self.row_max),
+            ("N rows", self.n_rows),
+            ("Col param", self.col_param),
+            ("Col min", self.col_min),
+            ("Col max", self.col_max),
+            ("N cols", self.n_cols),
+        ]:
+            _add_row(f, lbl, w)
+
+    def refresh(self, items):
+        """Rebuild both parameter menus from (label, path) items."""
+        fill_combo(self.row_param, items, prefer="volfrac")
+        fill_combo(self.col_param, items, prefer="m")
+
+    def row_key(self):
+        """The parameter path varied down the rows."""
+        return self.row_param.currentData() or self.row_param.currentText()
+
+    def col_key(self):
+        """The parameter path varied across the columns."""
+        return self.col_param.currentData() or self.col_param.currentText()
+
+
+class SensitivitySweepParamsGroup(QGroupBox):
+    """Combined settings for a 1-D sensitivity sweep.
+
+    Shows both the sensitivity config (which param, base value, gap) and
+    the sweep config (which param to vary, range, grid size).  The sweep
+    parameter dropdown includes the sensitivity-specific options
+    'Sensitivity base value' and 'Sensitivity gap' in addition to all
+    regular config fields.
+    """
+
+    def __init__(self, parent=None):
+        super().__init__("Sensitivity Sweep", parent)
+        f = QFormLayout(self)
+
+        f.addRow(section_label("Sensitivity"))
+        self.sens_param = QComboBox()
+        self.base_value = double_box(0.30, -1e6, 1e6, dec=4, step=0.05)
+        self.gap = double_box(0.05, 1e-6, 1e6, dec=4, step=0.01)
+        for lbl, w in [
+            ("Sens. parameter", self.sens_param),
+            ("Base value", self.base_value),
+            ("Gap (Δ)", self.gap),
+        ]:
+            _add_row(f, lbl, w)
+
+        f.addRow(section_label("Sweep"))
+        self.sweep_param = QComboBox()
+        self.min_val = double_box(0.15, -1e6, 1e6, dec=4, step=0.05)
+        self.max_val = double_box(0.45, -1e6, 1e6, dec=4, step=0.05)
+        self.n_rows = int_box(2, 1, 20)
+        self.n_cols = int_box(3, 1, 20)
+        for lbl, w in [
+            ("Sweep parameter", self.sweep_param),
+            ("Min", self.min_val),
+            ("Max", self.max_val),
+            ("Rows", self.n_rows),
+            ("Cols", self.n_cols),
+        ]:
+            _add_row(f, lbl, w)
+
+    def refresh(self, items):
+        """Rebuild both parameter menus from (label, path) items."""
+        fill_combo(self.sens_param, items, prefer="volfrac")
+        fill_sens_sweep_combo(self.sweep_param, items, prefer="sens.base_value")
+
+    def sens_key(self):
+        """The parameter whose sensitivity is measured."""
+        return self.sens_param.currentData() or self.sens_param.currentText()
+
+    def sweep_key(self):
+        """The parameter swept."""
+        return self.sweep_param.currentData() or self.sweep_param.currentText()
+
+
+class SensitivitySweep2DParamsGroup(QGroupBox):
+    """Combined settings for a 2-D sensitivity sweep.
+
+    Sensitivity config section is shared; row and column sweep sections each
+    have their own parameter dropdown (both include the sensitivity specials).
+    """
+
+    def __init__(self, parent=None):
+        super().__init__("Sensitivity Sweep 2D", parent)
+        f = QFormLayout(self)
+
+        f.addRow(section_label("Sensitivity"))
+        self.sens_param = QComboBox()
+        self.base_value = double_box(0.30, -1e6, 1e6, dec=4, step=0.05)
+        self.gap = double_box(0.05, 1e-6, 1e6, dec=4, step=0.01)
+        for lbl, w in [
+            ("Sens. parameter", self.sens_param),
+            ("Base value", self.base_value),
+            ("Gap (Δ)", self.gap),
+        ]:
+            _add_row(f, lbl, w)
+
+        f.addRow(section_label("Row sweep"))
+        self.row_param = QComboBox()
+        self.row_min = double_box(0.15, -1e6, 1e6, dec=4, step=0.05)
+        self.row_max = double_box(0.45, -1e6, 1e6, dec=4, step=0.05)
+        self.n_rows = int_box(2, 1, 20)
+        for lbl, w in [
+            ("Row parameter", self.row_param),
+            ("Row min", self.row_min),
+            ("Row max", self.row_max),
+            ("N rows", self.n_rows),
+        ]:
+            _add_row(f, lbl, w)
+
+        f.addRow(section_label("Col sweep"))
+        self.col_param = QComboBox()
+        self.col_min = double_box(0.02, -1e6, 1e6, dec=4, step=0.01)
+        self.col_max = double_box(0.10, -1e6, 1e6, dec=4, step=0.01)
+        self.n_cols = int_box(2, 1, 20)
+        for lbl, w in [
+            ("Col parameter", self.col_param),
+            ("Col min", self.col_min),
+            ("Col max", self.col_max),
+            ("N cols", self.n_cols),
+        ]:
+            _add_row(f, lbl, w)
+
+    def refresh(self, items):
+        """Rebuild the three parameter menus from (label, path) items."""
+        fill_combo(self.sens_param, items, prefer="volfrac")
+        fill_sens_sweep_combo(self.row_param, items, prefer="sens.base_value")
+        fill_sens_sweep_combo(self.col_param, items, prefer="sens.gap")
+
+    def sens_key(self):
+        """The parameter whose sensitivity is measured."""
+        return self.sens_param.currentData() or self.sens_param.currentText()
+
+    def row_sweep_key(self):
+        """The parameter swept down the rows."""
+        return self.row_param.currentData() or self.row_param.currentText()
+
+    def col_sweep_key(self):
+        """The parameter swept across the columns."""
+        return self.col_param.currentData() or self.col_param.currentText()
+
+
+class CompareMethodsParamsGroup(QGroupBox):
+    """Which methods to compare on the current problem (visible only in Compare Methods mode).
+
+    The physics is chosen once, above the list; the list then holds that physics'
+    updaters and the whole methods, instead of every updater again for every
+    physics. Changing the physics keeps the same updaters ticked where they fit.
+    Context checks disable incompatible entries and
+    choose defaults for the current model and objective. Each ticked
+    method runs on the same scenario, mesh, filters and stopping rule; the
+    results are one image of the designs and one table, also in the log.
+    """
+
+    #: Ticked when the panel is first shown.
+    DEFAULT = ("q4+oc", "q4+mma", "q4+simpl", "q4+beso")
+
+    def __init__(self, parent=None):
+        super().__init__("Compare Methods", parent)
+        from toporia_core.framework.registry import missing_dependencies
+        from toporia_library.methods import method_classes
+
+        layout = QVBoxLayout(self)
+        hint = QLabel(
+            "Ticked methods run on this problem with the same mesh, filters and "
+            "stopping rule. A method that cannot solve it is listed with the reason."
+        )
+        hint.setWordWrap(True)
+        layout.addWidget(hint)
+        from toporia_library.models import MODELS
+        physics_row = QHBoxLayout()
+        physics_row.addWidget(QLabel("Physics"))
+        self.physics = QComboBox()
+        for model_cls in MODELS.classes():
+            self.physics.addItem(model_cls.label, model_cls.name)
+        self.physics.setToolTip("Every updater below runs on this physics; whole methods bring their own.")
+        physics_row.addWidget(self.physics, 1)
+        layout.addLayout(physics_row)
+        self.methods = QListWidget()
+        self._missing_dependencies = {}
+        for cls in method_classes():
+            model, updater = getattr(cls, "model", None), getattr(cls, "updater", None)
+            text = updater.label if model else f"{cls.label}  (whole method)"
+            item = QListWidgetItem(text)
+            item.setData(Qt.UserRole, cls.name)
+            item.setToolTip(f"{cls.label}   [{cls.name}]")
+            missing = missing_dependencies(cls)
+            self._missing_dependencies[cls.name] = missing
+            if missing:
+                item.setFlags(item.flags() & ~Qt.ItemIsEnabled)
+                item.setToolTip(f"{cls.label}: needs {', '.join(missing)}, which is not installed")
+            item.setFlags(item.flags() | Qt.ItemIsUserCheckable)
+            item.setCheckState(Qt.Checked if cls.name in self.DEFAULT and not missing else Qt.Unchecked)
+            self.methods.addItem(item)
+        self.methods.setMinimumHeight(180)
+        self.physics.currentIndexChanged.connect(lambda *_: self._physics_changed())
+        self._shown_physics = None
+        self._show_physics()
+        self._context = None
+        self._context_signature = None
+        self._context_problems = None
+        self._hint = hint
+        layout.addWidget(self.methods)
+        explain = QHBoxLayout()
+        explain.addWidget(QLabel("About the highlighted method:"))
+        explain.addWidget(HelpButton(self.highlighted_topic))
+        explain.addStretch(1)
+        layout.addLayout(explain)
+
+    def highlighted_topic(self):
+        """Help on the method highlighted in the list (the first, when none is)."""
+        from toporia_library.methods import method_class
+
+        item = self.methods.currentItem() or self.methods.item(0)
+        return plugin_topic(method_class(item.data(Qt.UserRole)), "method")
+
+    @staticmethod
+    def _model_of(name):
+        """The physics a method name pairs with, or None for a whole method."""
+        return name.split("+", 1)[0] if "+" in name else None
+
+    def _show_physics(self):
+        """Show the chosen physics' pairings and the whole methods; hide every other pairing."""
+        chosen = self.physics.currentData()
+        for i in range(self.methods.count()):
+            item = self.methods.item(i)
+            model = self._model_of(item.data(Qt.UserRole))
+            item.setHidden(model is not None and model != chosen)
+        self._shown_physics = chosen
+
+    def _physics_changed(self):
+        """Keep the same updaters (and whole methods) ticked on the new physics, where they fit."""
+        before, ticked = self._shown_physics, self.selected()
+        self._show_physics()
+        chosen = self.physics.currentData()
+        moved = [f"{chosen}+{name.split('+', 1)[1]}" if self._model_of(name) == before else name for name in ticked]
+        self.set_selected(moved)
+
+    def selected(self):
+        """The ticked methods' names, in list order (only those shown: the chosen physics, whole methods)."""
+        return [
+            self.methods.item(i).data(Qt.UserRole)
+            for i in range(self.methods.count())
+            if self.methods.item(i).checkState() == Qt.Checked and self.methods.item(i).flags() & Qt.ItemIsEnabled
+            and not self.methods.item(i).isHidden()
+        ]
+
+    def set_selected(self, names):
+        """Tick exactly these methods; the physics follows the first paired one."""
+        model = next((self._model_of(n) for n in names if self._model_of(n)), None)
+        if model is not None and model != self.physics.currentData() and self.physics.findData(model) >= 0:
+            blocked = self.physics.blockSignals(True)
+            self.physics.setCurrentIndex(self.physics.findData(model))
+            self.physics.blockSignals(blocked)
+            self._show_physics()
+        for i in range(self.methods.count()):
+            item = self.methods.item(i)
+            item.setCheckState(Qt.Checked if item.data(Qt.UserRole) in names and item.flags() & Qt.ItemIsEnabled
+                               else Qt.Unchecked)
+
+    def set_context(self, run, reset=False, problems=None):
+        """Keep the full catalogue visible, with valid choices for this setup."""
+        signature = repr((run.scenario, run.solver, run.output.postprocess))
+        if signature == self._context_signature and not reset:
+            return self._context_problems
+        from toporia_core.engine.modes.methods import comparison_problems
+        from toporia_library.methods import method_class
+
+        current = method_class(run.solver.method)
+        model = getattr(current, "model", None)
+        model_name = model.name if model else None
+        reasons = problems
+        if reasons is None:
+            reasons = {}
+            for i in range(self.methods.count()):
+                name = self.methods.item(i).data(Qt.UserRole)
+                reasons[name] = comparison_problems(method_class(name), run, missing=self._missing_dependencies[name])
+        eligible = tuple(name for name, why in reasons.items() if not why)
+        context = model_name, eligible
+        self._context_signature = signature
+        self._context_problems = reasons
+        if context == self._context and not reset:
+            return reasons
+        selected = [name for name in self.selected() if name in eligible]
+        if reset or self._context is None or self._context[0] != model_name or not selected:
+            updaters = ("mma", "conlin") if run.scenario.objective.get("type") == "output_displacement" else (
+                "oc", "mma", "simpl", "beso")
+            preferred = [f"{model_name}+{u}" for u in updaters] if model else [current.name]
+            # Keep a preset's validated specialist (e.g. buckling MMA or local
+            # stress AL) when the classic compliance updaters cannot be used.
+            if current.name not in preferred:
+                preferred.append(current.name)
+            selected = [name for name in preferred if name in eligible] or list(eligible[:1])
+        for i in range(self.methods.count()):
+            item = self.methods.item(i)
+            name = item.data(Qt.UserRole)
+            cls = method_class(name)
+            if reasons[name]:
+                item.setFlags(item.flags() & ~Qt.ItemIsEnabled)
+                item.setToolTip(f"{cls.label}: {'; '.join(reasons[name])}")
+            else:
+                item.setFlags(item.flags() | Qt.ItemIsEnabled)
+                item.setToolTip(f"{cls.label}   [{name}]")
+        self.set_selected(selected)
+        if selected:
+            for i in range(self.methods.count()):
+                item = self.methods.item(i)
+                if item.data(Qt.UserRole) == selected[0]:
+                    self.methods.setCurrentItem(item)
+                    self.methods.scrollToItem(item)
+                    break
+        self._context = context
+        self._hint.setText(
+            f"{len(eligible)} compatible methods for this setup. Unavailable choices are disabled; "
+            "hover for the reason. Ticked methods use the same problem, mesh and stopping rule.")
+        return reasons
+
+    def refresh(self, items):
+        """The method list does not depend on the parameter paths."""
+
+
+class MethodsSweepParamsGroup(CompareMethodsParamsGroup):
+    """The ticked methods down the rows, one setting swept across the columns (Sweep Methods mode).
+
+    Shows how each optimiser reacts to the same change, e.g. the volume
+    fraction or the filter radius: every cell is a whole run, held to the same
+    problem, mesh and stopping rule, with only the method and the setting varied.
+    """
+
+    def __init__(self, parent=None):
+        super().__init__(parent)
+        self.setTitle("Sweep Methods")
+        form = QFormLayout()
+        self.param = QComboBox()
+        self.min_val = double_box(0.2, -1e6, 1e6, dec=4, step=0.05)
+        self.max_val = double_box(0.5, -1e6, 1e6, dec=4, step=0.05)
+        self.n_values = int_box(3, 1, 20)
+        for lbl, w in [("Parameter", self.param), ("Min", self.min_val), ("Max", self.max_val),
+                       ("Values", self.n_values)]:
+            _add_row(form, lbl, w)
+        self.layout().addLayout(form)
+
+    def refresh(self, items):
+        """Rebuild the swept-parameter menu from (label, path) items."""
+        fill_combo(self.param, items, prefer="volfrac")
+
+    def key(self):
+        """The parameter path swept across the columns."""
+        return self.param.currentData() or self.param.currentText()

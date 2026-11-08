@@ -14,17 +14,17 @@ from dataclasses import replace
 import numpy as np
 import pytest
 
-from toporia.engine.loop import initialized_method, run_single
-from toporia.engine.pipeline import pipeline_notes, pipeline_parts, pipeline_stages, solver_problems
-from toporia.framework.problem.mesh import RectangularProblem, make_problem
-from toporia.framework.problem.run import apply_param, read_param
-from toporia.plugins.catalog import parameter_paths
-from toporia.plugins.methods import method_class
-from toporia.plugins.problems import get_run
-from toporia.plugins.representations import REPRESENTATIONS
-from toporia.plugins.representations.bspline import BSplineField
-from toporia.plugins.representations.element_density import ElementDensity
-from toporia.plugins.representations.mmc import PER_BAR, PER_BAR_VARIABLE, MovingMorphableComponents
+from toporia_core.engine.loop import initialized_method, run_single
+from toporia_core.engine.pipeline import pipeline_notes, pipeline_parts, pipeline_stages, solver_problems
+from toporia_core.framework.problem.mesh import RectangularProblem, make_problem
+from toporia_core.framework.problem.run import apply_param, read_param
+from toporia_library.catalog import parameter_paths
+from toporia_library.methods import method_class
+from toporia_library.problems import get_run
+from toporia_library.representations import REPRESENTATIONS
+from toporia_library.representations.bspline import BSplineField
+from toporia_library.representations.element_density import ElementDensity
+from toporia_library.representations.mmc import PER_BAR, PER_BAR_VARIABLE, MovingMorphableComponents
 
 MMC = {"type": "mmc"}
 

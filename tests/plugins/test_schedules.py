@@ -11,15 +11,15 @@ import json
 import numpy as np
 import pytest
 
-from toporia.engine.loop import initialized_method, run_single_with_store
-from toporia.engine.pipeline import pipeline_parts, pipeline_stages
-from toporia.framework.problem.run import apply_param, read_param
-from toporia.plugins.catalog import parameter_paths, schedulable_paths
-from toporia.plugins.problems import get_run
-from toporia.plugins.schedules import SCHEDULES
-from toporia.plugins.schedules.geometric import Geometric
-from toporia.plugins.schedules.linear import Linear
-from toporia.plugins.schedules.steps import Steps
+from toporia_core.engine.loop import initialized_method, run_single_with_store
+from toporia_core.engine.pipeline import pipeline_parts, pipeline_stages
+from toporia_core.framework.problem.run import apply_param, read_param
+from toporia_library.catalog import parameter_paths, schedulable_paths
+from toporia_library.problems import get_run
+from toporia_library.schedules import SCHEDULES
+from toporia_library.schedules.geometric import Geometric
+from toporia_library.schedules.linear import Linear
+from toporia_library.schedules.steps import Steps
 
 PENAL = {"path": "interpolation.penal", "type": "steps", "start": 1.0, "end": 3.0, "step": 0.5, "every": 5}
 
@@ -136,7 +136,7 @@ def test_mmc_edges_can_be_sharpened_during_the_run():
 # ---- convergence-triggered continuation ("settled") ----------------------------------
 
 def _settled(**values):
-    from toporia.plugins.schedules.settled import Settled
+    from toporia_library.schedules.settled import Settled
     return Settled(**{"start": 1, "end": 8, "factor": 2, "change_below": 0.02, "settle": 1,
                       "min_every": 3, "max_every": 10, **values})
 
@@ -189,7 +189,7 @@ def test_settled_waits_for_consecutive_settled_iterations():
 
 def test_settled_beta_run_against_the_geometric_continuation():
     """MBB Beam, density + Heaviside filter, beta 1 -> 64: geometric every 25 vs settled."""
-    from toporia.plugins.postprocessors._measure import grey_level
+    from toporia_library.postprocessors._measure import grey_level
     filters = [{"type": "density"}, {"type": "heaviside", "beta": 1.0}]
     kinds = {"geometric": {"type": "geometric", "factor": 2, "every": 25},
              "settled": {"type": "settled", "factor": 2, "change_below": 0.03, "min_every": 10, "max_every": 40}}
@@ -209,7 +209,7 @@ def test_settled_beta_run_against_the_geometric_continuation():
 def test_settling_is_judged_on_the_physical_density(monkeypatch):
     # Under a sharp projection the design variables keep drifting where the projection is flat, so
     # a settled schedule observes the change of the physical density instead.
-    from toporia.plugins.schedules.settled import Settled
+    from toporia_library.schedules.settled import Settled
     seen, densities = [], []
     observe = Settled.observe
 

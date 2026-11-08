@@ -3,7 +3,7 @@
 A plugin package is found through a standard entry point; one that fails to
 load must not take the others down; one whose optional dependency is not
 installed must be greyed out and refused with an install hint, not fail
-part-way through a run; and toporia.api must offer everything a plugin needs.
+part-way through a run; and toporia_core.api must offer everything a plugin needs.
 """
 
 import sys
@@ -12,11 +12,11 @@ import types
 import numpy as np
 import pytest
 
-import toporia.framework.registry as registry_module
-from toporia.framework.parts.updater import Updater
-from toporia.framework.registry import Registry, missing_dependencies
-from toporia.plugins.updaters import UPDATERS
-from toporia.plugins.updaters.oc import OCUpdater
+import toporia_core.framework.registry as registry_module
+from toporia_core.framework.parts.updater import Updater
+from toporia_core.framework.registry import Registry, missing_dependencies
+from toporia_library.updaters import UPDATERS
+from toporia_library.updaters.oc import OCUpdater
 
 MISSING = "toporia_test_package_that_does_not_exist"
 
@@ -61,20 +61,21 @@ def installed(monkeypatch):
             _EntryPoint("clash", "my_optimisers:OC", type("OC", (OCUpdater,), {"name": "oc", "label": "x"})),
         ],
     }
-    monkeypatch.setattr(registry_module, "_entry_points", lambda group: points.get(group, []))
+    real = registry_module._entry_points             # Toporia's own library is an entry point too
+    monkeypatch.setattr(registry_module, "_entry_points", lambda group: [*real(group), *points.get(group, [])])
 
 
 # ── Entry points ──────────────────────────────────────────────────────────────
 
 def test_an_installed_package_adds_its_plugins(installed):
-    registry = Registry("updater", Updater, "toporia.plugins.updaters")
+    registry = Registry("updater", Updater, "toporia_library.updaters")
     assert {"external_step", "from_module", "oc", "mma"} <= set(registry.names())
     assert registry.source("external_step") == "my-optimisers"
     assert registry.source("oc") == "toporia"
 
 
 def test_a_broken_or_clashing_plugin_is_reported_and_the_rest_still_load(installed):
-    registry = Registry("updater", Updater, "toporia.plugins.updaters")
+    registry = Registry("updater", Updater, "toporia_library.updaters")
     errors = dict(registry.errors)
     assert "No module named 'nlopt'" in errors["broken = my_optimisers.broken"]
     assert "Two updaters are named 'oc'" in errors["clash = my_optimisers:OC"]
@@ -87,20 +88,20 @@ def test_a_broken_module_in_a_package_does_not_hide_the_others(tmp_path, monkeyp
     package.mkdir()
     (package / "__init__.py").write_text("")
     (package / "good.py").write_text(
-        "from toporia.plugins.updaters.oc import OCUpdater\n"
+        "from toporia_library.updaters.oc import OCUpdater\n"
         "class Good(OCUpdater):\n    name, label = 'good', 'Good'\n")
     (package / "bad.py").write_text("import toporia_test_package_that_does_not_exist\n")
     monkeypatch.syspath_prepend(str(tmp_path))
-    registry = Registry("updater", Updater, "toporia_test_plugins")
+    registry = Registry("updater", Updater, "toporia_test_plugins", group="toporia_test.updaters")  # this package only
     assert registry.names() == ["good"]
     assert [where for where, _ in registry.errors] == ["toporia_test_plugins.bad"]
     sys.modules.pop("toporia_test_plugins", None)
 
 
 def test_an_installed_updater_is_a_method_part_like_any_other(installed):
-    from toporia.engine.loop import initialized_method
-    from toporia.plugins.methods import method_class
-    from toporia.plugins.problems import get_run
+    from toporia_core.engine.loop import initialized_method
+    from toporia_library.methods import method_class
+    from toporia_library.problems import get_run
     UPDATERS._by_name = None        # rediscover with the package installed
     try:
         assert method_class("q4+external_step").updater is ExternalStep
@@ -115,9 +116,9 @@ def test_an_installed_updater_is_a_method_part_like_any_other(installed):
 def test_a_run_records_which_package_each_part_came_from(installed, tmp_path):
     import json
 
-    from toporia.engine.loop import run_single
-    from toporia.engine.pipeline import pipeline_stages
-    from toporia.plugins.problems import get_run
+    from toporia_core.engine.loop import run_single
+    from toporia_core.engine.pipeline import pipeline_stages
+    from toporia_library.problems import get_run
     UPDATERS._by_name = None
     try:
         run = get_run("MBB Beam").updated(method="q4+external_step", m=0.3, max_iter=2, tol=0.0,
@@ -137,7 +138,7 @@ def test_a_run_records_which_package_each_part_came_from(installed, tmp_path):
 
 
 def test_a_part_registered_by_hand_says_so():
-    from toporia.engine.pipeline import part_origin
+    from toporia_core.engine.pipeline import part_origin
     UPDATERS.register(_NeedsMissing)
     try:
         assert part_origin("updater", _NeedsMissing)["source"].startswith("registered by hand")
@@ -160,15 +161,15 @@ def needs_missing():
 
 
 def test_missing_dependencies_are_found_for_a_plugin_and_for_a_pairing(needs_missing):
-    from toporia.plugins.methods import method_class
+    from toporia_library.methods import method_class
     assert missing_dependencies(needs_missing) == [MISSING]
     assert missing_dependencies(method_class("q4+needs_missing")) == [MISSING]
     assert missing_dependencies(OCUpdater) == []
 
 
 def test_a_run_refuses_a_missing_dependency_before_it_starts(needs_missing):
-    from toporia.engine.loop import initialized_method
-    from toporia.plugins.problems import get_run
+    from toporia_core.engine.loop import initialized_method
+    from toporia_library.problems import get_run
     run = get_run("MBB Beam").updated(method="q4+needs_missing", m=0.3)
     with pytest.raises(ImportError, match=f"pip install {MISSING}"):
         initialized_method(run)
@@ -180,7 +181,7 @@ def test_the_gui_greys_out_what_is_not_installed_and_says_why(needs_missing, mon
     os.environ.setdefault("QT_QPA_PLATFORM", "offscreen")
     from PySide6 import QtWidgets
     QtWidgets.QApplication.instance() or QtWidgets.QApplication([])
-    from toporia.apps.gui.window import MainWindow
+    from toporia_gui.window import MainWindow
 
     window = MainWindow()
     combo = window.core.updater
@@ -201,7 +202,7 @@ def test_the_gui_greys_out_what_is_not_installed_and_says_why(needs_missing, mon
 # ── The public API ────────────────────────────────────────────────────────────
 
 def test_the_api_offers_everything_a_plugin_needs():
-    import toporia.api as api
+    import toporia_core.api as api
     for name in api.__all__:
         assert hasattr(api, name), name
     assert set(api.REGISTRIES) == {"model", "updater", "representation", "filter", "interpolation",
@@ -210,7 +211,7 @@ def test_the_api_offers_everything_a_plugin_needs():
 
 
 def test_entry_point_groups_follow_the_plugin_kinds():
-    import toporia.api as api
+    import toporia_core.api as api
     assert {kind: registry.group for kind, registry in api.REGISTRIES.items()} == {
         "model": "toporia.models", "updater": "toporia.updaters", "representation": "toporia.representations",
         "filter": "toporia.filters", "schedule": "toporia.schedules",

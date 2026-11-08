@@ -7,11 +7,11 @@ import sys
 import numpy as np
 import pytest
 
-from toporia.apps.gui.geometry import make_object
-from toporia.apps.gui.project import Project
-from toporia.framework.problem.run import Run
-from toporia.framework.problem.scenario import Scenario
-from toporia.framework.problem.solver import Solver
+from toporia_core.framework.problem.run import Run
+from toporia_core.framework.problem.scenario import Scenario
+from toporia_core.framework.problem.solver import Solver
+from toporia_gui.geometry import make_object
+from toporia_gui.project import Project
 
 
 def snapshot(folder, objects=None):
@@ -30,7 +30,7 @@ def test_worker_uses_saved_settings_and_writes_result_and_status(tmp_path, mode,
                      "sg": {"param": "volfrac", "min_val": .3, "max_val": .5, "n_rows": 1, "n_cols": 2},
                      "cg": {"param": "volfrac", "value_a": .3, "value_b": .5}}
     project.save()
-    result = subprocess.run([sys.executable, "-m", "toporia.apps.gui_worker", str(path)], capture_output=True, text=True, timeout=60)
+    result = subprocess.run([sys.executable, "-m", "toporia_gui.worker", str(path)], capture_output=True, text=True, timeout=60)
     assert result.returncode == 0, result.stdout + result.stderr
     events = [json.loads(line[8:]) for line in result.stdout.splitlines() if line.startswith("TOPORIA ")]
     assert any(event["event"] == "iteration" for event in events)
@@ -46,13 +46,13 @@ def test_worker_uses_saved_settings_and_writes_result_and_status(tmp_path, mode,
 def test_worker_reports_invalid_problem_and_cooperative_stop_distinctly(tmp_path):
     invalid = tmp_path / "invalid"
     path = snapshot(invalid, [])
-    result = subprocess.run([sys.executable, "-m", "toporia.apps.gui_worker", str(path)], capture_output=True, text=True, timeout=60)
+    result = subprocess.run([sys.executable, "-m", "toporia_gui.worker", str(path)], capture_output=True, text=True, timeout=60)
     assert result.returncode == 1
     assert json.loads((invalid / "session.json").read_text())["status"] == "error"
     stopped = tmp_path / "stopped"
     path = snapshot(stopped)
     (stopped / "stop.flag").touch()
-    result = subprocess.run([sys.executable, "-m", "toporia.apps.gui_worker", str(path)], capture_output=True, text=True, timeout=60)
+    result = subprocess.run([sys.executable, "-m", "toporia_gui.worker", str(path)], capture_output=True, text=True, timeout=60)
     assert result.returncode == 0
     assert json.loads((stopped / "session.json").read_text())["status"] == "stopped"
     assert not (stopped / "design.npy").exists()
@@ -64,7 +64,7 @@ def test_worker_runs_h8_with_a_true_spatial_point_force(tmp_path):
     run = Run(scenario=Scenario(Lx=10, Ly=4, Lz=4, regions=objects),
               solver=Solver(method="h8+oc", m=.5, max_iter=2, filter_specs=[{"type": "density"}]))
     path = Project("Spatial worker", run, objects=objects).save(tmp_path / "input.top")
-    result = subprocess.run([sys.executable, "-m", "toporia.apps.gui_worker", str(path)], capture_output=True, text=True, timeout=60)
+    result = subprocess.run([sys.executable, "-m", "toporia_gui.worker", str(path)], capture_output=True, text=True, timeout=60)
     assert result.returncode == 0, result.stdout + result.stderr
     density = np.load(tmp_path / "design.npy")
     assert density.shape == (2, 2, 5) and np.isfinite(density).all()
@@ -75,7 +75,7 @@ def test_worker_refuses_an_unfinished_blank_project_even_with_runnable_hidden_de
     project = Project.load(path)
     project.view["blank_setup"] = {"dimension": 2}
     project.save()
-    result = subprocess.run([sys.executable, "-m", "toporia.apps.gui_worker", str(path)],
+    result = subprocess.run([sys.executable, "-m", "toporia_gui.worker", str(path)],
                             capture_output=True, text=True, timeout=60)
     assert result.returncode == 1
     status = json.loads((tmp_path / "session.json").read_text())
@@ -85,7 +85,7 @@ def test_worker_refuses_an_unfinished_blank_project_even_with_runnable_hidden_de
 
 
 def test_worker_executes_saved_parallel_functions_before_boolean_export_result(tmp_path):
-    from toporia.framework.problem.workflow import optimization, stage_settings
+    from toporia_core.framework.problem.workflow import optimization, stage_settings
     path = snapshot(tmp_path)
     project = Project.load(path)
     branches = [optimization("First physics"), optimization("Second physics")]
@@ -94,7 +94,7 @@ def test_worker_executes_saved_parallel_functions_before_boolean_export_result(t
     project.workflow = {"id": "parallel", "name": "Independent physics", "kind": "parallel",
                                  "operation": "union", "children": branches}
     project.save()
-    result = subprocess.run([sys.executable, "-m", "toporia.apps.gui_worker", str(path)],
+    result = subprocess.run([sys.executable, "-m", "toporia_gui.worker", str(path)],
                             capture_output=True, text=True, timeout=60)
     assert result.returncode == 0, result.stdout + result.stderr
     events = [json.loads(line[8:]) for line in result.stdout.splitlines() if line.startswith("TOPORIA ")]

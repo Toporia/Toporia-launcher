@@ -5,11 +5,11 @@ from dataclasses import replace
 
 import pytest
 
-from toporia.engine.loop import run_single
-from toporia.framework import Scenario, Solver
-from toporia.framework.parts.method import OBJECTIVE
-from toporia.framework.problem.files import fingerprint, from_dict, load, save
-from toporia.plugins.problems import get_run, problem_names
+from toporia_core.engine.loop import run_single
+from toporia_core.framework import Scenario, Solver
+from toporia_core.framework.parts.method import OBJECTIVE
+from toporia_core.framework.problem.files import fingerprint, from_dict, load, save
+from toporia_library.problems import get_run, problem_names
 
 
 @pytest.mark.parametrize("name", problem_names())

@@ -10,9 +10,9 @@ from pathlib import Path
 
 import pytest
 
-from toporia.checks import conformance
-from toporia.framework.optimisers.external_loop import ExternalOptimizer
-from toporia.framework.parts.updater import Updater
+from toporia_core.checks import conformance
+from toporia_core.framework.optimisers.external_loop import ExternalOptimizer
+from toporia_core.framework.parts.updater import Updater
 
 GUIDE = Path(__file__).resolve().parents[2] / "docs" / "writing-plugins.md"
 BLOCKS = [block for block in re.findall(r"```python\n(.*?)```", GUIDE.read_text(encoding="utf-8"), re.S)
@@ -52,9 +52,9 @@ def test_every_guide_example_conforms(block):
 def test_the_quick_start_example_conforms_and_measures_the_material():
     import numpy as np
 
-    from toporia.framework.parts.postprocess import Result
-    from toporia.framework.problem.mesh import make_problem
-    from toporia.plugins.problems import get_run
+    from toporia_core.framework.parts.postprocess import Result
+    from toporia_core.framework.problem.mesh import make_problem
+    from toporia_library.problems import get_run
     blocks = [b for b in re.findall(r"```python\n(.*?)```", QUICKSTART.read_text(encoding="utf-8"), re.S)
               if "# example:" in b]
     assert len(blocks) == 1

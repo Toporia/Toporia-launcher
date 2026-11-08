@@ -16,10 +16,11 @@ dependencies = [
     "scipy>=1.10",
     "matplotlib>=3.7",
     "Pillow>=9.0",
-    "PySide6>=6.5",
 ]
 
 [project.optional-dependencies]
+# The desktop app (toporia_gui). The core and the library run, check and test without it.
+gui = ["PySide6>=6.5"]
 dev = ["pytest>=7", "ruff"]
 # Enables method="pymoto": compliance minimisation with pyMOTO's module network,
 # which computes sensitivities by backpropagation instead of by hand.
@@ -37,12 +38,43 @@ nullspace = ["nullspace_optimizer>=1.3"]
 # handles small ones without it); scikit-image draws the 3-D view of a design.
 3d = ["pyamg>=5.0", "scikit-image>=0.22"]
 # Optional interactive spatial editor and geometry import. Headless 2D remains usable without these.
-gui3d = ["pyvista>=0.47", "pyvistaqt>=0.11", "ezdxf>=1.4"]
+gui3d = ["toporia[gui]", "pyvista>=0.47", "pyvistaqt>=0.11", "ezdxf>=1.4"]
 # Builds the Windows program (python packaging/build_windows.py); not needed to run Toporia.
 build = ["pyinstaller>=6.10"]
 
 [project.scripts]
-toporia = "toporia.apps.cli:main"
+toporia = "toporia_core.cli:main"
+
+# Toporia's own library is a source of parts like any installed package: the core finds
+# it through these entry points and never imports it by name (toporia_core/framework/registry.py).
+[project.entry-points."toporia.methods"]
+toporia = "toporia_library.methods"
+[project.entry-points."toporia.models"]
+toporia = "toporia_library.models"
+[project.entry-points."toporia.updaters"]
+toporia = "toporia_library.updaters"
+[project.entry-points."toporia.filters"]
+toporia = "toporia_library.filters"
+[project.entry-points."toporia.interpolations"]
+toporia = "toporia_library.interpolations"
+[project.entry-points."toporia.responses"]
+toporia = "toporia_library.responses"
+[project.entry-points."toporia.representations"]
+toporia = "toporia_library.representations"
+[project.entry-points."toporia.schedules"]
+toporia = "toporia_library.schedules"
+[project.entry-points."toporia.postprocessors"]
+toporia = "toporia_library.postprocessors"
+[project.entry-points."toporia.problems"]
+toporia = "toporia_library.problems"
+# The desktop app, which `toporia` (no command) starts.
+[project.entry-points."toporia.apps"]
+gui = "toporia_gui:launch"
+
+# Three packages: the core (framework, engine, checks, command line), the library of
+# functions and presets, and the desktop GUI.  The core never imports the other two.
+[tool.hatch.build.targets.wheel]
+packages = ["toporia_core", "toporia_library", "toporia_gui"]
 
 
 # ── Test suite ────────────────────────────────────────────────────────────────

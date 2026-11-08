@@ -11,12 +11,12 @@ import json
 import numpy as np
 import pytest
 
-from toporia.engine.loop import initialized_method, run_single
-from toporia.engine.pipeline import pipeline_parts, pipeline_stages
-from toporia.plugins.interpolations import INTERPOLATIONS
-from toporia.plugins.interpolations.ramp import RAMP
-from toporia.plugins.interpolations.simp import SIMP
-from toporia.plugins.problems import get_run
+from toporia_core.engine.loop import initialized_method, run_single
+from toporia_core.engine.pipeline import pipeline_parts, pipeline_stages
+from toporia_library.interpolations import INTERPOLATIONS
+from toporia_library.interpolations.ramp import RAMP
+from toporia_library.interpolations.simp import SIMP
+from toporia_library.problems import get_run
 
 SMALL = {"m": 0.3, "max_iter": 8, "tol": 0.0, "save_every": 0}
 
@@ -92,7 +92,7 @@ def test_ordered_simp_is_registered():
 
 
 def test_ordered_simp_hits_each_materials_modulus_at_its_density():
-    from toporia.plugins.interpolations.ordered_simp import OrderedSIMP
+    from toporia_library.interpolations.ordered_simp import OrderedSIMP
     law = OrderedSIMP(n_materials=4, rho2=0.4, E2=0.25, rho3=0.7, E3=0.55)
     rho = np.array([0.0, 0.4, 0.7, 1.0])
     assert law.stiffness(rho, 1.0, 1e-9) == pytest.approx([1e-9, 0.25, 0.55, 1.0], rel=1e-6)
@@ -101,13 +101,13 @@ def test_ordered_simp_hits_each_materials_modulus_at_its_density():
 
 
 def test_ordered_simp_with_two_materials_is_simp():
-    from toporia.plugins.interpolations.ordered_simp import OrderedSIMP
+    from toporia_library.interpolations.ordered_simp import OrderedSIMP
     rho = np.linspace(0.0, 1.0, 21)
     assert np.allclose(OrderedSIMP(n_materials=2).stiffness(rho, 1.0, 1e-9), SIMP(3.0).stiffness(rho, 1.0, 1e-9))
 
 
 def test_ordered_simp_refuses_unordered_materials():
-    from toporia.plugins.interpolations.ordered_simp import OrderedSIMP
+    from toporia_library.interpolations.ordered_simp import OrderedSIMP
     with pytest.raises(ValueError, match="strictly increase"):
         OrderedSIMP(n_materials=4, rho2=0.7, rho3=0.4)
 

@@ -5,12 +5,12 @@ from dataclasses import replace
 import numpy as np
 import pytest
 
-from toporia.apps.gui.geometry import make_object, objects_from_scenario
-from toporia.framework.problem.files import from_dict, to_dict
-from toporia.framework.problem.mesh import make_problem
-from toporia.framework.problem.scenario import LoadCase, Scenario
-from toporia.plugins.physics.q4_plane_stress import Q4DofLayout
-from toporia.plugins.problems import get_run
+from toporia_core.framework.problem.files import from_dict, to_dict
+from toporia_core.framework.problem.mesh import make_problem
+from toporia_core.framework.problem.scenario import LoadCase, Scenario
+from toporia_gui.geometry import make_object, objects_from_scenario
+from toporia_library.physics.q4_plane_stress import Q4DofLayout
+from toporia_library.problems import get_run
 
 
 def beam_objects():
@@ -56,7 +56,7 @@ def test_incomplete_or_ambiguous_regions_are_rejected_without_defaults(objects, 
 
 
 def test_heat_regions_need_a_sink_but_no_load_and_take_the_force_magnitude_as_heat():
-    from toporia.plugins.physics.q4_heat import Q4Heat
+    from toporia_library.physics.q4_heat import Q4Heat
     sink = make_object("circle", (10, 0, 0), (4, 4, 4), "support")
     heater = make_object("point", (10, 10, 0), role="load", force=[3, -4, 0])
     generated = Q4Heat()
@@ -70,7 +70,7 @@ def test_heat_regions_need_a_sink_but_no_load_and_take_the_force_magnitude_as_he
 
 def test_every_preset_copied_to_regions_keeps_its_problem():
     """Copy to custom: the explicit objects reproduce the preset's supports, loads and passive regions."""
-    from toporia.plugins.problems import problem_names
+    from toporia_library.problems import problem_names
     for name in problem_names():
         scenario = get_run(name).scenario
         if scenario.Lz:
@@ -97,9 +97,9 @@ def test_copying_mbb_to_explicit_regions_preserves_boundary_conditions_and_force
 
 
 def test_custom_problem_reaches_the_actual_optimizer(tmp_path):
-    from toporia.engine.loop import run_single
-    from toporia.framework.problem.run import Run
-    from toporia.framework.problem.solver import Solver
+    from toporia_core.engine.loop import run_single
+    from toporia_core.framework.problem.run import Run
+    from toporia_core.framework.problem.solver import Solver
     cfg = Run(scenario=beam(), solver=Solver(method="q4+oc", m=.5, max_iter=3, filter_specs=[{"type": "density"}]))
     density = run_single(cfg.with_output_dir(tmp_path))
     assert density.shape == (5, 10)

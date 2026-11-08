@@ -3,9 +3,9 @@
 import numpy as np
 import pytest
 
-from toporia.engine.loop import run_single
-from toporia.plugins.problems import get_run
-from toporia.plugins.updaters.oc import OCUpdater
+from toporia_core.engine.loop import run_single
+from toporia_library.problems import get_run
+from toporia_library.updaters.oc import OCUpdater
 
 
 def test_a_non_finite_design_stops_the_run_with_its_iteration(monkeypatch, tmp_path):

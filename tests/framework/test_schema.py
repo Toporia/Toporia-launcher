@@ -9,7 +9,7 @@ from dataclasses import fields
 
 import pytest
 
-from toporia.framework import (
+from toporia_core.framework import (
     OUTPUT_PARAMS,
     SCENARIO_PARAMS,
     SOLVER_PARAMS,
@@ -20,14 +20,14 @@ from toporia.framework import (
     apply_param,
     read_param,
 )
-from toporia.framework.params import Param, resolve_params, select
-from toporia.plugins.catalog import parameter_paths
-from toporia.plugins.filters import FILTERS
-from toporia.plugins.methods import METHODS, make_method, method_class, method_classes
-from toporia.plugins.models import MODELS
-from toporia.plugins.problems import get_run
-from toporia.plugins.responses import RESPONSES
-from toporia.plugins.updaters import UPDATERS
+from toporia_core.framework.params import Param, resolve_params, select
+from toporia_library.catalog import parameter_paths
+from toporia_library.filters import FILTERS
+from toporia_library.methods import METHODS, make_method, method_class, method_classes
+from toporia_library.models import MODELS
+from toporia_library.problems import get_run
+from toporia_library.responses import RESPONSES
+from toporia_library.updaters import UPDATERS
 
 PLUGINS = [(f"method:{c.name}", c) for c in METHODS.classes()] + \
           [(f"filter:{c.name}", c) for c in FILTERS.classes()] + \

@@ -21,31 +21,31 @@ can execute; those are different milestones.</p>
 <tbody>
 <tr>
 <td style="text-align:left">Registry identity and parameters</td>
-<td style="text-align:left"><code>kind:name</code>, <code>Param</code>, defaults and dependency declarations already support a larger library. <a href="../../toporia/framework/registry.py">Registry</a>, <a href="../../toporia/framework/params.py">parameters</a></td>
+<td style="text-align:left"><code>kind:name</code>, <code>Param</code>, defaults and dependency declarations already support a larger library. <a href="../../toporia_core/framework/registry.py">Registry</a>, <a href="../../toporia_core/framework/params.py">parameters</a></td>
 </tr>
 <tr>
 <td style="text-align:left">Representation Jacobian</td>
-<td style="text-align:left">Geometric variables, spline coefficients and neural weights already return to one element field. <a href="../../toporia/framework/parts/representation.py">Contract</a>, <a href="../../toporia/plugins/models/assembled.py">assembled model</a></td>
+<td style="text-align:left">Geometric variables, spline coefficients and neural weights already return to one element field. <a href="../../toporia_core/framework/parts/representation.py">Contract</a>, <a href="../../toporia_core/framework/parts/assembled.py">assembled model</a></td>
 </tr>
 <tr>
 <td style="text-align:left">Opaque state and feature requirements</td>
-<td style="text-align:left">A physics state can contain displacements, modes or temperatures; response compatibility is checked through features. <a href="../../toporia/framework/parts/physics.py">Physics</a>, <a href="../../toporia/framework/parts/response.py">responses</a></td>
+<td style="text-align:left">A physics state can contain displacements, modes or temperatures; response compatibility is checked through features. <a href="../../toporia_core/framework/parts/physics.py">Physics</a>, <a href="../../toporia_core/framework/parts/response.py">responses</a></td>
 </tr>
 <tr>
 <td style="text-align:left">Generic optimizer input</td>
-<td style="text-align:left">Objective, material budget, ordinary constraints and gradients live in <code>Evaluation</code>. <a href="../../toporia/framework/parts/model.py">Model contract</a></td>
+<td style="text-align:left">Objective, material budget, ordinary constraints and gradients live in <code>Evaluation</code>. <a href="../../toporia_core/framework/parts/model.py">Model contract</a></td>
 </tr>
 <tr>
 <td style="text-align:left">External optimizer lifecycle</td>
-<td style="text-align:left">Free-variable mapping, cached evaluations, callbacks, stop/close and library verdicts are implemented. <a href="../../toporia/framework/optimisers/flat_view.py">Flat view</a>, <a href="../../toporia/framework/optimisers/external_loop.py">external loop</a></td>
+<td style="text-align:left">Free-variable mapping, cached evaluations, callbacks, stop/close and library verdicts are implemented. <a href="../../toporia_core/framework/optimisers/flat_view.py">Flat view</a>, <a href="../../toporia_core/framework/optimisers/external_loop.py">external loop</a></td>
 </tr>
 <tr>
 <td style="text-align:left">Shared-variable variants</td>
-<td style="text-align:left">Repeated evaluations can combine mean/worst objectives and constraints. This is not a general transfer network. <a href="../../toporia/framework/parts/variants.py">Variants</a></td>
+<td style="text-align:left">Repeated evaluations can combine mean/worst objectives and constraints. This is not a general transfer network. <a href="../../toporia_core/framework/parts/variants.py">Variants</a></td>
 </tr>
 <tr>
 <td style="text-align:left">Research knowledge</td>
-<td style="text-align:left">Plain descriptions, rendered equations, reports, stable function IDs and contribution templates can feed the GUI library/help. <a href="../../toporia/plugins/problems/_research.py">Description data</a>, <a href="templates/research-note.md">contribution template</a></td>
+<td style="text-align:left">Plain descriptions, rendered equations, reports, stable function IDs and contribution templates can feed the GUI library/help. <a href="../../toporia_library/problems/_research.py">Description data</a>, <a href="templates/research-note.md">contribution template</a></td>
 </tr>
 </tbody>
 </table>
@@ -136,7 +136,7 @@ usable numerical path. Tasks overlap, so the rows should not be added blindly.</
 </tbody>
 </table>
 <p>Source-paper recovery or a difficult nonlinear/eigenvalue convergence issue can
-extend these ranges substantially. The <a href="../../toporia/plugins/TODO.md">integration backlog</a>
+extend these ranges substantially. The <a href="../../toporia_library/TODO.md">integration backlog</a>
 contains historically recorded dependency blockers; this batch does not recheck
 or install every unimplemented external package. No algorithm or physics listed
 in this table was added by the assessment.</p>

@@ -7,7 +7,7 @@ Usage:
 The same entry point is the bundled Windows program (toporia/apps/desktop.py).
 """
 
-from toporia.apps.desktop import main
+from toporia_gui.desktop import main
 
 if __name__ == "__main__":
     raise SystemExit(main())

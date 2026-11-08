@@ -5,12 +5,12 @@ from math import gamma
 import numpy as np
 import pytest
 
-from toporia.checks.representation import check_representation
-from toporia.engine.loop import initialized_method
-from toporia.framework.problem.mesh import make_problem
-from toporia.plugins.problems import get_run
-from toporia.plugins.representations.mmc import MovingMorphableComponents
-from toporia.plugins.representations.mmv import MovingMorphableVoids
+from toporia_core.checks.representation import check_representation
+from toporia_core.engine.loop import initialized_method
+from toporia_core.framework.problem.mesh import make_problem
+from toporia_library.problems import get_run
+from toporia_library.representations.mmc import MovingMorphableComponents
+from toporia_library.representations.mmv import MovingMorphableVoids
 
 
 def _voids(m=0.5, **params):

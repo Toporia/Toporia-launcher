@@ -5,10 +5,10 @@ from types import SimpleNamespace
 import numpy as np
 import pytest
 
-from toporia.checks import conformance
-from toporia.engine.loop import initialized_method
-from toporia.plugins.filters.self_support import SelfSupportProjection
-from toporia.plugins.problems import get_run
+from toporia_core.checks import conformance
+from toporia_core.engine.loop import initialized_method
+from toporia_library.filters.self_support import SelfSupportProjection
+from toporia_library.problems import get_run
 
 
 def make_filter(shape=(9, 13), spacing=(1.0, 1.0), **settings):

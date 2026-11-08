@@ -7,9 +7,9 @@ for the two binary methods, next to soft-kill BESO's.
 
 import numpy as np
 
-from toporia.checks.common import iterate, small_run
-from toporia.engine.loop import initialized_method
-from toporia.plugins.methods import method_class
+from toporia_core.checks.common import iterate, small_run
+from toporia_core.engine.loop import initialized_method
+from toporia_library.methods import method_class
 
 
 def _run(name, iterations=200, **values):

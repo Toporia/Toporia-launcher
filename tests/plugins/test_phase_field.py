@@ -5,17 +5,17 @@ from dataclasses import replace
 import numpy as np
 import pytest
 
-from toporia.checks.response import check_response
-from toporia.engine.loop import initialized_method
-from toporia.framework import LoadCase, Scenario, read_param
-from toporia.framework.params import resolve_params
-from toporia.framework.problem.mesh import make_problem
-from toporia.plugins.interpolations.simp import SIMP
-from toporia.plugins.methods import method_class
-from toporia.plugins.physics.h8_solid import H8Solid
-from toporia.plugins.physics.q4_plane_stress import Q4PlaneStress
-from toporia.plugins.problems import get_run
-from toporia.plugins.responses.phase_field import (
+from toporia_core.checks.response import check_response
+from toporia_core.engine.loop import initialized_method
+from toporia_core.framework import LoadCase, Scenario, read_param
+from toporia_core.framework.params import resolve_params
+from toporia_core.framework.problem.mesh import make_problem
+from toporia_library.interpolations.simp import SIMP
+from toporia_library.methods import method_class
+from toporia_library.physics.h8_solid import H8Solid
+from toporia_library.physics.q4_plane_stress import Q4PlaneStress
+from toporia_library.problems import get_run
+from toporia_library.responses.phase_field import (
     PhaseFieldCompliance,
     phase_energy,
     physical_laplacian,

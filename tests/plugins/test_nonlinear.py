@@ -9,12 +9,12 @@ the clear error when Newton cannot follow; and the preset.
 import numpy as np
 import pytest
 
-from toporia.engine.loop import initialized_method
-from toporia.framework.problem.mesh import RectangularProblem
-from toporia.plugins.models.q4 import Q4Model
-from toporia.plugins.models.q4_nonlinear import Q4NonlinearModel
-from toporia.plugins.physics.q4_nonlinear import NonlinearConvergenceError, NonlinearElement
-from toporia.plugins.problems import get_run
+from toporia_core.engine.loop import initialized_method
+from toporia_core.framework.problem.mesh import RectangularProblem
+from toporia_library.models.q4 import Q4Model
+from toporia_library.models.q4_nonlinear import Q4NonlinearModel
+from toporia_library.physics.q4_nonlinear import NonlinearConvergenceError, NonlinearElement
+from toporia_library.problems import get_run
 
 SETTINGS = {"penal": 3.0, "steps": 10, "newton_tol": 1e-11, "max_newton": 40, "linear_below": 0.1, "linear_above": 0.2}
 

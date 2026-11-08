@@ -14,10 +14,10 @@ import threading
 import numpy as np
 import pytest
 
-from toporia.engine.loop import initialized_method, run_single_with_store
-from toporia.framework.optimisers.external_loop import ExternalOptimizer, Verdict
-from toporia.plugins.problems import get_run
-from toporia.plugins.updaters import UPDATERS
+from toporia_core.engine.loop import initialized_method, run_single_with_store
+from toporia_core.framework.optimisers.external_loop import ExternalOptimizer, Verdict
+from toporia_library.problems import get_run
+from toporia_library.updaters import UPDATERS
 
 
 class _Descent(ExternalOptimizer):
@@ -145,7 +145,7 @@ def test_a_library_that_reports_only_its_answer_is_one_step(tmp_path):
 # ── Made visible ──────────────────────────────────────────────────────────────
 
 def test_the_pipeline_says_who_owns_the_loop():
-    from toporia.engine.pipeline import pipeline_stages
+    from toporia_core.engine.pipeline import pipeline_stages
     seen = dict(pipeline_stages(_run("test_descent")))["Optimiser sees"]
     assert "own loop in the background" in seen and "each of its iterations" in seen
     seen = dict(pipeline_stages(_run("test_final_only")))["Optimiser sees"]

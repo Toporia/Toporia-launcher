@@ -9,12 +9,12 @@ import pytest
 
 def missing_for(item):
     """The optional packages `item` (a Run, a method name, a plugin id or class) needs and lacks."""
-    from toporia.framework.registry import missing_dependencies
-    from toporia.plugins.methods import method_class
+    from toporia_core.framework.registry import missing_dependencies
+    from toporia_library.methods import method_class
     if hasattr(item, "solver"):
         item = item.solver.method
     if isinstance(item, str) and ":" in item:            # a plugin id, e.g. "updater:pymoto_mma"
-        from toporia.plugins.compatibility import part_class
+        from toporia_library.compatibility import part_class
         item = part_class(item)
         if item is None:                                   # a physics engine: declares nothing optional
             return []

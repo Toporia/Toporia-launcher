@@ -7,10 +7,10 @@ import pytest
 os.environ.setdefault("QT_QPA_PLATFORM", "offscreen")
 from PySide6.QtWidgets import QApplication
 
-from toporia.apps.gui.editor import ProblemEditor
-from toporia.apps.gui.geometry import make_object, objects_from_scenario
-from toporia.framework.problem.scenario import Scenario
-from toporia.plugins.problems import get_run, problem_names
+from toporia_core.framework.problem.scenario import Scenario
+from toporia_gui.editor import ProblemEditor
+from toporia_gui.geometry import make_object, objects_from_scenario
+from toporia_library.problems import get_run, problem_names
 
 
 @pytest.fixture(scope="module")
@@ -92,10 +92,10 @@ def test_empty_custom_problem_stays_empty_and_domain_edits_do_not_move_objects(e
 def test_material_presets_fill_real_moduli_and_keep_the_void_relative():
     from PySide6.QtWidgets import QApplication
 
-    from toporia.apps.gui.editor import ProblemEditor
-    from toporia.apps.gui.geometry import objects_from_scenario
-    from toporia.apps.gui.materials import MATERIALS, VOID_RATIO, matching_material
-    from toporia.plugins.problems import get_run
+    from toporia_gui.editor import ProblemEditor
+    from toporia_gui.geometry import objects_from_scenario
+    from toporia_gui.materials import MATERIALS, VOID_RATIO, matching_material
+    from toporia_library.problems import get_run
     QApplication.instance() or QApplication([])
     editor = ProblemEditor()
     scenario = get_run("Cantilever").scenario

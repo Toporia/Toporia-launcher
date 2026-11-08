@@ -7,10 +7,10 @@ import pytest
 
 pytest.importorskip("nlopt")
 
-from toporia.checks import conformance  # noqa: E402
-from toporia.checks.common import small_run  # noqa: E402
-from toporia.engine.loop import initialized_method  # noqa: E402
-from toporia.plugins.updaters import UPDATERS  # noqa: E402
+from toporia_core.checks import conformance  # noqa: E402
+from toporia_core.checks.common import small_run  # noqa: E402
+from toporia_core.engine.loop import initialized_method  # noqa: E402
+from toporia_library.updaters import UPDATERS  # noqa: E402
 
 NAMES = ["nlopt_mma", "nlopt_ccsaq", "nlopt_slsqp", "nlopt_auglag"]
 

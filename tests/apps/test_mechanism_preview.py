@@ -2,8 +2,8 @@
 
 from matplotlib.figure import Figure
 
-from toporia.apps.gui.preview import draw_problem
-from toporia.plugins.problems import get_run
+from toporia_gui.preview import draw_problem
+from toporia_library.problems import get_run
 
 
 def test_springs_and_desired_output_are_drawn_from_the_actual_scenario():

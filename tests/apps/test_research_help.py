@@ -11,9 +11,9 @@ from PySide6.QtCore import QUrl
 from PySide6.QtGui import QPixmap, QTextDocument
 from PySide6.QtWidgets import QApplication, QTextBrowser
 
-from toporia.apps.gui.help import problem_topic
-from toporia.apps.research_render import description_html
-from toporia.plugins.problems import problem_description, problem_info, problem_names
+from toporia_gui.help import problem_topic
+from toporia_gui.research_render import description_html
+from toporia_library.problems import problem_description, problem_info, problem_names
 
 
 @pytest.fixture(scope="module")

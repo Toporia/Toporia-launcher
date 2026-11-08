@@ -3,13 +3,13 @@
 import numpy as np
 import pytest
 
-from toporia.checks import conformance
-from toporia.engine.loop import initialized_method
-from toporia.engine.records import check_limits
-from toporia.framework.problem.mesh import make_problem
-from toporia.plugins.interpolations.sinh import SINH
-from toporia.plugins.problems import get_run
-from toporia.plugins.responses.volume import Volume
+from toporia_core.checks import conformance
+from toporia_core.engine.loop import initialized_method
+from toporia_core.engine.records import check_limits
+from toporia_core.framework.problem.mesh import make_problem
+from toporia_library.interpolations.sinh import SINH
+from toporia_library.problems import get_run
+from toporia_library.responses.volume import Volume
 
 
 @pytest.mark.parametrize("penal", [0., 1e-10, 1., 3., 20.])

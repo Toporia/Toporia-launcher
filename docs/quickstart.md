@@ -2,12 +2,12 @@
 
 From a fresh checkout to your own part running in the GUI, in about fifteen minutes.
 For every kind of part in detail, see [writing-plugins.md](writing-plugins.md). For how the
-code fits together, see [toporia/README.md](../toporia/README.md).
+code fits together, see [toporia_core/README.md](../toporia_core/README.md).
 
 ## 1. Set up
 
 ```bash
-pip install -e ".[dev,3d]"
+pip install -e ".[dev,gui,3d]"
 ```
 
 `dev` brings the test tools. `3d` brings the fast 3-D solver (pyamg) and the 3-D view
@@ -58,7 +58,7 @@ remain supported when the shell preserves their quotes.
 ## 2. Where your change goes
 
 Almost every change from a paper is **one new file in one folder of
-[`toporia/plugins/`](../toporia/plugins/README.md)**. A file there is found automatically:
+[`toporia_library/`](../toporia_library/README.md)**. A file there is found automatically:
 no registration, no list to edit.
 
 | A paper that changes… | Is a… | In folder |
@@ -82,13 +82,13 @@ The example is a post-processor that reports how much material the finished desi
 in cubic millimetres. It's a small, real part, and it's run by the test suite, so it works
 as written.
 
-**Step 1: write the file.** Save this as `toporia/plugins/postprocessors/material_volume.py`:
+**Step 1: write the file.** Save this as `toporia_library/postprocessors/material_volume.py`:
 
 ```python
 # example: postprocessor
 import numpy as np
 
-from toporia.api import Param, PostProcessor
+from toporia_core.api import Param, PostProcessor
 
 
 class MaterialVolume(PostProcessor):
@@ -191,7 +191,7 @@ python tests/golden/regenerate_baselines.py mbb_oc
 - **`framework/` imports nothing from the rest of Toporia.** To change an interface, add an
   optional method with a default rather than change an existing one; every plugin is
   written against it.
-- **Plugins in your own package** need no change here at all. Import from `toporia.api` and
+- **Plugins in your own package** need no change here at all. Import from `toporia_core.api` and
   declare an entry point; see
   [writing-plugins.md](writing-plugins.md#packaging-outside-this-repository).
 
@@ -199,9 +199,9 @@ python tests/golden/regenerate_baselines.py mbb_oc
 
 | To understand… | Read |
 | :-- | :-- |
-| the layers and the life of a run | [toporia/README.md](../toporia/README.md) |
-| every interface a part implements | [toporia/framework/README.md](../toporia/framework/README.md) |
-| the loop, the stopping rule, what a run writes | [toporia/engine/README.md](../toporia/engine/README.md) |
-| the GUI and the command line | [toporia/apps/README.md](../toporia/apps/README.md) |
+| the layers and the life of a run | [toporia_core/README.md](../toporia_core/README.md) |
+| every interface a part implements | [toporia_core/framework/README.md](../toporia_core/framework/README.md) |
+| the loop, the stopping rule, what a run writes | [toporia_core/engine/README.md](../toporia_core/engine/README.md) |
+| the GUI and the command line | [toporia/apps/README.md](../toporia_gui/README.md) |
 | every kind of part, with a worked example | [writing-plugins.md](writing-plugins.md) |
-| what exists in the field, and what is here | [toporia/plugins/README.md](../toporia/plugins/README.md) |
+| what exists in the field, and what is here | [toporia_library/README.md](../toporia_library/README.md) |

@@ -73,16 +73,18 @@ reinstall. The part in brackets picks the extras:
 
 | Group | What it installs | What for |
 | :-- | :-- | :-- |
-| *(always)* | numpy, scipy, matplotlib, Pillow, PySide6 | the solver, plots, and the desktop GUI |
+| *(always)* | numpy, scipy, matplotlib, Pillow | the solver and the images a run writes (`toporia_core`, `toporia_library`) |
+| `gui` | PySide6 | the desktop app (`toporia_gui`); the command line and scripts run without it |
 | `dev` | pytest, ruff | the test suite and the linter |
 | `3d` | pyamg, scikit-image | the fast multigrid solver for large 3-D meshes, and the 3-D view |
-| `gui3d` | pyvista, pyvistaqt, ezdxf | the interactive 3-D spatial editor in the GUI, and geometry import (DXF). 2-D works without it |
+| `gui3d` | the `gui` extra, pyvista, pyvistaqt, ezdxf | the desktop app with its interactive 3-D spatial editor and geometry import (DXF) |
 | `pymoto` | pyMOTO | `method="pymoto"` (sensitivities by backpropagation) |
 | `nlopt` | NLopt | the `nlopt_mma`, `nlopt_ccsaq`, `nlopt_slsqp` and `nlopt_auglag` updaters |
 | `mmapy` | mmapy *(GPL-3)* | the `mmapy_mma` and `mmapy_gcmma` updaters |
 | `nullspace` | nullspace_optimizer *(GPL-3)* | the `nullspace` updater |
 
-Combine any of them, for example `pip install -e ".[dev,3d,pymoto,nlopt]"`. The GPL-3
+Combine any of them, for example `pip install -e ".[dev,gui,3d,pymoto,nlopt]"`; without `gui` or
+`gui3d` you get the command line and the Python packages only. The GPL-3
 optimisers are never required. Toporia only imports them when you pick their updater.
 
 ## 5. Check it works

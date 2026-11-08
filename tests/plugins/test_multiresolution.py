@@ -5,14 +5,14 @@ from dataclasses import replace
 import numpy as np
 import pytest
 
-from toporia.checks import conformance
-from toporia.engine.loop import initialized_method
-from toporia.framework import HoleConfig, LoadCase, PointConstraint
-from toporia.framework.problem.mesh import make_problem
-from toporia.plugins.models.q4_multiresolution import Q4MultiresolutionModel
-from toporia.plugins.physics.q4_multiresolution import Q4Multiresolution
-from toporia.plugins.physics.q4_plane_stress import Q4PlaneStress
-from toporia.plugins.problems import get_run
+from toporia_core.checks import conformance
+from toporia_core.engine.loop import initialized_method
+from toporia_core.framework import HoleConfig, LoadCase, PointConstraint
+from toporia_core.framework.problem.mesh import make_problem
+from toporia_library.models.q4_multiresolution import Q4MultiresolutionModel
+from toporia_library.physics.q4_multiresolution import Q4Multiresolution
+from toporia_library.physics.q4_plane_stress import Q4PlaneStress
+from toporia_library.problems import get_run
 
 
 def engines(shape=(8, 12), factor=2, scenario=None):
@@ -151,7 +151,7 @@ def test_a_filter_smaller_than_one_analysis_cell_is_refused(filter_specs):
 def test_one_analysis_cell_of_filter_keeps_the_coarse_model_honest():
     # The artefact this rule prevents: below one analysis cell the coarse model claims a design
     # far stiffer than a fine Q4 analysis of the same density finds.
-    from toporia.plugins.physics.q4_plane_stress import solve_fea
+    from toporia_library.physics.q4_plane_stress import solve_fea
     run = get_run("MBB Beam").updated(method="q4_multiresolution+mma", m=1.0, max_iter=80, tol=0.0,
         method_params={"coarsening": 2}, filter_specs=[{"type": "density", "rmin": 2}])
     method = initialized_method(run)

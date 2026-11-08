@@ -1,6 +1,6 @@
 """test_conformance.py — every plugin passes the conformance test, and the test has teeth.
 
-toporia.checks.conformance is what a plugin author runs on a new class.  Here
+toporia_core.checks.conformance is what a plugin author runs on a new class.  Here
 it runs on every registered plugin, and on deliberately broken ones, to show it
 catches what it claims to catch: a design that leaves its bounds, a wrong
 adjoint, a wrong gradient, a poor optimiser.
@@ -8,11 +8,11 @@ adjoint, a wrong gradient, a poor optimiser.
 
 import pytest
 
-from toporia.checks import Report, all_plugins, conformance
-from toporia.framework.parts.updater import Updater
-from toporia.plugins.filters.density import DensityFilter
-from toporia.plugins.models.q4 import Q4Model
-from toporia.plugins.updaters.oc import OCUpdater
+from toporia_core.checks import Report, all_plugins, conformance
+from toporia_core.framework.parts.updater import Updater
+from toporia_library.filters.density import DensityFilter
+from toporia_library.models.q4 import Q4Model
+from toporia_library.updaters.oc import OCUpdater
 
 
 @pytest.mark.parametrize("plugin", all_plugins())

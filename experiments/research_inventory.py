@@ -17,10 +17,10 @@ import re
 from collections import Counter
 from pathlib import Path
 
-from toporia.engine.pipeline import registries
-from toporia.framework.parts.physics import Physics
-from toporia.plugins import physics
-from toporia.plugins.problems import _modules, problem_description
+from toporia_core.engine.pipeline import registries
+from toporia_core.framework.parts.physics import Physics
+from toporia_library import physics
+from toporia_library.problems import _modules, problem_description
 
 ROOT = Path(__file__).resolve().parents[1]
 BASELINE = {"model:q4", "physics:q4_plane_stress", "representation:element_density",
@@ -69,7 +69,7 @@ def inventory():
     functions, errors = [], []
     for kind, registry in registries().items():
         for cls in registry.classes():
-            if cls.__module__.startswith("toporia.plugins."):
+            if cls.__module__.startswith("toporia_library."):
                 functions.append(_row(kind, cls.name, cls))
         errors.extend(str(error) for error in registry.errors)
     for info in pkgutil.iter_modules(physics.__path__):
@@ -129,7 +129,8 @@ def inventory():
         defined_in.setdefault(row["source_file"], []).append(row["id"])
     preset_files = {preset["source_file"] for preset in presets}
     modules = []
-    for path in sorted((ROOT / "toporia").rglob("*.py")):
+    for path in sorted(p for package in ("toporia_core", "toporia_library", "toporia_gui")
+                       for p in (ROOT / package).rglob("*.py")):
         relative = path.relative_to(ROOT).as_posix()
         content = path.read_text(encoding="utf-8-sig")
         docstring = ast.get_docstring(ast.parse(content))

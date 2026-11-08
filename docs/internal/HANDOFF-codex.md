@@ -16,19 +16,19 @@ is done, what is half done (**buckling**), and what is still to add from the "sm
 | `integration/physics` | `integration/all` + heat conduction, vibration (eigenfrequency and harmonic), local stress with augmented Lagrangian, and geometrically non-linear elasticity. **Continue from here.** |
 | `wip/buckling` | Unfinished linearised buckling, written but **never run**. Based on an older commit. See section 3. |
 
-The overview of every part and its source is `toporia/plugins/LIBRARY.md` (also used to make
-the PDF). The working plan is `toporia/plugins/TODO.md`.
+The overview of every part and its source is `toporia_library/LIBRARY.md` (also used to make
+the PDF). The working plan is `toporia_library/TODO.md`.
 
 ## 2. Rules every new part follows (tests enforce most of them)
 
 1. **One file per part in the right folder, registered automatically.** A class in
-   `toporia/plugins/<kind>/` with a non-empty `name` is registered. Read `docs/writing-plugins.md`.
+   `toporia_library/<kind>/` with a non-empty `name` is registered. Read `docs/writing-plugins.md`.
 2. **New physics is a new engine.** Don't change `plugins/physics/q4_plane_stress.py` or
    `h8_solid.py`. Subclass or import them instead (see `q4_dynamic.py`, `q4_nonlinear.py`,
    `q4_heat.py`). The golden tests in `tests/golden/` must stay bit-identical. Never regenerate
    their baselines.
 3. **Features:** an engine declares `provides = (...)` feature names, and a response declares
-   `requires = (...)`. New features get their own section in `toporia/framework/parts/physics.py`.
+   `requires = (...)`. New features get their own section in `toporia_core/framework/parts/physics.py`.
    Existing sections: ELASTIC_ENERGY, STRESS, THERMAL_ENERGY, NONLINEAR (END_COMPLIANCE),
    MODES, HARMONIC.
 4. **`reference` on every plugin class** (tested by `tests/apps/test_gui.py`). It names the paper and
@@ -45,8 +45,8 @@ the PDF). The working plan is `toporia/plugins/TODO.md`.
 7. **Docs:**
    - In the folder's README: a ✅ row, plus a section saying what the part does, with the paper
      link and how to use it in the GUI and on the command line. Run the CLI example yourself.
-   - In `toporia/plugins/LIBRARY.md`: add the row, and remove the item from "To add next".
-   - Then update the count tables in `toporia/plugins/README.md` and the top-level `README.md`.
+   - In `toporia_library/LIBRARY.md`: add the row, and remove the item from "To add next".
+   - Then update the count tables in `toporia_library/README.md` and the top-level `README.md`.
 8. **Python 3.14 on Windows:** `/c/Users/johan/AppData/Local/Python/pythoncore-3.14-64/python.exe`.
    It is not on PATH in bash; use `PYTHONPATH=.` for `-m toporia`. The full suite takes 10–20 min.
 9. **Commit messages** end with the co-author line the repository already uses. Don't push to
@@ -66,10 +66,10 @@ Files in that commit:
 
 | File | What it should be |
 | :-- | :-- |
-| `toporia/plugins/physics/q4_buckling.py` (212 lines) | Subclass of `Q4PlaneStress`. Adds the element geometric (stress) stiffness K_σ(u) from the linear prebuckling stress, the generalised eigenproblem (K + λ K_σ) φ = 0 for the lowest positive load factors (scipy `eigsh`, shift-invert, supports applied), and the load-factor sensitivities including the adjoint term through u. K_σ uses its own interpolation exponent, to avoid spurious modes in void. |
-| `toporia/plugins/models/q4_buckling.py` | The model, "2-D Q4 with buckling (Toporia)". |
-| `toporia/plugins/responses/buckling.py` | `buckling_load`. As objective: maximise the lowest load factor through a KS or p-norm aggregate of 1/λ of the lowest few modes. As constraint: λ₁ ≥ λ_min, normalised to ≤ 0. |
-| `toporia/plugins/problems/column_buckling.py` | Preset with the paper's compressed column. |
+| `toporia_library/physics/q4_buckling.py` (212 lines) | Subclass of `Q4PlaneStress`. Adds the element geometric (stress) stiffness K_σ(u) from the linear prebuckling stress, the generalised eigenproblem (K + λ K_σ) φ = 0 for the lowest positive load factors (scipy `eigsh`, shift-invert, supports applied), and the load-factor sensitivities including the adjoint term through u. K_σ uses its own interpolation exponent, to avoid spurious modes in void. |
+| `toporia_library/models/q4_buckling.py` | The model, "2-D Q4 with buckling (Toporia)". |
+| `toporia_library/responses/buckling.py` | `buckling_load`. As objective: maximise the lowest load factor through a KS or p-norm aggregate of 1/λ of the lowest few modes. As constraint: λ₁ ≥ λ_min, normalised to ≤ 0. |
+| `toporia_library/problems/column_buckling.py` | Preset with the paper's compressed column. |
 | `tests/plugins/test_buckling.py` (114 lines) | Euler-load check, finite-difference check of the sensitivity, preset run. |
 | Edits to `framework/parts/physics.py` (a BUCKLING section), `tests/apps/test_gui.py`, `plugins/LIBRARY.md`, and the READMEs and `__init__` docstrings of models, physics, problems and responses | Docs and registration. |
 
@@ -118,7 +118,7 @@ Files in that commit:
 | Simulated annealing | A deliberately weak gradient-free baseline. Cap the evaluations. It will probably fail the 10 %-of-OC benchmark: report that, don't register a failing part, and don't weaken the check. | topASA on GitHub |
 | Compliant mechanism + force inverter | A response that maximises output displacement u_out = lᵀu with springs at input and output, using the existing `adjoint()` / `mutual_energy()` of the STRESS feature. Springs need a scenario or physics addition (stiffness on the diagonal at the ports). Then the force-inverter preset. Use MMA (signed sensitivities). | Sigmund, *Mech. Struct. Mach.* 25 (1997), https://doi.org/10.1080/08905459708945415 |
 | pyMOTO mechanism module | Optional cross-check for the compliant mechanism, as `pymoto_heat` and `pymoto_dynamic` do for theirs. | pyMOTO |
-| Reference results from the original MATLAB codes | Historical scope was gradients only. The later GO authorises available-runtime references: top88 and top3d now have external fixtures. See `INTEGRATION-progress.md` for current results and remaining source/dependency gaps. Ask before installing or changing runtimes. | see `toporia/plugins/SURVEY.md` |
+| Reference results from the original MATLAB codes | Historical scope was gradients only. The later GO authorises available-runtime references: top88 and top3d now have external fixtures. See `INTEGRATION-progress.md` for current results and remaining source/dependency gaps. Ask before installing or changing runtimes. | see `toporia_library/SURVEY.md` |
 
 ## 6. Still to add: medium (new physics or a whole method)
 
@@ -134,7 +134,7 @@ Files in that commit:
 | Neural reparameterisation (TOuNN) | A representation whose variables are network weights, with the `adam` updater (already in). Needs PyTorch or JAX, which may have no Python 3.14 wheels on Windows: check first and report. | Chandrasekhar & Suresh, *SMO* 63 (2021), https://doi.org/10.1007/s00158-020-02748-4 |
 | SINH and Hashin–Shtrikman material laws | Need a small framework change: the material law must also see the volume (SINH) and Poisson's ratio (HS). Currently `Interpolation.stiffness(ρ, E0, Emin)` only. | Bruns 2005, https://doi.org/10.1007/s00158-005-0537-x ; Bendsøe & Sigmund 1999, https://doi.org/10.1007/s004190050248 |
 
-## 7. Small fixes noticed (from `toporia/plugins/TODO.md`)
+## 7. Small fixes noticed (from `toporia_library/TODO.md`)
 
 - The console's `obj=` column prints the change since iteration 1 (`engine/loop.py`), which reads
   like a negative compliance. Rename it `Δobj`, or print the objective.

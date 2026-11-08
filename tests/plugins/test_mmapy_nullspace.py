@@ -17,10 +17,10 @@ import sys
 import numpy as np
 import pytest
 
-from toporia.engine.loop import initialized_method
-from toporia.framework.parts.method import OBJECTIVE
-from toporia.plugins.problems import get_run
-from toporia.plugins.updaters import UPDATERS
+from toporia_core.engine.loop import initialized_method
+from toporia_core.framework.parts.method import OBJECTIVE
+from toporia_library.problems import get_run
+from toporia_library.updaters import UPDATERS
 
 HAVE_MMAPY = importlib.util.find_spec("mmapy") is not None
 HAVE_NULLSPACE = importlib.util.find_spec("nullspace_optimizer") is not None
@@ -58,7 +58,7 @@ def test_importing_the_adapters_does_not_import_the_gpl_libraries():
     """Registered and importable without the libraries: they are loaded only when a run starts."""
     script = (
         "import sys\n"
-        "import toporia.plugins.updaters.mmapy_optimizers, toporia.plugins.updaters.nullspace\n"
+        "import toporia_library.updaters.mmapy_optimizers, toporia_library.updaters.nullspace\n"
         "print('mmapy' in sys.modules, 'nullspace_optimizer' in sys.modules)\n"
     )
     result = subprocess.run([sys.executable, "-c", script], capture_output=True, text=True, check=True)
@@ -72,7 +72,7 @@ def test_importing_the_adapters_does_not_import_the_gpl_libraries():
 def test_the_install_hint_appears_when_the_library_is_missing(module, function, package):
     script = (
         f"import sys; sys.modules[{package!r}] = None   # make it unimportable\n"
-        f"from toporia.plugins.updaters.{module} import {function}\n"
+        f"from toporia_library.updaters.{module} import {function}\n"
         "try:\n"
         f"    {function}()\n"
         "except ImportError as error:\n"

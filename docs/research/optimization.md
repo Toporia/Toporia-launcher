@@ -26,14 +26,14 @@ Taking a density update directly on bar coordinates would violate this map.
 
 | Numerical function | Core computation | Files |
 | :-- | :-- | :-- |
-| Representation | `setup`, `initial`, `bounds`, `density(z)`, `backward(z, sensitivity)` | [Contract](../../toporia/framework/parts/representation.py), [implementations](../../toporia/plugins/representations/README.md) |
-| Assembled model | R, filters, material, state solve, responses, reverse chain | [assembled.py](../../toporia/plugins/models/assembled.py) |
-| Evaluation | Objective, volume, their gradients, additional constraints and reported scalars | [model.py](../../toporia/framework/parts/model.py) |
-| Updater | `initialize(model, settings)`, `update(z, evaluation, completed)` | [Contract](../../toporia/framework/parts/updater.py), [implementations](../../toporia/plugins/updaters/README.md) |
-| Composition | One model and one updater; compatibility checks; update and displayed field | [composition.py](../../toporia/framework/parts/composition.py) |
-| Flat view | Free variables, normalization, cached exact gradients and fixed-bound removal | [flat_view.py](../../toporia/framework/optimisers/flat_view.py) |
-| External loop | Pauses the library at callbacks; resumes/stops and records its verdict | [external_loop.py](../../toporia/framework/optimisers/external_loop.py) |
-| Engine loop | Schedules, step, record, continuation/stop checks, final output | [loop.py](../../toporia/engine/loop.py) |
+| Representation | `setup`, `initial`, `bounds`, `density(z)`, `backward(z, sensitivity)` | [Contract](../../toporia_core/framework/parts/representation.py), [implementations](../../toporia_library/representations/README.md) |
+| Assembled model | R, filters, material, state solve, responses, reverse chain | [assembled.py](../../toporia_core/framework/parts/assembled.py) |
+| Evaluation | Objective, volume, their gradients, additional constraints and reported scalars | [model.py](../../toporia_core/framework/parts/model.py) |
+| Updater | `initialize(model, settings)`, `update(z, evaluation, completed)` | [Contract](../../toporia_core/framework/parts/updater.py), [implementations](../../toporia_library/updaters/README.md) |
+| Composition | One model and one updater; compatibility checks; update and displayed field | [composition.py](../../toporia_core/framework/parts/composition.py) |
+| Flat view | Free variables, normalization, cached exact gradients and fixed-bound removal | [flat_view.py](../../toporia_core/framework/optimisers/flat_view.py) |
+| External loop | Pauses the library at callbacks; resumes/stops and records its verdict | [external_loop.py](../../toporia_core/framework/optimisers/external_loop.py) |
+| Engine loop | Schedules, step, record, continuation/stop checks, final output | [loop.py](../../toporia_core/engine/loop.py) |
 
 These last adapters and orchestration modules support functions; they are not
 new numerical plugins. The [module map](modules.md) lists them separately.

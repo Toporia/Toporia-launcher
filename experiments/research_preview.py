@@ -15,7 +15,7 @@ from PySide6.QtCore import QUrl
 from PySide6.QtGui import QFont, QFontDatabase, QTextCursor
 from PySide6.QtWidgets import QApplication, QTextBrowser
 
-from toporia.apps.gui.help import HelpWindow, problem_topic
+from toporia_gui.help import HelpWindow, problem_topic
 
 
 def main():

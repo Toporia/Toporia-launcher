@@ -7,9 +7,9 @@ COBYLA were tried and cannot: about +50 % over OC on the benchmark, so they are 
 import numpy as np
 from scipy.optimize import OptimizeResult
 
-from toporia.checks import conformance
-from toporia.plugins.updaters import UPDATERS
-from toporia.plugins.updaters.scipy_minimize import ScipyTrustConstr, _design, _moves_only
+from toporia_core.checks import conformance
+from toporia_library.updaters import UPDATERS
+from toporia_library.updaters.scipy_minimize import ScipyTrustConstr, _design, _moves_only
 
 
 def test_trust_constr_conforms_including_the_benchmark():

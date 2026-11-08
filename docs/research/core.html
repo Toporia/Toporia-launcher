@@ -13,10 +13,10 @@ post-processing. A preset is a recipe for these objects, not a new algorithm.</p
 fields have shape <code>(nely, nelx)</code> or <code>(nelz, nely, nelx)</code>; a representation's
 design variables can have another shape. Coordinates and units are defined by
 the scenario; the baseline paper examples use normalized stiffness and forces.</p>
-<p>Code: <a href="../../toporia/framework/problem/run.py">run.py</a>,
-<a href="../../toporia/framework/problem/scenario.py">scenario.py</a>,
-<a href="../../toporia/framework/problem/solver.py">solver.py</a>,
-<a href="../../toporia/framework/problem/mesh.py">mesh.py</a>.</p>
+<p>Code: <a href="../../toporia_core/framework/problem/run.py">run.py</a>,
+<a href="../../toporia_core/framework/problem/scenario.py">scenario.py</a>,
+<a href="../../toporia_core/framework/problem/solver.py">solver.py</a>,
+<a href="../../toporia_core/framework/problem/mesh.py">mesh.py</a>.</p>
 <h2>2. Turn variables into physical material</h2>
 <p>The representation maps variables to an element field. Filters act in their
 declared order. The pipeline then enforces fixed solid/void bounds.</p>
@@ -32,9 +32,9 @@ with the same shape as those variables.</p>
 its physical size. Boundary row sums differ; a normalized forward average is
 not generally its own adjoint. Sensitivity filtering is a separate heuristic:
 its forward map is identity and its modified gradient is a search direction.</p>
-<p>Code: <a href="../../toporia/framework/parts/representation.py">representation.py</a>,
-<a href="../../toporia/framework/parts/filter.py">filter.py</a>,
-<a href="../../toporia/plugins/filters/pipeline.py">pipeline.py</a>.</p>
+<p>Code: <a href="../../toporia_core/framework/parts/representation.py">representation.py</a>,
+<a href="../../toporia_core/framework/parts/filter.py">filter.py</a>,
+<a href="../../toporia_core/framework/parts/filter_pipeline.py">pipeline.py</a>.</p>
 <h2>3. Assign material and solve the state</h2>
 <p>For linear-elastic SIMP, density sets each element's modulus. Element stiffnesses
 are assembled at shared degrees of freedom; the solver handles supports and
@@ -49,9 +49,9 @@ matrix, and <img class="equation" src="data:image/png;base64,iVBORw0KGgoAAAANSUh
 stiffness and mass, and nonlinear elasticity solves a residual through Newton
 iterations. A generic state can therefore be written as:</p>
 <p><img class="equation" src="data:image/png;base64,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" width="82" height="14" alt="\mathcal{R}(u,\rho)=0."></p>
-<p>Code: <a href="../../toporia/plugins/physics/q4_plane_stress.py">q4_plane_stress.py</a>,
-<a href="../../toporia/plugins/interpolations/simp.py">simp.py</a>,
-<a href="../../toporia/framework/parts/physics.py">physics.py</a>.</p>
+<p>Code: <a href="../../toporia_library/physics/q4_plane_stress.py">q4_plane_stress.py</a>,
+<a href="../../toporia_library/interpolations/simp.py">simp.py</a>,
+<a href="../../toporia_core/framework/parts/physics.py">physics.py</a>.</p>
 <h2>4. Measure responses and differentiate</h2>
 <p>Responses ask physics for declared features rather than depending on its degree
 of freedom numbering. Fixed-load compliance is external work. Smaller compliance
@@ -77,9 +77,9 @@ routing filter floors its volume sensitivity for OC stability, and the Batch 2
 audit found a singular saturated-input case in volume-preserving projection.
 See the <a href="batch-2.md">documented exceptions and evidence</a> before treating those
 paths as universally exact or differentiable.</p>
-<p>Code: <a href="../../toporia/plugins/models/assembled.py">assembled.py</a>,
-<a href="../../toporia/framework/parts/response.py">response.py</a>,
-<a href="../../toporia/plugins/responses/compliance.py">compliance.py</a>.</p>
+<p>Code: <a href="../../toporia_core/framework/parts/assembled.py">assembled.py</a>,
+<a href="../../toporia_core/framework/parts/response.py">response.py</a>,
+<a href="../../toporia_library/responses/compliance.py">compliance.py</a>.</p>
 <h2>5. Update, continue and stop</h2>
 <p>The model returns an <code>Evaluation</code>: objective, volume, optional constraints and
 their gradients. The updater returns the next variables. Baseline OC uses:</p>
@@ -103,10 +103,10 @@ while continuation remains active, can accept a method-specific criterion, and
 always applies the iteration cap. Small motion alone proves neither feasibility
 nor a globally optimal or binary design. Post-processors then compute diagnostics
 or exports; thresholding changes the design and needs its own validation.</p>
-<p>Code: <a href="../../toporia/framework/parts/composition.py">composition.py</a>,
-<a href="../../toporia/plugins/updaters/oc.py">oc.py</a>,
-<a href="../../toporia/engine/loop.py">loop.py</a>,
-<a href="../../toporia/engine/postprocess.py">postprocess.py</a>.</p>
+<p>Code: <a href="../../toporia_core/framework/parts/composition.py">composition.py</a>,
+<a href="../../toporia_library/updaters/oc.py">oc.py</a>,
+<a href="../../toporia_core/engine/loop.py">loop.py</a>,
+<a href="../../toporia_core/engine/postprocess.py">postprocess.py</a>.</p>
 <h2>Which functions contain which other functions?</h2>
 <table>
 <thead>

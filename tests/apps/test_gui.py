@@ -12,14 +12,14 @@ import pytest
 os.environ.setdefault("QT_QPA_PLATFORM", "offscreen")
 QtWidgets = pytest.importorskip("PySide6.QtWidgets")
 
-from toporia.framework import read_param  # noqa: E402
-from toporia.framework.params import resolve_params  # noqa: E402
-from toporia.plugins.filters import FILTERS  # noqa: E402
-from toporia.plugins.methods import METHODS, method_class, method_classes  # noqa: E402
-from toporia.plugins.models import MODELS  # noqa: E402
-from toporia.plugins.problems import get_run, problem_names  # noqa: E402
-from toporia.plugins.responses import OBJECTIVE_ROLE, responses_for  # noqa: E402
-from toporia.plugins.updaters import UPDATERS  # noqa: E402
+from toporia_core.framework import read_param  # noqa: E402
+from toporia_core.framework.params import resolve_params  # noqa: E402
+from toporia_library.filters import FILTERS  # noqa: E402
+from toporia_library.methods import METHODS, method_class, method_classes  # noqa: E402
+from toporia_library.models import MODELS  # noqa: E402
+from toporia_library.problems import get_run, problem_names  # noqa: E402
+from toporia_library.responses import OBJECTIVE_ROLE, responses_for  # noqa: E402
+from toporia_library.updaters import UPDATERS  # noqa: E402
 
 PLUGINS = [(f"method:{c.name}", c) for c in METHODS.classes()] + \
           [(f"model:{c.name}", c) for c in MODELS.classes()] + \
@@ -44,14 +44,14 @@ def app():
 
 @pytest.fixture(scope="module")
 def window(app):
-    from toporia.apps.gui.window import MainWindow
+    from toporia_gui.window import MainWindow
     return MainWindow()
 
 
 @pytest.mark.parametrize("cls", [c for _, c in PLUGINS], ids=[i for i, _ in PLUGINS])
 def test_param_form_round_trips(app, cls):
     """Defaults, then extreme values, come back out exactly as they went in."""
-    from toporia.apps.gui.panels import ParamForm
+    from toporia_gui.panels import ParamForm
     form = ParamForm(cls.params)
     _assert_same(form.get_values(), resolve_params(cls.name, cls.params, {}))
 
@@ -67,7 +67,7 @@ def test_param_form_round_trips(app, cls):
 
 @pytest.mark.parametrize("name", METHOD_NAMES)
 def test_selecting_a_method_adapts_the_panels(window, name):
-    from toporia.apps.gui import runner
+    from toporia_gui import runner
     cls = method_class(name)
     window.core.select_method(name)
     assert window.core.method_name() == name
@@ -108,8 +108,8 @@ def test_the_pipeline_names_every_part_of_the_selection(window):
 
 
 def test_sharp_support_projection_keeps_small_moves_and_its_settings_in_the_gui(window):
-    from toporia.apps.gui import runner
-    from toporia.engine.loop import initialized_method
+    from toporia_core.engine.loop import initialized_method
+    from toporia_gui import runner
 
     window._on_config_changed("Cantilever")
     window.core.select_method("q4+mma")
@@ -128,8 +128,8 @@ def test_sharp_support_projection_keeps_small_moves_and_its_settings_in_the_gui(
 
 
 def test_multiresolution_keeps_the_fine_design_mesh_and_coarse_analysis_setting(window):
-    from toporia.apps.gui import runner
-    from toporia.engine.loop import initialized_method
+    from toporia_core.engine.loop import initialized_method
+    from toporia_gui import runner
 
     window._on_config_changed("Cantilever")
     window.core.select_method("q4_multiresolution+oc")
@@ -152,7 +152,7 @@ def test_older_method_names_select_the_parts_they_stand_for(window):
 
 @pytest.mark.parametrize("preset", problem_names())
 def test_a_preset_survives_the_round_trip_through_the_gui(window, preset):
-    from toporia.apps.gui import runner
+    from toporia_gui import runner
     window._on_config_changed(preset)
     cfg = runner.build_config(window.core, window.lc, window.filters, base_cfg=window._base_cfg)
     original = get_run(preset)
@@ -167,7 +167,7 @@ def test_a_preset_survives_the_round_trip_through_the_gui(window, preset):
 
 
 def test_fixed_projection_keeps_its_small_initial_asymptotes_in_the_gui(window):
-    from toporia.apps.gui import runner
+    from toporia_gui import runner
 
     preset = "MBB Beam (Fixed Projection)"
     window._on_config_changed(preset)
@@ -190,7 +190,7 @@ def test_objective_and_constraints_follow_the_method(window, name):
 
 
 def test_a_constraint_reaches_the_run_only_when_the_method_can_enforce_it(window):
-    from toporia.apps.gui import runner
+    from toporia_gui import runner
     window._on_config_changed("MBB Beam")
     window.core.select_method("q4+pymoto_mma")
     window.constraints.load_specs([{"type": "stress", "limit": 7.0}])
@@ -211,7 +211,7 @@ def test_a_constraint_reaches_the_run_only_when_the_method_can_enforce_it(window
 
 
 def test_check_parts_runs_the_conformance_test_on_the_selected_pipeline(window):
-    from toporia.apps.gui import runner
+    from toporia_gui import runner
     window._on_config_changed("MBB Beam")
     window.core.select_method("q4+oc")
     cfg = runner.build_config(window.core, window.lc, window.filters, base_cfg=window._base_cfg,
@@ -227,7 +227,7 @@ def test_check_parts_runs_the_conformance_test_on_the_selected_pipeline(window):
 
 
 def test_compare_methods_lists_every_method_and_runs_the_ticked_ones(window, tmp_path):
-    from toporia.apps.gui import runner
+    from toporia_gui import runner
     window._on_config_changed("MBB Beam")
     assert window.mode.findText("Compare Methods") >= 0
     assert window.cmg.selected() == ["q4+oc", "q4+mma", "q4+simpl", "q4+beso"]   # the classic four
@@ -246,7 +246,7 @@ def test_compare_methods_lists_every_method_and_runs_the_ticked_ones(window, tmp
 
 
 def test_the_material_law_panel_follows_the_method(window):
-    from toporia.apps.gui import runner
+    from toporia_gui import runner
     window._on_config_changed("MBB Beam")
     window.core.select_method("q4+oc")
     assert not window.material.isHidden()
@@ -267,7 +267,7 @@ def test_the_material_law_panel_follows_the_method(window):
 
 
 def test_the_design_representation_panel_follows_the_method(window):
-    from toporia.apps.gui import runner
+    from toporia_gui import runner
     window._on_config_changed("MBB Beam")
     window.core.select_method("q4+mma")
     assert not window.design.representation.isHidden()
@@ -322,7 +322,7 @@ def test_the_resolution_can_be_given_as_an_element_size(window):
 
 def test_a_3d_run_ends_with_a_3d_view(window, tmp_path):
     pytest.importorskip("skimage")
-    from toporia.apps.gui import runner
+    from toporia_gui import runner
     window._on_config_changed("Cantilever 3D")
     cfg = _built(window).updated(max_iter=3).with_output_dir(tmp_path)
     density = runner.run_one(cfg, None, lambda *_: None)
@@ -333,7 +333,7 @@ def test_a_3d_run_ends_with_a_3d_view(window, tmp_path):
 
 
 def _built(window):
-    from toporia.apps.gui import runner
+    from toporia_gui import runner
     return runner.build_config(window.core, window.lc, window.filters, base_cfg=window._base_cfg,
                                objective=window.objective, constraints=window.constraints,
                                interpolation=window.material, representation=window.design,
@@ -397,7 +397,7 @@ REGISTRIES = ("methods", "models", "updaters", "filters", "interpolations", "res
 def _all_plugin_classes():
     import importlib
     for package in REGISTRIES:
-        module = importlib.import_module(f"toporia.plugins.{package}")
+        module = importlib.import_module(f"toporia_library.{package}")
         yield from getattr(module, package.upper()).classes()
 
 
@@ -408,13 +408,13 @@ def test_every_plugin_says_where_it_comes_from(cls):
 
 @pytest.mark.parametrize("preset", problem_names())
 def test_every_preset_says_what_it_is_and_where_it_comes_from(preset):
-    from toporia.plugins.problems import problem_info
+    from toporia_library.problems import problem_info
     about, reference = problem_info(preset)
     assert about and reference
 
 
 def test_every_help_button_in_the_window_opens_a_sourced_topic(window):
-    from toporia.apps.gui.help import UNSTATED, HelpButton, HelpWindow
+    from toporia_gui.help import UNSTATED, HelpButton, HelpWindow
     window._on_config_changed("MBB Beam")
     buttons = window.findChildren(HelpButton)
     assert len(buttons) > 50
@@ -430,8 +430,8 @@ def test_every_help_button_in_the_window_opens_a_sourced_topic(window):
 
 @pytest.mark.parametrize("cls", [c for _, c in PLUGINS], ids=[i for i, _ in PLUGINS])
 def test_every_generated_parameter_has_a_help_button(app, cls):
-    from toporia.apps.gui.help import HelpButton
-    from toporia.apps.gui.panels import ParamForm
+    from toporia_gui.help import HelpButton
+    from toporia_gui.panels import ParamForm
     form = ParamForm(cls.params, owner=cls)
     buttons = form.findChildren(HelpButton)
     assert len(buttons) == len(cls.params)
@@ -450,7 +450,7 @@ def test_a_dropdowns_help_follows_the_selection(window):
 
 
 def test_the_pipeline_is_drawn_as_a_network_whose_boxes_explain_themselves(window):
-    from toporia.apps.gui.panels.pipeline import node_topic
+    from toporia_gui.panels.pipeline import node_topic
     window._on_config_changed("MBB Beam")
     window.core.select_method("q4+mma")
     window._use_robust_projection()
@@ -487,7 +487,7 @@ def test_every_preset_can_be_drawn_before_it_is_solved(preset):
     matplotlib.use("Agg")
     import matplotlib.pyplot as plt
 
-    from toporia.apps.gui.preview import describe_problem, draw_problem
+    from toporia_gui.preview import describe_problem, draw_problem
     run = get_run(preset)
     fig, ax = plt.subplots()
     shown = draw_problem(ax, run.scenario, title=describe_problem(run.scenario, run.solver.m, preset))
@@ -496,8 +496,8 @@ def test_every_preset_can_be_drawn_before_it_is_solved(preset):
 
 
 def test_the_fallback_supports_and_loads_are_drawn_where_the_solver_puts_them():
-    from toporia.apps.gui.preview import supports_and_loads
-    from toporia.framework import Scenario
+    from toporia_core.framework import Scenario
+    from toporia_gui.preview import supports_and_loads
     edges, points, loads = supports_and_loads(Scenario(Lx=80.0, Ly=40.0))
     assert edges == [("left", "both")] and points == [] and loads == [(80.0, 20.0)]
 
@@ -518,7 +518,7 @@ def test_the_view_shows_the_problem_until_a_run_starts(window):
 
 
 def test_post_processors_can_be_applied_to_the_last_design_without_a_new_run(window, tmp_path):
-    from toporia.apps.gui import runner
+    from toporia_gui import runner
     window.config_combo.setCurrentText("MBB Beam")
     cfg = _built(window).updated(max_iter=3, m=0.3, save_every=0).with_output_dir(tmp_path)
     runner.run_one(cfg, None, lambda *_: None)
@@ -538,7 +538,7 @@ def test_post_processors_can_be_applied_to_the_last_design_without_a_new_run(win
 def test_sweep_methods_puts_the_methods_down_the_rows_and_a_setting_across(window, tmp_path):
     import csv
 
-    from toporia.apps.gui import runner
+    from toporia_gui import runner
     window.config_combo.setCurrentText("MBB Beam")
     window.mode.setCurrentText("Sweep Methods")
     assert not window.msg.isHidden() and window.run_btn.text() == "▶  Run: Sweep Methods"
@@ -595,7 +595,7 @@ def test_every_registered_part_and_preset_can_be_picked_in_the_gui(window):
         window.constraints.load_specs([])
     missing = [f"{package}:{cls.name}"
                for package in REGISTRIES
-               for cls in getattr(importlib.import_module(f"toporia.plugins.{package}"),
+               for cls in getattr(importlib.import_module(f"toporia_library.{package}"),
                                   package.upper()).classes()
                if (cls.label or cls.name) not in texts and cls.name not in texts]
     missing += [f"problem:{name}" for name in problem_names() if name not in texts]
@@ -603,8 +603,8 @@ def test_every_registered_part_and_preset_can_be_picked_in_the_gui(window):
 
 
 def test_the_heat_sink_preset_offers_thermal_compliance_and_runs_from_the_gui(window):
-    from toporia.apps.gui import runner
-    from toporia.engine.loop import initialized_method
+    from toporia_core.engine.loop import initialized_method
+    from toporia_gui import runner
     window._on_config_changed("Heat Sink")
     assert window.core.method_name() == "q4_heat+oc"
     assert window.objective.offered_types() == ["thermal_compliance"]
@@ -620,9 +620,9 @@ def test_the_heat_sink_preset_offers_thermal_compliance_and_runs_from_the_gui(wi
 
 
 def test_the_force_inverter_preserves_springs_and_its_signed_output_in_the_gui(window):
-    from toporia.apps.gui import runner
-    from toporia.checks.common import iterate
-    from toporia.engine.loop import initialized_method
+    from toporia_core.checks.common import iterate
+    from toporia_core.engine.loop import initialized_method
+    from toporia_gui import runner
     window._on_config_changed("Force Inverter")
     assert window.core.method_name() == "q4_mechanism+mma"
     assert "output_displacement" in window.objective.offered_types()
@@ -643,7 +643,7 @@ def test_the_force_inverter_preserves_springs_and_its_signed_output_in_the_gui(w
 
 @pytest.mark.parametrize("magnitude", [0.000001, 0.001, 0.012345, 1.0, 1234.56789])
 def test_load_case_rows_preserve_small_force_magnitudes(app, magnitude):
-    from toporia.apps.gui.panels.loads import LoadCaseRow
+    from toporia_gui.panels.loads import LoadCaseRow
 
     row = LoadCaseRow(1, fmag=magnitude)
     assert row.get().Fmag == pytest.approx(magnitude, rel=1e-12)
@@ -654,7 +654,7 @@ def test_force_inverter_comparison_selects_spring_models_and_runs_them(window, t
 
     from PySide6.QtCore import Qt
 
-    from toporia.apps.gui import runner
+    from toporia_gui import runner
 
     window._on_config_changed("Force Inverter")
     expected = ["q4_mechanism+mma", "q4_mechanism+conlin"]
@@ -684,7 +684,7 @@ def test_force_inverter_comparison_selects_spring_models_and_runs_them(window, t
 
 @pytest.mark.parametrize("mode,panel", [("compare", "cmg"), ("sweep", "msg")])
 def test_method_studies_require_at_least_one_compatible_selection(window, mode, panel):
-    from toporia.apps.gui import runner
+    from toporia_gui import runner
 
     window._on_config_changed("Force Inverter")
     group = getattr(window, panel)
@@ -709,10 +709,10 @@ def test_every_presets_default_method_comparison_runs_from_the_gui(window, tmp_p
 
     import numpy as np
 
-    from toporia.apps.gui import runner
-    from toporia.engine.modes.methods import comparison_problems
-    from toporia.plugins.responses import RESPONSES
-    from toporia.plugins.responses.minimum_length import calibration
+    from toporia_core.engine.modes.methods import comparison_problems
+    from toporia_gui import runner
+    from toporia_library.responses import RESPONSES
+    from toporia_library.responses.minimum_length import calibration
 
     def expanded(scenario):
         # GUI rows spell out defaults that a preset may omit; compare their

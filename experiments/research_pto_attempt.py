@@ -27,11 +27,11 @@ from pathlib import Path
 import numpy as np
 
 from experiments.research_batch3 import dump
-from toporia.engine.loop import _loop, initialized_method
-from toporia.engine.records import ResultStore
-from toporia.framework import LoadCase, PointConstraint, PointLoad
-from toporia.framework.problem.run import Run
-from toporia.plugins.problems._research_batch3 import recipe
+from toporia_core.engine.loop import _loop, initialized_method
+from toporia_core.engine.records import ResultStore
+from toporia_core.framework import LoadCase, PointConstraint, PointLoad
+from toporia_core.framework.problem.run import Run
+from toporia_library.problems._research_batch3 import recipe
 
 ROOT = Path(__file__).resolve().parents[1]
 REFERENCE = ROOT / "tests/references/paper_ptoc.json"
@@ -146,7 +146,7 @@ def attempt(reference, output):
 
 def reproduce_ptoc(reference, output):
     """Run the original PTOc preset and compare it with the captured author run, step by step."""
-    from toporia.plugins.problems import get_run
+    from toporia_library.problems import get_run
     output.mkdir(parents=True, exist_ok=True)
     run = get_run("Paper: PTOc Fig. 3 (MBB)").with_output_dir(output / "run")
     with (output / "execution.log").open("w", encoding="utf-8") as log, contextlib.redirect_stdout(log):

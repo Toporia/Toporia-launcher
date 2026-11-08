@@ -9,11 +9,11 @@ import pytest
 from experiments.research_batch3 import cap_probe, representation_probe, run_case, update_probe
 from experiments.research_pto_attempt import SOURCE_HASH, capture
 from experiments.research_publish3 import publish
-from toporia.engine.loop import initialized_method
-from toporia.framework.problem.mesh import make_problem
-from toporia.plugins.physics.q4_plane_stress import solve_fea
-from toporia.plugins.problems import get_run, problem_description, problem_names
-from toporia.plugins.problems._research_batch3 import CASES, metadata, recipe
+from toporia_core.engine.loop import initialized_method
+from toporia_core.framework.problem.mesh import make_problem
+from toporia_library.physics.q4_plane_stress import solve_fea
+from toporia_library.problems import get_run, problem_description, problem_names
+from toporia_library.problems._research_batch3 import CASES, metadata, recipe
 
 ROOT = Path(__file__).resolve().parents[2]
 

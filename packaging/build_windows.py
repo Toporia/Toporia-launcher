@@ -18,7 +18,7 @@ from pathlib import Path
 ROOT = Path(__file__).resolve().parents[1]
 sys.path.insert(0, str(ROOT))
 
-from toporia import __version__  # noqa: E402
+from toporia_core import __version__  # noqa: E402
 
 DIST, BUILD = ROOT / "dist", ROOT / "build"
 NAME = "Toporia"
@@ -31,8 +31,12 @@ def pyinstaller():
     command = [sys.executable, "-m", "PyInstaller", str(ROOT / "main.py"), "--name", NAME,
                "--noconfirm", "--clean", "--windowed", "--distpath", str(DIST), "--workpath", str(BUILD),
                "--specpath", str(BUILD),
-               # Plugins are found by scanning their packages, so every module and data file goes in.
-               "--collect-submodules", "toporia", "--collect-data", "toporia",
+               # Parts are found by scanning their packages, so every module and data file goes in;
+               # the core finds the library and the app through entry points: copy the metadata.
+               "--collect-submodules", "toporia_core", "--collect-data", "toporia_core",
+               "--collect-submodules", "toporia_library", "--collect-data", "toporia_library",
+               "--collect-submodules", "toporia_gui", "--collect-data", "toporia_gui",
+               "--copy-metadata", "toporia",
                "--hidden-import", "matplotlib.backends.backend_qtagg",
                # Never bundled: test and development tools.
                "--exclude-module", "pytest", "--exclude-module", "ruff", "--exclude-module", "PyInstaller"]

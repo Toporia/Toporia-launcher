@@ -2,16 +2,16 @@
 
 import pytest
 
-from toporia.plugins.compatibility import demo_presets, function_id, use_when, works_with
-from toporia.plugins.filters import FILTERS
-from toporia.plugins.interpolations import INTERPOLATIONS
-from toporia.plugins.methods import METHODS, method_class
-from toporia.plugins.models import MODELS
-from toporia.plugins.postprocessors import POSTPROCESSORS
-from toporia.plugins.representations import REPRESENTATIONS
-from toporia.plugins.responses import RESPONSES
-from toporia.plugins.schedules import SCHEDULES
-from toporia.plugins.updaters import UPDATERS
+from toporia_library.compatibility import demo_presets, function_id, use_when, works_with
+from toporia_library.filters import FILTERS
+from toporia_library.interpolations import INTERPOLATIONS
+from toporia_library.methods import METHODS, method_class
+from toporia_library.models import MODELS
+from toporia_library.postprocessors import POSTPROCESSORS
+from toporia_library.representations import REPRESENTATIONS
+from toporia_library.responses import RESPONSES
+from toporia_library.schedules import SCHEDULES
+from toporia_library.updaters import UPDATERS
 
 PARTS = [cls for registry in (FILTERS, INTERPOLATIONS, REPRESENTATIONS, RESPONSES, SCHEDULES, POSTPROCESSORS,
                               MODELS, UPDATERS, METHODS) for cls in registry.classes()]

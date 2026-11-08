@@ -6,7 +6,7 @@ as a validated data-only workflow.
 
 ## Plugin contracts
 
-Choose the existing contract in `toporia/framework/parts/`: representation,
+Choose the existing contract in `toporia_core/framework/parts/`: representation,
 filter, model, updater, response, interpolation, schedule, method, or postprocess.
 A whole method implements optimization lifecycle itself; an assembled method
 combines a model (physics, responses, gradients) and an updater (design changes).
@@ -27,7 +27,7 @@ only when its volume derivative differs. See `plugins/filters/density.py` and
 ## Discovery and validation
 
 Built-in registries scan non-underscore modules under their plugin package.
-Adding a subclass in `toporia/plugins/filters/`, for example, makes it available
+Adding a subclass in `toporia_library/filters/`, for example, makes it available
 without editing a central list. External packages can declare an entry point,
 such as `[project.entry-points."toporia.filters"]`, pointing to a plugin module
 or class. Registries also support explicit `register()` for scripts/tests.

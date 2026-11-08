@@ -19,16 +19,16 @@ import pytest
 
 matplotlib.use("Agg")   # never open a window during tests
 
-from toporia.engine.modes.compare import compare_load_cases, compare_two  # noqa: E402
-from toporia.engine.modes.sensitivity import (  # noqa: E402
+from toporia_core.engine.modes.compare import compare_load_cases, compare_two  # noqa: E402
+from toporia_core.engine.modes.sensitivity import (  # noqa: E402
     sensitivity_field,
     sensitivity_sweep,
     sensitivity_sweep_2d,
 )
-from toporia.engine.modes.single import run_one  # noqa: E402
-from toporia.engine.modes.sweep import sweep, sweep_2d  # noqa: E402
-from toporia.framework import LoadCase  # noqa: E402
-from toporia.plugins.problems import get_run  # noqa: E402
+from toporia_core.engine.modes.single import run_one  # noqa: E402
+from toporia_core.engine.modes.sweep import sweep, sweep_2d  # noqa: E402
+from toporia_core.framework import LoadCase  # noqa: E402
+from toporia_library.problems import get_run  # noqa: E402
 
 
 @pytest.fixture
@@ -116,7 +116,7 @@ def test_a_grid_leaves_a_skipped_run_empty_but_titled(tmp_path):
     import matplotlib.pyplot as plt
     import numpy as np
 
-    from toporia.engine.modes.grids import DESIGNS, save_grid
+    from toporia_core.engine.modes.grids import DESIGNS, save_grid
     image = tmp_path / "design.png"
     plt.imsave(image, np.random.default_rng(0).random((20, 60)), cmap="gray")
     grid = save_grid([(image, "ran"), (None, "skipped: cannot enforce stress")], 1, 2,
@@ -127,7 +127,7 @@ def test_a_grid_leaves_a_skipped_run_empty_but_titled(tmp_path):
 def test_a_sweep_in_parallel_processes_gives_the_same_designs(tmp_path, monkeypatch):
     import numpy as np
 
-    from toporia.engine.modes.grids import workers_for
+    from toporia_core.engine.modes.grids import workers_for
     base = get_run("MBB Beam").updated(m=0.25, max_iter=3, tol=0.0, save_every=0)
     monkeypatch.setenv("TOPORIA_WORKERS", "1")
     sweep("volfrac", 0.3, 0.5, 1, 3, base.with_output_dir(tmp_path / "one"))

@@ -10,7 +10,7 @@ import re
 from io import BytesIO
 from pathlib import Path
 
-from toporia.apps.research_render import equation_image
+from toporia_gui.research_render import equation_image
 
 ROOT = Path(__file__).resolve().parents[1]
 

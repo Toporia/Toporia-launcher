@@ -8,10 +8,10 @@ import pytest
 
 from experiments.research_batch2 import CASES, CURVE_MATCHES, run_case
 from experiments.research_figures import compare
-from toporia.engine.loop import initialized_method
-from toporia.framework.problem.run import Run
-from toporia.plugins.problems import problem_description, problem_names
-from toporia.plugins.problems._research_batch2 import QUARANTINED, description, metadata, recipe
+from toporia_core.engine.loop import initialized_method
+from toporia_core.framework.problem.run import Run
+from toporia_library.problems import problem_description, problem_names
+from toporia_library.problems._research_batch2 import QUARANTINED, description, metadata, recipe
 
 
 @pytest.mark.parametrize("case_id", [name for name in CASES if name != "pde"])
@@ -77,10 +77,10 @@ def test_volume_preserving_companion_is_registered_once_its_binary_limit_is_sett
 def test_volume_preserving_projection_refuses_solid_void_updaters_in_any_position():
     # Behind a density filter smaller than one cell a BESO design stays 0/1 (the GUI comparison
     # hit this on its coarse mesh), so the refusal does not depend on the chain position.
-    from toporia.engine.pipeline import solver_problems
-    from toporia.framework import Run, Scenario, Solver
-    from toporia.plugins.filters.heaviside import HeavisideFilter
-    from toporia.plugins.methods import method_class
+    from toporia_core.engine.pipeline import solver_problems
+    from toporia_core.framework import Run, Scenario, Solver
+    from toporia_library.filters.heaviside import HeavisideFilter
+    from toporia_library.methods import method_class
     projection = HeavisideFilter(eta_mode="volume_preserving")
     for method in ("q4+tobs", "q4+beso", "q4+beso_hard"):
         for specs in ([{"type": "heaviside", "eta_mode": "volume_preserving"}],

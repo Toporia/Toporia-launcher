@@ -13,9 +13,9 @@ from time import perf_counter
 
 import numpy as np
 
-from toporia.engine.loop import initialized_method
-from toporia.plugins.physics.q4_plane_stress import Q4PlaneStress
-from toporia.plugins.problems import get_run
+from toporia_core.engine.loop import initialized_method
+from toporia_library.physics.q4_plane_stress import Q4PlaneStress
+from toporia_library.problems import get_run
 
 
 def validate(preset, factor=2, iterations=100, mesh=1.0, radius=3.0):

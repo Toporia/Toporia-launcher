@@ -5,13 +5,13 @@ from dataclasses import replace
 import numpy as np
 import pytest
 
-from toporia.apps.gui.geometry import make_object, objects_from_scenario
-from toporia.framework.problem.mesh import make_problem
-from toporia.framework.problem.run import Run
-from toporia.framework.problem.scenario import Scenario
-from toporia.framework.problem.solver import Solver
-from toporia.plugins.physics.h8_solid import H8DofLayout
-from toporia.plugins.problems import get_run
+from toporia_core.framework.problem.mesh import make_problem
+from toporia_core.framework.problem.run import Run
+from toporia_core.framework.problem.scenario import Scenario
+from toporia_core.framework.problem.solver import Solver
+from toporia_gui.geometry import make_object, objects_from_scenario
+from toporia_library.physics.h8_solid import H8DofLayout
+from toporia_library.problems import get_run
 
 
 def spatial_objects():
@@ -49,7 +49,7 @@ def test_legacy_extrusion_copy_keeps_h8_supports_and_layer_force_shares():
 
 
 def test_h8_optimizer_accepts_true_spatial_definition(tmp_path):
-    from toporia.engine.loop import run_single
+    from toporia_core.engine.loop import run_single
     run = Run(scenario=scenario(), solver=Solver(method="h8+oc", m=.5, max_iter=2, filter_specs=[{"type": "density"}]))
     density = run_single(run.with_output_dir(tmp_path))
     assert density.shape == (2, 2, 5)
@@ -58,8 +58,8 @@ def test_h8_optimizer_accepts_true_spatial_definition(tmp_path):
 
 def test_stl_can_define_support_load_domain_and_solid_void_regions(tmp_path):
     pv = pytest.importorskip("pyvista")
-    from toporia.apps.gui.geometry_import import import_stl
-    from toporia.apps.gui.project import ProblemDocument
+    from toporia_gui.geometry_import import import_stl
+    from toporia_gui.project import ProblemDocument
     path = tmp_path / "patch.stl"
     pv.Cube(bounds=(-.1, .1, 0, 4, 0, 4)).triangulate().save(path)
     support = import_stl(path, "support")
@@ -87,7 +87,7 @@ def test_stl_can_define_support_load_domain_and_solid_void_regions(tmp_path):
 
 def test_open_stl_is_a_surface_patch_and_cannot_be_a_volume(tmp_path):
     pv = pytest.importorskip("pyvista")
-    from toporia.apps.gui.geometry_import import import_stl
+    from toporia_gui.geometry_import import import_stl
     path = tmp_path / "face.stl"
     pv.Plane(center=(10, 2, 2), direction=(1, 0, 0), i_size=4, j_size=4).triangulate().save(path)
     patch = import_stl(path, "load")

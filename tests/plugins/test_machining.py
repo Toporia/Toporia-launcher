@@ -5,11 +5,11 @@ from types import SimpleNamespace
 import numpy as np
 import pytest
 
-from toporia.checks import conformance
-from toporia.engine.loop import initialized_method
-from toporia.framework.problem.scenario import EnforcedArea
-from toporia.plugins.filters.machining import MachiningFilter
-from toporia.plugins.problems import get_run
+from toporia_core.checks import conformance
+from toporia_core.engine.loop import initialized_method
+from toporia_core.framework.problem.scenario import EnforcedArea
+from toporia_library.filters.machining import MachiningFilter
+from toporia_library.problems import get_run
 
 
 def make_filter(shape=(7, 11), spacing=None, solid=None, **settings):

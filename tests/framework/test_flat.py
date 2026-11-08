@@ -9,11 +9,11 @@ caching is meant to keep down.
 import numpy as np
 import pytest
 
-from toporia.engine.loop import initialized_method
-from toporia.framework.optimisers.flat_view import VOLUME_BUDGET, FlatProblem
-from toporia.framework.problem.mesh import RectangularProblem
-from toporia.plugins.models.q4 import Q4Model
-from toporia.plugins.problems import get_run
+from toporia_core.engine.loop import initialized_method
+from toporia_core.framework.optimisers.flat_view import VOLUME_BUDGET, FlatProblem
+from toporia_core.framework.problem.mesh import RectangularProblem
+from toporia_library.models.q4 import Q4Model
+from toporia_library.problems import get_run
 
 STRESS = {"type": "stress", "limit": 5.0}
 

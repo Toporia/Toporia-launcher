@@ -5,16 +5,16 @@ from dataclasses import replace
 import numpy as np
 import pytest
 
-from toporia.checks.method import check_method
-from toporia.engine.loop import initialized_method
-from toporia.framework import PointSpring
-from toporia.framework.problem.mesh import make_problem
-from toporia.plugins.methods.levelset_reaction_diffusion import (
+from toporia_core.checks.method import check_method
+from toporia_core.engine.loop import initialized_method
+from toporia_core.framework import PointSpring
+from toporia_core.framework.problem.mesh import make_problem
+from toporia_library.methods.levelset_reaction_diffusion import (
     ReactionDiffusionLevelSet,
     material_fraction,
     topological_matrix,
 )
-from toporia.plugins.problems import get_run
+from toporia_library.problems import get_run
 
 
 def _method(**values):
@@ -49,7 +49,7 @@ def test_tensor_matches_independent_strain_contraction_on_rectangles(nu):
 
 
 def test_tensor_is_not_the_density_energy_matrix():
-    from toporia.plugins.physics.q4_plane_stress import element_stiffness
+    from toporia_library.physics.q4_plane_stress import element_stiffness
     td = topological_matrix(0.3, 1.0, 1.0)
     ordinary = element_stiffness(0.3)
     ratio = np.vdot(td, ordinary)/np.vdot(ordinary, ordinary)

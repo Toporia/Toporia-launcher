@@ -9,11 +9,11 @@ and 3-D, plus a short optimisation run with each.  The gradient is checked by
 import numpy as np
 import pytest
 
-from toporia.engine.loop import initialized_method
-from toporia.plugins.filters.casting import CastingFilter
-from toporia.plugins.filters.extrusion import ExtrusionFilter
-from toporia.plugins.filters.pattern import PatternFilter
-from toporia.plugins.problems import get_run
+from toporia_core.engine.loop import initialized_method
+from toporia_library.filters.casting import CastingFilter
+from toporia_library.filters.extrusion import ExtrusionFilter
+from toporia_library.filters.pattern import PatternFilter
+from toporia_library.problems import get_run
 
 
 class _P2:

@@ -9,13 +9,13 @@ filter must still converge to a sensible, not-greyer design.
 import numpy as np
 import pytest
 
-from toporia.checks import conformance
-from toporia.engine.loop import initialized_method
-from toporia.framework.parts.method import OBJECTIVE
-from toporia.framework.problem.mesh import make_problem
-from toporia.plugins.filters.density import DensityFilter
-from toporia.plugins.filters.morphology import MorphologyFilter
-from toporia.plugins.problems import get_run
+from toporia_core.checks import conformance
+from toporia_core.engine.loop import initialized_method
+from toporia_core.framework.parts.method import OBJECTIVE
+from toporia_core.framework.problem.mesh import make_problem
+from toporia_library.filters.density import DensityFilter
+from toporia_library.filters.morphology import MorphologyFilter
+from toporia_library.problems import get_run
 
 
 def _mbb(**values):

@@ -7,9 +7,9 @@ import pytest
 os.environ.setdefault("QT_QPA_PLATFORM", "offscreen")
 from PySide6.QtWidgets import QApplication, QMessageBox
 
-from toporia.apps.gui.project import Project
-from toporia.apps.gui.window import MainWindow
-from toporia.plugins.problems import get_run
+from toporia_gui.project import Project
+from toporia_gui.window import MainWindow
+from toporia_library.problems import get_run
 
 
 @pytest.fixture(scope="module")

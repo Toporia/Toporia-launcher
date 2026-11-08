@@ -9,9 +9,9 @@ meant to be used: compliance under the volume budget AND a stress limit.
 import numpy as np
 import pytest
 
-from toporia.engine.loop import initialized_method
-from toporia.plugins.methods import method_class
-from toporia.plugins.problems import get_run
+from toporia_core.engine.loop import initialized_method
+from toporia_library.methods import method_class
+from toporia_library.problems import get_run
 
 
 def _run(run):

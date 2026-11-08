@@ -5,12 +5,12 @@ from types import SimpleNamespace
 import numpy as np
 import pytest
 
-from toporia.checks.common import iterate
-from toporia.checks.updater import check_updater
-from toporia.engine.loop import initialized_method
-from toporia.plugins.problems import get_run
-from toporia.plugins.updaters.floating_projection import FloatingProjectionUpdater
-from toporia.plugins.updaters.oc import OCUpdater
+from toporia_core.checks.common import iterate
+from toporia_core.checks.updater import check_updater
+from toporia_core.engine.loop import initialized_method
+from toporia_library.problems import get_run
+from toporia_library.updaters.floating_projection import FloatingProjectionUpdater
+from toporia_library.updaters.oc import OCUpdater
 
 
 class _VolumeModel:

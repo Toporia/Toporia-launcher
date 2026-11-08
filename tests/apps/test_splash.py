@@ -7,7 +7,7 @@ import pytest
 os.environ.setdefault("QT_QPA_PLATFORM", "offscreen")
 QtWidgets = pytest.importorskip("PySide6.QtWidgets")
 
-from toporia.apps.gui import splash  # noqa: E402
+from toporia_gui import splash  # noqa: E402
 
 
 def test_the_bar_counts_down_the_average_of_recent_start_ups():

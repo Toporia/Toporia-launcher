@@ -10,12 +10,12 @@ import pytest
 os.environ.setdefault("QT_QPA_PLATFORM", "offscreen")
 QtWidgets = pytest.importorskip("PySide6.QtWidgets")
 
-from toporia.apps.gui.canvas import LiveCanvas  # noqa: E402
-from toporia.apps.gui.inspect_view import InspectPanel, find_runs, variables  # noqa: E402
-from toporia.engine.fields import analysis_fields  # noqa: E402
-from toporia.engine.loop import run_single  # noqa: E402
-from toporia.engine.modes.compare import compare_two  # noqa: E402
-from toporia.plugins.problems import get_run  # noqa: E402
+from toporia_core.engine.fields import analysis_fields  # noqa: E402
+from toporia_core.engine.loop import run_single  # noqa: E402
+from toporia_core.engine.modes.compare import compare_two  # noqa: E402
+from toporia_gui.canvas import LiveCanvas  # noqa: E402
+from toporia_gui.inspect_view import InspectPanel, find_runs, variables  # noqa: E402
+from toporia_library.problems import get_run  # noqa: E402
 
 
 def _small(name="MBB Beam", **values):
@@ -66,7 +66,7 @@ def test_a_comparison_lists_each_of_its_runs(app, tmp_path):
 
 
 def test_the_analysis_fields_follow_each_physics():
-    from toporia.framework.problem.mesh import make_problem
+    from toporia_core.framework.problem.mesh import make_problem
     heat = _small("Heat Sink")
     density = np.ones(make_problem(heat.scenario, heat.solver.m).shape)
     fields = analysis_fields(heat, density)

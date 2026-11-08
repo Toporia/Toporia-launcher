@@ -6,8 +6,8 @@ from types import SimpleNamespace
 import numpy as np
 import pytest
 
-from toporia.framework.params import resolve_params
-from toporia.plugins.responses.minimum_length import MinimumLength, calibration, cone_kernel
+from toporia_core.framework.params import resolve_params
+from toporia_library.responses.minimum_length import MinimumLength, calibration, cone_kernel
 
 
 def response(shape=(12, 16), spacing=None, **settings):

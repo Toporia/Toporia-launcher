@@ -9,10 +9,10 @@ import json
 import numpy as np
 import pytest
 
-from toporia.engine.loop import initialized_method, run_single_with_store
-from toporia.engine.pipeline import pipeline_stages
-from toporia.framework.parts.variants import VariantModel
-from toporia.plugins.problems import get_run
+from toporia_core.engine.loop import initialized_method, run_single_with_store
+from toporia_core.engine.pipeline import pipeline_stages
+from toporia_core.framework.parts.variants import VariantModel
+from toporia_library.problems import get_run
 
 FILTERS = [{"type": "density"}, {"type": "heaviside", "beta": 4.0, "beta_max": 4.0}]
 ROBUST = {"path": "filters[1].eta", "values": [0.75, 0.5, 0.25]}

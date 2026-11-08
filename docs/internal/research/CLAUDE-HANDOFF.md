@@ -38,7 +38,7 @@ relaxed to hide it. Do not translate “no pending census rows” into “nothin
 
 ## Priority 1: audit the last additions and keep readiness claims honest
 
-- Review `toporia/plugins/problems/_research_defaults.py`. It supplies descriptions
+- Review `toporia_library/problems/_research_defaults.py`. It supplies descriptions
   for the 18 original presets using shared model equations and actual recipe data.
   This is a pragmatic fallback, not 18 independently authored mathematical monographs.
   Check equation roles, symbols, normalization and parameter assumptions for each

@@ -21,14 +21,14 @@ import numpy as np
 from scipy.optimize import brentq
 from scipy.special import expit
 
-from toporia.apps.research_render import description_page
-from toporia.framework.params import resolve_params
-from toporia.framework.problem.mesh import make_problem
-from toporia.framework.problem.run import Run
-from toporia.plugins.filters import FILTERS
-from toporia.plugins.interpolations import INTERPOLATIONS
-from toporia.plugins.problems._research_batch2 import CASES, QUARANTINED, description, metadata, recipe
-from toporia.plugins.schedules import SCHEDULES
+from toporia_core.framework.params import resolve_params
+from toporia_core.framework.problem.mesh import make_problem
+from toporia_core.framework.problem.run import Run
+from toporia_gui.research_render import description_page
+from toporia_library.filters import FILTERS
+from toporia_library.interpolations import INTERPOLATIONS
+from toporia_library.problems._research_batch2 import CASES, QUARANTINED, description, metadata, recipe
+from toporia_library.schedules import SCHEDULES
 
 ROOT = Path(__file__).resolve().parents[1]
 PDE_REFERENCE = ROOT / "tests/references/paper_top82.json"
@@ -413,7 +413,7 @@ def schedule_figure(case_id, folder, companions=False):
     report = {"clock_rule_error": error, "rule_tolerance": 1e-12, "checks_passed": error < 1e-12,
               "event_signal": "own exponential change signal; not a paper iteration history"}
     if companions:
-        from toporia.engine.loop import run_single_with_store
+        from toporia_core.engine.loop import run_single_with_store
         scenario, solver = recipe(case_id)
         run = Run(scenario, solver).updated(save_every=0).with_output_dir(folder / "companion")
         with contextlib.redirect_stdout(StringIO()):
@@ -447,7 +447,7 @@ def schedule_figure(case_id, folder, companions=False):
 
 
 def pde_figure(folder, cached_result=None):
-    from toporia.engine.loop import initialized_method
+    from toporia_core.engine.loop import initialized_method
 
     from .research_figures import compare, plot_comparison
     reference = json.loads(PDE_REFERENCE.read_text(encoding="utf-8"))

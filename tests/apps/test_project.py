@@ -4,9 +4,9 @@ import json
 
 import pytest
 
-from toporia.apps.gui.project import ProblemDocument, Project, results_folder_name
-from toporia.framework.problem.files import save
-from toporia.plugins.problems import get_run, problem_names
+from toporia_core.framework.problem.files import save
+from toporia_gui.project import ProblemDocument, Project, results_folder_name
+from toporia_library.problems import get_run, problem_names
 
 
 @pytest.mark.parametrize("name", problem_names())
@@ -30,12 +30,12 @@ def test_problem_export_contains_no_solver_or_results(tmp_path):
     assert set(json.loads(path.read_text())) == {"kind", "format", "scenario", "objects"}
     legacy = save(original.scenario, tmp_path / "scenario.json")
     assert ProblemDocument.load(legacy).scenario == original.scenario
-    from toporia.framework.problem.files import load
+    from toporia_core.framework.problem.files import load
     assert load(path, "scenario") == original.scenario
 
 
 def test_workflow_configuration_survives_presentation_reset_and_legacy_migration(tmp_path):
-    from toporia.framework.problem.workflow import optimization
+    from toporia_core.framework.problem.workflow import optimization
     tree = optimization("Saved computation")
     project = Project("Workflow", get_run("MBB Beam"), workflow=tree)
     project.view = {"method_positions": {"node": [10, 20]}}
@@ -70,7 +70,7 @@ def test_failed_save_keeps_existing_document_and_location(tmp_path, monkeypatch)
     assert path.read_bytes() == before
     assert project.path == path
     project.view = {}
-    monkeypatch.setattr("toporia.apps.gui.project.os.replace", lambda *_: (_ for _ in ()).throw(OSError("disk")))
+    monkeypatch.setattr("toporia_gui.project.os.replace", lambda *_: (_ for _ in ()).throw(OSError("disk")))
     with pytest.raises(OSError):
         project.save()
     assert path.read_bytes() == before
@@ -89,7 +89,7 @@ def test_project_loader_rejects_incompatible_documents(tmp_path, change):
 
 
 def test_editor_objects_are_the_saved_headless_definition_and_are_not_duplicated(tmp_path):
-    from toporia.apps.gui.geometry import make_object
+    from toporia_gui.geometry import make_object
     objects = [make_object(position=(3, 4, 0))]
     project = Project("Explicit", get_run("MBB Beam"), objects=objects)
     path = project.save(tmp_path / "project.top")

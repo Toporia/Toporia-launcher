@@ -19,18 +19,18 @@ from scipy.integrate import quad
 from scipy.optimize import brentq
 from scipy.special import expit
 
-from toporia.apps.research_render import description_page
-from toporia.engine.loop import _loop, initialized_method
-from toporia.engine.records import ResultStore
-from toporia.framework.params import resolve_params
-from toporia.framework.parts.model import Evaluation
-from toporia.framework.problem.files import to_dict
-from toporia.framework.problem.mesh import make_problem
-from toporia.framework.problem.run import Run
-from toporia.plugins.models.assembled import design_representation
-from toporia.plugins.physics.q4_plane_stress import solve_fea
-from toporia.plugins.problems._research_batch3 import CASES, description, metadata, recipe
-from toporia.plugins.updaters import UPDATERS
+from toporia_core.engine.loop import _loop, initialized_method
+from toporia_core.engine.records import ResultStore
+from toporia_core.framework.params import resolve_params
+from toporia_core.framework.parts.model import Evaluation
+from toporia_core.framework.problem.files import to_dict
+from toporia_core.framework.problem.mesh import make_problem
+from toporia_core.framework.problem.run import Run
+from toporia_gui.research_render import description_page
+from toporia_library.models.assembled import design_representation
+from toporia_library.physics.q4_plane_stress import solve_fea
+from toporia_library.problems._research_batch3 import CASES, description, metadata, recipe
+from toporia_library.updaters import UPDATERS
 
 ROOT = Path(__file__).resolve().parents[1]
 NEXT_CHECKS = {
@@ -178,7 +178,7 @@ def update_probe(case_id, folder):
 
 
 def cap_probe(folder):
-    from toporia.plugins.representations.geometry_projection import cap_projection
+    from toporia_library.representations.geometry_projection import cap_projection
     t = np.linspace(-1., 1., 101)
     actual2, _ = cap_projection(t, 1., 2)
     actual3, _ = cap_projection(t, 1., 3)

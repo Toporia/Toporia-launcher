@@ -13,13 +13,13 @@ import importlib.util
 import numpy as np
 import pytest
 
-from toporia.engine.loop import initialized_method
-from toporia.framework import EdgeConstraint, LoadCase, PointLoad, Scenario
-from toporia.framework.params import resolve_params
-from toporia.framework.problem.mesh import make_problem
-from toporia.plugins.physics.q4_dynamic import Q4Dynamic, mass_interpolation
-from toporia.plugins.problems import get_run
-from toporia.plugins.responses.eigenfrequency import soft_minimum
+from toporia_core.engine.loop import initialized_method
+from toporia_core.framework import EdgeConstraint, LoadCase, PointLoad, Scenario
+from toporia_core.framework.params import resolve_params
+from toporia_core.framework.problem.mesh import make_problem
+from toporia_library.physics.q4_dynamic import Q4Dynamic, mass_interpolation
+from toporia_library.problems import get_run
+from toporia_library.responses.eigenfrequency import soft_minimum
 
 
 def _engine(scenario, m, **settings):
@@ -153,7 +153,7 @@ def test_soft_minimum_is_never_above_the_lowest_and_tends_to_it():
 
 def test_eigenfrequency_objective_gradient_through_the_model():
     """The model's objective gradient with three modes aggregated, through the density filter."""
-    from toporia.plugins.models.q4_dynamic import Q4DynamicModel
+    from toporia_library.models.q4_dynamic import Q4DynamicModel
     run = get_run("Vibrating Beam").updated(m=2.0)
     problem = make_problem(run.scenario, run.solver.m)
     model = Q4DynamicModel()
@@ -184,7 +184,7 @@ def test_the_preset_raises_the_fundamental_frequency():
 
 @pytest.mark.skipif(importlib.util.find_spec("pymoto") is None, reason="optional dependency: pip install pymoto")
 def test_lowest_eigenvalues_agree_with_pymoto():
-    from toporia.plugins.models.pymoto_dynamic import PymotoDynamicModel
+    from toporia_library.models.pymoto_dynamic import PymotoDynamicModel
     run = get_run("Vibrating Beam").updated(m=4.0, method="pymoto_dynamic", method_params={"attached_mass": 2.0})
     problem = make_problem(run.scenario, run.solver.m)
     values = {"rmin": 1.5, "penal": 3.0, "mass_density": 1.0, "low_density_below": 0.1,

@@ -94,7 +94,7 @@ Numbers are the note's own.
       model for every physics.
 - [ ] 🧑 Clean file tree: compact READMEs, a tidy catalogue and docs; decide on `examples/` and
       `experiments/`; `results/` is not needed in the repository.
-- [ ] 🤖 Split into core, library and GUI (agreed 28 October 2026, 🤖; see section 4).
+- [x] 🤖 Split into core, library and GUI (agreed 28 October 2026, 🤖; see section 4).
 - [ ] 🧑 Easy install on a new machine without Python: a zipped Windows folder (🧑 chose a zip
       over an installer; unsigned).
 - [ ] 🧑 Version 0.3.0.
@@ -136,28 +136,20 @@ the one before.
 
 ## 4. Split the repository into core, library and GUI
 
-Agreed 28 October 2026 (🤖 written, 🧑 agreed); the GUI branch is merged into `full-gui`, so
-it can start. Target top level, next to `docs/`, `tests/` and `experiments/` (`main.py` stays):
+Agreed 28 October 2026 (🤖 written, 🧑 agreed); done before the launch, 8 November 2026 (🧑
+chose before launch, and prefixed names to avoid clashes with other installed packages).
 
-- `toporia_core/`: only the glue every function uses, no functions. Problem description
-  (`framework/problem`), part base classes (`framework/parts`), parameters, registry,
-  external-optimiser adapter, the engine loop and run modes, the contract checks (`checks/`),
-  `api.py` and the command line.
-- `library/`: every function, today's `toporia/plugins/`, and the presets with their research
-  descriptions.
-- `toporia_gui/`: only the visual program, today's `toporia/apps/gui/` plus the research HTML
-  rendering. A run must work without it.
-
-- [ ] 🤖 `toporia_core` never imports `library` or `toporia_gui`; `library` imports only
-      `toporia_core`; `toporia_gui` imports both. A test enforces it.
-- [ ] 🤖 Remove today's core-to-library imports by looking parts up through the registry:
-      `engine/loop.py`, `engine/pipeline.py`, `framework/parts/composition.py`,
-      `engine/modes/methods.py`.
-- [ ] 🤖 Move plotting (`engine/records.py`, compare/sweep/sensitivity modes) out of the core.
-- [ ] 🤖 Decide the import name: `toporia_core` instead of `toporia`.
-- [ ] 🤖 One `pyproject.toml`; PySide6 becomes an optional GUI extra.
-- [ ] 🤖 Ignore `results/` and cache folders in git; move the library PDFs into `docs/`.
-- [ ] 🤖 Pure moves first, then the import changes, then docs; full suite after each commit.
+- [x] 🤖 `toporia_core/` (framework, registries, engine, checks, `api.py`, command line),
+      `toporia_library/` (every function and the presets) and `toporia_gui/` (the desktop app).
+- [x] 🤖 `toporia_core` imports neither of the others, `toporia_library` imports only the core;
+      `tests/test_package_boundaries.py` enforces it for every import.
+- [x] 🤖 The registries, `method_class` and the response checks live in the core; it finds the
+      library's parts and presets, and the app, through entry points in `pyproject.toml`.
+      `AssembledModel`, the filter pipeline and the comparison referee moved into the core.
+- [x] 🤖 One `pyproject.toml`; PySide6 is the `gui` extra.
+- [x] 🤖 Library PDFs in `docs/library/`; `results/` ignored.
+- [ ] 🤖 Plotting (`engine/records.py`, the compare/sweep/sensitivity images) is imported only
+      when used, but matplotlib is still a core dependency; making it optional is open.
 
 ## 5. Research and paper comparisons
 

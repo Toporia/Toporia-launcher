@@ -1,0 +1,217 @@
+# apps/gui/panels/method.py — the core parameters and the method, chosen part by part.
+#
+# CoreParamsGroup holds the mesh resolution and volume fraction, then the
+# method — a physics model and an updater (any pair), or a whole method —
+# each with its own generated parameter form, then convergence and output.
+
+
+from PySide6.QtCore import Signal
+from PySide6.QtWidgets import (
+    QComboBox,
+    QFormLayout,
+    QGroupBox,
+    QVBoxLayout,
+    QWidget,
+)
+
+from .common import (
+    CollapsibleSection,
+    add_tooltip_row,
+    mark_availability,
+)
+from .forms import ParamForm
+
+
+class CoreParamsGroup(QWidget):
+    """Scenario fields, the optimisation method as explicit parts, and convergence/output.
+
+    The method is chosen part by part: a physics model and an updater, any
+    pair of them — or a whole method that does not split into parts (the RBF
+    level set).  Each part shows its own parameters.  Every input is generated
+    from Param declarations and the plugin registries, so a new model, updater
+    or method appears here without editing this file.
+    """
+    method_changed = Signal(str)   # fires with the method name: "<model>+<updater>" or a whole method
+
+    #: The "Method" selector's entry for a method assembled from a model and an updater.
+    PARTS = ""
+
+    def __init__(self, parent=None):
+        super().__init__(parent)
+        from toporia_core.framework import OUTPUT_PARAMS, SCENARIO_PARAMS, SOLVER_PARAMS
+        from toporia_core.framework.params import select
+        from toporia_library.methods import METHODS
+        from toporia_library.models import MODELS
+        from toporia_library.updaters import UPDATERS
+
+        outer = QVBoxLayout(self)
+        outer.setContentsMargins(0, 0, 0, 0)
+        outer.setSpacing(0)
+
+        core = QGroupBox("Volume budget")
+        # The mesh resolution lives in the Design section, with 2-D/3-D.
+        self._design = ParamForm(select(SCENARIO_PARAMS, "volfrac"))
+        QVBoxLayout(core).addWidget(self._design)
+        outer.addWidget(core)
+        self.volume_box = core   # the window may move it to the problem definition
+
+        opt = CollapsibleSection("Method", expanded=True)
+        selector = QFormLayout()
+        self.approach = QComboBox()
+        self.approach.addItem("Physics model + updater", userData=self.PARTS)
+        for cls in METHODS.classes():
+            self.approach.addItem(f"{cls.label} (whole method)", userData=cls.name)
+        mark_availability(self.approach, METHODS.classes())
+        add_tooltip_row(selector, "Method", self.approach,
+                         "Pick a physics model and an updater separately (any pair works), or a whole "
+                         "method that brings its own design representation and update.",
+                         topic=self._method_topic)
+        opt.body_layout.addLayout(selector)
+
+        # One selector and one parameter panel per part; whole methods get a panel each.
+        self.model, self._model_forms, self._model_row = self._part_selector(
+            opt, "Physics model", MODELS,
+            "What is solved: the physics engine, and with it which objectives and constraints "
+            "can be computed.")
+        self.updater, self._updater_forms, self._updater_row = self._part_selector(
+            opt, "Updater", UPDATERS,
+            "How the design moves from one iteration to the next.")
+        self._method_forms = {}
+        for cls in METHODS.classes():
+            form = ParamForm(cls.params, owner=cls)
+            self._method_forms[cls.name] = form
+            opt.body_layout.addWidget(form)
+        outer.addWidget(opt)
+
+        self._convergence = ParamForm(select(SOLVER_PARAMS, "max_iter", "tol"))
+        self._output = ParamForm(OUTPUT_PARAMS)
+        for title, form in (("Convergence", self._convergence), ("Output", self._output)):
+            section = CollapsibleSection(title, expanded=False)
+            section.body_layout.addWidget(form)
+            outer.addWidget(section)
+        self.output_section = section   # the window may move it next to the exports
+
+        for combo in (self.approach, self.model, self.updater):
+            combo.currentIndexChanged.connect(self._on_method_changed)
+        self._on_method_changed()
+
+    @staticmethod
+    def _part_selector(section, title, registry, tooltip):
+        """A titled selector for one part, with that part's parameter panel under it."""
+        from ..help import plugin_topic
+
+        classes = registry.classes()
+        box = QWidget()
+        layout = QVBoxLayout(box)
+        layout.setContentsMargins(0, 4, 0, 0)
+        layout.setSpacing(2)
+        row = QFormLayout()
+        combo = QComboBox()
+        add_tooltip_row(row, title, combo, tooltip,
+                        topic=lambda: plugin_topic(registry.get(combo.currentData()), title.lower()))
+        layout.addLayout(row)
+        forms = {}
+        for cls in classes:
+            combo.addItem(cls.label, userData=cls.name)
+            forms[cls.name] = ParamForm(cls.params, owner=cls)
+            layout.addWidget(forms[cls.name])
+        mark_availability(combo, classes)
+        section.body_layout.addWidget(box)
+        return combo, forms, box
+
+    def _method_topic(self):
+        """Help on the "Method" choice: assembling from parts, or the whole method selected."""
+        from toporia_library.methods import method_class
+
+        from ..help import plugin_topic, text_topic
+
+        if self._composed():
+            return text_topic(
+                "Physics model + updater",
+                "The method is assembled from two parts chosen below: a physics model (what is "
+                "solved, and which responses it computes) and an updater (how the design moves). "
+                "Any model works with any updater; the help of each says where it comes from.",
+                "Toporia's own split. It follows the two halves of the top88 code (Andreassen et al. "
+                "2011), whose finite element analysis and optimality criteria update are separate steps.")
+        return plugin_topic(method_class(self.approach.currentData()), "whole method")
+
+    def _composed(self):
+        return self.approach.currentData() == self.PARTS
+
+    def method_name(self):
+        """The selected method: "<model>+<updater>", or a whole method's name."""
+        from toporia_core.framework.parts.composition import SEPARATOR
+        if self._composed():
+            return f"{self.model.currentData()}{SEPARATOR}{self.updater.currentData()}"
+        return self.approach.currentData()
+
+    def select_method(self, name):
+        """Show the method `name`, in either form; older names such as "density" are accepted."""
+        from toporia_core.framework.parts.composition import ComposedMethod
+        from toporia_library.methods import method_class
+        cls = method_class(name)
+        combos = (self.approach, self.model, self.updater)
+        for combo in combos:
+            combo.blockSignals(True)
+        if issubclass(cls, ComposedMethod):
+            self.approach.setCurrentIndex(self.approach.findData(self.PARTS))
+            self.model.setCurrentIndex(self.model.findData(cls.model.name))
+            self.updater.setCurrentIndex(self.updater.findData(cls.updater.name))
+        else:
+            self.approach.setCurrentIndex(self.approach.findData(cls.name))
+        for combo in combos:
+            combo.blockSignals(False)
+        self._on_method_changed()
+
+    def _all_forms(self):
+        return [*self._model_forms.values(), *self._updater_forms.values(), *self._method_forms.values()]
+
+    def _visible_forms(self):
+        if self._composed():
+            return [self._model_forms[self.model.currentData()], self._updater_forms[self.updater.currentData()]]
+        return [self._method_forms[self.approach.currentData()]]
+
+    def _on_method_changed(self, *_):
+        composed = self._composed()
+        self._model_row.setVisible(composed)
+        self._updater_row.setVisible(composed)
+        visible = self._visible_forms()
+        for form in self._all_forms():
+            form.setVisible(form in visible)
+        self.method_changed.emit(self.method_name())
+
+    #: The volume fraction that means "no budget": the whole domain may be solid.
+    NO_BUDGET = 1.0
+
+    def volume_budget(self):
+        """The volume fraction the design may fill, or None when there is no budget."""
+        value = self._design.get_values()["volfrac"]
+        return None if value >= self.NO_BUDGET else value
+
+    def set_volume_budget(self, value):
+        """Set the budget; None removes it (volume fraction 1.0)."""
+        self._design.set_values({"volfrac": self.NO_BUDGET if value is None else value})
+
+    def get_kwargs(self):
+        """Return {field: value} to overlay on a Run with Run.updated."""
+        method_params = {}
+        for form in self._visible_forms():
+            method_params.update(form.get_values())
+        return {
+            **self._design.get_values(),
+            **self._convergence.get_values(),
+            **self._output.get_values(),
+            "method": self.method_name(),
+            "method_params": method_params,
+        }
+
+    def load_from_config(self, cfg):
+        """Populate every panel from a Run (called when a preset is selected)."""
+        from toporia_core.framework import read_param
+        self.select_method(cfg.solver.method)
+        visible = self._visible_forms()
+        for form in self._all_forms():
+            mine = {k: v for k, v in cfg.solver.method_params.items() if k in form.names()}
+            form.set_values(mine if form in visible else {})
+        for form in (self._design, self._convergence, self._output):
+            form.set_values({key: read_param(cfg, key) for key in form.names()})

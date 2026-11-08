@@ -9,8 +9,8 @@ suite runs in seconds.  `tol=0.0` disables the early-exit convergence check,
 which makes the iteration count fixed and therefore assertable.
 """
 
-from toporia.framework import LoadCase, Run
-from toporia.plugins.problems import get_run
+from toporia_core.framework import LoadCase, Run
+from toporia_library.problems import get_run
 
 
 def _base(problem_name: str, **overrides) -> Run:

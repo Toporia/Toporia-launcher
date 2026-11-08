@@ -8,7 +8,7 @@ Research snapshot: 27 October 2026.
 
 The map and timeline are a documentation snapshot, not a live view of plugin discovery. Update the data, embedded visualization data and audit together when revising the research catalogue.
 
-The catalogue says its tables come from `toporia/plugins/LIBRARY.md`. That file was used to recover clickable source links and feature associations. The front-page additions, Berryman reference, Adam preprint, Kraft report and unlinked Ma citation were also included. Each DOI is counted once even if many features cite it. A preprint and its journal version are combined. Software packages, ordinary engineering practice and Toporia's own geometry/export utilities do not receive invented publication dates or research locations. Future-work entries and unregistered annealing are excluded.
+The catalogue says its tables come from `toporia_library/LIBRARY.md`. That file was used to recover clickable source links and feature associations. The front-page additions, Berryman reference, Adam preprint, Kraft report and unlinked Ma citation were also included. Each DOI is counted once even if many features cite it. A preprint and its journal version are combined. Software packages, ordinary engineering practice and Toporia's own geometry/export utilities do not receive invented publication dates or research locations. Future-work entries and unregistered annealing are excluded.
 
 ## How to read the figures
 

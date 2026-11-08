@@ -5,18 +5,18 @@ from dataclasses import replace
 import numpy as np
 import pytest
 
-from toporia.checks.common import iterate
-from toporia.engine.loop import initialized_method
-from toporia.framework import LoadCase, PointSpring, read_param
-from toporia.framework.problem.files import fingerprint, from_dict, to_dict
-from toporia.framework.problem.mesh import make_problem
-from toporia.framework.problem.scenario import Scenario
-from toporia.plugins.models.assembled import material_law
-from toporia.plugins.physics.q4_mechanism import Q4Mechanism
-from toporia.plugins.physics.q4_plane_stress import Q4PlaneStress
-from toporia.plugins.problems import get_run
-from toporia.plugins.responses.compliance import Compliance
-from toporia.plugins.responses.output_displacement import OutputDisplacement
+from toporia_core.checks.common import iterate
+from toporia_core.engine.loop import initialized_method
+from toporia_core.framework import LoadCase, PointSpring, read_param
+from toporia_core.framework.problem.files import fingerprint, from_dict, to_dict
+from toporia_core.framework.problem.mesh import make_problem
+from toporia_core.framework.problem.scenario import Scenario
+from toporia_library.models.assembled import material_law
+from toporia_library.physics.q4_mechanism import Q4Mechanism
+from toporia_library.physics.q4_plane_stress import Q4PlaneStress
+from toporia_library.problems import get_run
+from toporia_library.responses.compliance import Compliance
+from toporia_library.responses.output_displacement import OutputDisplacement
 
 
 def _engine(run=None):

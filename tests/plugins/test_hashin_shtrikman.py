@@ -5,12 +5,12 @@ from types import SimpleNamespace
 import numpy as np
 import pytest
 
-from toporia.checks import conformance
-from toporia.engine.loop import initialized_method
-from toporia.engine.pipeline import solver_problems
-from toporia.plugins.interpolations.hashin_shtrikman import HashinShtrikman
-from toporia.plugins.methods import method_class
-from toporia.plugins.problems import get_run
+from toporia_core.checks import conformance
+from toporia_core.engine.loop import initialized_method
+from toporia_core.engine.pipeline import solver_problems
+from toporia_library.interpolations.hashin_shtrikman import HashinShtrikman
+from toporia_library.methods import method_class
+from toporia_library.problems import get_run
 
 
 def law_for(nu=.3, dimension=2):

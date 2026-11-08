@@ -7,9 +7,9 @@ import numpy as np
 import pytest
 
 from experiments.research_papers import CASES, EVIDENCE, MATCH
-from toporia.engine.loop import initialized_method
-from toporia.framework import Run
-from toporia.plugins.problems import get_run, problem_description
+from toporia_core.engine.loop import initialized_method
+from toporia_core.framework import Run
+from toporia_library.problems import get_run, problem_description
 
 REPORTS = {name: json.loads((EVIDENCE / name / "report.json").read_text(encoding="utf-8"))
            for name in CASES if (EVIDENCE / name / "report.json").exists()}

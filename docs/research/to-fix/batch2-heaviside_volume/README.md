@@ -6,7 +6,7 @@ Numerical issue: **resolved** (28 October 2026). The zero threshold-derivative
 denominator at 0/1 designs now has its exact treatment: the identity for
 all-solid/all-void designs (checked by one-sided finite differences), an explicit
 error for mixed 0/1 designs, which have no gradient. See the header of
-[`heaviside.py`](../../../../toporia/plugins/filters/heaviside.py).
+[`heaviside.py`](../../../../toporia_library/filters/heaviside.py).
 
 Reason the comparison stays open: mean preservation does not make every cell or
 optimized topology agree with top99neo. The input field here is a controlled

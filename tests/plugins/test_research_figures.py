@@ -7,7 +7,7 @@ import pytest
 
 from experiments.research_figures import FIXTURE, PRESETS, compare, solve
 from experiments.research_inventory import inventory
-from toporia.plugins.problems import get_run, problem_description
+from toporia_library.problems import get_run, problem_description
 
 
 @pytest.mark.parametrize("kind", PRESETS)

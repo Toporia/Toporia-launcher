@@ -4,12 +4,12 @@ import numpy as np
 import pytest
 from numpy.polynomial.legendre import leggauss
 
-from toporia.checks.representation import check_representation
-from toporia.engine.loop import initialized_method
-from toporia.framework import EdgeConstraint, LoadCase, PointLoad, Run, Scenario, Solver
-from toporia.framework.problem.mesh import make_problem
-from toporia.plugins.problems import get_run
-from toporia.plugins.representations.geometry_projection import GeometryProjection, cap_projection
+from toporia_core.checks.representation import check_representation
+from toporia_core.engine.loop import initialized_method
+from toporia_core.framework import EdgeConstraint, LoadCase, PointLoad, Run, Scenario, Solver
+from toporia_core.framework.problem.mesh import make_problem
+from toporia_library.problems import get_run
+from toporia_library.representations.geometry_projection import GeometryProjection, cap_projection
 
 
 def _representation(dim=2, m=1.0, **params):

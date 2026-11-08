@@ -6,12 +6,12 @@ import numpy as np
 import pytest
 from scipy.sparse import diags
 
-from toporia.framework.problem.mesh import make_problem
-from toporia.plugins.models.assembled import material_law
-from toporia.plugins.models.pymoto_elastic import PymotoElasticModel, import_pymoto
-from toporia.plugins.physics.q4_mechanism import Q4Mechanism
-from toporia.plugins.problems import get_run
-from toporia.plugins.responses.output_displacement import OutputDisplacement
+from toporia_core.framework.problem.mesh import make_problem
+from toporia_library.models.assembled import material_law
+from toporia_library.models.pymoto_elastic import PymotoElasticModel, import_pymoto
+from toporia_library.physics.q4_mechanism import Q4Mechanism
+from toporia_library.problems import get_run
+from toporia_library.responses.output_displacement import OutputDisplacement
 
 pytestmark = pytest.mark.skipif(importlib.util.find_spec("pymoto") is None,
                                 reason="optional dependency: pip install pymoto")

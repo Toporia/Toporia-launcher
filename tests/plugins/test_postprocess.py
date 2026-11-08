@@ -14,20 +14,20 @@ from xml.etree import ElementTree
 import numpy as np
 import pytest
 
-from toporia.engine.loop import initialized_method, run_single_with_store
-from toporia.engine.pipeline import pipeline_stages
-from toporia.engine.postprocess import postprocess_folder, run_postprocessors
-from toporia.framework.parts.postprocess import PostProcessor, Result
-from toporia.framework.problem.mesh import RectangularProblem
-from toporia.plugins.postprocessors import POSTPROCESSORS
-from toporia.plugins.postprocessors._measure import clip_to_box, outlines, polygon_area, referee_compliance
-from toporia.plugins.postprocessors.export_dxf import ExportDXF
-from toporia.plugins.postprocessors.export_stl import ExportSTL
-from toporia.plugins.postprocessors.feature_size import thinnest
-from toporia.plugins.postprocessors.grey_level import GreyLevel
-from toporia.plugins.postprocessors.smooth_outline import SmoothOutline, smoothed
-from toporia.plugins.postprocessors.threshold import Threshold
-from toporia.plugins.problems import get_run
+from toporia_core.engine.loop import initialized_method, run_single_with_store
+from toporia_core.engine.pipeline import pipeline_stages
+from toporia_core.engine.postprocess import postprocess_folder, run_postprocessors
+from toporia_core.framework.parts.postprocess import PostProcessor, Result
+from toporia_core.framework.problem.mesh import RectangularProblem
+from toporia_library.postprocessors import POSTPROCESSORS
+from toporia_library.postprocessors._measure import clip_to_box, outlines, polygon_area, referee_compliance
+from toporia_library.postprocessors.export_dxf import ExportDXF
+from toporia_library.postprocessors.export_stl import ExportSTL
+from toporia_library.postprocessors.feature_size import thinnest
+from toporia_library.postprocessors.grey_level import GreyLevel
+from toporia_library.postprocessors.smooth_outline import SmoothOutline, smoothed
+from toporia_library.postprocessors.threshold import Threshold
+from toporia_library.problems import get_run
 
 ALL = ["threshold", "connectivity", "feature_size", "export_svg", "export_dxf", "export_stl"]
 
@@ -237,7 +237,7 @@ def test_a_saved_run_can_be_post_processed_again(tmp_path):
 
 
 def test_compare_methods_gets_the_same_columns_for_every_method(tmp_path):
-    from toporia.engine.modes.methods import compare_methods, format_table
+    from toporia_core.engine.modes.methods import compare_methods, format_table
     run = _run(m=0.3, max_iter=6, postprocess=[{"type": "threshold"}, {"type": "connectivity"},
                                                {"type": "export_svg"}]).with_output_dir(tmp_path)
     _, rows = compare_methods(["q4+oc", "q4+mma"], run)

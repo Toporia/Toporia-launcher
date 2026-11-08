@@ -9,13 +9,13 @@ import pytest
 os.environ.setdefault("QT_QPA_PLATFORM", "offscreen")
 from PySide6.QtWidgets import QApplication
 
-from toporia.apps.gui.editor import ProblemEditor
-from toporia.apps.gui.geometry import make_object
-from toporia.apps.gui.project import Project
-from toporia.apps.gui.spatial_view import object_mesh, transformed_object
-from toporia.framework.problem.run import Run
-from toporia.framework.problem.scenario import Scenario
-from toporia.framework.problem.spatial import rotation_matrix
+from toporia_core.framework.problem.run import Run
+from toporia_core.framework.problem.scenario import Scenario
+from toporia_core.framework.problem.spatial import rotation_matrix
+from toporia_gui.editor import ProblemEditor
+from toporia_gui.geometry import make_object
+from toporia_gui.project import Project
+from toporia_gui.spatial_view import object_mesh, transformed_object
 
 
 @pytest.fixture(scope="module")
@@ -104,8 +104,8 @@ def test_dxf_profiles_become_independent_planar_regions(editor, tmp_path):
 
 
 def test_legacy_extrusion_depth_is_editable_without_tilting_its_cross_section(editor):
-    from toporia.apps.gui.geometry import objects_from_scenario
-    from toporia.plugins.problems import get_run
+    from toporia_gui.geometry import objects_from_scenario
+    from toporia_library.problems import get_run
     scenario = get_run("Cantilever 3D").scenario
     objects = objects_from_scenario(scenario)
     line = next(obj for obj in objects if obj["shape"] == "line")

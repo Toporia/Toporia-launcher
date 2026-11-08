@@ -68,7 +68,7 @@ paper reproductions: final maximum changes are 0.04979 and 0.01 respectively.
 Gray fractions between 0.1 and 0.9 are 18.75% and 3.91%. The independent ray
 check uses a 0.5 density threshold and the selected Cartesian tool side; it
 does not certify a finite cutter or holder. The PDE has known diffusion and
-projection artefacts. See the [filter scope](../toporia/plugins/filters/README.md#machining-accessibility).
+projection artefacts. See the [filter scope](../toporia_library/filters/README.md#machining-accessibility).
 
 ## Projection-based self-support
 
@@ -112,7 +112,7 @@ Thresholding changes the volume: own MMA gives 0.5125/0.407222 and GCMMA gives
 0.519167/0.411111. All four exceed their smooth-design budgets after thresholding.
 Fresh binary-field compliances are 385.85622/269.24762 and 347.78378/240.99253,
 respectively; they are not budget-matched performance comparisons. No binary
-result is labelled feasible or printable. The [filter documentation](../toporia/plugins/filters/README.md#gaynorguest-self-support-projection)
+result is labelled feasible or printable. The [filter documentation](../toporia_library/filters/README.md#gaynorguest-self-support-projection)
 describes the cell discretisation, boundary truncation and grid-dependent threshold.
 
 The longer GCMMA check uses the same settings and reproduces the 500-step
@@ -284,7 +284,7 @@ are not convergence or binary-design claims. The envelope satisfies both elastic
 upper limits at the solver's fixed nu. It neither implements the paper's variable
 nu nor certifies lower bounds, joint attainability or a manufacturable composite.
 The common SIMP p=3 comparison referee also uses a different interpolation.
-See the [material-law scope](../toporia/plugins/interpolations/README.md#hashin-shtrikman-fixed-nu-upper-envelope).
+See the [material-law scope](../toporia_library/interpolations/README.md#hashin-shtrikman-fixed-nu-upper-envelope).
 
 ## SINH effective volume
 
@@ -385,7 +385,7 @@ The model uses exact fine-cell quadrature of coarse bilinear displacement fields
 projected loads and constrained interpolation of fine supports. This is an aligned
 2-D variant of the [MTOP paradigm](https://doi.org/10.1007/s00158-009-0443-8),
 not its original centroid-rule implementation, adaptive/high-order analysis or
-independent three-mesh system. See the [model documentation](../toporia/plugins/models/README.md#multiresolution-q4)
+independent three-mesh system. See the [model documentation](../toporia_library/models/README.md#multiresolution-q4)
 and [QR-pattern study](https://doi.org/10.1007/s00158-018-2048-6).
 
 ## Minimum-length response: feasible-seed validation

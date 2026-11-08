@@ -13,14 +13,14 @@ from dataclasses import replace
 import numpy as np
 import pytest
 
-from toporia.engine.loop import initialized_method, run_single_with_store
-from toporia.framework import EdgeConstraint, LoadCase, PointLoad, Scenario
-from toporia.framework.params import resolve_params
-from toporia.framework.problem.mesh import make_problem
-from toporia.plugins.physics import q4_buckling
-from toporia.plugins.physics.q4_buckling import Q4Buckling, geometric_stiffness_basis
-from toporia.plugins.problems import get_run
-from toporia.plugins.responses.buckling import BucklingLoad
+from toporia_core.engine.loop import initialized_method, run_single_with_store
+from toporia_core.framework import EdgeConstraint, LoadCase, PointLoad, Scenario
+from toporia_core.framework.params import resolve_params
+from toporia_core.framework.problem.mesh import make_problem
+from toporia_library.physics import q4_buckling
+from toporia_library.physics.q4_buckling import Q4Buckling, geometric_stiffness_basis
+from toporia_library.problems import get_run
+from toporia_library.responses.buckling import BucklingLoad
 
 WIDTH, LENGTH, MESH = 4.0, 40.0, 2.0
 

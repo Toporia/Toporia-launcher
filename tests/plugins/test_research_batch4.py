@@ -11,10 +11,10 @@ from experiments.research_batch4 import science_case
 from experiments.research_gradients import at_schedule_end
 from experiments.research_inventory import inventory
 from experiments.research_publish4 import CASE_IDS, publish
-from toporia.engine.loop import initialized_method
-from toporia.framework.problem.run import Run
-from toporia.plugins.problems import get_run, problem_description, problem_names
-from toporia.plugins.problems._research_batch4 import CASES, POSTS, metadata, recipe
+from toporia_core.engine.loop import initialized_method
+from toporia_core.framework.problem.run import Run
+from toporia_library.problems import get_run, problem_description, problem_names
+from toporia_library.problems._research_batch4 import CASES, POSTS, metadata, recipe
 
 ROOT = Path(__file__).resolve().parents[2]
 

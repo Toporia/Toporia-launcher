@@ -6,8 +6,8 @@ evaluate three designs per iteration and drive beta by its schedule.
 
 import numpy as np
 
-from toporia.engine.loop import initialized_method, run_single_with_store
-from toporia.plugins.problems import get_run, problem_names
+from toporia_core.engine.loop import initialized_method, run_single_with_store
+from toporia_library.problems import get_run, problem_names
 
 
 def test_presets_are_listed():

@@ -18,17 +18,17 @@ from pathlib import Path
 import numpy as np
 
 from experiments.research_batch3 import dump, versions
-from toporia.apps.research_render import description_page
-from toporia.engine.loop import _loop, initialized_method
-from toporia.engine.records import ResultStore
-from toporia.framework import EdgeConstraint, LoadCase, PointLoad, Scenario
-from toporia.framework.params import resolve_params
-from toporia.framework.parts.postprocess import Result
-from toporia.framework.problem.files import to_dict
-from toporia.framework.problem.mesh import make_problem
-from toporia.framework.problem.run import Run
-from toporia.plugins.postprocessors import POSTPROCESSORS
-from toporia.plugins.problems._research_batch4 import CASES, POSTS, description, metadata, recipe
+from toporia_core.engine.loop import _loop, initialized_method
+from toporia_core.engine.records import ResultStore
+from toporia_core.framework import EdgeConstraint, LoadCase, PointLoad, Scenario
+from toporia_core.framework.params import resolve_params
+from toporia_core.framework.parts.postprocess import Result
+from toporia_core.framework.problem.files import to_dict
+from toporia_core.framework.problem.mesh import make_problem
+from toporia_core.framework.problem.run import Run
+from toporia_gui.research_render import description_page
+from toporia_library.postprocessors import POSTPROCESSORS
+from toporia_library.problems._research_batch4 import CASES, POSTS, description, metadata, recipe
 
 ROOT = Path(__file__).resolve().parents[1]
 
@@ -95,8 +95,8 @@ def gradient_probe(name):
 
 
 def analytic_heat(dim):
-    from toporia.plugins.physics.h8_heat import H8Heat
-    from toporia.plugins.physics.q4_heat import Q4Heat
+    from toporia_library.physics.h8_heat import H8Heat
+    from toporia_library.physics.q4_heat import Q4Heat
     cls = H8Heat if dim == 3 else Q4Heat
     scenario = Scenario(Lx=8., Ly=2., Lz=2. if dim == 3 else 0.,
                         edge_constraints=[EdgeConstraint("left"), EdgeConstraint("right")], load_cases=[LoadCase(Fmag=0.)])
@@ -176,7 +176,7 @@ def special_probe(name, folder):
     if name == "phase_field":
         from scipy.special import expit
 
-        from toporia.plugins.responses.phase_field import phase_energy, physical_laplacian
+        from toporia_library.responses.phase_field import phase_energy, physical_laplacian
         rows = []
         for h in (.4, .2, .1, .05):
             x = (np.arange(round(40/h))+.5)*h-20
@@ -187,7 +187,7 @@ def special_probe(name, folder):
         error = float(abs(rows[-1][1]-rows[-1][2])/rows[-1][2])
         extra = dict(planar_interface_relative_error=error, planar_interface_pass=error < 1e-3)
     if name == "dynamic":
-        from toporia.plugins.physics.q4_dynamic import Q4Dynamic
+        from toporia_library.physics.q4_dynamic import Q4Dynamic
         scenario = Scenario(Lx=20., Ly=1., nu=0., edge_constraints=[EdgeConstraint("left", "both")],
                             point_loads=[PointLoad(20., .5)], load_cases=[LoadCase(Fmag=1., Fa=270.)])
         rows = []
@@ -202,7 +202,7 @@ def special_probe(name, folder):
         error = float(abs(rows[-1][1]-reference)/reference)
         extra = dict(euler_bernoulli_relative_error=error, beam_frequency_pass=error < .03)
     if name == "buckling":
-        from toporia.plugins.physics.q4_buckling import Q4Buckling
+        from toporia_library.physics.q4_buckling import Q4Buckling
         scenario = Scenario(Lx=40., Ly=4., edge_constraints=[EdgeConstraint("left", "both")],
                             point_loads=[PointLoad(40., j/2) for j in range(9)],
                             load_cases=[LoadCase(Fmag=1/9, Fa=180.)])
@@ -245,7 +245,7 @@ def special_probe(name, folder):
         finally:
             method.close()
     if name == "minimum_length":
-        from toporia.plugins.responses.minimum_length import MinimumLength
+        from toporia_library.responses.minimum_length import MinimumLength
         problem = make_problem(Scenario(Lx=50., Ly=40.), 1.)
         part = MinimumLength()
         part.setup(None, problem, resolve_params(part.name, part.params, dict(min_length=10.)))
@@ -300,7 +300,7 @@ def science_case(name, output, max_iter=None):
                 checks["zero_frequency_static_relative_error"] = float(abs(rows[0][1]-static)/max(abs(static), 1e-30))
                 checks["checks_passed"] &= checks["zero_frequency_static_relative_error"] < 1e-9
             if name == "multires":
-                from toporia.plugins.physics.q4_plane_stress import solve_fea
+                from toporia_library.physics.q4_plane_stress import solve_fea
                 fine = float(solve_fea(method.problem, density, 3.)[2])
                 checks["fine_q4_compliance"] = fine
                 checks["coarse_over_fine_compliance"] = float(fresh.objective/fine)

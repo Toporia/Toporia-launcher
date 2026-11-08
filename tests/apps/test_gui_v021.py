@@ -9,10 +9,10 @@ import pytest
 os.environ.setdefault("QT_QPA_PLATFORM", "offscreen")
 from PySide6.QtWidgets import QApplication, QFileDialog
 
-from toporia.apps.gui.project import Project
-from toporia.apps.gui.window import MainWindow
-from toporia.framework.problem.workflow import nodes
-from toporia.plugins.problems import get_run
+from toporia_core.framework.problem.workflow import nodes
+from toporia_gui.project import Project
+from toporia_gui.window import MainWindow
+from toporia_library.problems import get_run
 
 
 @pytest.fixture
@@ -89,7 +89,7 @@ def test_live_disabled_and_interval_do_not_lose_final_result(window):
 
 
 def test_manual_binary_refresh_exports_the_processed_array(window, tmp_path, monkeypatch):
-    from toporia.apps.gui import runner
+    from toporia_gui import runner
     window._result_density = np.array([[.1, .49, .5, .9]])
     window._result_config = window.current_config()
     window._result_objective_label = "Compliance"
@@ -147,10 +147,10 @@ def test_same_function_can_be_opened_closed_and_reopened_by_clicking(window):
 def test_export_preserves_boolean_removal_of_an_input_fixed_region(window, tmp_path, monkeypatch):
     import struct
 
-    from toporia.apps.gui.geometry import make_object
-    from toporia.framework.problem.mesh import make_problem
-    from toporia.framework.problem.run import Run
-    from toporia.framework.problem.scenario import Scenario
+    from toporia_core.framework.problem.mesh import make_problem
+    from toporia_core.framework.problem.run import Run
+    from toporia_core.framework.problem.scenario import Scenario
+    from toporia_gui.geometry import make_object
 
     objects = [make_object("line", (0, 0, 0), (0, 3, 0)),
                make_object(position=(5, 1, 0), role="load"),
@@ -202,7 +202,7 @@ def test_appearance_switch_preserves_configuration_display_data_and_unapplied_ed
 def test_appearance_preference_restores_the_saved_mode(window, tmp_path, monkeypatch):
     from PySide6.QtCore import QSettings
 
-    from toporia.apps.gui import appearance
+    from toporia_gui import appearance
     path = str(tmp_path / "appearance.ini")
     monkeypatch.setattr(appearance, "preference_store", lambda: QSettings(path, QSettings.IniFormat))
     try:
@@ -229,12 +229,12 @@ def _library(window, context):
 def test_library_offers_every_registered_part_and_explains_what_cannot_be_used(window):
     from PySide6.QtCore import Qt
 
-    from toporia.plugins.interpolations import INTERPOLATIONS
-    from toporia.plugins.methods import METHODS
-    from toporia.plugins.models import MODELS
-    from toporia.plugins.representations import REPRESENTATIONS
-    from toporia.plugins.responses import OBJECTIVE_ROLE, responses_for
-    from toporia.plugins.updaters import UPDATERS
+    from toporia_library.interpolations import INTERPOLATIONS
+    from toporia_library.methods import METHODS
+    from toporia_library.models import MODELS
+    from toporia_library.representations import REPRESENTATIONS
+    from toporia_library.responses import OBJECTIVE_ROLE, responses_for
+    from toporia_library.updaters import UPDATERS
     window.go_to_step(1)
     stage = window._active_stage
     loop = _library(window, stage)
@@ -258,8 +258,8 @@ def test_library_offers_every_registered_part_and_explains_what_cannot_be_used(w
 
 
 def test_every_study_mode_post_processor_and_exporter_is_offered(window):
-    from toporia.apps.gui.window import MODES
-    from toporia.plugins.postprocessors import POSTPROCESSORS
+    from toporia_gui.window import MODES
+    from toporia_library.postprocessors import POSTPROCESSORS
     window.go_to_step(2)
     assert [window.mode.itemText(i) for i in range(window.mode.count())] == list(MODES)
     assert all(not window.mode.view().isRowHidden(i) for i in range(window.mode.count()))
@@ -271,8 +271,8 @@ def test_every_study_mode_post_processor_and_exporter_is_offered(window):
 
 
 def test_post_processing_list_runs_on_the_shown_result(window, tmp_path):
-    from toporia.apps.gui import runner
-    from toporia.framework.problem.mesh import make_problem
+    from toporia_core.framework.problem.mesh import make_problem
+    from toporia_gui import runner
     window._result_config = window.current_config()
     window._result_density = np.full(make_problem(window._result_config.scenario, .3).shape, .6)
     runner.last_run_folder = tmp_path
@@ -288,7 +288,7 @@ def test_post_processing_list_runs_on_the_shown_result(window, tmp_path):
 
 
 def test_home_library_sections_pack_their_cards(window):
-    from toporia.apps.gui.home import category
+    from toporia_gui.home import category
     window.show_home()
     home = window.home
     home.open_section(1)
@@ -360,7 +360,7 @@ def test_optimisations_and_their_groups_collapse_but_the_top_level_always_stays(
 
 
 def test_one_add_button_offers_every_function_and_asks_where_when_there_is_a_choice(window, monkeypatch):
-    from toporia.apps.gui.add_function import AddFunctionDialog
+    from toporia_gui.add_function import AddFunctionDialog
     window.go_to_step(1)
     window.method_view.root()
     window._add_function("composition", "parallel")
@@ -381,8 +381,8 @@ def test_one_add_button_offers_every_function_and_asks_where_when_there_is_a_cho
 def test_every_style_applies_and_the_style_maker_keeps_a_custom_one(window):
     from PySide6.QtGui import QColor
 
-    from toporia.apps.gui import appearance
-    from toporia.apps.gui.style_maker import StyleMaker
+    from toporia_gui import appearance
+    from toporia_gui.style_maker import StyleMaker
     app = QApplication.instance()
     try:
         for mode in appearance.MODES:
@@ -408,8 +408,8 @@ def test_every_style_applies_and_the_style_maker_keeps_a_custom_one(window):
 def test_each_function_shows_its_showcase_figure_and_opens_its_showcase(window):
     from PySide6.QtCore import Qt
 
-    from toporia.apps.gui.function_library import showcase_figure, showcase_preset
-    from toporia.plugins.filters import FILTERS
+    from toporia_gui.function_library import showcase_figure, showcase_preset
+    from toporia_library.filters import FILTERS
     heaviside = FILTERS.get("heaviside")
     assert showcase_figure(heaviside) is not None and showcase_preset(heaviside) is not None
     explorer = window.home.explorer

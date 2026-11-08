@@ -20,9 +20,9 @@ from pathlib import Path
 
 import numpy as np
 
-from toporia.apps.research_render import description_page
-from toporia.engine.loop import initialized_method
-from toporia.plugins.problems import get_run, problem_description
+from toporia_core.engine.loop import initialized_method
+from toporia_gui.research_render import description_page
+from toporia_library.problems import get_run, problem_description
 
 ROOT = Path(__file__).resolve().parents[1]
 FIXTURE = ROOT / "tests/references/paper_top88.json"

@@ -9,7 +9,7 @@ os.environ.setdefault("QT_QPA_PLATFORM", "offscreen")
 QtWidgets = pytest.importorskip("PySide6.QtWidgets")
 from matplotlib.backend_bases import MouseEvent  # noqa: E402
 
-from toporia.apps.gui.canvas import LiveCanvas  # noqa: E402
+from toporia_gui.canvas import LiveCanvas  # noqa: E402
 
 
 @pytest.fixture
@@ -62,9 +62,9 @@ def test_the_convergence_curve_zooms_and_resets_too(canvas):
 
 
 def test_the_export_step_previews_what_the_file_will_hold(tmp_path):
-    from toporia.apps.gui.project import Project
-    from toporia.apps.gui.window import MainWindow
-    from toporia.plugins.problems import get_run
+    from toporia_gui.project import Project
+    from toporia_gui.window import MainWindow
+    from toporia_library.problems import get_run
     app = QtWidgets.QApplication.instance() or QtWidgets.QApplication([])
     window = MainWindow()
     try:
@@ -89,7 +89,7 @@ def test_the_export_step_previews_what_the_file_will_hold(tmp_path):
 
 
 def test_a_3d_design_shows_as_a_density_cloud_or_its_surface():
-    from toporia.apps.gui.canvas import LiveCanvas
+    from toporia_gui.canvas import LiveCanvas
     QtWidgets.QApplication.instance() or QtWidgets.QApplication([])
     density = np.zeros((4, 6, 10))
     density[:, 2:4, :] = 1.0

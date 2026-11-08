@@ -13,23 +13,23 @@ from dataclasses import replace
 import numpy as np
 import pytest
 
-from toporia.checks.model import _model_run
-from toporia.engine.loop import initialized_method
-from toporia.engine.pipeline import solver_problems
-from toporia.framework import Param
-from toporia.framework.parts.composition import ComposedMethod, compose
-from toporia.framework.parts.method import OBJECTIVE
-from toporia.framework.parts.model import Model
-from toporia.framework.problem.mesh import make_problem
-from toporia.framework.registry import missing_dependencies
-from toporia.plugins.methods import method_class, method_classes
-from toporia.plugins.models import MODELS
-from toporia.plugins.models.pymoto_elastic import PymotoElasticModel
-from toporia.plugins.problems import get_run
-from toporia.plugins.updaters import UPDATERS
-from toporia.plugins.updaters.mma import MMAUpdater
-from toporia.plugins.updaters.oc import OCUpdater
-from toporia.plugins.updaters.simpl import SiMPLUpdater
+from toporia_core.checks.model import _model_run
+from toporia_core.engine.loop import initialized_method
+from toporia_core.engine.pipeline import solver_problems
+from toporia_core.framework import Param
+from toporia_core.framework.parts.composition import ComposedMethod, compose
+from toporia_core.framework.parts.method import OBJECTIVE
+from toporia_core.framework.parts.model import Model
+from toporia_core.framework.problem.mesh import make_problem
+from toporia_core.framework.registry import missing_dependencies
+from toporia_library.methods import method_class, method_classes
+from toporia_library.models import MODELS
+from toporia_library.models.pymoto_elastic import PymotoElasticModel
+from toporia_library.problems import get_run
+from toporia_library.updaters import UPDATERS
+from toporia_library.updaters.mma import MMAUpdater
+from toporia_library.updaters.oc import OCUpdater
+from toporia_library.updaters.simpl import SiMPLUpdater
 
 PAIRS = list(itertools.product(MODELS.classes(), UPDATERS.classes()))
 
@@ -41,7 +41,7 @@ def test_local_stress_is_only_offered_to_its_multiplier_updater():
 
 
 def test_pymoto_vibration_refuses_compliance_before_building_its_network():
-    from toporia.plugins.models.pymoto_dynamic import PymotoDynamicModel
+    from toporia_library.models.pymoto_dynamic import PymotoDynamicModel
     run = get_run("MBB Beam")
     with pytest.raises(ValueError, match="cannot minimise 'compliance'"):
         PymotoDynamicModel().initialize(make_problem(run.scenario, 0.3), run.solver, {})

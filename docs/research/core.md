@@ -19,10 +19,10 @@ fields have shape `(nely, nelx)` or `(nelz, nely, nelx)`; a representation's
 design variables can have another shape. Coordinates and units are defined by
 the scenario; the baseline paper examples use normalized stiffness and forces.
 
-Code: [run.py](../../toporia/framework/problem/run.py),
-[scenario.py](../../toporia/framework/problem/scenario.py),
-[solver.py](../../toporia/framework/problem/solver.py),
-[mesh.py](../../toporia/framework/problem/mesh.py).
+Code: [run.py](../../toporia_core/framework/problem/run.py),
+[scenario.py](../../toporia_core/framework/problem/scenario.py),
+[solver.py](../../toporia_core/framework/problem/solver.py),
+[mesh.py](../../toporia_core/framework/problem/mesh.py).
 
 ## 2. Turn variables into physical material
 
@@ -50,9 +50,9 @@ its physical size. Boundary row sums differ; a normalized forward average is
 not generally its own adjoint. Sensitivity filtering is a separate heuristic:
 its forward map is identity and its modified gradient is a search direction.
 
-Code: [representation.py](../../toporia/framework/parts/representation.py),
-[filter.py](../../toporia/framework/parts/filter.py),
-[pipeline.py](../../toporia/plugins/filters/pipeline.py).
+Code: [representation.py](../../toporia_core/framework/parts/representation.py),
+[filter.py](../../toporia_core/framework/parts/filter.py),
+[pipeline.py](../../toporia_core/framework/parts/filter_pipeline.py).
 
 ## 3. Assign material and solve the state
 
@@ -80,9 +80,9 @@ $$
 \mathcal{R}(u,\rho)=0.
 $$
 
-Code: [q4_plane_stress.py](../../toporia/plugins/physics/q4_plane_stress.py),
-[simp.py](../../toporia/plugins/interpolations/simp.py),
-[physics.py](../../toporia/framework/parts/physics.py).
+Code: [q4_plane_stress.py](../../toporia_library/physics/q4_plane_stress.py),
+[simp.py](../../toporia_library/interpolations/simp.py),
+[physics.py](../../toporia_core/framework/parts/physics.py).
 
 ## 4. Measure responses and differentiate
 
@@ -128,9 +128,9 @@ audit found a singular saturated-input case in volume-preserving projection.
 See the [documented exceptions and evidence](batch-2.md) before treating those
 paths as universally exact or differentiable.
 
-Code: [assembled.py](../../toporia/plugins/models/assembled.py),
-[response.py](../../toporia/framework/parts/response.py),
-[compliance.py](../../toporia/plugins/responses/compliance.py).
+Code: [assembled.py](../../toporia_core/framework/parts/assembled.py),
+[response.py](../../toporia_core/framework/parts/response.py),
+[compliance.py](../../toporia_library/responses/compliance.py).
 
 ## 5. Update, continue and stop
 
@@ -165,10 +165,10 @@ always applies the iteration cap. Small motion alone proves neither feasibility
 nor a globally optimal or binary design. Post-processors then compute diagnostics
 or exports; thresholding changes the design and needs its own validation.
 
-Code: [composition.py](../../toporia/framework/parts/composition.py),
-[oc.py](../../toporia/plugins/updaters/oc.py),
-[loop.py](../../toporia/engine/loop.py),
-[postprocess.py](../../toporia/engine/postprocess.py).
+Code: [composition.py](../../toporia_core/framework/parts/composition.py),
+[oc.py](../../toporia_library/updaters/oc.py),
+[loop.py](../../toporia_core/engine/loop.py),
+[postprocess.py](../../toporia_core/engine/postprocess.py).
 
 ## Which functions contain which other functions?
 

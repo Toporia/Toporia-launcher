@@ -4,8 +4,8 @@ import numpy as np
 import pytest
 
 from experiments.fixed_projection import validate
-from toporia.plugins.filters.heaviside import HeavisideFilter
-from toporia.plugins.problems import get_run
+from toporia_library.filters.heaviside import HeavisideFilter
+from toporia_library.problems import get_run
 
 
 def test_projection_remains_fixed_beyond_multiple_continuation_intervals():

@@ -15,12 +15,12 @@ from dataclasses import replace
 import numpy as np
 import pytest
 
-from toporia.engine.loop import initialized_method, run_single_with_store
-from toporia.framework.problem.mesh import BoxProblem, RectangularProblem, make_problem, projection
-from toporia.plugins.interpolations.simp import SIMP
-from toporia.plugins.physics.h8_solid import H8Solid, element_stiffness
-from toporia.plugins.physics.q4_plane_stress import Q4PlaneStress
-from toporia.plugins.problems import get_run
+from toporia_core.engine.loop import initialized_method, run_single_with_store
+from toporia_core.framework.problem.mesh import BoxProblem, RectangularProblem, make_problem, projection
+from toporia_library.interpolations.simp import SIMP
+from toporia_library.physics.h8_solid import H8Solid, element_stiffness
+from toporia_library.physics.q4_plane_stress import Q4PlaneStress
+from toporia_library.problems import get_run
 
 
 def _quick(**values):
@@ -152,7 +152,7 @@ def test_post_processing_in_3d(tmp_path):
 
 
 def test_a_saved_3d_run_can_be_post_processed_again(tmp_path):
-    from toporia.engine.postprocess import postprocess_folder
+    from toporia_core.engine.postprocess import postprocess_folder
     run_single_with_store(_quick(max_iter=5).with_output_dir(tmp_path))
     done = postprocess_folder(tmp_path, [{"type": "threshold"}])
     assert done["threshold"]["metrics"]["volume"] == pytest.approx(0.3, abs=0.01)

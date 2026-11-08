@@ -23,42 +23,42 @@ Taking a density update directly on bar coordinates would violate this map.</p>
 <tr>
 <td style="text-align:left">Representation</td>
 <td style="text-align:left"><code>setup</code>, <code>initial</code>, <code>bounds</code>, <code>density(z)</code>, <code>backward(z, sensitivity)</code></td>
-<td style="text-align:left"><a href="../../toporia/framework/parts/representation.py">Contract</a>, <a href="../../toporia/plugins/representations/README.md">implementations</a></td>
+<td style="text-align:left"><a href="../../toporia_core/framework/parts/representation.py">Contract</a>, <a href="../../toporia_library/representations/README.md">implementations</a></td>
 </tr>
 <tr>
 <td style="text-align:left">Assembled model</td>
 <td style="text-align:left">R, filters, material, state solve, responses, reverse chain</td>
-<td style="text-align:left"><a href="../../toporia/plugins/models/assembled.py">assembled.py</a></td>
+<td style="text-align:left"><a href="../../toporia_core/framework/parts/assembled.py">assembled.py</a></td>
 </tr>
 <tr>
 <td style="text-align:left">Evaluation</td>
 <td style="text-align:left">Objective, volume, their gradients, additional constraints and reported scalars</td>
-<td style="text-align:left"><a href="../../toporia/framework/parts/model.py">model.py</a></td>
+<td style="text-align:left"><a href="../../toporia_core/framework/parts/model.py">model.py</a></td>
 </tr>
 <tr>
 <td style="text-align:left">Updater</td>
 <td style="text-align:left"><code>initialize(model, settings)</code>, <code>update(z, evaluation, completed)</code></td>
-<td style="text-align:left"><a href="../../toporia/framework/parts/updater.py">Contract</a>, <a href="../../toporia/plugins/updaters/README.md">implementations</a></td>
+<td style="text-align:left"><a href="../../toporia_core/framework/parts/updater.py">Contract</a>, <a href="../../toporia_library/updaters/README.md">implementations</a></td>
 </tr>
 <tr>
 <td style="text-align:left">Composition</td>
 <td style="text-align:left">One model and one updater; compatibility checks; update and displayed field</td>
-<td style="text-align:left"><a href="../../toporia/framework/parts/composition.py">composition.py</a></td>
+<td style="text-align:left"><a href="../../toporia_core/framework/parts/composition.py">composition.py</a></td>
 </tr>
 <tr>
 <td style="text-align:left">Flat view</td>
 <td style="text-align:left">Free variables, normalization, cached exact gradients and fixed-bound removal</td>
-<td style="text-align:left"><a href="../../toporia/framework/optimisers/flat_view.py">flat_view.py</a></td>
+<td style="text-align:left"><a href="../../toporia_core/framework/optimisers/flat_view.py">flat_view.py</a></td>
 </tr>
 <tr>
 <td style="text-align:left">External loop</td>
 <td style="text-align:left">Pauses the library at callbacks; resumes/stops and records its verdict</td>
-<td style="text-align:left"><a href="../../toporia/framework/optimisers/external_loop.py">external_loop.py</a></td>
+<td style="text-align:left"><a href="../../toporia_core/framework/optimisers/external_loop.py">external_loop.py</a></td>
 </tr>
 <tr>
 <td style="text-align:left">Engine loop</td>
 <td style="text-align:left">Schedules, step, record, continuation/stop checks, final output</td>
-<td style="text-align:left"><a href="../../toporia/engine/loop.py">loop.py</a></td>
+<td style="text-align:left"><a href="../../toporia_core/engine/loop.py">loop.py</a></td>
 </tr>
 </tbody>
 </table>

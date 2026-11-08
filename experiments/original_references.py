@@ -20,10 +20,10 @@ from pathlib import Path
 
 import numpy as np
 
-from toporia.framework import LoadCase, PointLoad
-from toporia.framework.problem.mesh import make_problem
-from toporia.plugins.methods import method_class
-from toporia.plugins.problems import get_run
+from toporia_core.framework import LoadCase, PointLoad
+from toporia_core.framework.problem.mesh import make_problem
+from toporia_library.methods import method_class
+from toporia_library.problems import get_run
 
 REFERENCES = Path(__file__).resolve().parents[1] / "tests" / "references" / "matlab.json"
 
@@ -65,7 +65,7 @@ def validate_additional_fe(case):
     This compares finite elements, not equality of independent optimization
     trajectories. The isolated reference layout overrides never alter presets.
     """
-    from toporia.engine.loop import initialized_method
+    from toporia_core.engine.loop import initialized_method
 
     if case["name"] == "top3D125_density":
         run = get_run("Cantilever").updated(method="h8+oc", Lx=12, Ly=4, Lz=2,

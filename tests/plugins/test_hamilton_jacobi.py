@@ -5,20 +5,20 @@ from dataclasses import replace
 import numpy as np
 import pytest
 
-from toporia.checks.common import iterate
-from toporia.checks.method import check_method
-from toporia.engine.loop import initialized_method
-from toporia.framework import EdgeConstraint, PointConstraint, PointSpring, Scenario
-from toporia.framework.problem.mesh import make_problem
-from toporia.plugins.interpolations.simp import SIMP
-from toporia.plugins.methods.levelset_hamilton_jacobi import (
+from toporia_core.checks.common import iterate
+from toporia_core.checks.method import check_method
+from toporia_core.engine.loop import initialized_method
+from toporia_core.framework import EdgeConstraint, PointConstraint, PointSpring, Scenario
+from toporia_core.framework.problem.mesh import make_problem
+from toporia_library.interpolations.simp import SIMP
+from toporia_library.methods.levelset_hamilton_jacobi import (
     HamiltonJacobiLevelSet,
     circular_hole_matrix,
     godunov_norm,
     signed_distance,
 )
-from toporia.plugins.physics.q4_plane_stress import Q4PlaneStress
-from toporia.plugins.problems import get_run
+from toporia_library.physics.q4_plane_stress import Q4PlaneStress
+from toporia_library.problems import get_run
 
 
 def _method(**values):

@@ -11,9 +11,9 @@ import pytest
 
 matplotlib.use("Agg")   # sweeps and comparisons draw figures; never open a window
 
-from toporia.apps.cli import main  # noqa: E402
-from toporia.framework import Solver  # noqa: E402
-from toporia.framework.problem.files import fingerprint, load, save  # noqa: E402
+from toporia_core.cli import main  # noqa: E402
+from toporia_core.framework import Solver  # noqa: E402
+from toporia_core.framework.problem.files import fingerprint, load, save  # noqa: E402
 
 # Small and fast: every command below runs real optimisations.
 SMALL = ["--set", "m=0.25", "--set", "max_iter=3", "--set", "tol=0", "--set", "save_every=0"]
@@ -58,7 +58,7 @@ def test_run_a_preset_with_overrides(tmp_path):
 def test_structured_override_errors_are_clear_before_any_run(override, tmp_path, monkeypatch):
     def unexpected_run(*args, **kwargs):
         pytest.fail("Malformed structured arguments must be rejected before computing")
-    monkeypatch.setattr("toporia.engine.loop.run_single_with_store", unexpected_run)
+    monkeypatch.setattr("toporia_core.engine.loop.run_single_with_store", unexpected_run)
     out = tmp_path / "must-not-be-created"
     with pytest.raises(SystemExit, match="requires a JSON (object|array)"):
         main(["run", "MBB Beam", "--out", str(out), "--set", override])

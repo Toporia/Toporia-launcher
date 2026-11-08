@@ -14,16 +14,16 @@ import pytest
 
 matplotlib.use("Agg")
 
-from toporia.engine.modes.methods import (  # noqa: E402
+from toporia_core.engine.modes.methods import (  # noqa: E402
     COLUMNS,
     benchmark,
     compare_methods,
     grey_level,
     referee_compliance,
 )
-from toporia.framework.problem.mesh import RectangularProblem  # noqa: E402
-from toporia.plugins.models.q4 import Q4Model  # noqa: E402
-from toporia.plugins.problems import get_run, problem_names  # noqa: E402
+from toporia_core.framework.problem.mesh import RectangularProblem  # noqa: E402
+from toporia_library.models.q4 import Q4Model  # noqa: E402
+from toporia_library.problems import get_run, problem_names  # noqa: E402
 
 SMALL = {"m": 0.3, "max_iter": 25, "save_every": 0}
 
@@ -80,7 +80,7 @@ def test_the_referee_measures_a_design_like_the_q4_model_without_a_filter():
 
 
 def test_multiresolution_comparison_uses_a_fine_q4_referee_and_keeps_candidate_parameters(tmp_path):
-    from toporia.plugins.physics.q4_plane_stress import Q4PlaneStress
+    from toporia_library.physics.q4_plane_stress import Q4PlaneStress
 
     run = _small(method="q4_multiresolution+oc", m=0.4, max_iter=3, tol=0,
                  method_params={"coarsening": 2},
@@ -103,8 +103,8 @@ def test_multiresolution_comparison_uses_a_fine_q4_referee_and_keeps_candidate_p
 
 
 def test_the_referee_retains_the_mechanisms_point_springs():
-    from toporia.plugins.interpolations.simp import SIMP
-    from toporia.plugins.physics.q4_mechanism import Q4Mechanism
+    from toporia_library.interpolations.simp import SIMP
+    from toporia_library.physics.q4_mechanism import Q4Mechanism
 
     run = _small("Force Inverter", m=0.2)
     problem = RectangularProblem(run.scenario, run.solver.m)
@@ -117,8 +117,8 @@ def test_the_referee_retains_the_mechanisms_point_springs():
 
 
 def test_thermal_referee_measures_heat_with_the_selected_source_not_zero_mechanical_work():
-    from toporia.plugins.interpolations.simp import SIMP
-    from toporia.plugins.physics.q4_heat import Q4Heat
+    from toporia_library.interpolations.simp import SIMP
+    from toporia_library.physics.q4_heat import Q4Heat
 
     run = _small("Heat Sink", m=0.1, method_params={"heat_source": 0.0002})
     problem = RectangularProblem(run.scenario, run.solver.m)
@@ -132,8 +132,8 @@ def test_thermal_referee_measures_heat_with_the_selected_source_not_zero_mechani
 
 
 def test_comparison_preflight_uses_the_candidate_models_dimensions():
-    from toporia.engine.modes.methods import comparison_problems
-    from toporia.plugins.methods import method_class
+    from toporia_core.engine.modes.methods import comparison_problems
+    from toporia_library.methods import method_class
 
     run = _small(Lz=5)
     assert comparison_problems(method_class("h8+mma"), run) == []
@@ -141,7 +141,7 @@ def test_comparison_preflight_uses_the_candidate_models_dimensions():
 
 
 def test_sinh_study_records_its_actual_effective_budget_alongside_geometric_volume(tmp_path):
-    from toporia.plugins.interpolations.sinh import SINH
+    from toporia_library.interpolations.sinh import SINH
 
     run = _small(m=.2, max_iter=3, interpolation={"type": "sinh"}).with_output_dir(tmp_path)
     _, (row,) = compare_methods(["q4+mma"], run)

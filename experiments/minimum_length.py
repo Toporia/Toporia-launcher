@@ -12,9 +12,9 @@ from pathlib import Path
 
 import numpy as np
 
-from toporia.engine.loop import initialized_method
-from toporia.framework import PointLoad
-from toporia.plugins.problems import get_run
+from toporia_core.engine.loop import initialized_method
+from toporia_core.framework import PointLoad
+from toporia_library.problems import get_run
 
 
 def seeded_validation(start="feasible", iterations=500, refine=2):

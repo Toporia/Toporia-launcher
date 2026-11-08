@@ -19,13 +19,13 @@ Scenario + Solver -> representation -> scalar density -> filter chain
 
 | Existing boundary | Evidence and adaptation point |
 | :-- | :-- |
-| Registry identity and parameters | `kind:name`, `Param`, defaults and dependency declarations already support a larger library. [Registry](../../toporia/framework/registry.py), [parameters](../../toporia/framework/params.py) |
-| Representation Jacobian | Geometric variables, spline coefficients and neural weights already return to one element field. [Contract](../../toporia/framework/parts/representation.py), [assembled model](../../toporia/plugins/models/assembled.py) |
-| Opaque state and feature requirements | A physics state can contain displacements, modes or temperatures; response compatibility is checked through features. [Physics](../../toporia/framework/parts/physics.py), [responses](../../toporia/framework/parts/response.py) |
-| Generic optimizer input | Objective, material budget, ordinary constraints and gradients live in `Evaluation`. [Model contract](../../toporia/framework/parts/model.py) |
-| External optimizer lifecycle | Free-variable mapping, cached evaluations, callbacks, stop/close and library verdicts are implemented. [Flat view](../../toporia/framework/optimisers/flat_view.py), [external loop](../../toporia/framework/optimisers/external_loop.py) |
-| Shared-variable variants | Repeated evaluations can combine mean/worst objectives and constraints. This is not a general transfer network. [Variants](../../toporia/framework/parts/variants.py) |
-| Research knowledge | Plain descriptions, rendered equations, reports, stable function IDs and contribution templates can feed the GUI library/help. [Description data](../../toporia/plugins/problems/_research.py), [contribution template](templates/research-note.md) |
+| Registry identity and parameters | `kind:name`, `Param`, defaults and dependency declarations already support a larger library. [Registry](../../toporia_core/framework/registry.py), [parameters](../../toporia_core/framework/params.py) |
+| Representation Jacobian | Geometric variables, spline coefficients and neural weights already return to one element field. [Contract](../../toporia_core/framework/parts/representation.py), [assembled model](../../toporia_core/framework/parts/assembled.py) |
+| Opaque state and feature requirements | A physics state can contain displacements, modes or temperatures; response compatibility is checked through features. [Physics](../../toporia_core/framework/parts/physics.py), [responses](../../toporia_core/framework/parts/response.py) |
+| Generic optimizer input | Objective, material budget, ordinary constraints and gradients live in `Evaluation`. [Model contract](../../toporia_core/framework/parts/model.py) |
+| External optimizer lifecycle | Free-variable mapping, cached evaluations, callbacks, stop/close and library verdicts are implemented. [Flat view](../../toporia_core/framework/optimisers/flat_view.py), [external loop](../../toporia_core/framework/optimisers/external_loop.py) |
+| Shared-variable variants | Repeated evaluations can combine mean/worst objectives and constraints. This is not a general transfer network. [Variants](../../toporia_core/framework/parts/variants.py) |
+| Research knowledge | Plain descriptions, rendered equations, reports, stable function IDs and contribution templates can feed the GUI library/help. [Description data](../../toporia_library/problems/_research.py), [contribution template](templates/research-note.md) |
 
 The selectable `model:q4` encapsulates filters, material, physics and responses;
 it is not an opaque indivisible algorithm. The module map distinguishes these
@@ -64,7 +64,7 @@ usable numerical path. Tasks overlap, so the rows should not be added blindly.
 | GPU/autodiff backend through an existing structured problem | 4–8 h | 12–24 h | NumPy/device boundaries, sparse solver differentiation, memory and optional-package support |
 
 Source-paper recovery or a difficult nonlinear/eigenvalue convergence issue can
-extend these ranges substantially. The [integration backlog](../../toporia/plugins/TODO.md)
+extend these ranges substantially. The [integration backlog](../../toporia_library/TODO.md)
 contains historically recorded dependency blockers; this batch does not recheck
 or install every unimplemented external package. No algorithm or physics listed
 in this table was added by the assessment.
