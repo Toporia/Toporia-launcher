@@ -403,3 +403,37 @@ def test_every_style_applies_and_the_style_maker_keeps_a_custom_one(window):
         assert window.style_maker_action is not None
     finally:
         window.set_appearance("basic", persist=False)
+
+
+def test_each_function_shows_its_showcase_figure_and_opens_its_showcase(window):
+    from PySide6.QtCore import Qt
+
+    from toporia.apps.gui.function_library import showcase_figure, showcase_preset
+    from toporia.plugins.filters import FILTERS
+    heaviside = FILTERS.get("heaviside")
+    assert showcase_figure(heaviside) is not None and showcase_preset(heaviside) is not None
+    explorer = window.home.explorer
+    item = next(explorer.tree.topLevelItem(i).child(j) for i in range(explorer.tree.topLevelItemCount())
+                for j in range(explorer.tree.topLevelItem(i).childCount())
+                if explorer.tree.topLevelItem(i).child(j).data(0, Qt.UserRole + 1) is heaviside)
+    explorer.tree.setCurrentItem(item)
+    assert "figure.png" in explorer.details.toHtml() or "<img" in explorer.details.toHtml()
+    assert not explorer.open_showcase.isHidden()
+    opened = []
+    window.home.benchmark_requested.connect(opened.append)
+    explorer.open_showcase.click()
+    assert opened == [showcase_preset(heaviside)]
+
+
+def test_home_reads_the_documentation_and_follows_its_links(window):
+    from pathlib import Path
+
+    from PySide6.QtCore import QUrl
+    window.show_home()
+    window.home.open_section(3)
+    docs = window.home.docs
+    assert docs.list.count() >= 5 and docs.current.name == "README.md"
+    assert "Toporia" in docs.reader.toPlainText()
+    docs._follow(QUrl("docs/installation.md"))
+    assert docs.current == (Path(docs.current).parents[1] / "docs" / "installation.md") or \
+        docs.current.name == "installation.md"

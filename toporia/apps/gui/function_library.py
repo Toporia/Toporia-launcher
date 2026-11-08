@@ -1,9 +1,12 @@
 """Registry-backed function information shared by Home and nested workspaces."""
 
-from PySide6.QtCore import Qt
+from pathlib import Path
+
+from PySide6.QtCore import Qt, QUrl, Signal
 from PySide6.QtWidgets import (
     QHBoxLayout,
     QLineEdit,
+    QPushButton,
     QTextBrowser,
     QTreeWidget,
     QTreeWidgetItem,
@@ -29,8 +32,35 @@ PLACEMENT = {
 }
 
 
+#: Where the showcases keep their figures: docs/research/evidence/batch*/<function name>/figure.png.
+EVIDENCE = Path(__file__).resolve().parents[3] / "docs" / "research" / "evidence"
+
+
+def showcase_figure(cls):
+    """The figure of the function's own showcase run, or None where there is none (or no docs/)."""
+    name = getattr(cls, "name", "")
+    if not name or not EVIDENCE.is_dir():
+        return None
+    return next((path for path in sorted(EVIDENCE.glob(f"batch*/{name}/figure.png"))), None)
+
+
+def showcase_preset(cls):
+    """The research or paper preset made to show this function, or None."""
+    from toporia.plugins.compatibility import demo_presets, function_id
+    names = demo_presets(function_id(cls))
+    # A research showcase is made to show this one function; a paper preset reproduces a figure.
+    return next((n for n in names if n.startswith("Research:")), None) or         next((n for n in names if n.startswith("Paper:")), None)
+
+
 class FunctionExplorer(QWidget):
-    """Browsable encyclopedia populated from installed plugin declarations."""
+    """Browsable encyclopedia populated from installed plugin declarations.
+
+    Each function shows what it computes, when to use it, what it works with, its
+    parameters and source, the figure of its showcase run, and a button that opens
+    that showcase as a project.
+    """
+
+    showcase_requested = Signal(str)     # a preset name
 
     def __init__(self, parent=None):
         super().__init__(parent)
@@ -45,7 +75,13 @@ class FunctionExplorer(QWidget):
         self.details = QTextBrowser()
         self.details.setOpenExternalLinks(True)
         row.addWidget(self.tree, 1)
-        row.addWidget(self.details, 2)
+        right = QVBoxLayout()
+        right.addWidget(self.details, 1)
+        self.open_showcase = QPushButton()
+        self.open_showcase.hide()
+        self.open_showcase.clicked.connect(lambda: self.showcase_requested.emit(self.open_showcase.property("preset")))
+        right.addWidget(self.open_showcase)
+        row.addLayout(right, 2)
         layout.addLayout(row, 1)
         for kind, registry in registries().items():
             group = QTreeWidgetItem(self.tree, [kind.capitalize()])
@@ -55,6 +91,7 @@ class FunctionExplorer(QWidget):
                 topic.add("Where it belongs", PLACEMENT[kind])
                 topic.add("Developer contributions", "Add a registered plugin with its computational contract, parameter declarations, documentation and reference. GUI function authoring is planned for a future release.")
                 item.setData(0, Qt.UserRole, topic)
+                item.setData(0, Qt.UserRole + 1, cls)
                 item.setToolTip(0, PLACEMENT[kind])
         independent = QTreeWidgetItem(self.tree, ["Independent infrastructure"])
         for title, description in (
@@ -72,8 +109,21 @@ class FunctionExplorer(QWidget):
     def _select(self):
         selected = self.tree.selectedItems()
         topic = selected[0].data(0, Qt.UserRole) if selected else None
-        if topic:
-            self.details.setHtml(topic.to_html())
+        cls = selected[0].data(0, Qt.UserRole + 1) if selected else None
+        if not topic:
+            return
+        html = topic.to_html()
+        figure = showcase_figure(cls) if cls is not None else None
+        if figure is not None:
+            url = QUrl.fromLocalFile(str(figure)).toString()
+            html += (f"<h3>Its showcase</h3><p><img src='{url}' width='520'></p>"
+                     "<p style='font-size:small'>The function's own showcase run, from the research evidence.</p>")
+        self.details.setHtml(html)
+        preset = showcase_preset(cls) if cls is not None else None
+        self.open_showcase.setVisible(preset is not None)
+        if preset is not None:
+            self.open_showcase.setText(f"Open the showcase: {preset}")
+            self.open_showcase.setProperty("preset", preset)
 
     def _filter(self, value):
         needle = value.casefold()

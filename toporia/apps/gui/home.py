@@ -75,7 +75,8 @@ class HomePage(QWidget):
         self.sections.addWidget(landing)
         self.section_buttons = []
         for text, icon, index in (("Benchmarks", QStyle.SP_DirIcon, 1),
-                                  ("Functions", QStyle.SP_FileDialogInfoView, 2)):
+                                  ("Functions", QStyle.SP_FileDialogInfoView, 2),
+                                  ("Docs", QStyle.SP_FileDialogDetailedView, 3)):
             button = QPushButton(text)
             button.setProperty("entryCard", True)
             button.setIcon(self.style().standardIcon(icon))
@@ -160,8 +161,18 @@ class HomePage(QWidget):
         back_functions.clicked.connect(lambda: self.open_section(0))
         functions_layout.addWidget(back_functions, alignment=Qt.AlignLeft)
         self.explorer = FunctionExplorer()
+        self.explorer.showcase_requested.connect(self.benchmark_requested.emit)
         functions_layout.addWidget(self.explorer)
         self.sections.addWidget(functions)
+        from .docs_view import DocsView
+        docs = QWidget()
+        docs_layout = QVBoxLayout(docs)
+        back_docs = QPushButton("‹ Home")
+        back_docs.clicked.connect(lambda: self.open_section(0))
+        docs_layout.addWidget(back_docs, alignment=Qt.AlignLeft)
+        self.docs = DocsView()
+        docs_layout.addWidget(self.docs, 1)
+        self.sections.addWidget(docs)
         self._thumbnails_loaded = False
 
     def refresh_recent(self):
