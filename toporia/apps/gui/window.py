@@ -617,6 +617,8 @@ class MainWindow(WorkflowActions, ProjectActions, ExecutionActions, QMainWindow)
         self.method_view.stage_requested.connect(self._select_stage)
         self.method_view.add_requested.connect(self._add_function)
         self.method_view.offers = self._library_offers
+        self.method_view.stage_graph = self._stage_graph
+        self.method_view.mode_text = self._mode_summary
         self.method_view.context_changed.connect(lambda *_: self._restore_inspector())
         self.workspace_views.addWidget(self.method_view)
         runner_page = QWidget()
@@ -749,10 +751,13 @@ class MainWindow(WorkflowActions, ProjectActions, ExecutionActions, QMainWindow)
         if node.kind == "export":
             self.go_to_step(4)
             return
+        if node.kind == "mode":
+            self.go_to_step(2)
+            return
         widgets = {"design": self.design.representation, "filter": self.filters,
                    "material": self.material, "physics": self.core._model_row, "updater": self.core._updater_row,
                    "method": self.core, "objective": self.objective,
-                   "constraint": self.constraints, "budget": self.core.volume_box,
+                   "constraint": self.constraints, "budget": self.constraints,
                    "convergence": self.core._convergence, "schedule": self.schedules,
                    "variants": self.variants, "postprocessor": self.post}
         widget = widgets.get(node.kind)
@@ -1004,6 +1009,29 @@ class MainWindow(WorkflowActions, ProjectActions, ExecutionActions, QMainWindow)
         self.constraints.set_allowed(enforceable, self._why_no_constraints(name))
         self._refresh_parameter_paths()
 
+    def _stage_graph(self, stage_id):
+        """The pipeline graph of one optimisation of the workflow, for the whole tree; None if invalid."""
+        from toporia.engine.pipeline import pipeline_graph
+        from toporia.framework.problem.workflow import nodes, stage_run
+        tree = self._ensure_workflow()
+        node = next((n for n in nodes(tree) if n["id"] == stage_id), None)
+        if node is None:
+            return None
+        try:
+            cfg = self.current_config()
+            return pipeline_graph(cfg if stage_id == self._active_stage else stage_run(cfg, node))
+        except (ValueError, KeyError, TypeError):
+            return None
+
+    def _mode_summary(self):
+        """The kind of run, in a few words, for the run-mode block of the whole tree."""
+        mode = self.mode.currentText()
+        group = {"Sweep": self.sg, "Sensitivity": self.sens}.get(mode)
+        combo = getattr(group, "param", None) or getattr(group, "sens_param", None) if group else None
+        if mode == "Compare Methods":
+            return f"Compare Methods · {len(self.cmg.selected())} methods"
+        return f"{mode} · {combo.currentText()}" if combo is not None and combo.currentText() else mode
+
     def _ensure_budget(self, *_):
         """An objective other than the volume needs a volume budget: add it back when it is missing."""
         from .preflight import needs_budget
@@ -1119,6 +1147,9 @@ class MainWindow(WorkflowActions, ProjectActions, ExecutionActions, QMainWindow)
         # per-design panels inside clcg replace it completely.
         self.lc.setVisible(m != "Compare Load Cases")
         self._show_run_label()
+        if hasattr(self, "method_view") and self.method_view.context == "root":
+            self.method_view._signature = None
+            self.method_view.show_pipeline(self.method_view._graph, self.method_view._notes)
 
     def _log(self, text):
         """Append one line to the log box and scroll to the bottom."""

@@ -121,10 +121,12 @@ def test_dragged_connectors_keep_arrowheads_aligned_with_their_terminal_segment(
         tip = path.elementAt(count - 2)
         left = path.elementAt(count - 3)
         right = path.elementAt(count - 1)
-        assert abs(left.x - tip.x) == pytest.approx(5)
-        assert abs(right.x - tip.x) == pytest.approx(5)
-        assert tip.y - left.y == pytest.approx(10)
-        assert tip.y - right.y == pytest.approx(10)
+        # Pointing down or right: both wings 10 back along the terminal segment and 5 to either side.
+        for wing in (left, right):
+            assert np.hypot(wing.x - tip.x, wing.y - tip.y) == pytest.approx(np.hypot(10, 5))
+        middle = ((left.x + right.x) / 2 - tip.x, (left.y + right.y) / 2 - tip.y)
+        assert np.hypot(*middle) == pytest.approx(10)
+        assert np.hypot(left.x - right.x, left.y - right.y) == pytest.approx(10)
 
 
 def test_same_function_can_be_opened_closed_and_reopened_by_clicking(window):
@@ -321,3 +323,56 @@ def test_a_conflicting_part_stays_selectable_and_its_choice_replaces_what_confli
     assert window.current_config().solver.method == "q4+oc"
     assert window.current_config().scenario.constraints == []
     assert any(change.startswith("constraints:") for change in window._last_adaptation)
+
+
+def _kinds(window):
+    return [block.node.kind for block in window.method_view.blocks.values()]
+
+
+def test_the_method_step_shows_the_whole_tree_with_the_run_mode_above_the_optimisations(window):
+    window.go_to_step(1)
+    window.method_view.root()
+    kinds = _kinds(window)
+    assert kinds[:3] == ["domain", "mode", "optimization"] and kinds[-1] == "export"
+    assert {"design", "physics", "objective", "updater", "convergence"} <= set(kinds)   # the loop, expanded
+    window.mode.setCurrentText("Sweep")
+    mode = next(b.node for b in window.method_view.blocks.values() if b.node.kind == "mode")
+    assert mode.label.startswith("Sweep")
+    window._inspect_method_node(mode)
+    assert window.current_step() == 2                                     # the run mode lives in Runner
+    window.mode.setCurrentText("Run One")
+
+
+def test_optimisations_and_their_groups_collapse_but_the_top_level_always_stays(window):
+    window.go_to_step(1)
+    window.method_view.root()
+    window._add_function("composition", "sequential")
+    window.method_view.root()
+    stages = [n["id"] for n in nodes(window.project.workflow) if n["kind"] == "optimization"]
+    assert _kinds(window).count("optimization") == 2 and "transform" in _kinds(window)
+    window.method_view._toggle(stages[0])
+    window.method_view._toggle(stages[1])
+    assert _kinds(window) == ["domain", "mode", "optimization", "transform", "optimization", "export"]
+    window.method_view._toggle(stages[0])
+    window.method_view._toggle(stages[0] + "/physics")
+    kinds = _kinds(window)
+    assert "group" in kinds and "physics" not in kinds and "design" in kinds
+
+
+def test_one_add_button_offers_every_function_and_asks_where_when_there_is_a_choice(window, monkeypatch):
+    from toporia.apps.gui.add_function import AddFunctionDialog
+    window.go_to_step(1)
+    window.method_view.root()
+    window._add_function("composition", "parallel")
+    entries = window.method_view._add_entries()
+    kinds = {kind for _, kind, _, _, _ in entries}
+    assert {"model", "updater", "objective", "constraint", "filter", "composition"} <= kinds
+    dialog = AddFunctionDialog(entries, window._active_stage)
+    filters = next(i for i in range(dialog.list.count()) if dialog.list.item(i).data(0x0100)[0] == "filter")
+    dialog.list.setCurrentRow(filters)
+    assert dialog.place.count() == 2 and dialog.place.isEnabled()        # two optimisations: choose one
+    second = dialog.place.itemData(1)
+    before = len(window.current_config().solver.filter_specs)
+    window.method_view._add_at("filter", "heaviside", second)
+    assert window._active_stage == second[1]
+    assert len(window.current_config().solver.filter_specs) == before + 1

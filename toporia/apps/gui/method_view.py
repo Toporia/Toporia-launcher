@@ -119,7 +119,12 @@ class MethodWorkspace(QWidget):
         self.breadcrumb = QLabel("Workflow")
         bar.addWidget(self.breadcrumb)
         bar.addStretch()
-        for title, callback in (("↑ Parent", self.up), ("Workflow", self.root),
+        self.add_button = QPushButton("+  Add function…")
+        self.add_button.setMinimumHeight(36)
+        self.add_button.setToolTip("Every function that can be added, and where it goes.")
+        self.add_button.clicked.connect(lambda: self.open_add_dialog())
+        bar.addWidget(self.add_button)
+        for title, callback in (("↑ Parent", self.up), ("Whole tree", self.root),
                                 ("Fit", self.fit), ("Reset layout", self.reset_layout)):
             button = QPushButton(title)
             button.setMinimumHeight(36)
@@ -170,6 +175,12 @@ class MethodWorkspace(QWidget):
         self._notes = []
         #: The window's offers(where) -> [(label, kind, name, reason)]; a reason greys the entry out.
         self.offers = None
+        #: The window's stage_graph(stage_id) -> pipeline graph of that optimisation, or None.
+        self.stage_graph = None
+        #: The window's mode_text() -> the kind of run, for the tree's run-mode block.
+        self.mode_text = None
+        #: Collapsed parts of the whole tree: optimisation ids, and "<id>/filters", "<id>/physics".
+        self.collapsed = set()
 
     def set_workflow(self, tree, active_stage):
         self.tree, self.active_stage = tree, active_stage
@@ -198,11 +209,26 @@ class MethodWorkspace(QWidget):
         self.show_pipeline(self._graph, self._notes)
 
     def _activate(self, node):
+        toggle = getattr(node, "toggle", None)
+        if toggle:
+            QTimer.singleShot(0, lambda: self._toggle(toggle, getattr(node, "stage", None)))
+            return
         target = getattr(node, "function_id", None)
         if target:
             QTimer.singleShot(0, lambda: self._enter_function(target))
-        else:
-            self.selected.emit(node)
+            return
+        stage = getattr(node, "stage", None)
+        if stage and stage != self.active_stage:
+            self.stage_requested.emit(stage)
+        self.selected.emit(node)
+
+    def _toggle(self, key, stage=None):
+        """Collapse or show one optimisation, filter chain or physics calculation of the tree."""
+        if stage and stage != self.active_stage:
+            self.stage_requested.emit(stage)
+        self.collapsed ^= {key}
+        self._signature = None
+        self.show_pipeline(self._graph, self._notes)
 
     def _enter_function(self, target):
         from toporia.framework.problem.workflow import nodes
@@ -331,8 +357,12 @@ class MethodWorkspace(QWidget):
     def show_pipeline(self, graph, notes):
         """Rebuild only when semantic content changes; preserve user positions."""
         self._graph, self._notes = graph, notes
+        if self.context == "root" and self.tree is not None and self.stage_graph is not None:
+            self.notes.setText("\n".join(notes))
+            self._show_tree()
+            return
         loop, after = self._local_graph(graph)
-        self.library_widget.setVisible(self.library.count() > 0)
+        self.library_widget.setVisible(False)          # offered through "+ Add function…"
         loop = [row for row in loop if row]
         signature = self.context + repr([(n.kind, n.title, n.label, n.badges) for row in loop for n in row]) + repr(after)
         self.notes.setText("\n".join(notes))
@@ -388,6 +418,223 @@ class MethodWorkspace(QWidget):
         self.fit()
         self.refresh_appearance()
 
+    # ── The whole tree ───────────────────────────────────────────────────────
+
+    W, H = 280, 118     # column and row pitch of the tree layout
+
+    def _tree_layout(self):
+        """Place every block of the whole tree: [(node, x, y)] and edges [(i, j, back)].
+
+        Always shown: the operating space, the kind of run, the optimisations and how they
+        relate (in sequence with a transformation between, or in parallel with their
+        combination), and the export.  Each optimisation, and in it the filter chain and
+        the physics calculation, can be collapsed.
+        """
+        placed, edges = [], []
+        W, H = self.W, self.H
+
+        def put(node, x, y):
+            placed.append((node, x, y))
+            return len(placed) - 1
+
+        def link(sources, targets, back=False):
+            edges.extend((a, b, back) for a in sources for b in targets)
+
+        def stage_rows(stage):
+            sid = stage["id"]
+            graph = self.stage_graph(sid)
+            if graph is None:
+                return [[self._node("note", "Cannot describe", "This optimisation's settings are invalid")]]
+            loop, _ = graph
+            physics_kinds = {"material", "physics", "objective", "constraint", "budget"}
+            rows, filters, physics = [], [], []
+            for row in loop:                      # design, filters…, material, physics, responses, updater
+                kinds = {n.kind for n in row}
+                if kinds == {"filter"}:
+                    if not filters:
+                        rows.append(["filters"])
+                    filters.append(row)
+                elif kinds & physics_kinds:
+                    if not physics:
+                        rows.append(["physics"])
+                    physics.append(row)
+                else:
+                    rows.append(row)
+            out = []
+            for row in rows:
+                if row == ["filters"]:
+                    key = f"{sid}/filters"
+                    closed = key in self.collapsed
+                    group = self._node("group", "Filter chain", f"{len(filters)} filter{'s' * (len(filters) != 1)}"
+                                       + (" · ▸ show" if closed else " · ▾ hide"))
+                    group.toggle, group.stage = key, sid
+                    out.append([group])
+                    if not closed:
+                        out += filters
+                elif row == ["physics"]:
+                    key = f"{sid}/physics"
+                    closed = key in self.collapsed
+                    group = self._node("group", "Physics calculation", "Material · physics · responses"
+                                       + (" · ▸ show" if closed else " · ▾ hide"))
+                    group.toggle, group.stage = key, sid
+                    out.append([group])
+                    if not closed:
+                        out += physics
+                else:
+                    out.append(row)
+            convergence = self._node("convergence", "Convergence", "Iteration limit and tolerance")
+            out.append([convergence])
+            for row in out:
+                for node in row:
+                    if not hasattr(node, "stage"):
+                        node.stage = sid
+            return out
+
+        def layout(item, x, y):
+            """Place `item` with its top-left at (x, y): (entries, exits, width, height)."""
+            kind = item["kind"]
+            if kind == "optimization":
+                sid = item["id"]
+                closed = sid in self.collapsed
+                header = self._node("optimization", item["name"],
+                                    ("▸ collapsed · select to show its loop" if closed
+                                     else "▾ its loop to the right · select to collapse"))
+                header.toggle, header.stage = sid, sid
+                head = put(header, x, y)
+                if closed:
+                    return [head], [head], W, H
+                previous, first, left, height = [head], None, x + W, H
+                for row in stage_rows(item):                  # left to right; a row's parts stacked
+                    indices = [put(node, left, y + i * H) for i, node in enumerate(row)]
+                    link(previous, indices)
+                    if first is None:
+                        first = indices
+                    previous, left, height = indices, left + W, max(height, len(row) * H)
+                link(previous, first or [head], back=True)        # the optimisation loop
+                return [head], [head], left - x, height + 30      # its result leaves from the header
+            children = item.get("children", [])
+            if kind == "sequential":
+                entries, exits, top, width = None, None, y, W
+                for i, child in enumerate(children):
+                    if i:
+                        step = put(self._node("transform", "Transformation",
+                                              "Previous density ≥ 0.5 → allowed domain"), x, top)
+                        link(exits, [step])
+                        exits, top = [step], top + H
+                    e, o, w, h = layout(child, x, top)
+                    if entries is None:
+                        entries = e
+                    else:
+                        link(exits, e)
+                    exits, top, width = o, top + h, max(width, w)
+                return entries or [], exits or [], width, top - y
+            # parallel: the branches one under another, each fed the same domain, then combined
+            entries, exits, top, width = [], [], y, W
+            for child in children:
+                e, o, w, h = layout(child, x + 40, top)
+                entries += e
+                exits += o
+                top, width = top + h, max(width, w + 40)
+            combine = put(self._node("combine", "Boolean combination", item.get("operation", "union")), x, top)
+            link(exits, [combine])
+            return entries, [combine], width, top + H - y
+
+        domain = put(self._node("domain", "Operating space", "Physical domain, supports, loads and mesh"), 0, 0)
+        mode = self._node("mode", "Run mode", (self.mode_text() if self.mode_text else "Run One")
+                          + " · step 3")
+        run = put(mode, 0, H)
+        link([domain], [run])
+        entries, exits, _, height = layout(self.tree, 0, 2 * H)
+        link([run], entries)
+        export = put(self._node("export", "Export", "Terminal file output · step 5"), 0, 2 * H + height)
+        link(exits, [export])
+        return placed, edges
+
+    def _show_tree(self):
+        """Draw the whole tree; rebuilt only when what it shows changes, so arranging survives."""
+        self.library.clear()
+        self.library_widget.setVisible(False)
+        self.breadcrumb.setText("Whole tree")
+        self.input_contract.setText("Select an optimisation, the filter chain or the physics calculation to "
+                                    "collapse or show it; select any other block to edit it.")
+        self.output_contract.setText("")
+        placed, edges = self._tree_layout()
+        signature = "tree" + repr([(n.kind, n.title, n.label, tuple(n.badges), x, y) for n, x, y in placed]) + repr(edges)
+        if signature == self._signature:
+            return
+        self._building = True
+        self._signature = signature
+        self.blocks, self.edges, self.filter_frame = {}, [], None
+        scene = self.view.scene()
+        scene.clear()
+        made = []
+        for index, (node, x, y) in enumerate(placed):
+            key = f"tree:{getattr(node, 'stage', '')}:{node.kind}:{node.title}:{index}"
+            block = _Block(node, key, self._moved, self._activate)
+            scene.addItem(block)
+            block.setPos(x, y)
+            self.blocks[key] = block
+            made.append(block)
+        for a, b, back in edges:
+            edge = QGraphicsPathItem()
+            edge.setPen(QPen(QColor("#9baabd"), 2, Qt.DashLine if back else Qt.SolidLine))
+            edge.setZValue(-1)
+            scene.addItem(edge)
+            self.edges.append((made[a], made[b], edge, back))
+        self._building = False
+        self._moved()
+        self.fit()
+        self.refresh_appearance()
+
+    def open_add_dialog(self):
+        """Every function that can be added, and, where there is a choice, where it goes."""
+        from .add_function import AddFunctionDialog
+        dialog = AddFunctionDialog(self._add_entries(), self.active_stage, self)
+        if dialog.exec() and dialog.choice is not None:
+            kind, name, place = dialog.choice
+            self._add_at(kind, name, place)
+
+    def _add_entries(self):
+        """(label, kind, name, reason, places) for the dialog; places are (label, (where, id))."""
+        from toporia.framework.problem.workflow import nodes
+        if self.tree is None:
+            return []
+        stages = [n for n in nodes(self.tree) if n["kind"] == "optimization"]
+        containers = [n for n in nodes(self.tree) if n["kind"] in {"sequential", "parallel"}]
+        here = [(s["name"], ("stage", s["id"])) for s in stages]
+        entries = []
+        for where in ("loop", "physics"):
+            for label, kind, name, reason in (self.offers(where) if self.offers else ()):
+                entries.append((label, kind, name, reason, here))
+        from toporia.engine.pipeline import part_dims
+        from toporia.plugins.filters import FILTERS
+        dims = getattr(self, "dimensions", 2)
+        entries += [(f"+ Filter: {cls.label}", "filter", cls.name, "", here) for cls in FILTERS.classes()
+                    if dims in (part_dims("filter", cls) or (dims,))]
+        entries += [("Parameter schedules", "inspect", "schedule", "", here),
+                    ("Design variants", "inspect", "variants", "", here)]
+        whole = [("After the whole workflow", ("root", None))]
+        entries += [("+ Sequential stage: another optimisation after this one", "composition", "sequential", "", whole),
+                    ("+ Parallel branch: another optimisation beside this one", "composition", "parallel", "", whole)]
+        if containers:
+            inside = [(c["name"], ("container", c["id"])) for c in containers]
+            entries.append(("+ Optimisation inside a sequence or parallel group", "composition", "optimization", "", inside))
+        return entries
+
+    def _add_at(self, kind, name, place):
+        where, target = place
+        if where == "stage" and target != self.active_stage:
+            self.stage_requested.emit(target)
+        previous = self.context
+        if where == "container":
+            self.context = target
+        elif where == "root":
+            self.context = "root"
+        self.add_requested.emit(kind, name)
+        self.context = previous
+        self._signature = None
+        self.show_pipeline(self._graph, self._notes)
+
     def refresh_appearance(self):
         from .appearance import colours
         colors = colours(self)
@@ -412,6 +659,36 @@ class MethodWorkspace(QWidget):
             return
         from PySide6.QtGui import QPainterPath
         for a, b, edge, back in self.edges:
+            ra, rb = a.sceneBoundingRect(), b.sceneBoundingRect()
+            if back and rb.right() < ra.left():
+                # A loop running left to right closes underneath its row.
+                start = QPointF(ra.center().x(), ra.bottom())
+                end = QPointF(rb.center().x(), rb.bottom())
+                below = max(ra.bottom(), rb.bottom()) + 18
+                path = QPainterPath(start)
+                path.lineTo(start.x(), below)
+                path.lineTo(end.x(), below)
+                path.lineTo(end)
+                unit, normal = QPointF(0, -1), QPointF(1, 0)
+                path.lineTo(end - unit * 10 + normal * 5)
+                path.moveTo(end)
+                path.lineTo(end - unit * 10 - normal * 5)
+                edge.setPath(path)
+                continue
+            if not back and rb.left() >= ra.right() - 1:
+                # Side by side: from the right edge into the left edge.
+                start = QPointF(ra.right(), ra.center().y())
+                end = QPointF(rb.left(), rb.center().y())
+                path = QPainterPath(start)
+                path.cubicTo(start + QPointF(30, 0), end - QPointF(30, 0), end)
+                unit, normal = QPointF(1, 0), QPointF(0, 1)
+                path.lineTo(end - unit * 10 + normal * 5)
+                path.moveTo(end)
+                path.lineTo(end - unit * 10 - normal * 5)
+                edge.setPath(path)
+                if hasattr(edge, "label"):
+                    edge.label.setPos((start + end) / 2 + QPointF(-20, -24))
+                continue
             start = a.pos() + QPointF(125, a.rect().height())
             end = b.pos() + QPointF(125, 0)
             path = QPainterPath(start)
