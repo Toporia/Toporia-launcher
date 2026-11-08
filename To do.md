@@ -59,12 +59,12 @@ Numbers are the note's own.
 
 ### Step 4: inspect and materials
 
-- [ ] 🧑 11 The post-processing tab is also the inspect tab: the result with all its data,
+- [x] 🧑 11 The post-processing tab is also the inspect tab: the result with all its data,
       fields and variables; for a sweep or comparison all runs, or a chosen few. Zoom and pan
       in any field, rotate in 3D. Applying a post-processor makes a modified copy of the field.
-- [ ] 🧑 20 View the analysis fields of the final geometry in colour: stress, strain,
+- [x] 🧑 20 View the analysis fields of the final geometry in colour: stress, strain,
       displacement, temperature.
-- [ ] 🧑 11 Materials defined in MPa, with presets: steels, aluminium, titanium, PE, PA (nylon),
+- [x] 🧑 11 Materials defined in MPa, with presets: steels, aluminium, titanium, PE, PA (nylon),
       PLA, resin.
 
 ### Step 5: speed
