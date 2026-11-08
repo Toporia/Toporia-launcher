@@ -8,6 +8,7 @@
 
 import traceback  # for formatting Python exception messages into readable text
 
+import numpy as np
 from PySide6.QtCore import Qt, QTimer
 from PySide6.QtGui import QFont, QTextCursor
 from PySide6.QtWidgets import (
@@ -464,6 +465,14 @@ class MainWindow(WorkflowActions, ProjectActions, ExecutionActions, QMainWindow)
         self.export_btn.setToolTip(tip)
         self.open_folder_btn.setToolTip(tip)
 
+    def _on_inspect_selection(self, density, run, folder):
+        """The run and design chosen in the inspector are what post-processing and export act on."""
+        from . import runner
+        self._result_density, self._result_config = np.asarray(density, dtype=float), run
+        if folder is not None:
+            runner.last_run_folder = folder
+        self._refresh_export_buttons()
+
     def _apply_binary(self):
         import numpy as np
 
@@ -475,6 +484,7 @@ class MainWindow(WorkflowActions, ProjectActions, ExecutionActions, QMainWindow)
         folder.mkdir(exist_ok=True)
         np.save(folder / "current_design.npy", self._result_density)
         self._draw_current_result(processed=True)
+        self.inspect.add_processed("threshold 0.5", self._result_density)
         self._log("[Post] Applied fixed 0.5 threshold; figure and export source updated. Objective has not been re-evaluated.")
 
     def _draw_current_result(self, processed=False):
@@ -654,15 +664,18 @@ class MainWindow(WorkflowActions, ProjectActions, ExecutionActions, QMainWindow)
         self.workspace_views.addWidget(runner_page)
         post_page = QWidget()
         post_layout = QVBoxLayout(post_page)
-        post_display = QPushButton("Display options…")
-        post_display.clicked.connect(self.display_options.show)
-        post_layout.addWidget(post_display, alignment=Qt.AlignRight)
         self.post_progress = QProgressBar()
         self.post_progress.setFormat("%v / %m iterations")
         self.post_progress.hide()
         post_layout.addWidget(self.post_progress)
         self.post_canvas = LiveCanvas()
-        post_layout.addWidget(self.post_canvas, 1)
+        from .inspect_view import InspectPanel
+        self.inspect = InspectPanel(self.post_canvas)
+        post_display = QPushButton("Display options…")
+        post_display.clicked.connect(self.display_options.show)
+        self.inspect.toolbar.addWidget(post_display)
+        self.inspect.selection_changed.connect(self._on_inspect_selection)
+        post_layout.addWidget(self.inspect, 1)
         self.workspace_views.addWidget(post_page)
         export_page = QWidget()
         export_layout = QVBoxLayout(export_page)

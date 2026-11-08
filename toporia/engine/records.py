@@ -78,8 +78,8 @@ class ResultStore:
         """
         self.save_density(density, self.output_dir / "final_density.png")
         self.save_csv(projection(density))
-        if np.ndim(density) == 3:
-            np.save(self.output_dir / "final_density.npy", np.asarray(density))
+        # The exact field, 2-D or 3-D, so a result can be inspected and re-analysed later.
+        np.save(self.output_dir / "final_density.npy", np.asarray(density))
         if save_history:
             self.save_history()
 

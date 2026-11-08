@@ -163,7 +163,7 @@ class ExecutionActions:
             self._pending_iteration = None
             self._terminal_event = event
             if event == "result":
-                self._show_result(message, self._run_config.solver.m)
+                self._show_result(message, self._run_config.solver.m, session=self._run_folder)
             elif event == "error":
                 self._log(message["text"])
 
@@ -173,8 +173,11 @@ class ExecutionActions:
         if pending is not None and self.display_options.values()["live"]:
             self.canvas.refresh(*pending)
 
-    def _show_result(self, result, resolution):
-        """Own only finished single-run results; studies display their result image."""
+    def _show_result(self, result, resolution, session=None):
+        """Own only finished single-run results; studies display their result image.
+
+        The inspector (Post-process step) then lists every run of the session.
+        """
         from . import runner
         runner.last_run_folder = None
         if result["kind"] == "density":
@@ -208,9 +211,15 @@ class ExecutionActions:
                     raise ValueError("Saved processed result has an invalid shape or values")
                 self._result_density = processed
                 self._draw_current_result(processed=True)
+            self.inspect.load_session(runner.last_run_folder, main=(self._result_config, density))
+            if current.exists():
+                self.inspect.add_processed("saved post-processing", self._result_density)
         elif result["kind"] == "image":
             for canvas in (self.canvas, self.post_canvas):
                 canvas.show_grid(result["path"], self.mode.currentText())
+            self.post_canvas._latest = None
+            if session is not None:
+                self.inspect.load_session(Path(session))
 
     def _worker_error(self, error):
         """Restore controls if the worker could not start at all."""
@@ -289,7 +298,7 @@ class ExecutionActions:
                 for key in ("path", "folder"):
                     if key in result and not Path(result[key]).is_absolute():
                         result[key] = str(path.parent / result[key])
-                self._show_result(result, snapshot.run.solver.m)
+                self._show_result(result, snapshot.run.solver.m, session=path.parent)
                 self._refresh_export_buttons()
         except (OSError, ValueError, KeyError) as error:
             QMessageBox.warning(self, "Cannot open result", str(error))

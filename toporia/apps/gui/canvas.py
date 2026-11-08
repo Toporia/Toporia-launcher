@@ -21,34 +21,8 @@ from PySide6.QtWidgets import QSizePolicy
 from toporia.framework.problem.mesh import projection
 
 
-class LiveCanvas(FigureCanvas):
-    """The live view: the current design on the left, the objective's convergence on the right."""
-    # FigureCanvas is a Qt widget that contains a matplotlib figure.
-    # By inheriting from it, LiveCanvas IS a Qt widget and can be added to layouts.
-
-    def __init__(self, parent=None):
-        # Create the matplotlib figure with two side-by-side subplots.
-        # width_ratios=[2,1] makes the density panel twice as wide as the curve panel.
-        # Embedded canvases belong to Qt, not pyplot's global figure registry.
-        fig = Figure(figsize=(10, 4))
-        axes = fig.subplots(1, 2, gridspec_kw={"width_ratios": [2, 1]})
-        super().__init__(fig)           # give the figure to the Qt widget base class
-        self.setParent(parent)
-        self.setSizePolicy(QSizePolicy.Expanding, QSizePolicy.Expanding)  # fill available space
-        self._fig = fig
-        self._ax_d, self._ax_c = axes   # density axis, convergence axis
-        self._im   = None               # the imshow image object (created on first refresh)
-        self._line = None               # the convergence line object
-        self.showing_problem = False    # True while the problem preview is shown instead of a run
-        from .display_options import DEFAULTS
-        self.options = dict(DEFAULTS)
-        self.objective_label = "Objective"
-        self._latest = None
-        self._volumes = {}
-        self._setup()
-        self._install_pan_zoom()
-
-    # ── Pan and zoom (2-D axes; 3-D axes keep matplotlib's own rotate and zoom) ──
+class PanZoom:
+    """Pan and zoom for a matplotlib canvas whose figure is `self._fig` (2-D axes only)."""
 
     def _install_pan_zoom(self):
         """Wheel zooms about the cursor, dragging pans, a double-click restores the full view.
@@ -115,6 +89,34 @@ class LiveCanvas(FigureCanvas):
                 axis.relim()
                 axis.autoscale_view()
         self.draw_idle()
+
+
+class LiveCanvas(PanZoom, FigureCanvas):
+    """The live view: the current design on the left, the objective's convergence on the right."""
+    # FigureCanvas is a Qt widget that contains a matplotlib figure.
+    # By inheriting from it, LiveCanvas IS a Qt widget and can be added to layouts.
+
+    def __init__(self, parent=None):
+        # Create the matplotlib figure with two side-by-side subplots.
+        # width_ratios=[2,1] makes the density panel twice as wide as the curve panel.
+        # Embedded canvases belong to Qt, not pyplot's global figure registry.
+        fig = Figure(figsize=(10, 4))
+        axes = fig.subplots(1, 2, gridspec_kw={"width_ratios": [2, 1]})
+        super().__init__(fig)           # give the figure to the Qt widget base class
+        self.setParent(parent)
+        self.setSizePolicy(QSizePolicy.Expanding, QSizePolicy.Expanding)  # fill available space
+        self._fig = fig
+        self._ax_d, self._ax_c = axes   # density axis, convergence axis
+        self._im   = None               # the imshow image object (created on first refresh)
+        self._line = None               # the convergence line object
+        self.showing_problem = False    # True while the problem preview is shown instead of a run
+        from .display_options import DEFAULTS
+        self.options = dict(DEFAULTS)
+        self.objective_label = "Objective"
+        self._latest = None
+        self._volumes = {}
+        self._setup()
+        self._install_pan_zoom()
 
     # ── Internal colour helpers ───────────────────────────────────────────────
 
