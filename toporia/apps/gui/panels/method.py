@@ -48,7 +48,7 @@ class CoreParamsGroup(QWidget):
         outer.setContentsMargins(0, 0, 0, 0)
         outer.setSpacing(0)
 
-        core = QGroupBox("Material budget")
+        core = QGroupBox("Volume budget")
         # The mesh resolution lives in the Design section, with 2-D/3-D.
         self._design = ParamForm(select(SCENARIO_PARAMS, "volfrac"))
         QVBoxLayout(core).addWidget(self._design)
@@ -179,6 +179,18 @@ class CoreParamsGroup(QWidget):
         for form in self._all_forms():
             form.setVisible(form in visible)
         self.method_changed.emit(self.method_name())
+
+    #: The volume fraction that means "no budget": the whole domain may be solid.
+    NO_BUDGET = 1.0
+
+    def volume_budget(self):
+        """The volume fraction the design may fill, or None when there is no budget."""
+        value = self._design.get_values()["volfrac"]
+        return None if value >= self.NO_BUDGET else value
+
+    def set_volume_budget(self, value):
+        """Set the budget; None removes it (volume fraction 1.0)."""
+        self._design.set_values({"volfrac": self.NO_BUDGET if value is None else value})
 
     def get_kwargs(self):
         """Return {field: value} to overlay on a Run with Run.updated."""

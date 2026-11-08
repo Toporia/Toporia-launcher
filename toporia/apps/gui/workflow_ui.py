@@ -233,6 +233,7 @@ class WorkflowActions:
         self._on_method_changed(self.core.method_name())
         self.method_view._signature = None
         self._refresh_pipeline()
+        self._ensure_budget()
         self._report_adaptation(before, kind)
 
     def _selection_summary(self):

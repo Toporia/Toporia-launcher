@@ -9,11 +9,20 @@ from toporia.framework.registry import missing_dependencies
 from toporia.plugins.methods import method_class
 
 
+def needs_budget(objective):
+    """Every objective but the volume itself fills the domain without a volume budget."""
+    return objective != "volume"
+
+
 def problems(run, check_mesh=False, mesh_limit=200_000):
     """Return errors without changing the project or silently supplying defaults."""
     try:
         method = method_class(run.solver.method)
         issues = method.capabilities.problems_with(run.scenario) + solver_problems(method, run)
+        objective = run.scenario.objective.get("type", "compliance")
+        if run.scenario.volfrac >= 1.0 and needs_budget(objective):
+            issues.append(f"There is no volume budget, so minimising {objective} only fills the domain. "
+                          "Add a volume budget under Constraints.")
         missing = missing_dependencies(method)
         if missing:
             issues.append(f"Install the optional dependencies for this method: {', '.join(missing)}")

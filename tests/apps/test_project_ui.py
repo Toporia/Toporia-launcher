@@ -264,3 +264,23 @@ def test_the_problem_page_imports_and_exports_problems(window, tmp_path, monkeyp
     monkeypatch.setattr(QFileDialog, "getOpenFileName", lambda *a, **k: (str(path), ""))
     window.problem_import_btn.click()
     assert window.current_config().scenario == scenario and window.project.name == "cantilever"
+
+
+def test_the_volume_budget_is_a_constraint_that_can_be_removed_and_comes_back_when_needed(window, monkeypatch):
+    from toporia.apps.gui.preflight import problems
+    monkeypatch.setattr(QMessageBox, "question", lambda *_: QMessageBox.Discard)
+    window._activate_project(Project("Budget", get_run("Cantilever").updated(volfrac=0.35)))
+    window.copy_to_custom()
+    window._add_function("updater", "conlin")                                  # it can minimise the volume
+    assert window.constraints.has_budget() and window.core.volume_box.parentWidget() is not None
+    window.constraints.remove_budget()
+    cfg = window.current_config()
+    assert cfg.scenario.volfrac == 1.0 and window.core.volume_box.isHidden()
+    assert any("no volume budget" in issue for issue in problems(cfg))        # compliance cannot run without one
+    window.objective.load_spec({"type": "volume"})                              # minimising volume needs none
+    assert not window.constraints.has_budget()
+    window.objective.load_spec({"type": "compliance"})                          # compliance does: it comes back
+    assert window.constraints.has_budget() and window.current_config().scenario.volfrac == 0.35
+    window.constraints.remove_budget()
+    window.constraints.add_budget()
+    assert window.current_config().scenario.volfrac == 0.35                    # with its last value

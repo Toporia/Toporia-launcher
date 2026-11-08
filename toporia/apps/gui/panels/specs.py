@@ -260,14 +260,60 @@ class ConstraintsGroup(SpecListGroup):
     def __init__(self, classes, parent=None):
         super().__init__("Constraints", classes, noun="constraint", parent=parent)
         layout = self._body.layout()
-        budget = QLabel("Volume budget: always enforced (Vol fraction, under Material budget).")
-        budget.setWordWrap(True)
         self._note = QLabel()
         self._note.setWordWrap(True)
-        layout.insertWidget(0, budget)
-        layout.insertWidget(1, self._note)
+        layout.insertWidget(0, self._note)
         self._note.hide()
         self._reason = ""
+        self._core = None
+        self._budget_box = None
+        self._last_budget = 0.5
+        self._add_budget = QPushButton("+ Add volume budget")
+        self._add_budget.setToolTip("Limit the fraction of the domain the design may fill.")
+        self._add_budget.clicked.connect(lambda: self.add_budget())
+        layout.insertWidget(0, self._add_budget)
+        self._add_budget.hide()
+
+    budget_changed = Signal()   # the volume budget was added or removed
+
+    def attach_budget(self, box, core):
+        """Show the core panel's volume-fraction box as this list's first constraint, with Remove."""
+        self._core, self._budget_box = core, box
+        remove = QPushButton("Remove")
+        remove.setToolTip("No volume budget: the whole domain may be solid (volume fraction 1.0). "
+                          "Only sensible when the objective is the volume itself.")
+        remove.clicked.connect(lambda: self.remove_budget())
+        self._remove_budget = remove
+        box.layout().addWidget(remove)
+        self._body.layout().insertWidget(0, box)
+        self.refresh_budget()
+
+    def has_budget(self):
+        return self._core is not None and self._core.volume_budget() is not None
+
+    def remove_budget(self):
+        if not self.has_budget():
+            return
+        self._last_budget = self._core.volume_budget()
+        self._core.set_volume_budget(None)
+        self.refresh_budget()
+        self.budget_changed.emit()
+
+    def add_budget(self, value=None):
+        if self._core is None or self.has_budget():
+            return
+        self._core.set_volume_budget(value if value is not None else self._last_budget)
+        self.refresh_budget()
+        self.budget_changed.emit()
+
+    def refresh_budget(self):
+        """Show the budget row, or the button that adds it back."""
+        if self._core is None:
+            return
+        present = self.has_budget()
+        self._budget_box.setVisible(present)
+        self._add_budget.setVisible(not present)
+        self._refresh_label()
 
     def available(self):
         """Whether the selected method can enforce any constraint besides the volume budget."""
@@ -288,6 +334,8 @@ class ConstraintsGroup(SpecListGroup):
 
     def _refresh_label(self):
         super()._refresh_label()
+        if getattr(self, "_core", None) is not None and not self.has_budget():
+            self._toggle.setText(self._toggle.text().replace("Constraints", "Constraints · no volume budget", 1))
         if getattr(self, "_allowed", True) == [] and self._rows:
             self._toggle.setText(self._toggle.text().replace("active)", "kept, not enforced by this method)"))
 

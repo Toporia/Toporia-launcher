@@ -333,6 +333,9 @@ class MainWindow(WorkflowActions, ProjectActions, ExecutionActions, QMainWindow)
             settings_layout.addWidget(widget)
         self.method_settings.hide()
         self._inspected_widget = None
+        self.constraints.attach_budget(self.core.volume_box, self.core)
+        self.constraints.budget_changed.connect(self._on_budget_changed)
+        self.objective.changed.connect(self._ensure_budget)
         problem_files = QWidget()
         problem_row = QHBoxLayout(problem_files)
         problem_row.setContentsMargins(0, 0, 0, 0)
@@ -347,7 +350,7 @@ class MainWindow(WorkflowActions, ProjectActions, ExecutionActions, QMainWindow)
         problem_row.addWidget(self.problem_import_btn)
         problem_row.addWidget(self.problem_export_btn)
         pages = (
-            (problem_files, self.design, self.core.volume_box, self.lc, self.objective, self.constraints),
+            (problem_files, self.design, self.lc, self.objective, self.constraints),
             (QLabel("Select a function to open its settings.\nEnter a block to work in its local network.\nUse the library to add compatible functions."),),
             (mode_box, history_section, self.sg, self.sg2, self.cg, self.clcg, self.cmg, self.msg, self.sens, self.ssg, self.ssg2),
             (self._build_post_box(),),
@@ -1000,6 +1003,20 @@ class MainWindow(WorkflowActions, ProjectActions, ExecutionActions, QMainWindow)
         enforceable = capabilities.constraints if capabilities.max_constraints != 0 else []
         self.constraints.set_allowed(enforceable, self._why_no_constraints(name))
         self._refresh_parameter_paths()
+
+    def _ensure_budget(self, *_):
+        """An objective other than the volume needs a volume budget: add it back when it is missing."""
+        from .preflight import needs_budget
+        if getattr(self, "_loading_stage", False) or self.constraints.has_budget():
+            return
+        objective = self.objective.get_spec().get("type", "compliance")
+        if needs_budget(objective):
+            self.constraints.add_budget()
+            self.statusBar().showMessage(f"Volume budget added: minimising {objective} needs one.", 10000)
+
+    def _on_budget_changed(self):
+        self._refresh_parameter_paths()
+        self._preview_timer.start()
 
     def _why_no_constraints(self, name):
         """In words: why the method enforces nothing besides the volume budget, and what would."""

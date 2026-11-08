@@ -169,6 +169,7 @@ class ProjectActions:
         self.material.load_spec(cfg.solver.interpolation)
         self.objective.load_spec(cfg.scenario.objective)
         self.constraints.load_specs(cfg.scenario.constraints)
+        self.constraints.refresh_budget()
         self.filters.load_specs(cfg.solver.filter_specs)
         self.schedules.load_specs(cfg.solver.schedules)
         self.variants.load_spec(cfg.solver.variants)
@@ -275,7 +276,7 @@ class ProjectActions:
         """Protect reference problems while allowing solver and resolution experiments."""
         locked = self.project.benchmark is not None
         self.lc.set_regional(self.project.objects is not None)
-        for widget in (self.core.volume_box, self.lc, self.objective, self.constraints,
+        for widget in (self.lc, self.objective, self.constraints,
                        self.design.dims, self.design.depth):
             widget.setEnabled(not locked)
         if hasattr(self, "project_label"):
