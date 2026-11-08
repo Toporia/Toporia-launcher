@@ -108,6 +108,6 @@ def test_l_bracket_meets_the_limit_and_rounds_the_corner(capsys, tmp_path):
 
 def test_local_stress_is_refused_with_an_updater_that_would_misread_its_penalty():
     from toporia.framework.problem.run import apply_param
-    run = apply_param(apply_param(get_run("L-bracket (local stress)"), "method", "q4+nlopt_mma"), "method_params", {})
+    run = apply_param(apply_param(get_run("L-bracket (local stress)"), "method", "q4+mma"), "method_params", {})
     with pytest.raises(ValueError, match=r"cannot enforce \['local_stress'\].*q4\+augmented_lagrangian"):
         initialized_method(run)

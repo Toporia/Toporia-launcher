@@ -24,6 +24,8 @@ def test_registered_companions_execute_without_new_framework_contracts(name):
     label = metadata(name)[0]
     assert label in problem_names()
     assert problem_description(label).functions == CASES[name]["functions"]
+    from tests._optional import skip_without
+    skip_without(get_run(label))
     method = initialized_method(get_run(label))
     try:
         method.step(1)
@@ -49,6 +51,8 @@ def test_curated_reports_retain_the_actual_final_fields_and_comparison_scope(nam
             assert (folder / "exports" / filename).is_file()
         return
     scenario, solver = recipe(name)
+    from tests._optional import skip_without
+    skip_without(Run(scenario, solver))
     method = initialized_method(Run(scenario, solver))
     at_schedule_end(method, solver)      # a projection or tolerance continuation ends at its last value
     try:

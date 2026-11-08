@@ -47,7 +47,10 @@ def test_springs_round_trip_and_are_addressable_in_scenario_paths():
 
 def test_unaware_models_reject_springs_even_with_a_supported_objective():
     run = get_run("Force Inverter").updated(objective={"type": "compliance"})
+    from tests._optional import missing_for
     for method in ("q4+mma", "pymoto_elastic+mma", "levelset"):
+        if missing_for(method):                    # pyMOTO is optional
+            continue
         with pytest.raises(ValueError, match="point springs"):
             initialized_method(run.updated(method=method))
 

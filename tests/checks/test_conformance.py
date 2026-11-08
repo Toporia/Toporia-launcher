@@ -17,6 +17,8 @@ from toporia.plugins.updaters.oc import OCUpdater
 
 @pytest.mark.parametrize("plugin", all_plugins())
 def test_every_registered_plugin_conforms(plugin):
+    from tests._optional import skip_without
+    skip_without(plugin)
     conformance(plugin).assert_ok()
 
 

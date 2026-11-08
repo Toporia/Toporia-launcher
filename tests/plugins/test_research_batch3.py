@@ -26,6 +26,8 @@ def test_real_discovered_recipe_executes_and_closes(case_id):
     text = problem_description(name)
     assert text.functions == (CASES[case_id]["function"],)
     assert text.equations and text.symbols and text.limitations
+    from tests._optional import skip_without
+    skip_without(run)
     method = initialized_method(run)
     try:
         method.step(1)
