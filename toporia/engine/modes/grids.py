@@ -94,7 +94,10 @@ def run_cells(base_run, cells, on_iteration=None):
 
 
 def _run_cells_parallel(base_run, cells, workers):
-    from concurrent.futures import ProcessPoolExecutor, as_completed
+    # From the submodules: concurrent.futures loads these names lazily, which a bundled
+    # (frozen) program cannot resolve on Python 3.15.
+    from concurrent.futures._base import as_completed
+    from concurrent.futures.process import ProcessPoolExecutor
     start = time.perf_counter()
     print(f"{len(cells)} runs in {workers} parallel processes")
     saved = {name: os.environ.get(name) for name in ONE_THREAD}

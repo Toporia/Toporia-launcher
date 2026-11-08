@@ -14,5 +14,5 @@ Or from the command line:
     toporia                      (no command: launches the GUI, as does python main.py)
 """
 
-__version__ = "0.1.0"
+__version__ = "0.3.0"
 __author__  = "Toporia contributors"

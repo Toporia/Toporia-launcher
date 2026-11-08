@@ -6,7 +6,7 @@
 # "from gui import ...".  Here we just re-export the launch function
 # so the top-level gui.py only needs one import line.
 
-GUI_VERSION = "0.2.1"
+from toporia import __version__ as GUI_VERSION  # one version for the program and its GUI
 
 
 def launch(project_path=None):
@@ -14,4 +14,4 @@ def launch(project_path=None):
     from .app import launch as start
     return start(project_path)
 
-__all__ = ["launch"]      # explicit list of public names
+__all__ = ["GUI_VERSION", "launch"]      # explicit list of public names

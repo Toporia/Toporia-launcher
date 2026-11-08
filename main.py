@@ -1,15 +1,13 @@
 """
-main.py — launch the Morpho GUI.
+main.py — launch the Toporia desktop app.
 
 Usage:
-    python main.py
+    python main.py [--project FILE.top] [--smoke-test]
+
+The same entry point is the bundled Windows program (toporia/apps/desktop.py).
 """
 
-import argparse
-
-from toporia.apps.gui import launch
+from toporia.apps.desktop import main
 
 if __name__ == "__main__":
-    parser = argparse.ArgumentParser(description="Toporia project desktop")
-    parser.add_argument("--project", help="Open a saved .top project")
-    launch(parser.parse_args().project)
+    raise SystemExit(main())

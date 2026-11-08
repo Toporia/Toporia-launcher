@@ -4,7 +4,6 @@
 
 import base64
 import json
-import sys
 from datetime import datetime, timezone
 from pathlib import Path
 from uuid import uuid4
@@ -86,10 +85,8 @@ class ExecutionActions:
         self.process.readyReadStandardError.connect(self._read_worker_error)
         self.process.finished.connect(self._worker_finished)
         self.process.errorOccurred.connect(self._worker_error)
-        executable = Path(sys.executable)
-        if executable.name.lower() == "pythonw.exe":
-            executable = executable.with_name("python.exe")
-        self.process.start(str(executable), ["-u", "-m", "toporia.apps.gui_worker", str(folder / "input.top")])
+        from ..desktop import worker_command
+        self.process.start(*worker_command(folder / "input.top"))
 
     def _open_run_window(self):
         """Show the run in its own window; its live widgets come back when that window closes."""
