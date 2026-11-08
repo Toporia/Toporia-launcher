@@ -98,7 +98,9 @@ def test_the_pipeline_names_every_part_of_the_selection(window):
 
     window.core.select_method("q4+pymoto_mma")
     assert dict(window.pipeline.stages())["Updater"] == UPDATERS.get("pymoto_mma").label
-    assert window.pipeline.notes() == []          # nothing is lost with this pairing
+    # Nothing is lost with this pairing. pyMOTO is an optional extra: where it is not installed the
+    # pipeline rightly says so, and that note is about the machine, not the pairing.
+    assert [n for n in window.pipeline.notes() if not n.startswith("Not installed here")] == []
 
     window.core.select_method("q4+oc")
     assert any("enforces only the volume budget" in note for note in window.pipeline.notes())
