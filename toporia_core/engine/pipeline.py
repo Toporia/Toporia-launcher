@@ -1,4 +1,4 @@
-# engine/pipeline.py — what a run is made of, in words.
+# toporia_core/engine/pipeline.py — what a run is made of, in words.
 #
 # A run's method is assembled from parts: the design passes through the
 # filters, the physics engine solves it, the responses are measured, and the
@@ -143,7 +143,7 @@ def dimension_problems(run):
 
 
 def _variant_problems(method_cls, run):
-    """Why solver.variants cannot be used as given (framework/parts/variants.py)."""
+    """Why solver.variants cannot be used as given (toporia_core/framework/parts/variants.py)."""
     from toporia_core.framework.parts.variants import COMBINE
     from toporia_core.framework.problem.run import apply_param
     spec = run.solver.variants

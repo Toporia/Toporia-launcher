@@ -1,4 +1,4 @@
-# apps/gui/docs_view.py — the documentation, readable inside the app (Home > Docs).
+# toporia_gui/docs_view.py — the documentation, readable inside the app (Home > Docs).
 #
 # The guides are the repository's own Markdown files, rendered as they are, so the app
 # and the repository never disagree.  Links between them work; web links open in the

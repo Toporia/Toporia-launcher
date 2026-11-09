@@ -1,4 +1,4 @@
-# engine/modes/sensitivity.py — where in the design does a parameter matter?
+# toporia_core/engine/modes/sensitivity.py — where in the design does a parameter matter?
 #
 #   sensitivity_field     two runs, at base and base + gap, and per element
 #                         (ρ_perturbed − ρ_base) / gap, drawn over the base design

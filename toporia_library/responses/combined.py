@@ -1,4 +1,4 @@
-# plugins/responses/combined.py — one objective made of several variables.
+# toporia_library/responses/combined.py — one objective made of several variables.
 #
 # The objective is a list of terms, each an objective-capable response (compliance,
 # volume, peak stress, thermal compliance, ...), and a rule that joins them:

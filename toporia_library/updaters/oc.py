@@ -1,4 +1,4 @@
-# plugins/updaters/oc.py — optimality criteria (OC).
+# toporia_library/updaters/oc.py — optimality criteria (OC).
 #
 # The classic top88 update for one material-volume constraint.  Each element
 # moves by the square root of its ratio of objective to volume sensitivity,

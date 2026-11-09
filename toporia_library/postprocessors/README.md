@@ -2,7 +2,7 @@
 
 An optimisation ends with a density field. What gets reported, compared and manufactured
 is made from that field afterwards. A post-processor does one such job; see
-[`framework/parts/postprocess.py`](../../toporia_core/framework/parts/postprocess.py).
+[`toporia_core/framework/parts/postprocess.py`](../../toporia_core/framework/parts/postprocess.py).
 
 **Switching them on.** Each post-processor is switched on by listing it in the run's Output
 section. Any combination works, in the order given:

@@ -1,4 +1,4 @@
-# framework/parts/representation.py — what the design variables are.
+# toporia_core/framework/parts/representation.py — what the design variables are.
 #
 # Every density method needs, in the end, a density per element; what it
 # optimises need not be that.  It can be the densities themselves, the
@@ -21,8 +21,8 @@
 # describe more fields on every element: the weights of candidate materials, a fibre
 # angle.  It names them in `fields`, hands them over with extra(z), and carries their
 # sensitivities back with backward_extra(z, ...).  Each field is used either by the
-# material law (a multi-material law: framework/parts/interpolation.py) or by the physics
-# (an orthotropic engine: framework/parts/physics.py); the model checks that every field
+# material law (a multi-material law: toporia_core/framework/parts/interpolation.py) or by the physics
+# (an orthotropic engine: toporia_core/framework/parts/physics.py); the model checks that every field
 # has exactly one user before the run.
 #
 # `element_wise` says whether the variables ARE element densities.  Some
@@ -48,7 +48,7 @@ class Representation(ABC):
     #: Tunable parameters (framework.params.Param).  The constructor must accept
     #: each one as a keyword argument of the same name.
     params = ()
-    #: Parameters a schedule may change during a run (framework/parts/schedule.py).
+    #: Parameters a schedule may change during a run (toporia_core/framework/parts/schedule.py).
     schedulable = ()
     #: True when the variables are one density per element (the identity map).
     element_wise = False

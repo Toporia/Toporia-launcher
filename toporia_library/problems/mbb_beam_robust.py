@@ -1,4 +1,4 @@
-# plugins/problems/mbb_beam_robust.py — the MBB beam, designed robustly (three-field projection).
+# toporia_library/problems/mbb_beam_robust.py — the MBB beam, designed robustly (three-field projection).
 #
 # The same scenario as mbb_beam.py, but every design is projected three times
 # (eroded eta = 0.75, intermediate 0.5, dilated 0.25) and the worst of the three
@@ -13,7 +13,7 @@
 # converges in about 184 iterations to a worst case near 198, black and white.
 #
 # This is a ready-made recipe, not new mathematics: solver.variants
-# (framework/parts/variants.py) and a schedule (plugins/schedules/geometric.py).
+# (toporia_core/framework/parts/variants.py) and a schedule (toporia_library/schedules/geometric.py).
 # Differences from the paper (volume held on the intermediate design, a smooth
 # maximum instead of one constraint per variant) are listed in variants.py.
 #

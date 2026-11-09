@@ -1,4 +1,4 @@
-# checks/model.py — is a model (or a physics engine, through a model) sound?
+# toporia_core/checks/model.py — is a model (or a physics engine, through a model) sound?
 #
 # Bounds and shapes; volume_of agrees with evaluate; values without gradients
 # equal values with them; every gradient against central finite differences.

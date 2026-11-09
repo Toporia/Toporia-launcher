@@ -1,4 +1,4 @@
-# plugins/filters/sensitivity.py — SensitivityFilter (heuristic sensitivity filter)
+# toporia_library/filters/sensitivity.py — SensitivityFilter (heuristic sensitivity filter)
 #
 # This implements the classic sensitivity-filter approach from the top88 MATLAB code:
 #   - Physical density = design variable (no spatial smoothing of densities)

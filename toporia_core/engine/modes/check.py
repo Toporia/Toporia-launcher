@@ -1,6 +1,6 @@
-# engine/modes/check.py — the "Check Parts" mode: is every part of this run sound?
+# toporia_core/engine/modes/check.py — the "Check Parts" mode: is every part of this run sound?
 #
-# Instead of optimising, it runs the conformance test (toporia/checks) on each
+# Instead of optimising, it runs the conformance test (toporia_core/checks) on each
 # plugin the run is made of — its model and updater (or whole method), its
 # filters, its objective and constraints — and prints one report per part:
 # the interface, every gradient against finite differences, and for an

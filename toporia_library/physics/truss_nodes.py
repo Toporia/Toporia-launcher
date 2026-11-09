@@ -1,4 +1,4 @@
-# plugins/physics/truss_nodes.py — what happens at the nodes of a truss.  TOPORIA'S OWN.
+# toporia_library/physics/truss_nodes.py — what happens at the nodes of a truss.  TOPORIA'S OWN.
 #
 # The ground-structure literature (Dorn, Gomory & Greenberg 1964 and after) treats a node as
 # an ideal pin: a point where bars meet, with no size, mass or stiffness of its own.  That is
@@ -23,7 +23,7 @@
 #     joint_area     Σ a_i of the bars meeting at n
 #     force          Σ |N_i| of the bars meeting at n
 #     x, y, z        its coordinates
-# checked like every formula in Toporia (framework/variables.py).
+# checked like every formula in Toporia (toporia_core/framework/variables.py).
 
 import numpy as np
 

@@ -1,4 +1,4 @@
-# plugins/representations/multi_material.py — a density and candidate-material weights per element.
+# toporia_library/representations/multi_material.py — a density and candidate-material weights per element.
 #
 # Several fields per element (Wave 5).  Every element carries its density ρ_e (topology:
 # material or void) and one weight x_{m,e} ∈ [0, 1] per candidate material m:
@@ -6,7 +6,7 @@
 #     z = [ρ ; x_1 ; … ; x_M]      shape (1 + M, nely, nelx)  (or the 3-D element shape)
 #
 # The density goes through the filters to the physics like any density; the weights are
-# the field "material", read by a multi-material law (plugins/interpolations/dmo.py) that
+# the field "material", read by a multi-material law (toporia_library/interpolations/dmo.py) that
 # turns them into a stiffness and a mass per element.  The chain rule back is the identity
 # on each part:  dz = [dρ ; dx_1 ; … ; dx_M].
 #

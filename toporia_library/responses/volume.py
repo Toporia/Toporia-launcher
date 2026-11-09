@@ -1,4 +1,4 @@
-# plugins/responses/volume.py — material volume.
+# toporia_library/responses/volume.py — material volume.
 #
 # The total physical material of the design.  As an objective it gives the
 # lightest design that still satisfies the scenario's constraints; on its own

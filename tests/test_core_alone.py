@@ -1,7 +1,7 @@
 """The core runs without matplotlib and Pillow (the split follow-up).
 
-toporia_core writes its PNGs itself (engine/png.py) and draws figures only when matplotlib
-is there (engine/plotting.py).  A fresh interpreter in which matplotlib and PIL cannot be
+toporia_core writes its PNGs itself (toporia_core/engine/png.py) and draws figures only when matplotlib
+is there (toporia_core/engine/plotting.py).  A fresh interpreter in which matplotlib and PIL cannot be
 imported runs a single optimisation and a sweep through the core and still writes every
 number, CSV and density image; only the matplotlib figures are skipped, with a notice.
 """

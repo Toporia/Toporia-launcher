@@ -1,4 +1,4 @@
-# plugins/filters/am.py — AMFilter (additive manufacturing overhang constraint)
+# toporia_library/filters/am.py — AMFilter (additive manufacturing overhang constraint)
 #
 # Direct port of AMfilter.m by Langelaar (2016),
 # DOI: 10.1007/s00158-016-1522-2

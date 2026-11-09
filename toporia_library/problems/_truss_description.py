@@ -1,4 +1,4 @@
-# plugins/problems/_truss_description.py — the research description shared by the truss presets.
+# toporia_library/problems/_truss_description.py — the research description shared by the truss presets.
 
 from ._research import Equation, ResearchDescription
 

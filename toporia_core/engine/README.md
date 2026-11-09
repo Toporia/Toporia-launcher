@@ -7,7 +7,7 @@ sensitivity study — is built on that one loop, so they all stop, record and re
 same way.
 
 The engine knows methods only through
-[`framework/parts/method.py`](../framework/parts/method.py). It does not know whether a
+[`toporia_core/framework/parts/method.py`](../framework/parts/method.py). It does not know whether a
 method is OC, BESO, SciPy's SLSQP or the level set; that is what keeps a cross-method
 comparison fair.
 

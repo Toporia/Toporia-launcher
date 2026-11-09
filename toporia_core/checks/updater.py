@@ -1,4 +1,4 @@
-# checks/updater.py — is an updater sound, and does it optimise?
+# toporia_core/checks/updater.py — is an updater sound, and does it optimise?
 #
 # A short run on the holes-and-rings test plate (holes inside solid rings) must stay finite and
 # inside the bounds and leave no thread behind; then the MBB benchmark, under

@@ -68,5 +68,5 @@ def test_the_quick_start_example_conforms_and_measures_the_material():
 
 def test_the_slsqp_template_the_guide_points_to_is_registered_and_conforms():
     text = GUIDE.read_text(encoding="utf-8")
-    assert "plugins/updaters/scipy_slsqp.py" in text
+    assert "toporia_library/updaters/scipy_slsqp.py" in text
     conformance("updater:scipy_slsqp").assert_ok()

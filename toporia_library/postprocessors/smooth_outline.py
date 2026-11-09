@@ -1,4 +1,4 @@
-# plugins/postprocessors/smooth_outline.py — the outline fitted with smooth curves.
+# toporia_library/postprocessors/smooth_outline.py — the outline fitted with smooth curves.
 #
 # The contour of an element field is piecewise linear and follows the grid, so
 # a diagonal member has stair-step wiggles that a cutter or a CAD user then has

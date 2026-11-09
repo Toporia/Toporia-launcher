@@ -1,4 +1,4 @@
-# apps/gui/geometry.py — editor objects in physical coordinates, independent of pixels/mesh.
+# toporia_gui/geometry.py — editor objects in physical coordinates, independent of pixels/mesh.
 # Each shape has an identity, transform and physical role. The solver adapter
 # consumes these definitions; the viewport and inspector never own numerical state.
 

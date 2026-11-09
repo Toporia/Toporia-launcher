@@ -1,4 +1,4 @@
-# checks/method.py — is a whole method sound?
+# toporia_core/checks/method.py — is a whole method sound?
 #
 # A short run of the benchmark; a composed method is checked part by part.
 

@@ -1,4 +1,4 @@
-# apps/gui/project.py — portable project documents, independent of run results.
+# toporia_gui/project.py — portable project documents, independent of run results.
 #
 # Project -> readable .top JSON (scenario + solver + output settings + notes).
 # ProblemDocument -> readable .pro JSON (scenario + editor objects only).

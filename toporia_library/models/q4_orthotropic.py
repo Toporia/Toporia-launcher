@@ -1,8 +1,13 @@
-# plugins/models/q4_orthotropic.py — the fibre-reinforced Q4 engine as a model.
+# toporia_library/models/q4_orthotropic.py — the fibre-reinforced Q4 engine as a model.
 #
 # Density and fibre angle per element (Wave 5): pair with the representation
 # fibre_angle, which hands the engine its "angle" field, and a general-gradient updater
-# (MMA).  The engine is plugins/physics/q4_orthotropic.py.
+# (MMA).  The engine is toporia_library/physics/q4_orthotropic.py.
+#
+#
+# The maths, in toporia_library/physics/q4_orthotropic.py: K = Σ_e E(ρ_e) K_e(θ_e) with
+# K_e(θ) = K0 + cos2θ K1 + sin2θ K2 + cos4θ K3 + sin4θ K4 (Tsai–Pagano), so
+# ∂C/∂ρ_e = −E'(ρ_e) Σ_k w_k u_ekᵀ K_e(θ_e) u_ek and ∂C/∂θ_e = −E(ρ_e) Σ_k w_k u_ekᵀ K_e'(θ_e) u_ek.
 
 from toporia_library.physics.q4_orthotropic import Q4Orthotropic
 

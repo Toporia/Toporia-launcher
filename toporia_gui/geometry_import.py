@@ -1,4 +1,4 @@
-# apps/gui/geometry_import.py — geometry-only imports into portable editor objects.
+# toporia_gui/geometry_import.py — geometry-only imports into portable editor objects.
 # Imported triangle coordinates are embedded; no runtime dependency on source paths.
 
 from pathlib import Path

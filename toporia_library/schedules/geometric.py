@@ -1,8 +1,12 @@
-# plugins/schedules/geometric.py — multiplied by a factor every so many iterations.
+# toporia_library/schedules/geometric.py — multiplied by a factor every so many iterations.
 #
 # The Heaviside continuation of Guest, Prevost & Belytschko (2004) and of
 # most projection papers since: beta = 1, 2, 4, ... 64, doubled every 50
 # iterations, so the projection sharpens only once the design has settled.
+#
+# With n the completed iterations and f the factor (1/f when end < start):
+#
+#     value(n) = start · f^⌊n / every⌋,  stopping at end
 
 from toporia_core.framework.params import Param
 from toporia_core.framework.parts.schedule import Schedule

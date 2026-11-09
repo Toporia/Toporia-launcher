@@ -1,7 +1,7 @@
-# plugins/problems/mbb_beam_stiffness_heat.py — one design, two physics: stiff and cool.
+# toporia_library/problems/mbb_beam_stiffness_heat.py — one design, two physics: stiff and cool.
 #
 # The MBB beam's scenario with a second physics on the same design field
-# (framework/companions.py): steady heat conduction, with its own material law (linear,
+# (toporia_core/framework/companions.py): steady heat conduction, with its own material law (linear,
 # p = 1) and void a thousandth of solid.  The load point is read by the heat engine as
 # the heat source and the supports as the sinks.  A variable measures the thermal
 # compliance on that physics, and a combined objective weighs it against the structural

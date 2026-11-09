@@ -1,4 +1,4 @@
-# engine/png.py — write and read PNG images with NumPy alone.
+# toporia_core/engine/png.py — write and read PNG images with NumPy alone.
 #
 # The core writes greyscale density images (records.py, measure.py) and the library a
 # colour connectivity picture; neither needs an imaging library for that.  A PNG is a

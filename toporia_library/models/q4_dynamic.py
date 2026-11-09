@@ -1,7 +1,7 @@
-# plugins/models/q4_dynamic.py — Toporia's 2-D Q4 solver with vibration, as a model.
+# toporia_library/models/q4_dynamic.py — Toporia's 2-D Q4 solver with vibration, as a model.
 #
 # The same assembly as q4.py (filters, material law, every static response), on an
-# engine that also has a mass matrix (plugins/physics/q4_dynamic.py), so it offers
+# engine that also has a mass matrix (toporia_library/physics/q4_dynamic.py), so it offers
 # two more things to optimise:
 #
 #     x ──filters──> ρ ──> K(ρ), M(ρ) ──> eigenfrequencies  K φ = λ M φ   (response: eigenfrequency)

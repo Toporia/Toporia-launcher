@@ -16,6 +16,6 @@
 - Separate native-code / paper-visual / paper-numerical status:
 - Limitations, unresolved discrepancies and next check:
 
-Implement the recipe as a discovered `plugins/problems/paper_*.py` module with
+Implement the recipe as a discovered `toporia_library/problems/paper_*.py` module with
 NAME, ABOUT, REFERENCE, DESCRIPTION, scenario() and solver(). Reuse implemented
 numerics; do not copy an algorithm into the preset or invent missing settings.

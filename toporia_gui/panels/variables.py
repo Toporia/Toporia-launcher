@@ -1,4 +1,4 @@
-# apps/gui/panels/variables.py — the Problem page's variable space (To do items 1 + 2).
+# toporia_gui/panels/variables.py — the Problem page's variable space (To do items 1 + 2).
 #
 # Lists every variable of the problem: the quantities the current physics computes
 # (built in), your own variables (a measured quantity under a name of your choice, or a

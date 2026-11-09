@@ -1,4 +1,4 @@
-# apps/gui/style_maker.py — make your own style from four colours.
+# toporia_gui/style_maker.py — make your own style from four colours.
 #
 # Background, surfaces (fields and lists), text and accent are chosen; every other
 # chrome colour (borders, hover, disabled text, selection) is derived from them

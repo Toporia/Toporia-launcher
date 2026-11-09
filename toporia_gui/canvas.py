@@ -1,4 +1,4 @@
-# apps/gui/canvas.py — the live visualisation panel
+# toporia_gui/canvas.py — the live visualisation panel
 #
 # LiveCanvas is a matplotlib figure embedded directly inside the Qt window.
 # It has two subplots:
@@ -7,7 +7,7 @@
 #
 # The canvas is updated after every optimisation step via refresh().
 # For sweep results, show_grid() loads the assembled PNG from disk and displays it.
-# Before a run, show_problem() draws the problem as it is set up (apps/gui/preview.py).
+# Before a run, show_problem() draws the problem as it is set up (toporia_gui/preview.py).
 
 import textwrap
 

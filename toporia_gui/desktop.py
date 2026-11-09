@@ -1,4 +1,4 @@
-# apps/desktop.py — the desktop program's one entry point: python main.py, and the Windows Toporia.exe.
+# toporia_gui/desktop.py — the desktop program's one entry point: python main.py, and the Windows Toporia.exe.
 #
 #   Toporia.exe                      the desktop app
 #   Toporia.exe --project FILE.top   open a project at start

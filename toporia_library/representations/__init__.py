@@ -2,7 +2,7 @@
 
 Every Representation subclass in this package with a non-empty `name` is
 found by the REPRESENTATIONS registry.  A solver names one by type:
-{"type": "mmc", "n_x": 4}.  See framework/parts/representation.py.
+{"type": "mmc", "n_x": 4}.  See toporia_core/framework/parts/representation.py.
 
     element_density.py   one density per element (the classic; the default)
     mmc.py               moving morphable components: bars by position, length,

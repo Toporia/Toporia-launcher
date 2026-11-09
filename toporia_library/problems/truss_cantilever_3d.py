@@ -1,4 +1,4 @@
-# plugins/problems/truss_cantilever_3d.py — the 3-D cantilever as a space truss, made into a solid.
+# toporia_library/problems/truss_cantilever_3d.py — the 3-D cantilever as a space truss, made into a solid.
 #
 # The 3-D cantilever's scenario solved by the ground-structure truss method in 3-D: nodes
 # every 5 mm, bars to every neighbour within two steps, sized for minimum compliance.  At

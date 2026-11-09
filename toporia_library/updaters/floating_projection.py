@@ -10,6 +10,17 @@ so this updater does not filter the trial design a second time. The exact model
 volume is checked after projection and move/bound clipping, including pinned
 elements. This is not the paper's separate smooth-boundary reconstruction and
 reanalysis, nor a guarantee of an exactly binary physical field after filtering.
+
+One update, with g the objective sensitivity and v the volume sensitivity:
+
+    g~   = (g + g_previous) / 2                       damping (eq. 9)
+    x*   = clip(x (-g~ / (lambda v))^(1/2), x -+ move, [lower, upper])     OC trial
+    x'   = H_beta(x*) with the threshold eta chosen so that sum H_beta(x*) = sum x*
+           (volume-preserving Heaviside, eqs. 12-16), H_beta(u) =
+           (tanh(beta eta) + tanh(beta (u - eta))) / (tanh(beta eta) + tanh(beta (1 - eta)))
+
+lambda is bisected on the model's exact volume of x'. beta rises by one each time
+the mean change of the free variables falls below fp_stage_tol, up to fp_beta_max.
 """
 
 import numpy as np

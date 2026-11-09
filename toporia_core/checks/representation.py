@@ -1,4 +1,4 @@
-# checks/representation.py — is a design representation sound?
+# toporia_core/checks/representation.py — is a design representation sound?
 #
 # The density field it gives has the mesh's shape and stays in [0, 1]; the
 # start design lies within the bounds; backward() is the derivative of

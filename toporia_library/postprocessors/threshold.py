@@ -1,4 +1,4 @@
-# plugins/postprocessors/threshold.py — black and white at the same volume, and its compliance.
+# toporia_library/postprocessors/threshold.py — black and white at the same volume, and its compliance.
 #
 # Methods finish with different amounts of grey, and grey material counts
 # partly as stiffness, so their own compliances are not comparable.  Papers

@@ -1,12 +1,12 @@
-# framework/problem/scenario.py — WHAT is being solved.
+# toporia_core/framework/problem/scenario.py — WHAT is being solved.
 #
 # A Scenario is the physical problem: the design domain, where the part is held,
 # where and how it is loaded, what it is made of, and how much material it may
 # use.  It says nothing about how the problem is solved — that is the Solver
-# (framework/problem/solver.py) — so the same scenario can be handed to any method, at any
+# (toporia_core/framework/problem/solver.py) — so the same scenario can be handed to any method, at any
 # mesh resolution, and the results compared.
 #
-# Scenarios are plain data and round-trip through JSON (framework/problem/files.py).
+# Scenarios are plain data and round-trip through JSON (toporia_core/framework/problem/files.py).
 # Coordinates are in mm, measured from the bottom-left corner of the domain.
 
 from dataclasses import dataclass, field
@@ -141,7 +141,7 @@ class Scenario:
     Lx: float = 100.0   # domain width
     Ly: float = 50.0    # domain height
     # Depth.  0 is a 2-D problem (plane stress, unit thickness); a positive
-    # depth extrudes the rectangle into a 3-D box (framework/problem/mesh.py,
+    # depth extrudes the rectangle into a 3-D box (toporia_core/framework/problem/mesh.py,
     # BoxProblem): holes through it, supports and loads through the thickness.
     Lz: float = 0.0
 
@@ -197,7 +197,7 @@ class Scenario:
     variables: list = field(default_factory=list)
 
     # More physics on the same design field, each with its own material law:
-    # [{"model": "q4_heat", "interpolation": {"type": "simp"}}] (framework/companions.py).
+    # [{"model": "q4_heat", "interpolation": {"type": "simp"}}] (toporia_core/framework/companions.py).
     # A variable names the physics it is measured on.  Empty keeps historical fingerprints.
     extra_physics: list = field(default_factory=list)
 

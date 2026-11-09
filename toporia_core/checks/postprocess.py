@@ -1,4 +1,4 @@
-# checks/postprocess.py — is a post-processor sound?
+# toporia_core/checks/postprocess.py — is a post-processor sound?
 #
 # Run on a small finished design, it returns plain metrics (numbers, booleans
 # or None), writes only into its folder and every file it names is there and

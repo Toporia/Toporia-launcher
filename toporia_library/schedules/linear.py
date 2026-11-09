@@ -1,8 +1,14 @@
-# plugins/schedules/linear.py — a straight ramp.
+# toporia_library/schedules/linear.py — a straight ramp.
 #
 # Held at `start` for `after` iterations, then moved in a straight line to
 # `end` over `over` iterations: the ramp several fabrication filters use
 # (switch the constraint on gradually once a topology has formed).
+#
+# With n the completed iterations:
+#
+#     value(n) = start                                      n < after
+#                start + (n − after)/over · (end − start)   after ≤ n < after + over
+#                end                                        n ≥ after + over
 
 from toporia_core.framework.params import Param
 from toporia_core.framework.parts.schedule import Schedule

@@ -1,4 +1,4 @@
-# plugins/problems/mbb_beam_hole_triangles.py — the MBB beam with a round hole, on triangles.
+# toporia_library/problems/mbb_beam_hole_triangles.py — the MBB beam with a round hole, on triangles.
 #
 # The MBB beam's scenario with a round hole of radius 4 mm in the middle, solved on an
 # unstructured triangle mesh (methods/unstructured.py) that follows the hole's rim instead of

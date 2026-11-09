@@ -1,4 +1,4 @@
-# plugins/updaters/mma.py — the method of moving asymptotes (MMA), one constraint.
+# toporia_library/updaters/mma.py — the method of moving asymptotes (MMA), one constraint.
 #
 # Mirrors the optimiser half of the top88mma.m script: a moving-asymptote
 # convex approximation of the objective and of the normalised volume constraint
@@ -8,9 +8,20 @@
 # solved through its dual by bisection on the single multiplier.  The objective
 # is rescaled by f0fac so its magnitude is comparable with the constraint.
 #
-# The subproblem works on the model's flat view (framework/optimisers/flat_view.py): the free design
+# The subproblem works on the model's flat view (toporia_core/framework/optimisers/flat_view.py): the free design
 # variables, column-major as in top88, with the volume budget as g_0.  Elements
 # pinned by holes or solid rings are left out rather than moved and clipped back.
+#
+#
+# The approximation (Svanberg 1987): around the current x^(k), each function f_i is
+# replaced by
+#
+#     f̃_i(x) = Σ_j ( p_ij / (U_j − x_j) + q_ij / (x_j − L_j) ) + r_i,
+#     p_ij = (U_j − x_j)² max(∂f_i/∂x_j, 0),   q_ij = (x_j − L_j)² max(−∂f_i/∂x_j, 0),
+#
+# convex and separable, with the asymptotes L_j < x_j < U_j moved closer when a
+# variable oscillates and further away when it moves steadily.  The subproblem is
+# solved exactly through its one-multiplier dual.
 
 import numpy as np
 

@@ -1,4 +1,4 @@
-# plugins/postprocessors/connectivity.py — is the structure in one piece, from the loads to the supports?
+# toporia_library/postprocessors/connectivity.py — is the structure in one piece, from the loads to the supports?
 #
 # The black-and-white design (from the threshold when one ran, else
 # density >= 0.5) is split into pieces of elements that share an edge.

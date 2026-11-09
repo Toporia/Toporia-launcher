@@ -3,7 +3,7 @@
 An updater turns a model's `Evaluation` (objective, volume, gradients) into the next
 design. It knows nothing about the physics that produced the numbers. Pairings
 still need compatible objectives, constraints and design variables — see
-[`framework/parts/composition.py`](../../toporia_core/framework/parts/composition.py).
+[`toporia_core/framework/parts/composition.py`](../../toporia_core/framework/parts/composition.py).
 
 **Status: 24 in Toporia · 4 with open code · 0 paper only**
 

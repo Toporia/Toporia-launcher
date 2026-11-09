@@ -1,10 +1,16 @@
-# plugins/schedules/steps.py — equal steps every so many iterations.
+# toporia_library/schedules/steps.py — equal steps every so many iterations.
 #
 # The classic SIMP continuation: p = 1, 1.5, 2, ... 3, raised by 0.5 every 20
 # iterations, so each penalty is solved before the next is applied.  The step
 # is taken towards `end`, so a decreasing schedule needs no negative step.
 # `first` delays the first step, as top99neo's continuation does (beta raised
 # from iteration 250 on); 0 means the first step comes after `every` iterations.
+#
+# With n the completed iterations:
+#
+#     value(n) = start ± step · k(n),   k = 0 for n < first,  k = ⌊(n − first) / every⌋ + 1 after,
+#
+# stopping at end (the sign is that of end − start).
 
 from toporia_core.framework.params import Param
 from toporia_core.framework.parts.schedule import Schedule

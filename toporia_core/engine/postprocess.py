@@ -1,4 +1,4 @@
-# engine/postprocess.py — apply the run's post-processors to its final design.
+# toporia_core/engine/postprocess.py — apply the run's post-processors to its final design.
 #
 #   run_postprocessors   after a run: each entry of run.output.postprocess, in
 #                        order, on the final design; files go to <run>/post/

@@ -1,4 +1,4 @@
-# plugins/physics/_conduction.py — what 2-D and 3-D steady heat conduction share.
+# toporia_library/physics/_conduction.py — what 2-D and 3-D steady heat conduction share.
 #
 # Steady conduction with a heat source Q (W per unit area or volume) and a
 # conductivity k(ρ) that follows the density:

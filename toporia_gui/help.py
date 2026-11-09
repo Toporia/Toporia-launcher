@@ -1,4 +1,4 @@
-# apps/gui/help.py — the "?" next to every option, and the window it opens.
+# toporia_gui/help.py — the "?" next to every option, and the window it opens.
 #
 # Every option in the GUI has a small "?" button.  Clicking it opens one
 # help window (reused, so the screen does not fill with them) that says what
@@ -14,7 +14,7 @@
 # A topic is a plain HelpTopic, built from what the option already declares:
 # a Param (help, units, range, source), a plugin class (docstring, reference,
 # dependencies, params, use_when, and what it works with, read from its declared
-# capabilities by plugins/compatibility.py), or a few sentences written next to the widget.  So a
+# capabilities by toporia_library/compatibility.py), or a few sentences written next to the widget.  So a
 # new plugin gets its help window by declaring `reference`, with no GUI change.
 
 import html

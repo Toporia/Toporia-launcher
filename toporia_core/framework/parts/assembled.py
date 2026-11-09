@@ -1,17 +1,17 @@
-# plugins/models/assembled.py — a model assembled from swappable parts.
+# toporia_core/framework/parts/assembled.py — a model assembled from swappable parts.
 #
 # Every density model does the same five things, so they are written once:
 #
 #     z ──Representation──> x ──Filters──> ρ ──Physics.solve──> state ──Responses──> objective, constraints
 #     dz <──backward─────── dx <─filter adjoint── dρ <─────────── gradients ─────────────┘
 #
-#   Representation  solver.representation         (plugins/representations): what the
+#   Representation  solver.representation         (toporia_library/representations): what the
 #              design variables z are, and where they start; usually one density per element
-#   Filters    solver.filter_specs                    (plugins/filters)
-#   Material   solver.interpolation                   (plugins/interpolations), for an
+#   Filters    solver.filter_specs                    (toporia_library/filters)
+#   Material   solver.interpolation                   (toporia_library/interpolations), for an
 #              engine that interpolates stiffness from density
-#   Physics    the model's `physics` class            (framework/parts/physics.py, plugins/physics)
-#   Responses  scenario.objective and .constraints    (plugins/responses)
+#   Physics    the model's `physics` class            (toporia_core/framework/parts/physics.py, toporia_library/physics)
+#   Responses  scenario.objective and .constraints    (toporia_library/responses)
 #
 # A new physics engine becomes a model with one declaration:
 #
@@ -123,7 +123,7 @@ class AssembledModel(Model):
                 raise ValueError("; ".join(reasons))
             self.material.setup(problem)
         self.engine.initialize(problem, settings, self.material)
-        # More physics on the same field, solved when a variable asks (framework/companions.py).
+        # More physics on the same field, solved when a variable asks (toporia_core/framework/companions.py).
         self.engine.companions = build_companions(getattr(scenario, "extra_physics", None), type(self), problem)
         self.representation = design_representation(solver)
         self.representation.setup(problem)
@@ -137,7 +137,7 @@ class AssembledModel(Model):
 
         self.objective = self._response(scenario.objective, OBJECTIVE_ROLE)
         self.constraints = [self._response(spec, CONSTRAINT_ROLE) for spec in scenario.constraints]
-        # The scenario's own variables are recorded every iteration (framework/variables.py).
+        # The scenario's own variables are recorded every iteration (toporia_core/framework/variables.py).
         self.variables = (VariableSet(self.engine, problem, scenario.variables)
                           if getattr(scenario, "variables", None) else None)
         # Compliance is worth recording whenever it is not the objective and

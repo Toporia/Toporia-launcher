@@ -1,4 +1,4 @@
-# framework/parts/postprocess.py — what is made of a finished design.
+# toporia_core/framework/parts/postprocess.py — what is made of a finished design.
 #
 # An optimisation ends with a density field.  What is reported, compared and
 # manufactured is made from it afterwards: a black-and-white design at the
@@ -32,7 +32,7 @@ class Result:
     """A finished design, as every post-processor sees it.
 
     density   the final physical density, (nely, nelx), row 0 at y = 0
-    problem   the meshed problem (framework/problem/mesh.py): element size,
+    problem   the meshed problem (toporia_core/framework/problem/mesh.py): element size,
               bounds, supports and loads
     run       the Run that produced it
     folder    where post-processors write their files (<run folder>/post)
@@ -89,7 +89,7 @@ class PostProcessor(ABC):
     #: Tunable parameters (framework.params.Param).  The constructor must accept
     #: each one as a keyword argument of the same name.
     params = ()
-    #: Optional packages it needs (see framework/registry.py).
+    #: Optional packages it needs (see toporia_core/framework/registry.py).
     dependencies = ()
     #: The metrics worth a column when methods are compared; None means all of them.
     table_metrics = None

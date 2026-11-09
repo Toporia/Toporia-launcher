@@ -1,4 +1,4 @@
-# framework/parts/schedule.py — a parameter that changes during a run.
+# toporia_core/framework/parts/schedule.py — a parameter that changes during a run.
 #
 # Many methods only work, or only match their paper, when a parameter is
 # tightened as the run goes on: the SIMP penalty raised from 1 to 3, the
@@ -9,7 +9,7 @@
 #     solver.schedules = [{"path": "interpolation.penal", "type": "steps",
 #                          "start": 1.0, "end": 3.0, "step": 0.5, "every": 20}]
 #
-# `path` is any parameter path (framework/problem/run.py) whose part allows it
+# `path` is any parameter path (toporia_core/framework/problem/run.py) whose part allows it
 # to change mid-run.  The engine applies every schedule before each iteration,
 # records the values with the history, and does not stop on its tolerance
 # while a schedule is still moving: a design "converged" at p = 1 is not the
@@ -60,7 +60,7 @@ class Schedule(ABC):
 
         The engine calls it after every iteration.  The default does nothing, so
         a schedule that depends only on the iteration count ignores it; one that
-        raises a parameter when the design has settled (plugins/schedules/settled.py)
+        raises a parameter when the design has settled (toporia_library/schedules/settled.py)
         keeps what it is told and answers value() from that.
         """
 

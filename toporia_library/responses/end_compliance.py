@@ -1,4 +1,4 @@
-# plugins/responses/end_compliance.py — compliance at the final load of a non-linear solve.
+# toporia_library/responses/end_compliance.py — compliance at the final load of a non-linear solve.
 #
 # C = Σ_k w_k · f_kᵀ u_k(ρ), where u_k solves the non-linear equilibrium
 # f_int(u, ρ) = f_k.  It is the stiffness-design objective of geometrically
@@ -6,7 +6,7 @@
 # the full load over the displacement it actually causes.
 #
 # It is not self-adjoint any more, so the engine answers with an adjoint solve,
-# K_T(u) λ = f, and dC/dρ_e = −λ_eᵀ ∂R_e/∂ρ_e (framework/parts/physics.py, NONLINEAR).
+# K_T(u) λ = f, and dC/dρ_e = −λ_eᵀ ∂R_e/∂ρ_e (toporia_core/framework/parts/physics.py, NONLINEAR).
 
 import numpy as np
 

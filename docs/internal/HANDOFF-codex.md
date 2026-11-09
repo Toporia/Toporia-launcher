@@ -23,7 +23,7 @@ the PDF). The working plan is `toporia_library/TODO.md`.
 
 1. **One file per part in the right folder, registered automatically.** A class in
    `toporia_library/<kind>/` with a non-empty `name` is registered. Read `docs/writing-plugins.md`.
-2. **New physics is a new engine.** Don't change `plugins/physics/q4_plane_stress.py` or
+2. **New physics is a new engine.** Don't change `toporia_library/physics/q4_plane_stress.py` or
    `h8_solid.py`. Subclass or import them instead (see `q4_dynamic.py`, `q4_nonlinear.py`,
    `q4_heat.py`). The golden tests in `tests/golden/` must stay bit-identical. Never regenerate
    their baselines.
@@ -71,7 +71,7 @@ Files in that commit:
 | `toporia_library/responses/buckling.py` | `buckling_load`. As objective: maximise the lowest load factor through a KS or p-norm aggregate of 1/λ of the lowest few modes. As constraint: λ₁ ≥ λ_min, normalised to ≤ 0. |
 | `toporia_library/problems/column_buckling.py` | Preset with the paper's compressed column. |
 | `tests/plugins/test_buckling.py` (114 lines) | Euler-load check, finite-difference check of the sensitivity, preset run. |
-| Edits to `framework/parts/physics.py` (a BUCKLING section), `tests/apps/test_gui.py`, `plugins/LIBRARY.md`, and the READMEs and `__init__` docstrings of models, physics, problems and responses | Docs and registration. |
+| Edits to `toporia_core/framework/parts/physics.py` (a BUCKLING section), `tests/apps/test_gui.py`, `toporia_library/LIBRARY.md`, and the READMEs and `__init__` docstrings of models, physics, problems and responses | Docs and registration. |
 
 **Steps to finish it:**
 
@@ -105,8 +105,8 @@ Files in that commit:
 | :-- | :-- | :-- |
 | Heat conduction | `physics/q4_heat.py`, `h8_heat.py`, `_conduction.py`; models `q4_heat`, `h8_heat`, `pymoto_heat`; response `thermal_compliance`; preset *Heat Sink* | Matches pyMOTO to 1e-9. OC now accepts `thermal_compliance`. Supports = T = 0, load `Fmag` = heat input, physics Param `heat_source`. |
 | Vibration | `physics/q4_dynamic.py`; models `q4_dynamic`, `pymoto_dynamic`; responses `eigenfrequency`, `eigenfrequency_limit`, `dynamic_compliance`; preset *Vibrating Beam* | Features MODES and HARMONIC. |
-| Local stress (augmented Lagrangian) | `responses/local_stress.py`, `updaters/augmented_lagrangian.py`; preset *L-bracket (local stress)* | `local_stress` returns a penalty, not a ≤ 0 constraint. It declares `only_with_updaters = ("augmented_lagrangian",)`, and `framework/parts/composition.py::_check_response_updaters` refuses any other updater. |
-| Large deformation | `physics/q4_nonlinear.py`; model `q4_nonlinear`; response `end_compliance`; preset *Nonlinear Cantilever* | Newton with load steps; energy interpolation in void. The preset's non-linearity is mild: larger loads make grey designs snap, and load control cannot follow that. `checks/model.py` honours a `check_load_scale` attribute for this. |
+| Local stress (augmented Lagrangian) | `responses/local_stress.py`, `updaters/augmented_lagrangian.py`; preset *L-bracket (local stress)* | `local_stress` returns a penalty, not a ≤ 0 constraint. It declares `only_with_updaters = ("augmented_lagrangian",)`, and `toporia_core/framework/parts/composition.py::_check_response_updaters` refuses any other updater. |
+| Large deformation | `physics/q4_nonlinear.py`; model `q4_nonlinear`; response `end_compliance`; preset *Nonlinear Cantilever* | Newton with load steps; energy interpolation in void. The preset's non-linearity is mild: larger loads make grey designs snap, and load control cannot follow that. `toporia_core/checks/model.py` honours a `check_load_scale` attribute for this. |
 
 ## 5. Still to add: small (one file in an existing slot)
 
@@ -136,10 +136,10 @@ Files in that commit:
 
 ## 7. Small fixes noticed (from `toporia_library/TODO.md`)
 
-- The console's `obj=` column prints the change since iteration 1 (`engine/loop.py`), which reads
+- The console's `obj=` column prints the change since iteration 1 (`toporia_core/engine/loop.py`), which reads
   like a negative compliance. Rename it `Δobj`, or print the objective.
 - `--set 'representation={...}'` with a JSON value that arrives as a plain string (PowerShell 5.1
-  strips the quotes) crashes in `engine/pipeline.py`. Give a clear error instead.
+  strips the quotes) crashes in `toporia_core/engine/pipeline.py`. Give a clear error instead.
 - The L-bracket dimensions and load point were written from memory. Check them against Le et al.
   2010.
 
@@ -152,12 +152,12 @@ failures first.** The causes, grouped:
 1. **~66 failures: generic tests pair every model with the default MBB scenario.** The default
    objective is compliance, which the heat and non-linear engines cannot compute:
    `ValueError: 'Compliance' cannot be computed on '2-D Q4 heat conduction (Toporia)'` (also
-   `3-D H8 heat conduction` and `2-D Q4 large deformation`), raised in `plugins/models/assembled.py:122`.
+   `3-D H8 heat conduction` and `2-D Q4 large deformation`), raised in `toporia_core/framework/parts/assembled.py:122`.
    Fix the tests rather than the models: parametrised tests over all methods (look in
    `tests/framework/test_composition.py`, `tests/checks/`, `tests/engine/`) should only use
    models whose `capabilities.objectives` contain the scenario's objective, or should give each
    physics a matching scenario (its own preset).
-2. **22 failures: `KeyError: 'modes'` at `plugins/models/pymoto_dynamic.py:150`.** The pyMOTO
+2. **22 failures: `KeyError: 'modes'` at `toporia_library/models/pymoto_dynamic.py:150`.** The pyMOTO
    vibration model fails when evaluated by the same generic tests, probably when asked for a
    response it did not build. Make it build or refuse cleanly.
 3. **Hard-coded registry lists in tests**, which need the new names added:

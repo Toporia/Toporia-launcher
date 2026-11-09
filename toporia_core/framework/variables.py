@@ -1,4 +1,4 @@
-# framework/variables.py — the problem as a space of variables (To do items 1 + 2).
+# toporia_core/framework/variables.py — the problem as a space of variables (To do items 1 + 2).
 #
 # Every quantity a physics can compute is a variable: compliance, volume, peak stress,
 # thermal compliance, ...  A scenario can add its own:

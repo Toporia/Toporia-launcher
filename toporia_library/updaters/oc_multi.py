@@ -1,4 +1,4 @@
-# plugins/updaters/oc_multi.py — optimality criteria with several constraints.
+# toporia_library/updaters/oc_multi.py — optimality criteria with several constraints.
 #
 # oc.py finds ONE multiplier, for the volume.  With constraints g_j <= 0
 # (j = 0 the volume budget, then the scenario's, e.g. a stress limit) the
@@ -35,7 +35,7 @@
 # It minimises compliance only (the update needs −dC/dx >= 0 to be a ratio), and,
 # like oc.py, needs one density per element.
 #
-# It works on the model's flat view (framework/optimisers/flat_view.py), which
+# It works on the model's flat view (toporia_core/framework/optimisers/flat_view.py), which
 # supplies the constraints and their gradients already normalised
 # (g_0 = V/V_limit − 1), so the multipliers of different constraints are comparable.
 #

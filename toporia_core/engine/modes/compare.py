@@ -1,4 +1,4 @@
-# engine/modes/compare.py — two optimisations side by side, and what differs between them.
+# toporia_core/engine/modes/compare.py — two optimisations side by side, and what differs between them.
 #
 #   compare_two          the same run with one parameter at two values
 #                        (e.g. volfrac 0.20 against 0.40)

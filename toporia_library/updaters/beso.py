@@ -1,4 +1,4 @@
-# plugins/updaters/beso.py — bi-directional evolutionary structural optimisation.
+# toporia_library/updaters/beso.py — bi-directional evolutionary structural optimisation.
 #
 # BESO does not move densities continuously.  Every element is either solid or
 # void, and each iteration does three things:

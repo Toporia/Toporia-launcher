@@ -1,4 +1,4 @@
-# apps/gui/panels/forms.py — build input widgets from Param declarations.
+# toporia_gui/panels/forms.py — build input widgets from Param declarations.
 #
 # This is the only place that knows how to turn a framework.params.Param into a Qt
 # widget.  Every method, filter and scenario panel in the GUI is a ParamForm,

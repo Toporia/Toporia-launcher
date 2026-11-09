@@ -1,4 +1,4 @@
-# plugins/responses/compliance.py — structural compliance.
+# toporia_library/responses/compliance.py — structural compliance.
 #
 # C = Σ_k w_k · f_kᵀ u_k, the load-weighted work of the external forces over
 # the load cases.  Minimising it maximises stiffness; it is the objective of

@@ -1,4 +1,4 @@
-# plugins/updaters/tobs.py — TOBS: topology optimisation of binary structures.
+# toporia_library/updaters/tobs.py — TOBS: topology optimisation of binary structures.
 #
 # Connects to the framework as an Updater: it receives an Evaluation (objective,
 # volume and their gradients) and returns the next design.  Like BESO it keeps
@@ -48,6 +48,16 @@
 # optimization using binary variables and integer programming", Structural and
 # Multidisciplinary Optimization 63 (2021) 935–954.
 # https://doi.org/10.1007/s00158-020-02719-9
+#
+#
+# The integer program each iteration, with Δ_e ∈ {−1, 0, +1} and x_e ∈ {0, 1}:
+#
+#     min_Δ  Σ_e (∂C/∂x_e) Δ_e
+#     s.t.   Σ_e (∂V/∂x_e) Δ_e ≤ V_target − V(x),     Σ_e |Δ_e| ≤ β n,
+#            Δ_e ≥ 0 where x_e = 0,   Δ_e ≤ 0 where x_e = 1,
+#
+# then x ← x + Δ.  V_target moves toward the budget by at most ε V_domain per
+# iteration.
 
 from collections import deque
 

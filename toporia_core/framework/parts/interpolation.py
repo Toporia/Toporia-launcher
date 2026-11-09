@@ -1,4 +1,4 @@
-# framework/parts/interpolation.py — how density becomes material stiffness.
+# toporia_core/framework/parts/interpolation.py — how density becomes material stiffness.
 #
 # A density method needs a material law for intermediate densities: an
 # interpolation between void (stiffness Emin) and solid (stiffness E0),
@@ -19,7 +19,7 @@
 # needs.  Both act element-wise on arrays of any shape.
 
 # A multi-material law reads more than the density: the weights of its candidate
-# materials, a field of the representation (framework/parts/representation.py).  It names
+# materials, a field of the representation (toporia_core/framework/parts/representation.py).  It names
 # the fields in `fields`, receives them with set_fields() before every solve, and gives
 # their slopes, dE/dfield and d(volume)/dfield, for the sensitivities.
 
@@ -44,7 +44,7 @@ class Interpolation(ABC):
     params = ()
     #: The problem dimensions it works in; None means any (it never looks at the mesh's shape).
     dims = None
-    #: Parameters a schedule may change during a run (framework/parts/schedule.py).
+    #: Parameters a schedule may change during a run (toporia_core/framework/parts/schedule.py).
     schedulable = ()
     #: True when the material budget differs from the geometric density sum.
     nonlinear_volume = False

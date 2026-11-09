@@ -1,4 +1,4 @@
-# checks/report.py — what a conformance check returns: one line per check.
+# toporia_core/checks/report.py — what a conformance check returns: one line per check.
 #
 # Report.step() runs one check and records it as passed, failed (with the
 # exception and the line it came from) or skipped.

@@ -1,4 +1,4 @@
-# plugins/filters/routing.py - RoutingRadiusFilter (2D router tool-radius constraint)
+# toporia_library/filters/routing.py - RoutingRadiusFilter (2D router tool-radius constraint)
 #
 # Models a round 2D routing tool by applying a smooth morphological closing:
 #

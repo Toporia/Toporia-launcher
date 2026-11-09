@@ -1,4 +1,4 @@
-# plugins/postprocessors/feature_size.py — the thinnest member and the smallest hole.
+# toporia_library/postprocessors/feature_size.py — the thinnest member and the smallest hole.
 #
 # Length-scale control is what filters, projections and the robust formulation
 # promise; this measures what was delivered.  For every solid element of the

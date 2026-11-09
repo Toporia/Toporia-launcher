@@ -1,4 +1,4 @@
-# plugins/representations/bspline.py — a density field as a B-spline of a few coefficients.
+# toporia_library/representations/bspline.py — a density field as a B-spline of a few coefficients.
 #
 # The design variables are the coefficients c of a tensor-product B-spline on a
 # coarse control grid; the element density is the spline evaluated at the

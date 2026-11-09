@@ -1,4 +1,4 @@
-# apps/gui_worker.py — headless process for an immutable GUI run snapshot.
+# toporia_gui/worker.py — headless process for an immutable GUI run snapshot.
 # Qt stays in the parent process; numerical work and Matplotlib file rendering
 # run here. Newline-delimited JSON carries logs/progress/results over stdout.
 

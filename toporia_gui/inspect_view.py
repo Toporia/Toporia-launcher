@@ -1,9 +1,9 @@
-# apps/gui/inspect_view.py — the Post-process step's inspector: every run, every field, every number.
+# toporia_gui/inspect_view.py — the Post-process step's inspector: every run, every field, every number.
 #
 # A finished session is one run, or many (a sweep or a comparison writes one folder per
 # run).  The inspector lists them; for the chosen run it shows the density, the copies
 # post-processing made of it, and the finite-element fields of the final design (stress,
-# strain energy, displacement, temperature: engine/fields.py), computed when first asked
+# strain energy, displacement, temperature: toporia_core/engine/fields.py), computed when first asked
 # for.  Beside the picture is every number run.json records.  The chosen run is what
 # post-processing and export then act on.
 

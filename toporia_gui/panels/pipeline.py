@@ -1,4 +1,4 @@
-# apps/gui/panels/pipeline.py — the Pipeline box: what the selected run is made of.
+# toporia_gui/panels/pipeline.py — the Pipeline box: what the selected run is made of.
 #
 # The run is drawn as a network (engine.pipeline.pipeline_graph): one box per
 # part, in the order the design flows through them, the responses side by

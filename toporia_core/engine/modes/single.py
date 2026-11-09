@@ -1,4 +1,4 @@
-# engine/modes/single.py — one optimisation, the "Run One" mode.
+# toporia_core/engine/modes/single.py — one optimisation, the "Run One" mode.
 #
 # The run itself is engine.loop.run_single_with_store; this mode adds what an
 # interactive single run is for: a summary of the meshed problem before it

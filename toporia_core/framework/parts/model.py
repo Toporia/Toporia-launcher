@@ -1,11 +1,11 @@
-# framework/parts/model.py — WHAT is optimised: a design in, numbers and gradients out.
+# toporia_core/framework/parts/model.py — WHAT is optimised: a design in, numbers and gradients out.
 #
 # A Model turns a design into an Evaluation: the objective, the material
 # volume, the scenario's further constraints, and the gradient of each.  The
 # physics, the filters and the sensitivity analysis live behind it; an
 # Updater (updater.py) only ever sees the Evaluation.
 #
-# Most models are not written by hand: plugins/models/assembled.py joins
+# Most models are not written by hand: toporia_core/framework/parts/assembled.py joins
 # filters, a physics engine (physics.py) and responses (response.py) into one.
 
 from abc import ABC, abstractmethod
@@ -70,7 +70,7 @@ class Model(ABC):
     order = 100
     #: Tunable parameters (framework.params.Param); they become method parameters.
     params = ()
-    #: Model parameters a schedule may change during a run (framework/parts/schedule.py).
+    #: Model parameters a schedule may change during a run (toporia_core/framework/parts/schedule.py).
     schedulable = ()
     #: Passed through to every method built on this model (see ComposedMethod).
     capabilities = Capabilities()

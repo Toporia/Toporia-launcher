@@ -1,4 +1,4 @@
-# plugins/problems/cantilever_3d.py — the 3-D cantilever of Liu & Tovar's top3d, small enough to run in seconds.
+# toporia_library/problems/cantilever_3d.py — the 3-D cantilever of Liu & Tovar's top3d, small enough to run in seconds.
 #
 #    clamped face (x = 0)                         free end
 #    ┌──────────────────────────────────────────┐
@@ -7,7 +7,7 @@
 #    └──────────────────────────────────────────┘ ↓ line load along the bottom
 #                      60 mm                        edge of the free end, through the depth
 #
-# A 60 × 20 mm rectangle extruded 10 mm (framework/problem/mesh.py, BoxProblem),
+# A 60 × 20 mm rectangle extruded 10 mm (toporia_core/framework/problem/mesh.py, BoxProblem),
 # clamped over the whole face at x = 0 and loaded downward along the bottom
 # edge of the free end, through the full depth — the benchmark of top3d.  At
 # the recommended 0.4 elements per mm it has 24 × 8 × 4 = 768 bricks and runs

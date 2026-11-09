@@ -1,4 +1,4 @@
-"""test_variants.py — one design evaluated in several versions (framework/parts/variants.py).
+"""test_variants.py — one design evaluated in several versions (toporia_core/framework/parts/variants.py).
 
 The robust formulation (eroded / intermediate / dilated projections) is the
 main use; the wrapper itself is generic over any parameter path.

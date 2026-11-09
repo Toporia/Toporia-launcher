@@ -1,4 +1,4 @@
-# apps/gui/panels/common.py — small pieces every panel uses.
+# toporia_gui/panels/common.py — small pieces every panel uses.
 #
 #   CollapsibleSection     a titled section that folds open and shut
 #   add_tooltip_row        a form row whose label and editor share a tooltip, with a "?"

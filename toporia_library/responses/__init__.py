@@ -1,7 +1,7 @@
 """plugins.responses — what a scenario can minimise or constrain.
 
 Every Response subclass in this package with a non-empty `name` is found by the
-RESPONSES registry.  Responses are declarations (see framework/parts/response.py); the
+RESPONSES registry.  Responses are declarations (see toporia_core/framework/parts/response.py); the
 models that can compute them say so in their Capabilities.
 
 The volume budget (scenario.volfrac) is enforced by every method and is not a
@@ -12,7 +12,7 @@ constraint entry; scenario.constraints adds further limits on top of it.
     volume.py      material volume — objective, used with a further constraint
     stress.py      peak von Mises stress — constraint, and peak_stress — objective
     combined.py    several terms in one objective: weighted sum, min-max or a formula
-    variable.py    any variable of the problem (framework/variables.py) — objective or constraint
+    variable.py    any variable of the problem (toporia_core/framework/variables.py) — objective or constraint
     buckling.py    reciprocal load-factor aggregate — objective or constraint
     thermal_compliance.py  weighted thermal compliance of heat conduction — objective
     eigenfrequency.py     lowest natural frequency — objective (maximise) and constraint (at least)

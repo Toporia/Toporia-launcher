@@ -1,4 +1,4 @@
-# apps/gui/add_function.py — one pop-up with every function that can be added to the method.
+# toporia_gui/add_function.py — one pop-up with every function that can be added to the method.
 #
 # The Method step's "+ Add function…" opens it.  An entry that does not fit the current
 # selection is greyed out but can still be chosen (choosing it changes what conflicts with

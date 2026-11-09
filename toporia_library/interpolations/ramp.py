@@ -1,4 +1,4 @@
-# plugins/interpolations/ramp.py — Rational Approximation of Material Properties.
+# toporia_library/interpolations/ramp.py — Rational Approximation of Material Properties.
 #
 #     E(ρ) = Emin + ρ / (1 + q(1 − ρ)) · (E0 − Emin)
 #     dE/dρ = (1 + q) / (1 + q(1 − ρ))² · (E0 − Emin)

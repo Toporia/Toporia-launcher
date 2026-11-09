@@ -1,4 +1,4 @@
-# plugins/responses/eigenfrequency.py — the lowest natural frequency of the design.
+# toporia_library/responses/eigenfrequency.py — the lowest natural frequency of the design.
 #
 # The fundamental frequency decides how a structure answers a vibrating load, so a
 # classic goal is to MAXIMISE the lowest eigenvalue λ1 = ω1² of K φ = λ M φ, or to

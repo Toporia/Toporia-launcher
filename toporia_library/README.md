@@ -95,7 +95,7 @@ example of every plugin kind, each one run and checked by the test suite.
 
 There is no decorator and no list to maintain: a class in the right package, subclassing
 the right base, with a non-empty `name`, **is** registered
-([`framework/registry.py`](../toporia_core/framework/registry.py)). Parameters are declared as
+([`toporia_core/framework/registry.py`](../toporia_core/framework/registry.py)). Parameters are declared as
 [`Param`](../toporia_core/framework/params.py) objects next to the code that uses them, and the GUI, the
 sweeps and the config validation are all generated from those declarations.
 

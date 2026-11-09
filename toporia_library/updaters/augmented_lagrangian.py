@@ -1,7 +1,7 @@
-# plugins/updaters/augmented_lagrangian.py — the outer loop of the augmented-Lagrangian method for local constraints.
+# toporia_library/updaters/augmented_lagrangian.py — the outer loop of the augmented-Lagrangian method for local constraints.
 #
 # A scenario constraint of a response that offers `update_multipliers`
-# (plugins/responses/local_stress.py) is not one number to keep below zero but
+# (toporia_library/responses/local_stress.py) is not one number to keep below zero but
 # a whole set of element constraints, summed into an augmented-Lagrangian penalty P
 # with its own multipliers.  This updater minimises  J = f/f₀ + ΣP  with the
 # moving-asymptote steps of mma.py (move limits, the volume budget as the one

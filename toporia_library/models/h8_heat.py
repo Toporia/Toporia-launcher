@@ -1,8 +1,13 @@
-# plugins/models/h8_heat.py — Toporia's 3-D heat-conduction solver as a model.
+# toporia_library/models/h8_heat.py — Toporia's 3-D heat-conduction solver as a model.
 #
 # The 3-D counterpart of q4_heat.py: element densities, the filter pipeline, a
 # material law, and steady conduction on eight-node bricks
-# (plugins/physics/h8_heat.py).  It needs a scenario with a depth (Lz > 0).
+# (toporia_library/physics/h8_heat.py).  It needs a scenario with a depth (Lz > 0).
+#
+#
+# The maths, in toporia_library/physics/h8_heat.py: K(ρ) T_k = q_k with
+# K = Σ_e k(ρ_e) K_e⁰ (unit conductivity per brick), supports held at T = 0, the
+# thermal compliance C_T = Σ_k w_k q_kᵀ T_k and ∂C_T/∂ρ_e = −k'(ρ_e) Σ_k w_k T_ekᵀ K_e⁰ T_ek.
 
 from toporia_library.physics.h8_heat import H8Heat
 

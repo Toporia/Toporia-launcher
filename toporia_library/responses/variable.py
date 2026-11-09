@@ -1,6 +1,6 @@
-# plugins/responses/variable.py — any variable of the problem as an objective or a constraint.
+# toporia_library/responses/variable.py — any variable of the problem as an objective or a constraint.
 #
-# The scenario's variables (framework/variables.py) and every built-in quantity of the
+# The scenario's variables (toporia_core/framework/variables.py) and every built-in quantity of the
 # physics are named; this response minimises one, or limits it:
 #
 #     objective   = {"type": "variable", "variable": "ratio"}
@@ -10,7 +10,7 @@
 #     at most   g = value / limit − 1 ≤ 0
 #     at least  g = 1 − value / limit ≤ 0
 # The gradient is exact for a measured variable; for a derived one it is the chain rule
-# through the formula (framework/variables.py).
+# through the formula (toporia_core/framework/variables.py).
 
 from toporia_core.framework.params import Param
 from toporia_core.framework.parts.response import CONSTRAINT_ROLE, OBJECTIVE_ROLE, Response, ResponseValue
@@ -25,7 +25,7 @@ class VariableResponse(Response):
         "To optimise or limit a quantity you defined yourself on the Problem page (a formula of other "
         "variables, or a measured quantity with its own parameters)."
     )
-    reference = "Toporia's variable space (framework/variables.py)."
+    reference = "Toporia's variable space (toporia_core/framework/variables.py)."
     order = 95
     roles = (OBJECTIVE_ROLE, CONSTRAINT_ROLE)
     requires = ()        # the variable is checked against the physics when the run starts

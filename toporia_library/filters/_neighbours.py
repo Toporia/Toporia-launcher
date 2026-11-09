@@ -1,4 +1,4 @@
-# plugins/filters/_neighbours.py — the weighted-neighbour matrix of the density and sensitivity filters, in any dimension.
+# toporia_library/filters/_neighbours.py — the weighted-neighbour matrix of the density and sensitivity filters, in any dimension.
 #
 #     H[e, f] = max(0, rmin − distance(e, f))      (distances in elements)
 #

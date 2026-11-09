@@ -1,7 +1,7 @@
-# engine/plotting.py — matplotlib only when it is there.
+# toporia_core/engine/plotting.py — matplotlib only when it is there.
 #
 # The core runs, records and is tested without matplotlib: the density images are written
-# with engine/png.py, and the figures matplotlib draws (the history plot, the comparison,
+# with toporia_core/engine/png.py, and the figures matplotlib draws (the history plot, the comparison,
 # sweep and sensitivity figures) are made only when it is installed.  Without it they are
 # skipped, with one notice per run of the program, and every number, CSV and run.json is
 # written as before.

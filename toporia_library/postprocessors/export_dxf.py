@@ -1,4 +1,4 @@
-# plugins/postprocessors/export_dxf.py — the design's outline as DXF.
+# toporia_library/postprocessors/export_dxf.py — the design's outline as DXF.
 #
 # Closed polylines in millimetres, in the plain R12 format that every CAD
 # program and laser- or waterjet-cutting tool reads.  For a contour, outer
@@ -6,6 +6,12 @@
 # Explicit shapes (moving morphable components) are one polyline per bar, cut
 # to the domain; where bars overlap, join them in CAD (a union) before cutting.
 # Written by hand, so no CAD library is needed.
+#
+#
+# What is traced: with explicit shapes (MMC, geometry projection) their polygons;
+# otherwise the boundary of the black-and-white design (the threshold's, else
+# density ≥ 0.5) found by marching squares on the element densities, so outer
+# boundaries and holes come out as closed polylines in millimetres.
 
 from toporia_core.framework.parts.postprocess import PostProcessor
 

@@ -1,4 +1,4 @@
-# apps/gui/splash.py — the loading screen shown while the desktop app starts.
+# toporia_gui/splash.py — the loading screen shown while the desktop app starts.
 #
 # Importing every plugin and building the window takes a few seconds and blocks Qt's
 # event loop, so the bar moves at checkpoints (progress()) rather than on a timer.  It

@@ -1,4 +1,4 @@
-# checks/common.py — what every conformance check uses.
+# toporia_core/checks/common.py — what every conformance check uses.
 #
 # The problems checks run on, a small run of the benchmark, stepping a method
 # under the engine's stopping rule, comparing a gradient with central finite

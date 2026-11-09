@@ -1,4 +1,4 @@
-# framework/registries.py — one registry per kind of part, and the glue that looks parts up by name.
+# toporia_core/framework/registries.py — one registry per kind of part, and the glue that looks parts up by name.
 #
 # The registries live in the core so that the core can find parts without importing
 # any library.  Every source of parts is a Python entry point in the registry's group

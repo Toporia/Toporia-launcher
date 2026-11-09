@@ -1,10 +1,16 @@
-# plugins/models/q4_buckling.py — the 2-D Q4 solver with linearised buckling as a model.
+# toporia_library/models/q4_buckling.py — the 2-D Q4 solver with linearised buckling as a model.
 #
-# The same pipeline as plugins/models/q4.py (filters, material law, responses),
+# The same pipeline as toporia_library/models/q4.py (filters, material law, responses),
 # on an engine that also answers the BUCKLING question, so the buckling load
-# response (plugins/responses/buckling.py) can be minimised or constrained next
+# response (toporia_library/responses/buckling.py) can be minimised or constrained next
 # to compliance, volume and stress.  pyMOTO has no buckling module, so there is
 # no pyMOTO version of this model.
+#
+#
+# The maths, in toporia_library/physics/q4_buckling.py: the static solve K u = f, then
+# the linearised buckling eigenproblem (K + λ K_σ(u)) φ = 0 with K_σ the stress
+# stiffness of the pre-buckling stresses; λ₁ is the lowest load factor.  Its
+# sensitivity needs the derivative of K_σ through u, one adjoint solve per mode.
 
 from toporia_library.physics.q4_buckling import Q4Buckling
 

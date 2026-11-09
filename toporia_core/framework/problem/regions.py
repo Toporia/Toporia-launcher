@@ -1,4 +1,4 @@
-# framework/problem/regions.py — explicit physical regions to structured-mesh masks.
+# toporia_core/framework/problem/regions.py — explicit physical regions to structured-mesh masks.
 #
 # This adapter is shared by GUI and CLI. It never invents supports or loads.
 # Regional forces are total vectors, distributed equally across selected nodes;

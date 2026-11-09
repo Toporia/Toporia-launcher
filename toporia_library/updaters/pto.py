@@ -1,4 +1,4 @@
-# plugins/updaters/pto.py — independent sensitivity-proxy PTO variant.
+# toporia_library/updaters/pto.py — independent sensitivity-proxy PTO variant.
 #
 # Connects to the framework as an Updater.  PTO is the "no optimiser at all"
 # baseline: each iteration the whole volume budget is simply handed out to the

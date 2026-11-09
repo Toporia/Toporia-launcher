@@ -1,7 +1,7 @@
-# plugins/responses/buckling.py — the lowest linearised buckling load factors.
+# toporia_library/responses/buckling.py — the lowest linearised buckling load factors.
 #
 # The load factor λ is the multiple of the applied load at which the structure
-# buckles (framework/parts/physics.py, BUCKLING).  A design has several modes,
+# buckles (toporia_core/framework/parts/physics.py, BUCKLING).  A design has several modes,
 # and during optimisation the lowest ones swap places and become equal, where a
 # single eigenvalue is not differentiable.  So the response aggregates the
 # lowest few modes of every load case with a p-norm of their reciprocals:

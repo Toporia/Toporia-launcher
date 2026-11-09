@@ -1,9 +1,9 @@
-"""apps/gui/panels — every input panel of the main window, one module each.
+"""toporia_gui/panels — every input panel of the main window, one module each.
 
 None of them contains optimisation logic.  Method, filter, response and
 scenario inputs are not written by hand: each is a ParamForm (forms.py)
 generated from the Param declarations of the plugins and of
-framework/problem, so a new plugin or parameter appears without editing here.
+toporia_core/framework/problem, so a new plugin or parameter appears without editing here.
 
 What contains what, top to bottom in the left panel:
 

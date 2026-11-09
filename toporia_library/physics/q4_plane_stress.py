@@ -1,4 +1,4 @@
-# plugins/physics/q4_plane_stress.py — 2-D Q4 plane-stress finite element solver.
+# toporia_library/physics/q4_plane_stress.py — 2-D Q4 plane-stress finite element solver.
 #
 # This is ONE implementation of the physics, not the platform's definition of it.
 # It owns everything that depends on the top88 conventions: the analytical 8×8
@@ -7,7 +7,7 @@
 # module here and the engine never notices the difference.
 #
 # Q4PlaneStress at the bottom of this file presents the solver as a physics
-# engine (framework/parts/physics.py), so every response written against that interface
+# engine (toporia_core/framework/parts/physics.py), so every response written against that interface
 # — compliance, stress — runs on it without knowing any of the above.
 
 import numpy as np

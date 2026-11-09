@@ -1,4 +1,4 @@
-# plugins/updaters/simpl.py — entropic mirror descent on a latent variable (SiMPL).
+# toporia_library/updaters/simpl.py — entropic mirror descent on a latent variable (SiMPL).
 #
 # The design is not updated directly.  It is carried as a latent variable
 #

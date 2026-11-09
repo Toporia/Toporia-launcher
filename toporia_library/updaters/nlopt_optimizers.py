@@ -1,4 +1,4 @@
-# plugins/updaters/nlopt_optimizers.py — the gradient-based, constrained algorithms of NLopt.
+# toporia_library/updaters/nlopt_optimizers.py — the gradient-based, constrained algorithms of NLopt.
 #
 # NLopt (Johnson, https://nlopt.readthedocs.io) is one C library with a common interface
 # to dozens of optimisers.  This file wraps the four that make sense for topology
@@ -17,8 +17,8 @@
 #
 # NLopt runs its own loop and has no per-iteration callback.  So, as for SciPy's SLSQP
 # (scipy_slsqp.py, the template), ExternalOptimizer runs the library in a background
-# thread (framework/optimisers/external_loop.py) on the flat view
-# (framework/optimisers/flat_view.py); the difference is *where* the engine is told about
+# thread (toporia_core/framework/optimisers/external_loop.py) on the flat view
+# (toporia_core/framework/optimisers/flat_view.py); the difference is *where* the engine is told about
 # a new design: from inside the objective wrapper, once per evaluation
 # (`reports = "evaluation"`).  An "iteration" in the live display is therefore one NLopt
 # function evaluation.  Evaluations that land almost on top of the last one shown (trial

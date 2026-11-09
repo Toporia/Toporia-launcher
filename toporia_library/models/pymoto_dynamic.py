@@ -1,7 +1,7 @@
-# plugins/models/pymoto_dynamic.py — natural frequencies on a pyMOTO module network.
+# toporia_library/models/pymoto_dynamic.py — natural frequencies on a pyMOTO module network.
 #
 # The vibration counterpart of pymoto_elastic.py, and the independent check of
-# plugins/physics/q4_dynamic.py: pyMOTO assembles the stiffness and the consistent
+# toporia_library/physics/q4_dynamic.py: pyMOTO assembles the stiffness and the consistent
 # mass and solves the eigenproblem itself, so none of Toporia's mass or eigenvalue
 # sensitivities are used here.
 #
@@ -9,7 +9,7 @@
 #                             └─mass interpolation─> AssembleMass ─┴─> EigenSolve ─> λ ─> smooth minimum
 #
 # Objective: eigenfrequency (the same smooth minimum of the lowest `modes`
-# eigenvalues as plugins/responses/eigenfrequency.py, scaled the same way).  The
+# eigenvalues as toporia_library/responses/eigenfrequency.py, scaled the same way).  The
 # mass is the consistent one, with the same Pedersen-type low-density fix and
 # attached mass as the Q4 engine, so on the same density both give the same
 # eigenvalues (tests/plugins/test_dynamics.py).

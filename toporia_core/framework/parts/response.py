@@ -1,4 +1,4 @@
-# framework/parts/response.py — the quantities a scenario can minimise or constrain.
+# toporia_core/framework/parts/response.py — the quantities a scenario can minimise or constrain.
 #
 # A Response is first a declaration: a name, a label, the roles it can play,
 # and its parameters.  Scenarios refer to responses by name:
@@ -11,7 +11,7 @@
 # starts.
 #
 # A Response can also compute itself, against the questions a physics engine
-# answers (framework/parts/physics.py).  Such a response lists the engine features it
+# answers (toporia_core/framework/parts/physics.py).  Such a response lists the engine features it
 # `requires`, and then works with every engine that provides them:
 #
 #     response.setup(physics, problem, settings)            once per run
@@ -76,7 +76,7 @@ class Response:
     gradient_check_settings = {}
     #: The problem dimensions it works in; None means any (it never looks at the mesh's shape).
     dims = None
-    #: Parameters a schedule may change during a run (framework/parts/schedule.py).
+    #: Parameters a schedule may change during a run (toporia_core/framework/parts/schedule.py).
     schedulable = ()
     #: True when a "limit" parameter is the bound on the response's own value, so a
     #: normalised constraint g = value / limit - 1 can be reported in those units.

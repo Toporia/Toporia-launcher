@@ -22,16 +22,16 @@ of the one below it back to its own input.
 
 | You have…                                        | Write a…                 | Subclass                    | Folder / entry-point group       |
 | :----------------------------------------------- | :----------------------- | :-------------------------- | :------------------------------- |
-| an update rule (OC, MMA, BESO, a new idea)       | updater                  | `Updater`                   | `plugins/updaters/` · `toporia.updaters` |
-| a library that runs its own loop (SciPy, NLopt)  | updater                  | `ExternalOptimizer`         | `plugins/updaters/` · `toporia.updaters` |
-| a new kind of design variable (bars, splines)    | representation           | `Representation`            | `plugins/representations/` · `toporia.representations` |
-| a smoothing, projection or fabrication rule      | filter                   | `Filter`                    | `plugins/filters/` · `toporia.filters` |
-| a material law (density → stiffness)             | interpolation            | `Interpolation`             | `plugins/interpolations/` · `toporia.interpolations` |
-| a continuation rule (a parameter over the run)   | schedule                 | `Schedule`                  | `plugins/schedules/` · `toporia.schedules` |
-| a check or export of the finished design         | post-processor           | `PostProcessor`             | `plugins/postprocessors/` · `toporia.postprocessors` |
-| an objective or constraint                       | response                 | `Response`                  | `plugins/responses/` · `toporia.responses` |
-| a finite-element solver or other physics         | physics engine + model   | `Physics`, `AssembledModel` | `plugins/physics/`, `plugins/models/` · `toporia.models` |
-| a method that does not split into the above      | whole method             | `OptimizationMethod`        | `plugins/methods/` · `toporia.methods` |
+| an update rule (OC, MMA, BESO, a new idea)       | updater                  | `Updater`                   | `toporia_library/updaters/` · `toporia.updaters` |
+| a library that runs its own loop (SciPy, NLopt)  | updater                  | `ExternalOptimizer`         | `toporia_library/updaters/` · `toporia.updaters` |
+| a new kind of design variable (bars, splines)    | representation           | `Representation`            | `toporia_library/representations/` · `toporia.representations` |
+| a smoothing, projection or fabrication rule      | filter                   | `Filter`                    | `toporia_library/filters/` · `toporia.filters` |
+| a material law (density → stiffness)             | interpolation            | `Interpolation`             | `toporia_library/interpolations/` · `toporia.interpolations` |
+| a continuation rule (a parameter over the run)   | schedule                 | `Schedule`                  | `toporia_library/schedules/` · `toporia.schedules` |
+| a check or export of the finished design         | post-processor           | `PostProcessor`             | `toporia_library/postprocessors/` · `toporia.postprocessors` |
+| an objective or constraint                       | response                 | `Response`                  | `toporia_library/responses/` · `toporia.responses` |
+| a finite-element solver or other physics         | physics engine + model   | `Physics`, `AssembledModel` | `toporia_library/physics/`, `toporia_library/models/` · `toporia.models` |
+| a method that does not split into the above      | whole method             | `OptimizationMethod`        | `toporia_library/methods/` · `toporia.methods` |
 
 Every piece works with every other: an updater never sees the physics, a response never
 sees the updater. A run names its method as `"<model>+<updater>"`, e.g. `"q4+mma"`, so a
@@ -149,7 +149,7 @@ done. Subclass `ExternalOptimizer` and write one method, `run(flat, x0, iterate)
 Toporia runs your `run` in a background thread and takes one design per `iterate`, so the
 live display, the stopping rule and the Stop button work as for any other updater, and
 the library's verdict is written to `run.json`. The complete SciPy SLSQP adapter,
-[`plugins/updaters/scipy_slsqp.py`](../toporia_library/updaters/scipy_slsqp.py), is the
+[`toporia_library/updaters/scipy_slsqp.py`](../toporia_library/updaters/scipy_slsqp.py), is the
 template:
 
 ```python
@@ -389,7 +389,7 @@ finishes and then stays put, and a short run.
 are a solver setting:
 `{"path": "filters[1].eta", "values": [0.75, 0.5, 0.25], "combine": "worst"}`
 evaluates every design eroded, intermediate and dilated, and minimises the worst. See
-[`framework/parts/variants.py`](../toporia_core/framework/parts/variants.py).
+[`toporia_core/framework/parts/variants.py`](../toporia_core/framework/parts/variants.py).
 
 ## A post-processor
 
@@ -495,11 +495,11 @@ class MyModel(AssembledModel):
 ```
 
 The filters, the responses and every updater then work with it.
-[`plugins/physics/q4_plane_stress.py`](../toporia_library/physics/q4_plane_stress.py) is the
-reference engine in 2-D, [`plugins/physics/h8_solid.py`](../toporia_library/physics/h8_solid.py)
+[`toporia_library/physics/q4_plane_stress.py`](../toporia_library/physics/q4_plane_stress.py) is the
+reference engine in 2-D, [`toporia_library/physics/h8_solid.py`](../toporia_library/physics/h8_solid.py)
 in 3-D. A physics that brings its own gradients (a pyMOTO network, an AD
 framework) can instead be a whole `Model` — see
-[`plugins/models/pymoto_elastic.py`](../toporia_library/models/pymoto_elastic.py).
+[`toporia_library/models/pymoto_elastic.py`](../toporia_library/models/pymoto_elastic.py).
 
 ## 2-D, 3-D, or both
 
@@ -541,7 +541,7 @@ use_when = "For cast or moulded parts: no undercuts along the draw direction, so
 
 The help window shows it as "When to use it". Below it, "Works with" is written for you
 from the declarations above (dimensions, objectives and constraints, `needs_element_densities`,
-`accepts_filters` and so on; see [`plugins/compatibility.py`](../toporia_library/compatibility.py)),
+`accepts_filters` and so on; see [`toporia_library/compatibility.py`](../toporia_library/compatibility.py)),
 so keep those honest and the help stays right. "Try it in these presets" lists the presets
 whose description names your plugin; add a preset that exercises it, since
 `tests/plugins/test_compatibility.py` requires one for every plugin.
@@ -573,8 +573,8 @@ For signed point output, provide `POINT_DISPLACEMENT` and implement
 `probe_displacement(state, case, probe)`. The probe is opaque to responses and
 must be usable as a virtual load in `adjoint`. Together with `STRESS`'s existing
 `mutual_energy`, this supports output-displacement gradients without a response
-indexing backend DOFs. See `plugins/physics/q4_mechanism.py` and
-`plugins/responses/output_displacement.py`. Both feature/interface names are
+indexing backend DOFs. See `toporia_library/physics/q4_mechanism.py` and
+`toporia_library/responses/output_displacement.py`. Both feature/interface names are
 exported through `toporia_core.api`.
 
 ## Packaging, outside this repository

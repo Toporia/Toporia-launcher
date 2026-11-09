@@ -188,7 +188,7 @@ python tests/golden/regenerate_baselines.py mbb_oc
 - **Optional packages are imported inside your methods, and declared:**
   `dependencies = ("nlopt",)`. Where the package is missing, the GUI greys the part out with
   the install command, instead of failing part-way through a run.
-- **`framework/` imports nothing from the rest of Toporia.** To change an interface, add an
+- **`toporia_core/framework/` imports nothing from the rest of Toporia.** To change an interface, add an
   optional method with a default rather than change an existing one; every plugin is
   written against it.
 - **Plugins in your own package** need no change here at all. Import from `toporia_core.api` and
@@ -202,6 +202,6 @@ python tests/golden/regenerate_baselines.py mbb_oc
 | the layers and the life of a run | [toporia_core/README.md](../toporia_core/README.md) |
 | every interface a part implements | [toporia_core/framework/README.md](../toporia_core/framework/README.md) |
 | the loop, the stopping rule, what a run writes | [toporia_core/engine/README.md](../toporia_core/engine/README.md) |
-| the GUI and the command line | [toporia/apps/README.md](../toporia_gui/README.md) |
+| the GUI and the command line | [toporia_gui/README.md](../toporia_gui/README.md) |
 | every kind of part, with a worked example | [writing-plugins.md](writing-plugins.md) |
 | what exists in the field, and what is here | [toporia_library/README.md](../toporia_library/README.md) |

@@ -21,8 +21,8 @@ State units, ranges, defaults, input/output meaning and any approximations.
 For example, a filter implements `forward(x)` and
 `backward(x_in, sensitivity)`; `setup(problem, solver)` prepares its mesh-dependent
 state. Set `exact_adjoint` accurately and implement `backward_volume` separately
-only when its volume derivative differs. See `plugins/filters/density.py` and
-`framework/parts/filter.py` for the existing contracts and examples.
+only when its volume derivative differs. See `toporia_library/filters/density.py` and
+`toporia_core/framework/parts/filter.py` for the existing contracts and examples.
 
 ## Discovery and validation
 
@@ -45,7 +45,7 @@ the separately planned integration work; this GUI change does not merge branches
 
 ## Nested execution
 
-`framework/problem/workflow.py` defines the portable tree: optimization leaves,
+`toporia_core/framework/problem/workflow.py` defines the portable tree: optimization leaves,
 sequential containers and parallel containers. IDs are unique safe names;
 unknown kinds, malformed children and unsupported depth/size are rejected.
 Each optimization records solver settings and allowed scenario overrides.

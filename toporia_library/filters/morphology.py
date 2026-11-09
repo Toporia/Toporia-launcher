@@ -1,4 +1,4 @@
-# plugins/filters/morphology.py — MorphologyFilter (smooth erode, dilate, open, close)
+# toporia_library/filters/morphology.py — MorphologyFilter (smooth erode, dilate, open, close)
 #
 # Sigmund's morphology-based black-and-white filters.  Where the density filter
 # takes a weighted MEAN of the neighbourhood, these take a smooth MAXIMUM

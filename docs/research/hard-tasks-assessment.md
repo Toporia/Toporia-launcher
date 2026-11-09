@@ -12,13 +12,13 @@ showcase), as in the earlier table. It is a planning range, not a measurement.
 
 | Layer | Assumes one scalar field on a structured grid? |
 | :-- | :-- |
-| Engine loop, schedules, stopping rule (`engine/loop.py`) | **No.** It sees an `OptimizationMethod` and a density array; only the result images and CSV expect a 2-D or 3-D grid. |
-| `Model`, `Evaluation`, `Updater` (`framework/parts`) | **No.** A design may have any shape; all 19 updaters work element-wise or on the flat view, and none reads the mesh. |
+| Engine loop, schedules, stopping rule (`toporia_core/engine/loop.py`) | **No.** It sees an `OptimizationMethod` and a density array; only the result images and CSV expect a 2-D or 3-D grid. |
+| `Model`, `Evaluation`, `Updater` (`toporia_core/framework/parts`) | **No.** A design may have any shape; all 19 updaters work element-wise or on the flat view, and none reads the mesh. |
 | `ComposedMethod`, `VariantModel` | **No.** Both combine models through `evaluate()` alone. |
 | `Representation` | Partly. It returns *one* element field; 5 of 6 representations use grid coordinates. |
 | Filters | Partly. 7 of 16 use grid offsets (`neighbour_matrix`, PDE stencils, the fabrication filters' build direction). |
 | `Physics` | **Yes.** Fields have the density's shape; 9 of 10 engines assemble Q4/H8 on the grid. |
-| `BaseProblem` (`framework/problem/mesh.py`) | **Yes.** It promises `nelx`, `nely`, node masks of shape `(nely+1, nelx+1)`. |
+| `BaseProblem` (`toporia_core/framework/problem/mesh.py`) | **Yes.** It promises `nelx`, `nely`, node masks of shape `(nely+1, nelx+1)`. |
 | Interpolations (5) and most responses (10 of 12) | **No.** They read only the density and the physics' answers. |
 
 The core loop and the optimiser side are already general. The grid assumption

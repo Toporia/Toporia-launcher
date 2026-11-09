@@ -1,10 +1,16 @@
-# plugins/models/h8.py — Toporia's own 3-D solver as a model.
+# toporia_library/models/h8.py — Toporia's own 3-D solver as a model.
 #
 # The 3-D counterpart of q4.py: element densities, the filter pipeline, a
 # material law, and linear elasticity on eight-node bricks
-# (plugins/physics/h8_solid.py).  It needs a scenario with a depth (Lz > 0);
+# (toporia_library/physics/h8_solid.py).  It needs a scenario with a depth (Lz > 0);
 # every updater, filter, schedule, variant and post-processor that works in
 # 3-D works with it.
+#
+#
+# The maths, in toporia_library/physics/h8_solid.py: K(ρ) u_k = f_k with
+# K = Σ_e E(ρ_e) K_e⁰ (8-node bricks, 2 × 2 × 2 Gauss points), C = Σ_k w_k f_kᵀ u_k and
+# ∂C/∂ρ_e = −E'(ρ_e) Σ_k w_k u_ekᵀ K_e⁰ u_ek.  Small meshes solve directly; large ones by
+# conjugate gradients with algebraic multigrid (pyamg) when it is installed.
 
 from toporia_library.physics.h8_solid import H8Solid
 

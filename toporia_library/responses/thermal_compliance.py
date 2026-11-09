@@ -1,4 +1,4 @@
-# plugins/responses/thermal_compliance.py — thermal compliance of a conduction problem.
+# toporia_library/responses/thermal_compliance.py — thermal compliance of a conduction problem.
 #
 # C = Σ_k w_k · q_kᵀ T_k, the load-weighted heat input times the temperature it
 # produces.  For uniform generation it is proportional to the average

@@ -1,4 +1,4 @@
-# plugins/updaters/nullspace_optimizer.py — Feppon's null-space optimiser, wrapped as an updater.
+# toporia_library/updaters/nullspace_optimizer.py — Feppon's null-space optimiser, wrapped as an updater.
 #
 # The null-space method (Feppon, Allaire & Dapogny) was designed for level-set
 # and shape optimisation with many constraints.  It integrates an ODE: at each
@@ -15,7 +15,7 @@
 # budget) as well as the volume budget alone.
 #
 # The library runs its own loop (nlspace_solve), so this is an ExternalOptimizer
-# (framework/optimisers/external_loop.py), shaped like scipy_slsqp.py:
+# (toporia_core/framework/optimisers/external_loop.py), shaped like scipy_slsqp.py:
 #
 #     flat.x0, f, df            ──>  Optimizable.x0, J, dJ        ──> nlspace_solve(problem, params)
 #     flat.g, flat.dg  (g <= 0) ──>  H, dH   (inequalities h <= 0, as the library wants)

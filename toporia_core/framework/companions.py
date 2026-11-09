@@ -1,4 +1,4 @@
-# framework/companions.py — more physics on the same design field (To do item 9).
+# toporia_core/framework/companions.py — more physics on the same design field (To do item 9).
 #
 # A scenario can name physics besides the main one, each with its own material law:
 #
@@ -17,7 +17,7 @@
 #     variables = [{"name": "heat", "type": "thermal_compliance", "physics": "q4_heat"}]
 #
 # and from there it becomes an objective, a term of a combined objective or a constraint
-# (framework/variables.py, the "variable" response).  The physics are combined through the
+# (toporia_core/framework/variables.py, the "variable" response).  The physics are combined through the
 # objective, not coupled: one field does not feed another (that is "coupled solving",
 # To do section 6).
 #

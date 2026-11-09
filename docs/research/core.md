@@ -185,16 +185,16 @@ Code: [composition.py](../../toporia_core/framework/parts/composition.py),
 
 | Module / area | What it supports |
 | :-- | :-- |
-| `framework/problem/` | Job descriptions, structured mesh construction, JSON and parameter paths. |
-| `framework/params.py` | Parameter defaults, ranges, labels, units and validation. |
-| `framework/registry.py` | Discovery, stable plugin names, aliases and optional dependencies. |
-| `framework/parts/` | Contracts; abstract interfaces are not additional implemented algorithms. |
-| `framework/optimisers/` | Flat-vector adapter, fixed-variable removal, caching and external-loop lifecycle. |
-| `engine/pipeline.py` | Compatibility checks and descriptions of selected parts. |
-| `engine/loop.py` | Execution, iteration counting, schedules, callbacks and stopping. |
-| `engine/records.py` | History, provenance and constraint reports. |
-| `apps/` | GUI/CLI interaction, plotting and help presentation. |
-| `plugins/problems/` | Preset recipes and research descriptions. |
+| `toporia_core/framework/problem/` | Job descriptions, structured mesh construction, JSON and parameter paths. |
+| `toporia_core/framework/params.py` | Parameter defaults, ranges, labels, units and validation. |
+| `toporia_core/framework/registry.py` | Discovery, stable plugin names, aliases and optional dependencies. |
+| `toporia_core/framework/parts/` | Contracts; abstract interfaces are not additional implemented algorithms. |
+| `toporia_core/framework/optimisers/` | Flat-vector adapter, fixed-variable removal, caching and external-loop lifecycle. |
+| `toporia_core/engine/pipeline.py` | Compatibility checks and descriptions of selected parts. |
+| `toporia_core/engine/loop.py` | Execution, iteration counting, schedules, callbacks and stopping. |
+| `toporia_core/engine/records.py` | History, provenance and constraint reports. |
+| `toporia_gui/` | The desktop app: interaction, plotting and help presentation. |
+| `toporia_library/problems/` | Preset recipes and research descriptions. |
 | Shared/private helpers | Sparse neighborhoods, element assembly and common parameter declarations. |
 | `checks/`, `tests/`, `experiments/` | Conformance, regression, independent numerical checks and reproduction evidence. |
 

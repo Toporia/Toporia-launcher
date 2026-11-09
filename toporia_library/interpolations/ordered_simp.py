@@ -1,4 +1,4 @@
-# plugins/interpolations/ordered_simp.py — ordered SIMP: several materials, one variable per element.
+# toporia_library/interpolations/ordered_simp.py — ordered SIMP: several materials, one variable per element.
 #
 # The materials are ordered by density, ρ_1 = 0 (void) < ρ_2 < … < ρ_m = 1 (the
 # solid), each with a Young's modulus (as a fraction of E0) f_1 = 0 < … < f_m = 1.

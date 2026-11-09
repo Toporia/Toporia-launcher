@@ -1,4 +1,4 @@
-# plugins/updaters/conlin.py — CONLIN, convex linearisation.
+# toporia_library/updaters/conlin.py — CONLIN, convex linearisation.
 #
 # MMA's predecessor, and MMA with the asymptotes taken away.  Every function
 # (the objective and each constraint) is linearised not in x but, variable by
@@ -28,7 +28,7 @@
 # warm-started from the last iteration.  That handles any number of constraints,
 # which a bisection on one multiplier (mma.py) does not.
 #
-# It works on the model's flat view (framework/optimisers/flat_view.py): free
+# It works on the model's flat view (toporia_core/framework/optimisers/flat_view.py): free
 # variables only, the volume budget as the first constraint, then the
 # scenario's, and the objective rescaled to start at 10 so it is comparable with
 # the normalised constraints.  Nothing damps the step but the move limit.

@@ -1,4 +1,4 @@
-# plugins/representations/element_density.py — one density per element.
+# toporia_library/representations/element_density.py — one density per element.
 #
 # The classic representation (Bendsøe 1989; Sigmund's 99-line code): the design
 # variables ARE the element densities, so density() and backward() are the
@@ -8,6 +8,11 @@
 # The start design is the volume fraction everywhere (the usual choice, which
 # meets the budget from the first iteration) or a full domain (what BESO and
 # volume minimisation under a stress limit start from).
+#
+#
+# The map is the identity: x = z, so backward(z, s) = s, the bounds are the problem's
+# per-element bounds (0 in holes, 1 in forced-solid rings), and the start is uniform at
+# the volume fraction (clipped to the bounds) or full.
 
 import numpy as np
 

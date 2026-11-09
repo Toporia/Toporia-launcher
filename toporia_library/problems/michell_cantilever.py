@@ -1,4 +1,4 @@
-# plugins/problems/michell_cantilever.py — a point load carried to a circular support.
+# toporia_library/problems/michell_cantilever.py — a point load carried to a circular support.
 #
 # Michell (1904) found the stiffest frame that carries a point load to a rigid
 # circular support: two families of orthogonal spirals (equiangular spirals

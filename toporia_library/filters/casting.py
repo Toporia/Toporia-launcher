@@ -1,4 +1,4 @@
-# plugins/filters/casting.py - CastingFilter (no undercuts along a draw direction)
+# toporia_library/filters/casting.py - CastingFilter (no undercuts along a draw direction)
 #
 # A cast part can be pulled out of a one-piece mould along the draw direction
 # only if, on every line parallel to it, the material is one solid run that

@@ -1,4 +1,4 @@
-# apps/gui/execution.py — Qt process lifecycle and result ownership for MainWindow.
+# toporia_gui/execution.py — Qt process lifecycle and result ownership for MainWindow.
 # Immutable input snapshots and terminal session records make interrupted work
 # reviewable. A separate headless process keeps editing/plotting in the Qt thread.
 

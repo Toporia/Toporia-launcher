@@ -1,4 +1,4 @@
-# plugins/physics/q4_heat.py — 2-D steady heat conduction on bilinear Q4 elements.
+# toporia_library/physics/q4_heat.py — 2-D steady heat conduction on bilinear Q4 elements.
 #
 # The scalar counterpart of q4_plane_stress.py: the same structured grid and
 # the same element numbering, but one temperature per node instead of two

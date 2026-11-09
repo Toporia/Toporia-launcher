@@ -1,4 +1,4 @@
-# framework/parts/filter.py — a filter, and a chain of them.
+# toporia_core/framework/parts/filter.py — a filter, and a chain of them.
 #
 # A filter maps design variables to physical densities and carries the chain
 # rule back the other way.  Filters stack into a FilterChain, so a density
@@ -20,7 +20,7 @@
 #                                 same as backward() unless a filter deliberately
 #                                 treats volume differently (the sensitivity filter)
 #
-# The conformance test (toporia/checks) checks backward() against finite
+# The conformance test (toporia_core/checks) checks backward() against finite
 # differences, unless the filter declares exact_adjoint = False.
 
 from abc import ABC, abstractmethod
@@ -46,7 +46,7 @@ class Filter(ABC):
     exact_adjoint = True
     #: The problem dimensions it works in (2 for plane problems, 3 for a box); None means any.
     dims = (2,)
-    #: Parameters a schedule may change during a run (framework/parts/schedule.py).
+    #: Parameters a schedule may change during a run (toporia_core/framework/parts/schedule.py).
     schedulable = ()
     #: Cumulative manufacturing maps can saturate a conventional gray start.
     #: Element-density models then bisect its amplitude to the physical budget.

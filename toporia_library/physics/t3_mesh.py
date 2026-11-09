@@ -1,4 +1,4 @@
-# plugins/physics/t3_mesh.py — an unstructured triangle mesh and linear triangle elements (Wave 5).
+# toporia_library/physics/t3_mesh.py — an unstructured triangle mesh and linear triangle elements (Wave 5).
 #
 # The structured grid follows the axes: a round hole becomes a staircase of squares.  An
 # unstructured mesh follows the geometry.  This one is built in three steps:

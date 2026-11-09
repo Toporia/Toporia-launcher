@@ -1,4 +1,4 @@
-# plugins/updaters/beso_hard.py — hard-kill BESO.
+# toporia_library/updaters/beso_hard.py — hard-kill BESO.
 #
 # Same ranking, same evolutionary volume schedule, same addition limit and the
 # same convergence test as soft-kill BESO (beso.py, which this subclasses and

@@ -9,7 +9,7 @@ E(ρ) = Emin + f(ρ) · (E0 − Emin),      f(0) = 0,  f(1) = 1,
 
 shaped so that grey material is not worth its cost and the optimum is driven towards
 black and white. The law is a part of its own — see
-[`framework/parts/interpolation.py`](../../toporia_core/framework/parts/interpolation.py) — chosen in the
+[`toporia_core/framework/parts/interpolation.py`](../../toporia_core/framework/parts/interpolation.py) — chosen in the
 solver like the filters, `solver.interpolation = {"type": "ramp", "q": 8}`, and shown in
 the GUI's **Material law** panel. Any physics engine that declares `uses_interpolation`
 (the Q4 engine does) takes it; models that bring their own (pyMOTO) or none (the level

@@ -1,4 +1,4 @@
-# plugins/responses/dynamic_compliance.py — compliance under a harmonic load.
+# toporia_library/responses/dynamic_compliance.py — compliance under a harmonic load.
 #
 # A load f cos(ωt) of driving frequency ω makes the structure vibrate with the
 # amplitude u of  (K − ω² M) u = f.  The dynamic compliance

@@ -46,7 +46,7 @@ relaxed to hide it. Do not translate “no pending census rows” into “nothin
   and keep shared SIMP/model formulas consistent with the selected configuration.
   Long setup text currently includes Python-style dataclass/dictionary representations;
   readability and per-preset explanations can be improved without changing recipes.
-- Audit the new public description fallback in `plugins/problems/__init__.py`.
+- Audit the new public description fallback in `toporia_library/problems/__init__.py`.
   Explicit DESCRIPTION wins, known originals receive generated help, and unknown
   presets can still return None. Keep this compatible with future/plugin presets.
 - Inspect actual Help windows in normal themes and narrow windows. Qt equation

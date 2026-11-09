@@ -1,6 +1,6 @@
-# toporia/api.py — what a plugin may import.  Everything here is kept stable.
+# toporia_core/api.py — what a plugin may import.  Everything here is kept stable.
 #
-# A plugin that lives in another package (see framework/registry.py for how it is
+# A plugin that lives in another package (see toporia_core/framework/registry.py for how it is
 # found) should import from this module only:
 #
 #     from toporia_core.api import Updater, Param
@@ -27,7 +27,7 @@
 #   method     OptimizationMethod            toporia.methods
 #
 # A physics engine (Physics) is not registered on its own: declare a model on
-# it with AssembledModel, three lines (see plugins/models/q4.py).
+# it with AssembledModel, three lines (see toporia_library/models/q4.py).
 
 from toporia_core.checks import conformance
 from toporia_core.framework.optimisers.external_loop import ExternalOptimizer, Verdict

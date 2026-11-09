@@ -5,9 +5,9 @@ Generated from every Python module under `toporia/`. A supporting module defines
 | Module | Classification | Public numerical function IDs |
 | :-- | :-- | :-- |
 | [toporia_core/__init__.py](../../toporia_core/__init__.py) | supporting module | - |
-| [toporia/__main__.py](../../toporia_core/__main__.py) | supporting module | - |
+| [toporia_core/__main__.py](../../toporia_core/__main__.py) | supporting module | - |
 | [toporia_core/api.py](../../toporia_core/api.py) | supporting module | - |
-| [toporia/apps/__init__.py](../../toporia_gui/__init__.py) | supporting module | - |
+| [toporia_gui/__init__.py](../../toporia_gui/__init__.py) | supporting module | - |
 | [toporia_core/cli.py](../../toporia_core/cli.py) | supporting module | - |
 | [toporia_gui/__init__.py](../../toporia_gui/__init__.py) | supporting module | - |
 | [toporia_gui/app.py](../../toporia_gui/app.py) | supporting module | - |
@@ -44,7 +44,7 @@ Generated from every Python module under `toporia/`. A supporting module defines
 | [toporia_gui/window.py](../../toporia_gui/window.py) | supporting module | - |
 | [toporia_gui/workflow_ui.py](../../toporia_gui/workflow_ui.py) | supporting module | - |
 | [toporia_gui/worker.py](../../toporia_gui/worker.py) | supporting module | - |
-| [toporia/apps/research_render.py](../../toporia_gui/research_render.py) | supporting module | - |
+| [toporia_gui/research_render.py](../../toporia_gui/research_render.py) | supporting module | - |
 | [toporia_core/checks/__init__.py](../../toporia_core/checks/__init__.py) | supporting module | - |
 | [toporia_core/checks/common.py](../../toporia_core/checks/common.py) | supporting module | - |
 | [toporia_core/checks/filter.py](../../toporia_core/checks/filter.py) | supporting module | - |

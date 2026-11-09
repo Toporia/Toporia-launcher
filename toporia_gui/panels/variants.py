@@ -1,10 +1,10 @@
-# apps/gui/panels/variants.py — evaluate every design in several versions (solver.variants).
+# toporia_gui/panels/variants.py — evaluate every design in several versions (solver.variants).
 #
 # One parameter path, a list of values, and how the versions are joined: the
 # worst case (robust design) or the mean (an expected value).  The button fills
 # in the classic robust formulation — eroded, intermediate and dilated
 # projections, Wang, Lazarov & Sigmund 2011 — on the first Heaviside filter.
-# See framework/parts/variants.py.
+# See toporia_core/framework/parts/variants.py.
 
 from PySide6.QtCore import Signal
 from PySide6.QtWidgets import QCheckBox, QComboBox, QFormLayout, QLineEdit, QPushButton, QVBoxLayout, QWidget

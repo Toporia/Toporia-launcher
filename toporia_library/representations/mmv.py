@@ -5,6 +5,16 @@ rotate, resize, intersect and merge. This own paper-based variant reuses MMC's
 constant-thickness superellipse and exact Jacobian, with the sign reversed.
 It does not implement the 2017 paper's B-spline surfaces or FE DOF removal.
 The number of holes is fixed; new holes cannot nucleate during a run.
+
+The maths: hole i has the level function phi_i of MMC's superellipse (centre,
+half-length, half-thickness, angle; representations/mmc.py), positive inside the
+hole, and H is MMC's smoothed Heaviside. The element density is
+
+    rho = prod_i (1 - H(phi_i))         solid everywhere except inside the holes
+    d rho / d phi_i = -H'(phi_i) prod_{j != i} (1 - H(phi_j))
+
+computed with prefix and suffix products, so a fully void overlap never divides
+by zero. The chain rule through phi_i to the hole parameters is MMC's.
 """
 
 import numpy as np

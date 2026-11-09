@@ -1,4 +1,4 @@
-# engine/modes/sweep.py — run a grid of optimisations, varying one or two parameters.
+# toporia_core/engine/modes/sweep.py — run a grid of optimisations, varying one or two parameters.
 #
 #   sweep     one parameter, linearly spaced over an n_rows × n_cols grid
 #             (e.g. volfrac from 0.08 to 0.60 in a 3 × 3 grid)
@@ -6,7 +6,7 @@
 #             to see how they interact (e.g. volfrac × mesh resolution m)
 #
 # Any parameter path works ("volfrac", "interpolation.penal", "filters[1].beta",
-# "load_cases[0].Fa"; see framework/problem/run.py).  Each cell is a complete
+# "load_cases[0].Fa"; see toporia_core/framework/problem/run.py).  Each cell is a complete
 # run with its own output folder; the final designs are then laid out as one
 # image, sweep_grid.png or sweep2d_grid.png.
 

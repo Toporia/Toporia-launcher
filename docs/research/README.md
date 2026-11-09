@@ -73,8 +73,8 @@ of paper review or successful reproduction.
 
 ## GUI handoff
 
-This branch owns `apps/research_render.py`, `apps/gui/research_help.py` and the
-small `problem_topic()` hook in `apps/gui/help.py`; it does not modify
+This branch owns `toporia_gui/research_render.py`, `toporia_gui/research_help.py` and the
+small `problem_topic()` hook in `toporia_gui/help.py`; it does not modify
 `toporia-gui`. `problem_description(name)` returns the optional plain description.
 The existing `problem_info(name)` tuple stays compatible.
 

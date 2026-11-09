@@ -1,7 +1,7 @@
-# plugins/physics/q4_buckling.py — 2-D Q4 plane stress plus linearised buckling.
+# toporia_library/physics/q4_buckling.py — 2-D Q4 plane stress plus linearised buckling.
 #
 # Q4PlaneStress (q4_plane_stress.py) with one more question answered, the
-# BUCKLING feature of framework/parts/physics.py.  Nothing of the parent changes;
+# BUCKLING feature of toporia_core/framework/parts/physics.py.  Nothing of the parent changes;
 # this subclass only adds the geometric stiffness and the eigenproblem.
 #
 # Method (the formulation of Ferrari, Sigmund & Guest, SMO 63 (2021) 3045-3066,

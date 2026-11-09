@@ -1,8 +1,19 @@
-# plugins/filters/symmetry.py - SymmetryFilter (mirror-average density constraint)
+# toporia_library/filters/symmetry.py - SymmetryFilter (mirror-average density constraint)
 #
 # Enforces geometric symmetry by replacing the incoming density field with the
 # average of itself and its mirrored copy. The operation is linear and
 # self-adjoint, so the backward pass is the same averaging operation.
+#
+#
+# For a field ρ on nely × nelx elements:
+#
+#     left_right   ρ̃(i, j) = ½ (ρ(i, j) + ρ(i, nelx − 1 − j))
+#     bottom_top   ρ̃(i, j) = ½ (ρ(i, j) + ρ(nely − 1 − i, j))
+#     both         the two, one after the other
+#
+# The map P is linear with Pᵀ = P (an average with a permutation), so the adjoint of
+# the sensitivity is the same average: ∂J/∂ρ = P ∂J/∂ρ̃.  A symmetric design results
+# whatever the loads; mirrored loads are the user's choice.
 
 from toporia_core.framework.params import Param
 from toporia_core.framework.parts.filter import Filter

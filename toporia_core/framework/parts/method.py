@@ -1,4 +1,4 @@
-# framework/parts/method.py — the interface every optimisation algorithm must satisfy.
+# toporia_core/framework/parts/method.py — the interface every optimisation algorithm must satisfy.
 #
 # This module deliberately contains no mathematics and imports nothing from
 # toporia_library.  It is the whole agreement between the engine (which drives
@@ -92,7 +92,7 @@ class OptimizationMethod(ABC):
     it.
 
     Most gradient-based methods are not written against this class directly
-    but assembled from a Model and an Updater (framework/parts/composition.py).
+    but assembled from a Model and an Updater (toporia_core/framework/parts/composition.py).
 
     A method also describes itself through class attributes.  The registry
     (toporia_library.methods.METHODS) finds every subclass with a `name`, the
@@ -113,7 +113,7 @@ class OptimizationMethod(ABC):
     #: Tunable parameters, as framework.params.Param declarations.
     params = ()
     capabilities = Capabilities()
-    #: Method parameters a schedule may change during a run (framework/parts/schedule.py).
+    #: Method parameters a schedule may change during a run (toporia_core/framework/parts/schedule.py).
     schedulable = ()
 
     @classmethod

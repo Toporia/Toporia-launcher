@@ -1,4 +1,4 @@
-# framework/problem/run.py — one complete, runnable job: a Scenario, a Solver and an Output.
+# toporia_core/framework/problem/run.py — one complete, runnable job: a Scenario, a Solver and an Output.
 #
 #     Scenario  (what is solved)  ─┐
 #     Solver    (how it is solved) ─┼─>  Run  ─>  engine.loop.run_single(run)
@@ -31,7 +31,7 @@ from toporia_core.framework.problem.solver import Solver
 
 # Resolved once at import time so results land in the repository's results/
 # folder regardless of where the terminal is opened.
-PROJECT_ROOT = Path(__file__).resolve().parents[3]   # toporia/framework/problem/run.py
+PROJECT_ROOT = Path(__file__).resolve().parents[3]   # toporia_core/framework/problem/run.py
 
 
 @dataclass(frozen=True)
@@ -45,7 +45,7 @@ class Output:
     save_every: int = 10   # intermediate density PNG every N iterations (0 = final only)
     # What is made of the final design, in order, each {"type": <name>, <param>: <value>}:
     # a black-and-white version, checks, exports.  Empty: nothing.  See
-    # framework/parts/postprocess.py.
+    # toporia_core/framework/parts/postprocess.py.
     postprocess: list = field(default_factory=list)
 
 

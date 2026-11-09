@@ -1,8 +1,8 @@
-# plugins/updaters/scipy_minimize.py — SciPy's trust-constr, wrapped like scipy_slsqp.py.
+# toporia_library/updaters/scipy_minimize.py — SciPy's trust-constr, wrapped like scipy_slsqp.py.
 #
 # Same pattern as scipy_slsqp.py (the worked example in docs/writing-plugins.md): SciPy runs its own
-# loop, ExternalOptimizer (framework/optimisers/external_loop.py) runs that loop in a background
-# thread on the flat view (framework/optimisers/flat_view.py), and the class below only calls
+# loop, ExternalOptimizer (toporia_core/framework/optimisers/external_loop.py) runs that loop in a background
+# thread on the flat view (toporia_core/framework/optimisers/flat_view.py), and the class below only calls
 # scipy.optimize.minimize the way SciPy's documentation says to.
 #
 #     Toporia                        this adapter                    SciPy

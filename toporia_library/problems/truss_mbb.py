@@ -1,4 +1,4 @@
-# plugins/problems/truss_mbb.py — the MBB beam as a truss, made into a clean solid.
+# toporia_library/problems/truss_mbb.py — the MBB beam as a truss, made into a clean solid.
 #
 # The MBB beam's scenario solved by the ground-structure truss method (methods/truss.py):
 # nodes every 5 mm, bars to neighbours up to two steps away, sized for minimum compliance

@@ -1,4 +1,4 @@
-# apps/gui/panels/method.py — the core parameters and the method, chosen part by part.
+# toporia_gui/panels/method.py — the core parameters and the method, chosen part by part.
 #
 # CoreParamsGroup holds the mesh resolution and volume fraction, then the
 # method — a physics model and an updater (any pair), or a whole method —

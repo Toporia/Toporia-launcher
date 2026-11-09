@@ -1,4 +1,4 @@
-# plugins/postprocessors/export_stl.py — the design as a closed solid, as STL.
+# toporia_library/postprocessors/export_stl.py — the design as a closed solid, as STL.
 #
 # Every solid element of the black-and-white design becomes a block — in 3-D
 # the element itself, in 2-D the element extruded to the chosen thickness —

@@ -1,4 +1,4 @@
-# apps/gui/panels/loads.py — the load cases: one row per force (magnitude, angle, weight).
+# toporia_gui/panels/loads.py — the load cases: one row per force (magnitude, angle, weight).
 
 
 from PySide6.QtCore import Signal

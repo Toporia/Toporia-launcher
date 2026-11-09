@@ -1,4 +1,4 @@
-# plugins/filters/pde.py — PdeFilter (the PDE / Helmholtz density filter)
+# toporia_library/filters/pde.py — PdeFilter (the PDE / Helmholtz density filter)
 #
 # Instead of averaging over a neighbour list, the design field is smoothed by
 # solving a screened-Poisson (Helmholtz) equation with Neumann boundaries:

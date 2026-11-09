@@ -1,4 +1,4 @@
-# apps/gui/panels/design.py — the Design section: what the design is, in how many dimensions, how finely meshed.
+# toporia_gui/panels/design.py — the Design section: what the design is, in how many dimensions, how finely meshed.
 #
 #   Representation  what the design variables are (element densities, moving
 #                   morphable components, ...), with its own parameters

@@ -1,4 +1,4 @@
-# engine/modes/methods.py — several methods on the same problem: which does best?
+# toporia_core/engine/modes/methods.py — several methods on the same problem: which does best?
 #
 #   compare_methods   run each method on one scenario, mesh and stopping rule;
 #                     one image of every final design, one table of numbers
@@ -224,7 +224,7 @@ def _run_method(name, base_config, folder, on_iteration):
 
 
 def referee_compliance(run, density):
-    """Compliance of a final design measured the same way for every method (plugins/postprocessors/_measure.py)."""
+    """Compliance of a final design measured the same way for every method (toporia_core/engine/measure.py)."""
     return measure.referee_compliance(make_problem(run.scenario, run.solver.m), density,
                                       heat_source=run.solver.method_params.get("heat_source"))
 

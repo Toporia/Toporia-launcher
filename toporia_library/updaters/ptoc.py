@@ -1,4 +1,4 @@
-# plugins/updaters/ptoc.py — proportional topology optimisation, the original PTOc algorithm.
+# toporia_library/updaters/ptoc.py — proportional topology optimisation, the original PTOc algorithm.
 #
 # Connects to the framework as an Updater.  Each iteration hands the whole
 # material budget out again, in proportion to each element's compliance, and
@@ -20,7 +20,7 @@
 # Checked against the unchanged author code (PLOS ONE S2, PTOc_mbb.m, captured
 # in tests/references/paper_ptoc.json): on the 120 x 40 half-MBB of Figure 3 all
 # 169 printed compliances agree to their two printed decimals and the final
-# density agrees to 1e-8.  plugins/updaters/pto.py is a different, sensitivity-
+# density agrees to 1e-8.  toporia_library/updaters/pto.py is a different, sensitivity-
 # proxy variant and is kept as such.
 #
 # Reference: E. Biyikli, A. C. To, "Proportional topology optimization: a new

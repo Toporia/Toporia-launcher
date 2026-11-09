@@ -1,4 +1,4 @@
-"""test_scipy_minimize.py — the SciPy trust-constr updater in plugins/updaters/scipy_minimize.py.
+"""test_scipy_minimize.py — the SciPy trust-constr updater in toporia_library/updaters/scipy_minimize.py.
 
 It must meet the full conformance check, including the MBB benchmark.  (Gradient-free COBYQA and
 COBYLA were tried and cannot: about +50 % over OC on the benchmark, so they are not registered.)

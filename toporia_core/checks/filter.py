@@ -1,4 +1,4 @@
-# checks/filter.py — is a filter sound?
+# toporia_core/checks/filter.py — is a filter sound?
 #
 # Output shape and range, its adjoint against finite differences (unless it
 # declares exact_adjoint = False), and a short run behind the density filter.

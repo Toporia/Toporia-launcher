@@ -1,4 +1,4 @@
-# plugins/problems/l_bracket_stress.py — the L-bracket with a stress limit on every element.
+# toporia_library/problems/l_bracket_stress.py — the L-bracket with a stress limit on every element.
 #
 # The geometry of l_bracket.py; the task is the one the benchmark exists for:
 # the lightest design whose von Mises stress stays under a limit in EVERY

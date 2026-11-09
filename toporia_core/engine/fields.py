@@ -1,4 +1,4 @@
-# engine/fields.py — what the finite-element analysis of a finished design looks like, field by field.
+# toporia_core/engine/fields.py — what the finite-element analysis of a finished design looks like, field by field.
 #
 # analysis_fields(run, density) solves the run's physics once for the given design and
 # returns the fields a person wants to look at in colour: the stress, the strain energy,

@@ -1,4 +1,4 @@
-# plugins/schedules/_common.py — the values every schedule shares.
+# toporia_library/schedules/_common.py — the values every schedule shares.
 
 from toporia_core.framework.params import Param
 

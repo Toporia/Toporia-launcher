@@ -1,8 +1,8 @@
-# plugins/problems/cantilever_two_materials.py — a cantilever of two materials (DMO).
+# toporia_library/problems/cantilever_two_materials.py — a cantilever of two materials (DMO).
 #
 # The cantilever's scenario, but every element chooses between void, a stiff heavy material
 # (stiffness 1, mass 1) and a soft light one (stiffness 0.4, mass 0.3), through the
-# multi-material representation and the DMO law (plugins/interpolations/dmo.py).  The
+# multi-material representation and the DMO law (toporia_library/interpolations/dmo.py).  The
 # volume budget bounds the mass, so the light material is cheap: the optimum puts the
 # stiff material where the bending stress is high (top and bottom, near the support) and
 # the light one in the web.  A demonstration of several fields per element (Wave 5).

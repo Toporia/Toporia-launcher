@@ -1,4 +1,4 @@
-# apps/gui/preflight.py — actionable checks for a physical definition and method.
+# toporia_gui/preflight.py — actionable checks for a physical definition and method.
 # A rigid-body rank test diagnoses missing supports; it does not claim that every
 # disconnected design or future physics problem is well posed.
 

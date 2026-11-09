@@ -1,4 +1,4 @@
-# plugins/interpolations/dmo.py — discrete material optimisation: void or one of several materials.
+# toporia_library/interpolations/dmo.py — discrete material optimisation: void or one of several materials.
 #
 # Several fields per element (Wave 5).  The representation multi_material gives every
 # element a density ρ and one weight x_m ∈ [0, 1] per candidate material m = 1 … M.  The

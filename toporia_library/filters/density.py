@@ -1,4 +1,4 @@
-# plugins/filters/density.py — DensityFilter (spatial averaging filter)
+# toporia_library/filters/density.py — DensityFilter (spatial averaging filter)
 #
 # Weighted-average filter over a circular neighbourhood of radius rmin.
 # Enforces a minimum length scale and prevents checkerboard patterns.
@@ -7,6 +7,14 @@
 # Adjoint (backward): ds/dx  = H @ (ds/dx_phys / Hs)
 #
 # H is symmetric, so the adjoint equals the forward operator (up to 1/Hs scaling).
+#
+#
+# The weights are the cone of Bruns & Tortorelli (2001), as in top88:
+#
+#     H_ei = max(0, rmin − dist(e, i)),   Hs_e = Σ_i H_ei,   ρ̃_e = Σ_i H_ei x_i / Hs_e
+#
+# rmin is given in mm and converted to elements with the mesh resolution, so the
+# length scale does not change when the mesh is refined.
 
 import numpy as np
 from scipy.sparse import coo_matrix

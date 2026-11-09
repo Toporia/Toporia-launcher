@@ -1,4 +1,4 @@
-# plugins/physics/q4_orthotropic.py — plane stress with a fibre direction per element.
+# toporia_library/physics/q4_orthotropic.py — plane stress with a fibre direction per element.
 #
 # Several fields per element (Wave 5).  Every element is a fibre-reinforced lamina: stiff
 # along its fibres (E1 = E0), soft across them (E2), with shear modulus G12 and Poisson's

@@ -1,4 +1,4 @@
-# framework/problem/solver.py — HOW a scenario is solved.
+# toporia_core/framework/problem/solver.py — HOW a scenario is solved.
 #
 # A Solver names the method and holds everything that belongs to solving rather
 # than to the physical problem: the method's own parameters, the filter
@@ -6,7 +6,7 @@
 #
 # Two runs that share a scenario and differ only in their solver are a
 # benchmark — the comparison Toporia exists to make.  Solvers round-trip
-# through JSON (framework/problem/files.py) just like scenarios.
+# through JSON (toporia_core/framework/problem/files.py) just like scenarios.
 
 from dataclasses import dataclass, field
 
@@ -31,13 +31,13 @@ class Solver:
 
     # The material law for models whose physics interpolates stiffness from
     # density, {"type": <interpolation name>, <param>: <value>}; see
-    # framework/parts/interpolation.py.  Other models (pyMOTO's, the level
+    # toporia_core/framework/parts/interpolation.py.  Other models (pyMOTO's, the level
     # set) bring their own and ignore it.
     interpolation: dict = field(default_factory=lambda: {"type": "simp"})
 
     # What the design variables are, {"type": <representation name>, <param>: <value>}:
     # one density per element (the default), or e.g. the bars of moving
-    # morphable components; see framework/parts/representation.py.  It also
+    # morphable components; see toporia_core/framework/parts/representation.py.  It also
     # sets the start design.  Models that keep their own variables (pyMOTO's,
     # the level set) ignore it.
     representation: dict = field(default_factory=lambda: {"type": "element_density"})
@@ -50,7 +50,7 @@ class Solver:
     # Continuation: parameters that change during the run, each
     # {"path": <parameter path>, "type": <schedule name>, <param>: <value>},
     # e.g. {"path": "interpolation.penal", "type": "steps", "start": 1, "end": 3}.
-    # See framework/parts/schedule.py.  The engine does not stop on its
+    # See toporia_core/framework/parts/schedule.py.  The engine does not stop on its
     # tolerance while one is still moving.
     schedules: list = field(default_factory=list)
 
@@ -58,7 +58,7 @@ class Solver:
     # {"path": <parameter path>, "values": [...], "combine": "worst" | "mean",
     #  "nominal": <index>, "sharpness": 50}; empty means one version.  The robust
     # formulation is {"path": "filters[1].eta", "values": [0.75, 0.5, 0.25]}.
-    # See framework/parts/variants.py.
+    # See toporia_core/framework/parts/variants.py.
     variants: dict = field(default_factory=dict)
 
     # ── Discretisation ────────────────────────────────────────────────────────

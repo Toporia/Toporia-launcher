@@ -1,9 +1,9 @@
-# plugins/postprocessors/truss_solid.py — a clean solid from a truss: bars, joints, one outline.
+# toporia_library/postprocessors/truss_solid.py — a clean solid from a truss: bars, joints, one outline.
 #
 # A truss design (methods/truss.py) is bars between nodes.  To make it, every bar becomes a
 # capsule as wide as its area (2-D, unit thickness: width = a) or a rod of the same
 # cross-section (3-D: radius √(a/π)), and every node where bars meet gets a round joint as
-# large as its thickest bar (larger for a joint-mass node, plugins/physics/truss_nodes.py).
+# large as its thickest bar (larger for a joint-mass node, toporia_library/physics/truss_nodes.py).
 # The solid is the union of all of them, found from their signed distance field
 #
 #     φ(p) = min( min_i (d(p, bar_i) − r_i),  min_j (|p − n_j| − R_j) ),     solid where φ ≤ 0,

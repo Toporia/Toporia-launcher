@@ -1,4 +1,4 @@
-# checks/schedule.py — is a continuation schedule sound?
+# toporia_core/checks/schedule.py — is a continuation schedule sound?
 #
 # Its values are finite; it finishes (within 10 000 iterations) and does not
 # move once it says it has; and a short run with it driving the sharpness of a

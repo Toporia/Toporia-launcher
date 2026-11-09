@@ -1,8 +1,8 @@
-# framework/parts/physics.py — the interface a physics engine implements.
+# toporia_core/framework/parts/physics.py — the interface a physics engine implements.
 #
 # A physics engine turns a physical density field into a solved state, and
 # answers a fixed set of questions about that state.  Responses
-# (plugins/responses) are written against these questions only, so one
+# (toporia_library/responses) are written against these questions only, so one
 # compliance or stress response works on every engine that can answer them:
 #
 #     density ──Physics.solve──> state ──Response.evaluate──> value, gradient
@@ -46,7 +46,7 @@ class Physics(ABC):
         params               tunable parameters (framework.params.Param)
         provides             the feature names (ELASTIC_ENERGY, STRESS, ...) it answers
         uses_interpolation   True when material stiffness comes from a material law
-                             (framework/parts/interpolation.py) chosen in the solver
+                             (toporia_core/framework/parts/interpolation.py) chosen in the solver
 
     Only `initialize` and `solve` are required.  The other methods belong to a
     feature; implement the ones of every feature listed in `provides`.
@@ -183,7 +183,7 @@ class Physics(ABC):
 # ── MODES ─────────────────────────────────────────────────────────────────────
 #
 # Free vibration: the generalised eigenproblem  K φ = λ M φ,  λ = ω².  Modes are
-# mass-normalised (φᵀ M φ = 1).  Provided by plugins/physics/q4_dynamic.py.
+# mass-normalised (φᵀ M φ = 1).  Provided by toporia_library/physics/q4_dynamic.py.
 
 #: Feature: the lowest eigenvalues of the structure and their sensitivities.
 MODES = "modes"
@@ -212,7 +212,7 @@ class ModalPhysics:
 # ── HARMONIC ──────────────────────────────────────────────────────────────────
 #
 # Forced vibration at one driving frequency: (K − ω² M) u = f.  Provided by
-# plugins/physics/q4_dynamic.py.
+# toporia_library/physics/q4_dynamic.py.
 
 #: Feature: the dynamic compliance fᵀu at a driving frequency, and its adjoint sensitivity.
 HARMONIC = "harmonic"

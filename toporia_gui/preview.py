@@ -1,4 +1,4 @@
-# apps/gui/preview.py — the problem drawn before anything is solved.
+# toporia_gui/preview.py — the problem drawn before anything is solved.
 #
 # Like a slicer that shows the part on the build plate before slicing, the
 # view shows the problem as it is set up: the design domain, the holes and
@@ -30,7 +30,7 @@ def supports_and_loads(scenario):
 
     Returns (edges, points, loads): [(edge, dof)], [(x, y, dof)], [(x, y)].  A
     scenario with no hard supports or positive springs is clamped on its left edge, and one with
-    no load points is loaded at mid-height of its right edge — as framework/problem/mesh.py does.
+    no load points is loaded at mid-height of its right edge — as toporia_core/framework/problem/mesh.py does.
     """
     edges = [(c.edge, c.dof) for c in scenario.edge_constraints]
     points = [(c.x, c.y, c.dof) for c in scenario.point_constraints]
@@ -134,7 +134,7 @@ def draw_problem(ax, scenario, text_colour="#222", title=""):
 
 def describe_problem(scenario, m, name=""):
     """One line under the drawing: the domain, the mesh and the material budget."""
-    nx, ny = int(round(scenario.Lx * m)), max(1, int(round(scenario.Ly * m)))   # as framework/problem/mesh.py
+    nx, ny = int(round(scenario.Lx * m)), max(1, int(round(scenario.Ly * m)))   # as toporia_core/framework/problem/mesh.py
     size = f"{scenario.Lx:g} × {scenario.Ly:g}" + (f" × {scenario.Lz:g}" if scenario.Lz > 0 else "") + " mm"
     if scenario.Lz > 0:
         nz = max(1, int(round(scenario.Lz * m)))

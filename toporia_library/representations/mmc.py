@@ -1,4 +1,4 @@
-# plugins/representations/mmc.py — moving morphable components.
+# toporia_library/representations/mmc.py — moving morphable components.
 #
 # The design is a set of bars, each described by five numbers: its centre
 # (xc, yc), its half-length L, its half-thickness t and its angle θ.  A few

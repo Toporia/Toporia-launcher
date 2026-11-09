@@ -1,4 +1,4 @@
-# apps/gui/run_window.py — a run in its own window, so the main window stays usable.
+# toporia_gui/run_window.py — a run in its own window, so the main window stays usable.
 #
 # The run works on a snapshot of the project saved when it starts, so the problem and
 # the method may be edited while it runs.  The live view (status, progress, the design

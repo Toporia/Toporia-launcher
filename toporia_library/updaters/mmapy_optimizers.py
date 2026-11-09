@@ -1,4 +1,4 @@
-# plugins/updaters/mmapy_optimizers.py — Svanberg's MMA and GCMMA through Arjen Deetman's `mmapy`.
+# toporia_library/updaters/mmapy_optimizers.py — Svanberg's MMA and GCMMA through Arjen Deetman's `mmapy`.
 #
 # `mmapy` (https://github.com/arjendeetman/GCMMA-MMA-Python, PyPI "mmapy") is a
 # line-by-line Python port of Krister Svanberg's reference MATLAB code.  That
@@ -9,7 +9,7 @@
 # mmapy exposes the method as functions, not as a loop.  `mmasub` is called once
 # per outer iteration with the values and gradients at the current design and
 # returns the next one, so these are ordinary Updaters on the flat view
-# (framework/optimisers/flat_view.py) — no background thread is needed:
+# (toporia_core/framework/optimisers/flat_view.py) — no background thread is needed:
 #
 #     engine: Evaluation at x ──> flat view: f, g, df, dg (free variables, volume first)
 #                                     │

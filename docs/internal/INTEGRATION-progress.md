@@ -157,5 +157,5 @@ The agreed small/medium implementation and bounded-validation round is complete,
 within the explicit scopes above. There is no unfinished active task in this round.
 Original-source gaps, rejected recipes and unreproduced paper variants are limitations,
 not silently completed full ports. Further tuning, complete external reproductions,
-whole-method bridges and large framework/dataset work require a new agreed scope.
+whole-method bridges and large toporia_core/framework/dataset work require a new agreed scope.
 The owner reviews and merges the independent branches; nothing is pushed or merged.

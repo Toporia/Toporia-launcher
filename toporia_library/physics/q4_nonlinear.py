@@ -1,4 +1,4 @@
-# plugins/physics/q4_nonlinear.py — 2-D Q4 geometrically non-linear elasticity (large displacement).
+# toporia_library/physics/q4_nonlinear.py — 2-D Q4 geometrically non-linear elasticity (large displacement).
 #
 # What it is.  The same bilinear Q4 plane-stress element as q4_plane_stress.py, but the
 # equilibrium is written on the DEFORMED shape: large displacements and rotations,

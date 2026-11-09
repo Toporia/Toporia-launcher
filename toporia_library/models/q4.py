@@ -1,4 +1,4 @@
-# plugins/models/q4.py — Toporia's own 2-D Q4 solver as a model.
+# toporia_library/models/q4.py — Toporia's own 2-D Q4 solver as a model.
 #
 # Design variable: x[i, j] ∈ [0, 1], the density of element (i, j) before
 # filtering.  The filter pipeline turns it into the physical density, SIMP
@@ -7,10 +7,10 @@
 #
 #     x ──filters──> ρ ──SIMP: E = Emin + ρ^p (E0 − Emin)──> K ──solve──> u ──> compliance, stress, ...
 #
-# All of that is assembled from parts (plugins/models/assembled.py); this
+# All of that is assembled from parts (toporia_core/framework/parts/assembled.py); this
 # file only says which physics engine to use.  It is the physics half of the
 # top88 code by Andreassen et al. (2011); the update half (OC, MMA, ...)
-# lives in plugins/updaters.
+# lives in toporia_library/updaters.
 
 from toporia_library.physics.q4_plane_stress import Q4PlaneStress
 

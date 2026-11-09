@@ -1,4 +1,4 @@
-# framework/params.py — self-describing parameters.
+# toporia_core/framework/params.py — self-describing parameters.
 #
 # Every tunable value in Toporia is declared once, as a Param, next to the code
 # that uses it.  From that single declaration:

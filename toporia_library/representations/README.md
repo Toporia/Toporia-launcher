@@ -12,7 +12,7 @@ dz <──backward──── d(field) <──filter adjoint── dρ <──�
 ```
 
 It is a part of its own — see
-[`framework/parts/representation.py`](../../toporia_core/framework/parts/representation.py) — chosen in
+[`toporia_core/framework/parts/representation.py`](../../toporia_core/framework/parts/representation.py) — chosen in
 the solver like the filters and the material law,
 `solver.representation = {"type": "mmc", "n_x": 4, "n_y": 2}`. It also sets the start
 design and the bounds of every variable. In the GUI it is the **Design representation**

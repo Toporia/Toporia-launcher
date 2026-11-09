@@ -1,4 +1,4 @@
-# apps/gui/materials.py — common engineering materials, for the material presets.
+# toporia_gui/materials.py — common engineering materials, for the material presets.
 #
 # Units are those of the whole program: millimetres, newtons, so stresses and Young's
 # modulus in N/mm² = MPa.  The values are typical room-temperature figures for design

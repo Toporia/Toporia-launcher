@@ -1,4 +1,4 @@
-# framework/optimisers/flat_view.py — the problem as an optimisation library sees it.
+# toporia_core/framework/optimisers/flat_view.py — the problem as an optimisation library sees it.
 #
 # Optimisers from the literature and from libraries (MMA, SciPy, NLopt, IPOPT,
 # pyMOTO) all want the same thing: a vector, its bounds, and callbacks

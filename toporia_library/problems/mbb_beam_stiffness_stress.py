@@ -1,6 +1,6 @@
-# plugins/problems/mbb_beam_stiffness_stress.py — the MBB beam, stiff and with a low peak stress.
+# toporia_library/problems/mbb_beam_stiffness_stress.py — the MBB beam, stiff and with a low peak stress.
 #
-# The MBB beam's scenario with a combined objective (plugins/responses/combined.py):
+# The MBB beam's scenario with a combined objective (toporia_library/responses/combined.py):
 # the weighted sum of compliance and the peak von Mises stress (its p-norm, p = 8), each
 # divided by its value at the start design.  Compliance alone puts sharp re-entrant
 # corners where the load meets the members; the stress term rounds them off at a small

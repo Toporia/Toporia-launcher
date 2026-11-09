@@ -96,7 +96,7 @@ objects. Domain dimensions/material edits preserve object coordinates. Scene
 objects persist in project/problem files. Validation: 176 GUI/editor/lifecycle
 checks passed; ruff passed after correcting QGraphicsScene ownership.
 
-Milestone 5 complete: explicit regions are compiled in framework/problem/regions.py.
+Milestone 5 complete: explicit regions are compiled in toporia_core/framework/problem/regions.py.
 Legacy presets bypass the adapter and retain their historical serialization and
 numerical baselines. Custom 2D objects produce support, solid/void/domain masks
 and independent per-case total force vectors in Q4 and pyMOTO. Level-set auxiliary
@@ -104,7 +104,7 @@ meshes now preserve explicit definitions. Validation catches missing supports/
 loads, residual rigid-body modes, unmeshed regions, excluded loads, material
 conflicts and budgets. Definitions remain in physical coordinates. Imported
 object structure is checked before it reaches graphics widgets.
-Validation: 378 framework/application tests passed; 29 regional/golden checks
+Validation: 378 toporia_core/framework/application tests passed; 29 regional/golden checks
 passed after active-material validation; ruff passed. Golden files unchanged.
 
 Milestone 6 complete: Qt launches a headless worker process using immutable

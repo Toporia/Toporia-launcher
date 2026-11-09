@@ -1,4 +1,4 @@
-# apps/gui/panels/extra_physics.py — more physics on the same design (To do item 9).
+# toporia_gui/panels/extra_physics.py — more physics on the same design (To do item 9).
 #
 # On the Problem page, under the main physics: each row adds a physics that is solved
 # on the same density with its own material law and its own solid and void property.

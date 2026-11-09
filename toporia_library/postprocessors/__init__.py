@@ -3,7 +3,7 @@
 Every PostProcessor subclass in this package with a non-empty `name` is found
 by the POSTPROCESSORS registry.  A run lists the ones to apply in
 output.postprocess: [{"type": "threshold"}, {"type": "export_dxf"}].
-See framework/parts/postprocess.py.
+See toporia_core/framework/parts/postprocess.py.
 
     threshold.py     black and white at the same volume, and its compliance
     connectivity.py  islands, and whether every load reaches a support

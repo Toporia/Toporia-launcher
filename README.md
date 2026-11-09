@@ -133,7 +133,7 @@ parameterisations, filters and updaters. Start at
 
 [`toporia_core/README.md`](toporia_core/README.md) maps the package: its layers and the life of a
 run, with diagrams. [`toporia_core/framework/`](toporia_core/framework/README.md),
-[`toporia_core/engine/`](toporia_core/engine/README.md) and [`toporia/apps/`](toporia_gui/README.md)
+[`toporia_core/engine/`](toporia_core/engine/README.md) and [`toporia_gui/`](toporia_gui/README.md)
 each explain every file in them and how they interact.
 
 ### Adding to it

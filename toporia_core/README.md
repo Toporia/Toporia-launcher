@@ -10,7 +10,7 @@ The code is three packages, next to each other in the repository:
 
 | Package | What it is | Needs |
 | :-- | :-- | :-- |
-| [`toporia_core/`](.) (this folder) | The glue every function uses and no function itself: what a run is, what a part must do, the registries, the engine loop and run modes, the conformance checks, `api.py` and the command line. | numpy, scipy; matplotlib only for figures, when installed ([`engine/plotting.py`](engine/plotting.py)); density images are written by [`engine/png.py`](engine/png.py) |
+| [`toporia_core/`](.) (this folder) | The glue every function uses and no function itself: what a run is, what a part must do, the registries, the engine loop and run modes, the conformance checks, `api.py` and the command line. | numpy, scipy; matplotlib only for figures, when installed ([`toporia_core/engine/plotting.py`](engine/plotting.py)); density images are written by [`toporia_core/engine/png.py`](engine/png.py) |
 | [`toporia_library/`](../toporia_library/README.md) | Every function: models and physics, updaters, filters, material laws, representations, responses, schedules, post-processors, whole methods, and the presets with their research descriptions. | the core |
 | [`toporia_gui/`](../toporia_gui/README.md) | The desktop app. A run never needs it. | the core, the library, PySide6 |
 
@@ -18,10 +18,10 @@ The code is three packages, next to each other in the repository:
 
 Read in this order; each step is one folder and one README.
 
-1. **What a run is** — [`framework/problem/`](framework/problem/): a `Scenario` (what is
+1. **What a run is** — [`toporia_core/framework/problem/`](framework/problem/): a `Scenario` (what is
    solved), a `Solver` (how), bundled in a `Run`.
-2. **What a part must do** — [`framework/parts/`](framework/parts/): one file per
-   interface. [`framework/README.md`](framework/README.md) explains them together.
+2. **What a part must do** — [`toporia_core/framework/parts/`](framework/parts/): one file per
+   interface. [`toporia_core/framework/README.md`](framework/README.md) explains them together.
 3. **Which parts exist** — [`toporia_library/`](../toporia_library/README.md): the catalogue,
    one folder per kind, each listing what is implemented here and what exists elsewhere.
 4. **How a run is driven** — [`engine/`](engine/README.md): the one loop, what it records,
@@ -55,7 +55,7 @@ the core, `framework` uses nothing else and `engine` uses `framework`.
 toporia_core/
 ├── api.py               the stable imports for plugin authors
 ├── cli.py               toporia run · sweep · compare · benchmark · check · list · export
-├── framework/           THE RULES — no mathematics
+├── toporia_core/framework/           THE RULES — no mathematics
 │   ├── problem/         scenario · mesh · solver · run · files · presets (found by name)
 │   ├── parts/           one file per interface; AssembledModel and the filter pipeline
 │   ├── optimisers/      flat_view · external_loop
@@ -93,10 +93,10 @@ toporia_gui/             THE DESKTOP APP — app · window · panels/ · inspect
 
 | Path | What it is | Read |
 | :--- | :--- | :--- |
-| [`framework/`](framework/) | **The rules.** What a run is and what every plugin must do, plus parameter declarations, the registries and plugin discovery. No mathematics. | [framework/README.md](framework/README.md) |
+| [`toporia_core/framework/`](framework/) | **The rules.** What a run is and what every plugin must do, plus parameter declarations, the registries and plugin discovery. No mathematics. | [toporia_core/framework/README.md](framework/README.md) |
 | [`toporia_library/`](../toporia_library) | **The swappable parts.** Each subfolder is scanned for plugins, so adding one is adding a file. Each folder's README maps its part of the field: what is here, what exists elsewhere, what is paper only. | [toporia_library/README.md](../toporia_library/README.md) |
-| [`engine/`](engine/) | **Running things.** Builds the method from a run, steps it, applies the one stopping rule, records history and `run.json`, checks the limits; and the analysis modes built on that loop. | [engine/README.md](engine/README.md) |
-| [`checks/`](checks/) | **The conformance test.** `conformance(MyPlugin)` checks a plugin's interface, its gradients against finite differences and, for an updater, a benchmark against optimality criteria. | [checks/README.md](checks/README.md) |
+| [`engine/`](engine/) | **Running things.** Builds the method from a run, steps it, applies the one stopping rule, records history and `run.json`, checks the limits; and the analysis modes built on that loop. | [toporia_core/engine/README.md](engine/README.md) |
+| [`checks/`](checks/) | **The conformance test.** `conformance(MyPlugin)` checks a plugin's interface, its gradients against finite differences and, for an updater, a benchmark against optimality criteria. | [toporia_core/checks/README.md](checks/README.md) |
 | [`toporia_gui/`](../toporia_gui) | **The desktop app.** No optimisation logic: it builds a `Run` and hands it to the engine, in a separate process. | [toporia_gui/README.md](../toporia_gui/README.md) |
 | [`api.py`](api.py) | **What a plugin imports.** The stable names for writing plugins, especially in other packages. | [docs/writing-plugins.md](../docs/writing-plugins.md) |
 
@@ -116,11 +116,11 @@ flowchart TB
 
 | Step | Where |
 | :-- | :-- |
-| A Run | [`framework/problem/run.py`](framework/problem/run.py) |
-| Check the parts, mesh the case | [`engine/loop.py`](engine/loop.py), [`engine/pipeline.py`](engine/pipeline.py), [`framework/problem/mesh.py`](framework/problem/mesh.py) |
-| Iterate | [`engine/loop.py`](engine/loop.py); what one evaluation does: [`framework/README.md`](framework/README.md#one-evaluation-the-chain-of-parts) |
-| Post-process | [`engine/postprocess.py`](engine/postprocess.py), [`toporia_library/postprocessors/`](../toporia_library/postprocessors/README.md) |
-| Results | [`engine/records.py`](engine/records.py) |
+| A Run | [`toporia_core/framework/problem/run.py`](framework/problem/run.py) |
+| Check the parts, mesh the case | [`toporia_core/engine/loop.py`](engine/loop.py), [`toporia_core/engine/pipeline.py`](engine/pipeline.py), [`toporia_core/framework/problem/mesh.py`](framework/problem/mesh.py) |
+| Iterate | [`toporia_core/engine/loop.py`](engine/loop.py); what one evaluation does: [`toporia_core/framework/README.md`](framework/README.md#one-evaluation-the-chain-of-parts) |
+| Post-process | [`toporia_core/engine/postprocess.py`](engine/postprocess.py), [`toporia_library/postprocessors/`](../toporia_library/postprocessors/README.md) |
+| Results | [`toporia_core/engine/records.py`](engine/records.py) |
 
 The method can also be a whole method that does its own iteration (the RBF level set),
 and the updater can be an outside library running its own loop in a background thread
@@ -150,7 +150,7 @@ Then `toporia check kind:name`, and mark it ✅ in the folder's README.
   it implements, if any.
 - **Every class and standalone function has a docstring.** Implementations of an
   interface method (`initialize`, `update`, `forward`, `evaluate`, …) do not repeat it:
-  the method is documented once, in `framework/parts/`.
+  the method is documented once, in `toporia_core/framework/parts/`.
 - **Comments say why**, or what a non-obvious line does — not what the code already says.
 - **Parameters are declared, not read from dictionaries by hand**: a `Param` next to the
   code that uses it, so the GUI, sweeps and validation follow automatically.

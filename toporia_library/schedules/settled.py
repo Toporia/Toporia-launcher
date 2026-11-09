@@ -1,7 +1,7 @@
-# plugins/schedules/settled.py — raised when the design has settled, not on a clock.
+# toporia_library/schedules/settled.py — raised when the design has settled, not on a clock.
 #
-# Connects to: framework/parts/schedule.py (the Schedule interface and its optional
-# observe() hook) and engine/loop.py, which calls observe(iteration, change) after
+# Connects to: toporia_core/framework/parts/schedule.py (the Schedule interface and its optional
+# observe() hook) and toporia_core/engine/loop.py, which calls observe(iteration, change) after
 # every iteration with the change of the physical density the method reported
 # (not of the design variables, which keep drifting where a sharp projection is flat).
 # The rule: the parameter moves up one level when the design change has been

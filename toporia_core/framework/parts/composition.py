@@ -1,4 +1,4 @@
-# framework/parts/composition.py — a method assembled from a model and an updater.
+# toporia_core/framework/parts/composition.py — a method assembled from a model and an updater.
 #
 # A gradient-based topology-optimisation method is two independent choices:
 #
@@ -23,7 +23,7 @@
 # method can minimise what its model can compute AND its updater can handle.
 #
 # A model is itself usually assembled from parts — filters, a physics engine
-# (framework/parts/physics.py) and responses — see plugins/models/assembled.py.
+# (toporia_core/framework/parts/physics.py) and responses — see toporia_core/framework/parts/assembled.py.
 
 from dataclasses import replace
 
@@ -116,7 +116,7 @@ class ComposedMethod(OptimizationMethod):
         self._evaluation = None
 
     def _build_model(self, problem, solver):
-        """One model per value of solver.variants, joined into a VariantModel (framework/parts/variants.py)."""
+        """One model per value of solver.variants, joined into a VariantModel (toporia_core/framework/parts/variants.py)."""
         from toporia_core.framework.parts.variants import VariantModel
         from toporia_core.framework.problem.run import Run, apply_param
         spec = solver.variants

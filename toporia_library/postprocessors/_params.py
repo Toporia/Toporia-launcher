@@ -1,4 +1,4 @@
-# plugins/postprocessors/_params.py — parameters the exporters share.
+# toporia_library/postprocessors/_params.py — parameters the exporters share.
 
 from toporia_core.framework.params import Param
 

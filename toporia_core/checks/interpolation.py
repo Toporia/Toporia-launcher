@@ -1,4 +1,4 @@
-# checks/interpolation.py — is a material law sound?
+# toporia_core/checks/interpolation.py — is a material law sound?
 #
 # E(0) = Emin and E(1) = E0 (void is void, solid is solid); E increases with
 # density; slope() is the derivative of stiffness() (central finite

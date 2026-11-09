@@ -1,4 +1,4 @@
-# framework/problem/spatial.py — physical transforms and portable triangular regions.
+# toporia_core/framework/problem/spatial.py — physical transforms and portable triangular regions.
 # STL triangles are embedded as plain vertices/faces, so .pro/.top files remain
 # self-contained. VTK supplies geometry queries; it is imported only for STL work.
 

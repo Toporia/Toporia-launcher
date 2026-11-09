@@ -1,13 +1,13 @@
-# plugins/physics/h8_solid.py — 3-D linear elasticity on eight-node bricks (H8).
+# toporia_library/physics/h8_solid.py — 3-D linear elasticity on eight-node bricks (H8).
 #
 # The 3-D counterpart of q4_plane_stress.py, for a BoxProblem (a scenario with
-# a depth, framework/problem/mesh.py).  Each element is a brick of dx × dy × dz
+# a depth, toporia_core/framework/problem/mesh.py).  Each element is a brick of dx × dy × dz
 # with trilinear shape functions and three displacements per node; its 24 × 24
 # stiffness matrix is integrated with 2 × 2 × 2 Gauss points, as in the 3-D
 # code of Liu & Tovar (2014).  Unlike in 2-D, the element size matters: K
 # scales with the element's length, so the real dx, dy, dz are used.
 #
-# The engine answers the same questions as the Q4 one (framework/parts/physics.py):
+# The engine answers the same questions as the Q4 one (toporia_core/framework/parts/physics.py):
 # compliance and strain energies, and the element stresses, adjoint solves and
 # mutual energies a stress response needs — with six stress components
 # (σxx, σyy, σzz, τyz, τxz, τxy) and the matching von Mises matrix.  So every

@@ -1,4 +1,4 @@
-# framework/problem/mesh.py — finite element mesh and boundary conditions
+# toporia_core/framework/problem/mesh.py — finite element mesh and boundary conditions
 #
 # Defines two things:
 #

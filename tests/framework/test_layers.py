@@ -1,4 +1,4 @@
-"""framework/ is the core: it imports nothing from the engine, the plugins or the apps."""
+"""toporia_core/framework/ is the core: it imports nothing from the engine, the plugins or the apps."""
 
 import ast
 from pathlib import Path

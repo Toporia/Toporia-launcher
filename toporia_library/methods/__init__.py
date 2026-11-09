@@ -2,8 +2,8 @@
 
 A method is named in solver.method in one of two ways:
 
-    "<model>+<updater>"   any model (plugins/models) with any updater
-                          (plugins/updaters), e.g. "q4+oc" or "pymoto_elastic+pymoto_gcmma".
+    "<model>+<updater>"   any model (toporia_library/models) with any updater
+                          (toporia_library/updaters), e.g. "q4+oc" or "pymoto_elastic+pymoto_gcmma".
                           The pairing is built on demand; nothing is declared per pair.
     "<method>"            a whole method that implements framework.parts.method.OptimizationMethod
                           itself, because it does not split into a model and an updater —

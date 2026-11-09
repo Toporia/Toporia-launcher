@@ -1,4 +1,4 @@
-# plugins/models/pymoto_heat.py — steady heat conduction on a pyMOTO module network.
+# toporia_library/models/pymoto_heat.py — steady heat conduction on a pyMOTO module network.
 #
 # The cross-check of q4_heat.py: the same problem, solved by someone else's
 # finite element code.  pyMOTO (https://github.com/aatmdelissen/pyMOTO, MIT)

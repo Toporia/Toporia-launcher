@@ -1,4 +1,4 @@
-# apps/gui/editor.py — 2D problem workspace: tools, geometry scene, object list and inspector.
+# toporia_gui/editor.py — 2D problem workspace: tools, geometry scene, object list and inspector.
 # All edits update physical definitions together; scene selection and list selection
 # share object IDs. Undo stores definitions, never mesh indices or screenshots.
 

@@ -1,4 +1,4 @@
-# plugins/postprocessors/_measure.py — measurements and drawings several post-processors share.
+# toporia_core/engine/measure.py — measurements and drawings several post-processors share.
 
 import numpy as np
 

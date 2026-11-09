@@ -1,4 +1,4 @@
-# framework/problem/presets.py — ready-made problems, found by name.
+# toporia_core/framework/problem/presets.py — ready-made problems, found by name.
 #
 # A preset is a module with
 #

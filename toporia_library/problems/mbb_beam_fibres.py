@@ -1,8 +1,8 @@
-# plugins/problems/mbb_beam_fibres.py — the MBB beam with steered fibres.
+# toporia_library/problems/mbb_beam_fibres.py — the MBB beam with steered fibres.
 #
 # The MBB beam's scenario in a fibre-reinforced material (stiff along its fibres, a tenth
 # as stiff across), where every element chooses its density and its fibre direction:
-# the representation fibre_angle with the orthotropic Q4 engine (plugins/physics/
+# the representation fibre_angle with the orthotropic Q4 engine (toporia_library/physics/
 # q4_orthotropic.py).  The fibres turn to follow the members, so the beam is much stiffer
 # than with fibres fixed along x.  A demonstration of several fields per element (Wave 5).
 

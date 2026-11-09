@@ -1,4 +1,4 @@
-# apps/gui/runner.py — the bridge between the GUI and the engine's analysis modes.
+# toporia_gui/runner.py — the bridge between the GUI and the engine's analysis modes.
 #
 # This is the only file in the gui/ package that RUNS optimisation code.  The
 # panels import plugin declarations (Param lists, capabilities) to build

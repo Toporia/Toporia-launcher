@@ -1,4 +1,4 @@
-# plugins/physics/h8_heat.py — 3-D steady heat conduction on eight-node bricks.
+# toporia_library/physics/h8_heat.py — 3-D steady heat conduction on eight-node bricks.
 #
 # The scalar counterpart of h8_solid.py: the same BoxProblem, the same brick
 # numbering (C order over z, y, x), one temperature per node.  The assembly,

@@ -1,8 +1,8 @@
-# apps/gui/panels/modes.py — the settings of each analysis mode.
+# toporia_gui/panels/modes.py — the settings of each analysis mode.
 #
 # One group per entry in the Mode menu (sweep, compare, sensitivity, ...);
 # the window shows only the selected mode's group.  Every parameter dropdown
-# lists the setup's parameter paths (plugins/catalog.py), so anything numeric
+# lists the setup's parameter paths (toporia_library/catalog.py), so anything numeric
 # can be swept, compared or perturbed.
 #
 # Every group offers the same small interface to the window:

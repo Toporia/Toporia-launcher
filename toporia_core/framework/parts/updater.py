@@ -1,8 +1,8 @@
-# framework/parts/updater.py — HOW the design moves: an Evaluation in, the next design out.
+# toporia_core/framework/parts/updater.py — HOW the design moves: an Evaluation in, the next design out.
 #
 # An Updater knows nothing about the physics that produced the numbers, so
 # every updater works with every model.  Two helpers for optimisers written
-# for vectors live in framework/optimisers: the flat view (any updater can
+# for vectors live in toporia_core/framework/optimisers: the flat view (any updater can
 # use it) and the external loop (for a library that runs its own loop).
 
 from abc import ABC, abstractmethod
@@ -13,7 +13,7 @@ class Updater(ABC):
 
     An updater that works on a flat vector, as almost every optimiser from a
     library does, sets `flat_view = True` and builds its view with
-    self.flat_problem(model) (framework/optimisers/flat_view.py): free variables only, the volume
+    self.flat_problem(model) (toporia_core/framework/optimisers/flat_view.py): free variables only, the volume
     budget as the first constraint, both sign conventions, caching.
     """
 
@@ -34,13 +34,13 @@ class Updater(ABC):
     constraints = None
     #: True when it works on framework.optimisers.flat_view.FlatProblem rather than on the design array.
     flat_view = False
-    #: True when it runs its own loop in the background (framework/optimisers/external_loop.py).
+    #: True when it runs its own loop in the background (toporia_core/framework/optimisers/external_loop.py).
     own_loop = False
     #: The flat view's objective rescaling (see FlatProblem); None leaves it unscaled.
     flat_objective_scale = None
     #: True when the update rule only makes sense on one density per element
     #: (OC, BESO): it is then refused with any other design representation
-    #: (framework/parts/representation.py).
+    #: (toporia_core/framework/parts/representation.py).
     needs_element_densities = False
     #: True when every design it produces is solid or void (TOBS, both BESO variants: 0 or the
     #: soft-kill minimum, and 1), so a part that needs a derivative at grey designs can refuse it.
@@ -51,7 +51,7 @@ class Updater(ABC):
     needs_material_law = False
     #: The problem dimensions it works in; None means any (it never looks at the mesh's shape).
     dims = None
-    #: Parameters a schedule may change during a run (framework/parts/schedule.py).
+    #: Parameters a schedule may change during a run (toporia_core/framework/parts/schedule.py).
     schedulable = ()
 
     def flat_problem(self, model):

@@ -1,5 +1,5 @@
-# apps/gui/spatial_view.py — optional VTK/Qt viewport over the shared physical objects.
-# Numerical geometry remains in framework/problem/regions.py; this view only
+# toporia_gui/spatial_view.py — optional VTK/Qt viewport over the shared physical objects.
+# Numerical geometry remains in toporia_core/framework/problem/regions.py; this view only
 # renders, picks and emits edits. QtInteractor is created lazily when shown.
 #
 # Editing in 3-D: a box is drawn by two clicks on the work plane (its footprint) with the

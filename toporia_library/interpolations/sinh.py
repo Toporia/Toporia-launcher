@@ -5,6 +5,17 @@ both measures (Table 2 case 5 when a density filter is selected). This is
 not case 6's separate resource-only filter or the hybrid stiffness penalty.
 The p=0 limit is linear in both measures. Effective cost is not geometric
 volume at intermediate density; both are reported separately by the model.
+
+The equations (Bruns 2005, 22-23), with p the volume penalty:
+
+    E(rho) = Emin + rho (E0 - Emin)                     stiffness: linear, no penalty
+    v(rho) = 1 - sinh(p (1 - rho)) / sinh(p)            material cost: v(0) = 0, v(1) = 1
+    dv/drho = p cosh(p (1 - rho)) / sinh(p)
+
+Grey material costs more of the budget than its density (v(0.5) > 0.5 for p > 0)
+while giving only linear stiffness, which drives the design to black and white.
+Near void the cost is evaluated as 2 cosh(p (1 - rho/2)) sinh(p rho/2) / sinh(p),
+the same value without cancellation.
 """
 
 import numpy as np

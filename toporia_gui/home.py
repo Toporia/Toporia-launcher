@@ -1,4 +1,4 @@
-# apps/gui/home.py — project entry points and an illustrated, sourced benchmark library.
+# toporia_gui/home.py — project entry points and an illustrated, sourced benchmark library.
 
 from matplotlib.backends.backend_agg import FigureCanvasAgg
 from matplotlib.figure import Figure

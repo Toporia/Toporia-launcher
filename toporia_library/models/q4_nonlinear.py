@@ -1,4 +1,4 @@
-# plugins/models/q4_nonlinear.py — Toporia's 2-D Q4 large-deformation solver as a model.
+# toporia_library/models/q4_nonlinear.py — Toporia's 2-D Q4 large-deformation solver as a model.
 #
 # Same design chain as the linear q4 model, with the geometrically non-linear engine
 # (physics/q4_nonlinear.py) in place of the linear one:

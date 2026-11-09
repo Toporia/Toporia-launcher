@@ -1,4 +1,4 @@
-# engine/records.py — what every run leaves behind.
+# toporia_core/engine/records.py — what every run leaves behind.
 #
 # Three things, in the order the loop uses them:
 #
@@ -72,7 +72,7 @@ class ResultStore:
         """Write the final density image, CSV, and optionally the history plot.
 
         A 3-D design is drawn and written to the CSV as its average through the
-        depth (framework/problem/mesh.py, projection), and saved whole as
+        depth (toporia_core/framework/problem/mesh.py, projection), and saved whole as
         final_density.npy.
         """
         self.save_density(density, self.output_dir / "final_density.png")

@@ -1,4 +1,4 @@
-# plugins/filters/extrusion.py - ExtrusionFilter (density constant along one axis)
+# toporia_library/filters/extrusion.py - ExtrusionFilter (density constant along one axis)
 #
 # Makes the design a prismatic extrusion: every line of elements parallel to
 # the chosen axis carries one density, the line's mean.  It is the same kind of

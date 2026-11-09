@@ -1,4 +1,4 @@
-# apps/gui/panels/objective_terms.py — the terms of a combined objective (To do item 4).
+# toporia_gui/panels/objective_terms.py — the terms of a combined objective (To do item 4).
 #
 # Shown under the objective when "Combined objective" is chosen: one row per term
 # (which quantity, its name in a formula, its weight, minimise or maximise) and, for

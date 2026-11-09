@@ -1,4 +1,4 @@
-# checks/response.py — is a response sound?
+# toporia_core/checks/response.py — is a response sound?
 #
 # Its roles, and its gradient against finite differences on every physics
 # engine that provides the features it requires.

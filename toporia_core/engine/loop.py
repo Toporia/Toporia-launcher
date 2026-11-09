@@ -1,4 +1,4 @@
-# engine/loop.py — the optimisation loop.
+# toporia_core/engine/loop.py — the optimisation loop.
 #
 # Every analysis mode (run_one, sweep, compare, sensitivity) goes through this
 # module, so the wiring, the loop, the stopping rule and the recording all live

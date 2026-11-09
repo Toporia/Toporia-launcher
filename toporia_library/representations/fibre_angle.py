@@ -1,4 +1,4 @@
-# plugins/representations/fibre_angle.py — a density and a fibre angle per element.
+# toporia_library/representations/fibre_angle.py — a density and a fibre angle per element.
 #
 # Several fields per element (Wave 5).  Every element carries its density ρ_e and the
 # direction θ_e of its fibres (radians from +x):
@@ -6,7 +6,7 @@
 #     z = [ρ ; θ]      shape (2, nely, nelx)
 #
 # The density goes through the filters to the physics; the angle is the field "angle",
-# read by an orthotropic physics (plugins/physics/q4_orthotropic.py), which turns it into
+# read by an orthotropic physics (toporia_library/physics/q4_orthotropic.py), which turns it into
 # the element's rotated stiffness.  Continuous fibre-angle optimisation of this kind has
 # many local optima (θ and θ + π are the same fibre); the start angle matters, and a
 # small move limit helps.  The angle is bounded to [−π, π] so it can turn freely through

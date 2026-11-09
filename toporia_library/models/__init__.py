@@ -7,7 +7,7 @@ about how the design is then updated.
 
 There are two ways to write one:
 
-  * assembled from parts (assembled.py): name a physics engine (framework/parts/physics.py)
+  * assembled from parts (assembled.py): name a physics engine (toporia_core/framework/parts/physics.py)
     and the filters and responses come for free — every response the engine
     provides features for, every filter in the pipeline;
   * by hand, as a whole, when the physics brings its own filters and gradients

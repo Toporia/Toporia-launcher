@@ -1,4 +1,4 @@
-# plugins/models/q4_heat.py — Toporia's 2-D heat-conduction solver as a model.
+# toporia_library/models/q4_heat.py — Toporia's 2-D heat-conduction solver as a model.
 #
 # Design variable: x[i, j] ∈ [0, 1], the density of element (i, j) before
 # filtering.  The filter pipeline turns it into the physical density, the
@@ -7,7 +7,7 @@
 #
 #     x ──filters──> ρ ──SIMP: k = kmin + ρ^p (k0 − kmin)──> K ──solve──> T ──> thermal compliance qᵀT
 #
-# All of that is assembled from parts (plugins/models/assembled.py); this file
+# All of that is assembled from parts (toporia_core/framework/parts/assembled.py); this file
 # only says which physics engine to use.  Supports are heat sinks (T = 0).
 
 from toporia_library.physics.q4_heat import Q4Heat

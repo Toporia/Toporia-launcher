@@ -7,14 +7,14 @@ navigation remain with that effort.
 
 ## Integration surface delivered here
 
-- `plugins/problems/_research.py`: plain immutable explanation data.
+- `toporia_library/problems/_research.py`: plain immutable explanation data.
 - Presets declare `DESCRIPTION`; no GUI imports in numerical/preset code.
-- `plugins/problems.problem_description(name)`: description or None.
-- `apps/research_render.description_html(description)`: escaped content and
+- `toporia_library/problems.problem_description(name)`: description or None.
+- `toporia_gui/research_render.py: description_html(description)`: escaped content and
   local embedded MathText PNGs, usable in a QTextBrowser.
-- `apps/gui/research_help.ResearchHelpTopic`: existing topic title/sections
+- `toporia_gui/research_help.ResearchHelpTopic`: existing topic title/sections
   plus rendered scientific description.
-- `apps/gui/help.py`: only the preset-topic hook. Merge this small function
+- `toporia_gui/help.py`: only the preset-topic hook. Merge this small function
   change carefully if the colleague edits help.py later.
 - `problem_info(name)` and short ABOUT/REFERENCE text are unchanged.
 

@@ -1,4 +1,4 @@
-"""test_new_presets.py — the L-bracket and the robust MBB presets (plugins/problems/).
+"""test_new_presets.py — the L-bracket and the robust MBB presets (toporia_library/problems/).
 
 The L-bracket must mesh with its corner removed and run; the robust preset must
 evaluate three designs per iteration and drive beta by its schedule.

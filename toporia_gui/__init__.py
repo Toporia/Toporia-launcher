@@ -1,10 +1,9 @@
-# This file marks the gui/ folder as a Python *package* — without it,
-# "from gui import launch" would fail because Python wouldn't treat the
-# folder as an importable unit.
+# toporia_gui/__init__.py — the desktop app as a package.
 #
-# It also defines what is publicly available when someone writes
-# "from gui import ...".  Here we just re-export the launch function
-# so the top-level gui.py only needs one import line.
+# launch() starts the app.  The core finds it through the entry point "toporia.apps",
+# name "gui" (pyproject.toml), so `toporia` with no command opens it without the core
+# importing this package by name.  Qt is loaded only inside launch(): the headless worker
+# (worker.py) imports the project modules without starting a GUI.
 
 from toporia_core import __version__ as GUI_VERSION  # one version for the program and its GUI
 

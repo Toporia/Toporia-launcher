@@ -1,4 +1,4 @@
-# engine/modes/grids.py — what every multi-run mode shares.
+# toporia_core/engine/modes/grids.py — what every multi-run mode shares.
 #
 # A sweep, a comparison and a sensitivity study all do the same three things:
 #

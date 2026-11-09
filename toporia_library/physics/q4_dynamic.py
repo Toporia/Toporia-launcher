@@ -1,4 +1,4 @@
-# plugins/physics/q4_dynamic.py — 2-D Q4 elasticity with a mass matrix: vibration.
+# toporia_library/physics/q4_dynamic.py — 2-D Q4 elasticity with a mass matrix: vibration.
 #
 # The static Q4 plane-stress engine (q4_plane_stress.py, untouched) plus a mass
 # matrix M, so two more questions can be answered about a design:

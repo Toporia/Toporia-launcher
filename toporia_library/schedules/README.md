@@ -9,7 +9,7 @@ run goes on:
 
 A schedule says what value one parameter takes after a given number of completed
 iterations. It is a part of its own; see
-[`framework/parts/schedule.py`](../../toporia_core/framework/parts/schedule.py). The solver lists the
+[`toporia_core/framework/parts/schedule.py`](../../toporia_core/framework/parts/schedule.py). The solver lists the
 schedules together with the parameter path each one drives:
 
 ```python
@@ -64,7 +64,7 @@ both set it.
 
 | Schedule | Reference | What it adds |
 | :-- | :-- | :-- |
-| 📄 Continuation-free projection | Guest, Asadpoure & Ha, *SMO* 2011 | Removes the need for a β schedule by reformulating the projection; useful as the baseline a schedule is compared with. It is a filter (a different projection function), not a schedule: nothing changes over time, so it belongs in `plugins/filters`. |
+| 📄 Continuation-free projection | Guest, Asadpoure & Ha, *SMO* 2011 | Removes the need for a β schedule by reformulating the projection; useful as the baseline a schedule is compared with. It is a filter (a different projection function), not a schedule: nothing changes over time, so it belongs in `toporia_library/filters`. |
 
 ## Waiting for the design: convergence-triggered continuation
 
@@ -78,7 +78,7 @@ design that settled long ago.
 **How it sees the design.** The engine tells every schedule the design change after each
 iteration through the optional hook `observe(completed, change)` (default: ignored, so
 `steps`, `geometric` and `linear` are untouched; see
-[`framework/parts/schedule.py`](../../toporia_core/framework/parts/schedule.py)). If nobody calls it, the
+[`toporia_core/framework/parts/schedule.py`](../../toporia_core/framework/parts/schedule.py)). If nobody calls it, the
 schedule is simply "every `max_every` iterations".
 
 **When.** Projection or SIMP-penalty continuation where the right moment depends on the
@@ -118,7 +118,7 @@ Some formulations evaluate every design several times instead of changing a para
 over time. The best-known is the robust formulation of Wang, Lazarov & Sigmund (2011):
 the design is projected eroded, intermediate and dilated, and the worst of the three is
 minimised. This is a solver setting, not a schedule; see
-[`framework/parts/variants.py`](../../toporia_core/framework/parts/variants.py):
+[`toporia_core/framework/parts/variants.py`](../../toporia_core/framework/parts/variants.py):
 
 ```python
 solver.variants = {"path": "filters[1].eta", "values": [0.75, 0.5, 0.25], "combine": "worst"}

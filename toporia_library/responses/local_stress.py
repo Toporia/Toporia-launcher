@@ -1,4 +1,4 @@
-# plugins/responses/local_stress.py — one stress limit per element, as an augmented-Lagrangian penalty.
+# toporia_library/responses/local_stress.py — one stress limit per element, as an augmented-Lagrangian penalty.
 #
 # Instead of aggregating the stresses into one number (a p-norm, stress.py),
 # every element gets its own constraint and its own multiplier.  With the

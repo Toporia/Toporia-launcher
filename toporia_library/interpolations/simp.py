@@ -1,4 +1,4 @@
-# plugins/interpolations/simp.py — Solid Isotropic Material with Penalisation.
+# toporia_library/interpolations/simp.py — Solid Isotropic Material with Penalisation.
 #
 #     E(ρ) = Emin + ρ^p · (E0 − Emin),      dE/dρ = p · (E0 − Emin) · ρ^(p − 1)
 #

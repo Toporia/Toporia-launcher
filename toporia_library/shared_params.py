@@ -1,4 +1,4 @@
-# plugins/shared_params.py — parameters declared once and used by more than one plugin.
+# toporia_library/shared_params.py — parameters declared once and used by more than one plugin.
 #
 # A parameter shown under the same name in two plugins must mean the same thing
 # and have the same range, so it is declared here once:

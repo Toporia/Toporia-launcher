@@ -1,4 +1,4 @@
-# plugins/filters/heaviside.py — HeavisideFilter (projection, binarisation with beta continuation)
+# toporia_library/filters/heaviside.py — HeavisideFilter (projection, binarisation with beta continuation)
 #
 # Maps intermediate densities toward crisp 0/1 values using:
 #   xf = (tanh(β·η) + tanh(β·(x − η))) / (tanh(β·η) + tanh(β·(1 − η)))

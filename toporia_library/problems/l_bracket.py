@@ -1,4 +1,4 @@
-# plugins/problems/l_bracket.py — the L-bracket, the standard stress-concentration benchmark.
+# toporia_library/problems/l_bracket.py — the L-bracket, the standard stress-concentration benchmark.
 #
 # An L-shaped domain: a 100 x 100 mm square with the top-right 60 x 60 mm
 # removed, so both arms are 40 mm wide.  The top edge of the vertical arm is
@@ -17,7 +17,7 @@
 # a stress constraint rounding it off.  Here the objective is compliance (what
 # q4+oc can run); for the stress-limited version pair a model with an updater
 # that takes a second constraint, e.g. q4+pymoto_mma, and add
-# constraints=[{"type": "stress", "limit": ...}] (plugins/responses/README.md).
+# constraints=[{"type": "stress", "limit": ...}] (toporia_library/responses/README.md).
 #
 # The vertical arm's clamp uses the whole top edge; the nodes right of x = 40
 # touch forced-empty elements with residual ersatz stiffness. This embedded-box

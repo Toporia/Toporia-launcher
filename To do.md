@@ -1,8 +1,8 @@
 # To do
 
 One overview of every open task. It merges the earlier `To do.md`, the method-integration
-plan [`toporia/plugins/TODO.md`](toporia/plugins/TODO.md) (which keeps its detailed tables)
-and the open-code survey [`toporia/plugins/SURVEY.md`](toporia/plugins/SURVEY.md).
+plan [`toporia_library/TODO.md`](toporia_library/TODO.md) (which keeps its detailed tables)
+and the open-code survey [`toporia_library/SURVEY.md`](toporia_library/SURVEY.md).
 
 **Who added it.** 🧑 you · 🤖 Claude · 🅧 Codex. Taken from the commit that first introduced
 each line (an AI co-author line in the commit means the agent wrote it); lines from the
@@ -173,10 +173,10 @@ chose before launch, and prefixed names to avoid clashes with other installed pa
       `AssembledModel`, the filter pipeline and the comparison referee moved into the core.
 - [x] 🤖 One `pyproject.toml`; PySide6 is the `gui` extra.
 - [x] 🤖 Library PDFs in `docs/library/`; `results/` ignored.
-- [x] 🤖 Plotting (`engine/records.py`, the compare/sweep/sensitivity images) is imported only
+- [x] 🤖 Plotting (`toporia_core/engine/records.py`, the compare/sweep/sensitivity images) is imported only
       when used, but matplotlib is still a core dependency; making it optional is open.
-      🤖 Done 9 November 2026: the core needs NumPy and SciPy only; PNGs by `engine/png.py`,
-      figures only with matplotlib (`engine/plotting.py`); `tests/test_core_alone.py` runs the
+      🤖 Done 9 November 2026: the core needs NumPy and SciPy only; PNGs by `toporia_core/engine/png.py`,
+      figures only with matplotlib (`toporia_core/engine/plotting.py`); `tests/test_core_alone.py` runs the
       core with matplotlib and Pillow blocked. Pillow is no longer a dependency.
 
 ## 5. Research and paper comparisons
@@ -194,12 +194,12 @@ chose before launch, and prefixed names to avoid clashes with other installed pa
 
 ## 6. Method integration backlog
 
-Details, sources and licences in [`toporia/plugins/TODO.md`](toporia/plugins/TODO.md) (🤖);
+Details, sources and licences in [`toporia_library/TODO.md`](toporia_library/TODO.md) (🤖);
 waves 3 and 4 are complete. Open:
 
 - [ ] 🤖 Wave 0: a systematic search for every open topology-optimisation code; correct the
       catalogue's 🔗/📄 markers. The verified survey so far is
-      [`SURVEY.md`](toporia/plugins/SURVEY.md) (🤖).
+      [`SURVEY.md`](toporia_library/SURVEY.md) (🤖).
 - [ ] 🤖 Wave 1, Python packages: cyipopt (blocked: no Windows wheel for this Python), ParOpt,
       dl4to + SELTO datasets, JAX/AuTO, google-research neural-structural-optimization,
       ceviche, JAX-FEM, TOFLUX; ToPy, PyTopo3D and others as oracles; FEniTop, Firedrake and

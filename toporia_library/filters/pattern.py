@@ -1,4 +1,4 @@
-# plugins/filters/pattern.py - PatternFilter (pattern repetition)
+# toporia_library/filters/pattern.py - PatternFilter (pattern repetition)
 #
 # Folds the domain into nx x ny (x nz) identical cells: all elements that sit
 # at the same place inside their cell share one density, their mean.  Like

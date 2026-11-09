@@ -1,4 +1,4 @@
-# framework/parts/variants.py — one design, evaluated in several versions at once.
+# toporia_core/framework/parts/variants.py — one design, evaluated in several versions at once.
 #
 # Some formulations evaluate every design more than once and optimise the
 # combination.  The robust formulation of Wang, Lazarov & Sigmund (2011)
@@ -12,7 +12,7 @@
 #     solver.variants = {"path": "filters[1].eta", "values": [0.75, 0.5, 0.25],
 #                        "combine": "worst", "nominal": 1}
 #
-# `path` is any parameter path (framework/problem/run.py); each value gives
+# `path` is any parameter path (toporia_core/framework/problem/run.py); each value gives
 # one variant: the same model built with that value.  VariantModel evaluates
 # them all at every design and joins them into one Evaluation, so updaters,
 # responses and filters do not change at all:

@@ -19,7 +19,7 @@ BRUNS = "https://doi.org/10.1007/s00158-005-0537-x"
 BOUNDS = "https://doi.org/10.1007/s004190050248"
 #: Companions kept out of discovery because of a known numerical failure, {case: reason}.  The
 #: volume-preserving projection left it once its 0/1-design limit was settled (identity when uniform,
-#: an explicit error when mixed; see plugins/filters/heaviside.py).
+#: an explicit error when mixed; see toporia_library/filters/heaviside.py).
 QUARANTINED = {}
 
 

@@ -1,7 +1,7 @@
 # methods/unstructured.py — density topology optimisation on an unstructured triangle mesh (Wave 5).
 #
 # The structured grid follows the axes; this method meshes the domain with triangles that
-# follow its edges and round holes (plugins/physics/t3_mesh.py) and optimises one density
+# follow its edges and round holes (toporia_library/physics/t3_mesh.py) and optimises one density
 # per triangle, the top88 recipe on that mesh:
 #
 #     stiffness   E_e = Emin + ρ_e^p (E0 − Emin)                                   (SIMP)

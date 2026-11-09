@@ -1,10 +1,15 @@
-# plugins/postprocessors/export_svg.py — the design's outline as SVG.
+# toporia_library/postprocessors/export_svg.py — the design's outline as SVG.
 #
 # One path of closed outlines in millimetres (width and height carry the
 # unit), with y turned the right way up for SVG.  A contour is filled with the
 # even-odd rule, so holes are holes; explicit shapes (moving morphable
 # components) with the non-zero rule, so overlapping bars fill as their union.
 # Good for figures and the web; for CAD use the DXF export.
+#
+#
+# What is traced: the same outlines as the DXF export (explicit shapes, or the
+# boundary of the black-and-white design by marching squares), drawn as one path
+# with y flipped to SVG's downward axis: (x, y) → (x, L_y − y).
 
 from toporia_core.framework.parts.postprocess import PostProcessor
 

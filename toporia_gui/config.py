@@ -1,4 +1,4 @@
-# apps/gui/config.py — turn the widgets' values into a Run.
+# toporia_gui/config.py — turn the widgets' values into a Run.
 #
 # Kept apart from runner.py, which imports every optimisation routine: the
 # window rebuilds the Run whenever a selection changes, to show the pipeline

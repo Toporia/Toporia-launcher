@@ -1,6 +1,6 @@
 # methods/truss.py — truss topology on a ground structure, kept as bars (To do item 3).
 #
-# The design variables are the bar areas a of a ground structure (plugins/physics/truss.py):
+# The design variables are the bar areas a of a ground structure (toporia_library/physics/truss.py):
 # a grid of nodes with a bar to every neighbour within reach.  Each iteration solves the
 # truss and updates the areas by optimality criteria,
 #
@@ -18,7 +18,7 @@
 # record and images; the app shows the bars themselves.  A clean solid to make is the
 # post-processor truss_solid, run only when it is in the post-processing list.
 #
-# The nodes (plugins/physics/truss_nodes.py): pins by default, as in the literature; joints
+# The nodes (toporia_library/physics/truss_nodes.py): pins by default, as in the literature; joints
 # with material (`joint_length` ℓ > 0) and anchored nodes (spring objects of the Problem page,
 # or `anchor_stiffness` on every free node) are Toporia's own additions.
 #

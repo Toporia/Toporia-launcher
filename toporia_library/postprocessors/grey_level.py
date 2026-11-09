@@ -1,4 +1,4 @@
-# plugins/postprocessors/grey_level.py — how grey the design is, at the end and over the run.
+# toporia_library/postprocessors/grey_level.py — how grey the design is, at the end and over the run.
 #
 # Sigmund's measure of non-discreteness, M_nd = 4/n Σ ρ(1 − ρ) × 100 %: 0 for
 # a black-and-white design, 100 for a uniformly half-dense one.  It says how

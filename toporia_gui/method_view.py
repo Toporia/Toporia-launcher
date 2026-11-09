@@ -1,4 +1,4 @@
-# apps/gui/method_view.py — an interactive view of the supported solver pipeline.
+# toporia_gui/method_view.py — an interactive view of the supported solver pipeline.
 # Moving boxes changes presentation only. The Run remains the execution contract;
 # filter ordering is edited explicitly inside the filter chain, never by wiring.
 

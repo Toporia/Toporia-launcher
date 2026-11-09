@@ -1,4 +1,4 @@
-# apps/gui/window.py — the main application window
+# toporia_gui/window.py — the main application window
 #
 # Home opens portable projects and the benchmark library. The persistent steps
 # switch both the left settings and the main workspace: physical editor, method

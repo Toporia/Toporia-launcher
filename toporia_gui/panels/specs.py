@@ -1,4 +1,4 @@
-# apps/gui/panels/specs.py — typed rows: the filter pipeline, the objective, the constraints.
+# toporia_gui/panels/specs.py — typed rows: the filter pipeline, the objective, the constraints.
 #
 # A filter, an objective and a constraint are all a spec of the same shape,
 # {"type": <plugin name>, <param>: <value>, ...}, so one row widget serves all
@@ -426,7 +426,7 @@ class _ScheduleRow(_SpecRow):
 
 
 class ScheduleListGroup(SpecListGroup):
-    """Continuation schedules: each drives one parameter during the run (framework/parts/schedule.py).
+    """Continuation schedules: each drives one parameter during the run (toporia_core/framework/parts/schedule.py).
 
     The parameter choices follow the method, the filters and the material
     law; with nothing that can change in this setup the group hides.

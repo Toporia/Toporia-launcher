@@ -1,4 +1,4 @@
-# plugins/updaters/adam.py — Adam on the design variables, volume budget as an augmented Lagrangian.
+# toporia_library/updaters/adam.py — Adam on the design variables, volume budget as an augmented Lagrangian.
 #
 # Connects to the framework as an Updater: it receives an Evaluation (objective,
 # volume, their gradients) and returns the next design.  It is the updater a

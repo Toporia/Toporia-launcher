@@ -1,4 +1,4 @@
-# plugins/physics/truss.py — pin-jointed bars on a ground structure, 2-D and 3-D (To do item 3).
+# toporia_library/physics/truss.py — pin-jointed bars on a ground structure, 2-D and 3-D (To do item 3).
 #
 # A ground structure is a grid of nodes in the design domain with a bar between every pair
 # of nodes within reach; the optimiser sizes the bars, and the ones that end up thin are the

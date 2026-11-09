@@ -46,7 +46,7 @@ Other physics and digitized paper curves need their own justified tolerances.
 ## Description and math
 
 Declare `DESCRIPTION` alongside the preset using the plain data classes in
-`plugins/problems/_research.py`. Include the question, setup, computation,
+`toporia_library/problems/_research.py`. Include the question, setup, computation,
 equations with short explanations, symbols/units, source, target panel,
 comparison method, limitations, rerun command and function IDs. No executable
 code or HTML goes in description text. Equations use MathText without `$`.

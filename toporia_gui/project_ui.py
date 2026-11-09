@@ -1,4 +1,4 @@
-# apps/gui/project_ui.py — file actions and project lifecycle for MainWindow.
+# toporia_gui/project_ui.py — file actions and project lifecycle for MainWindow.
 # Keeps persistence, prompts and notes out of the optimisation/preview wiring.
 
 from dataclasses import asdict, replace
