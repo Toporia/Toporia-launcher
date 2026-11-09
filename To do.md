@@ -87,17 +87,17 @@ Numbers are the note's own.
 
 ### Step 7: sync, 3D, compare, clean-up, release
 
-- [ ] 🧑 15 Constraints, physics and objective are editable in both the Problem and the Method
+- [x] 🧑 15 Constraints, physics and objective are editable in both the Problem and the Method
       tab, and stay in sync.
-- [ ] 🧑 18 A real 3D density view: the whole field as a cloud, not one averaged 2D view.
-- [ ] 🧑 28 Compare mode: choose the model once and change it, instead of a copy of every
+- [x] 🧑 18 A real 3D density view: the whole field as a cloud, not one averaged 2D view.
+- [x] 🧑 28 Compare mode: choose the model once and change it, instead of a copy of every
       model for every physics.
-- [ ] 🧑 Clean file tree: compact READMEs, a tidy catalogue and docs; decide on `examples/` and
+- [x] 🧑 Clean file tree: compact READMEs, a tidy catalogue and docs; decide on `examples/` and
       `experiments/`; `results/` is not needed in the repository.
 - [x] 🤖 Split into core, library and GUI (agreed 28 October 2026, 🤖; see section 4).
-- [ ] 🧑 Easy install on a new machine without Python: a zipped Windows folder (🧑 chose a zip
+- [x] 🧑 Easy install on a new machine without Python: a zipped Windows folder (🧑 chose a zip
       over an installer; unsigned).
-- [ ] 🧑 Version 0.3.0.
+- [x] 🧑 Version 0.3.0.
 
 ## 2. After the launch
 
