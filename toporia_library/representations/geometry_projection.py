@@ -12,6 +12,20 @@ float independently; shared endpoints and stacked-joint thickness are not used.
 References: Norato, Bell & Tortorelli, CMAME 293 (2015) 306-327; Smith & Norato,
 SMO 62 (2020) 1579-1594. The latter explains the cap approximation and capsules.
 Papers: https://doi.org/10.1016/j.cma.2015.05.005 https://doi.org/10.1007/s00158-020-02552-0
+
+The maths: for bar i with endpoints a_i, b_i, stock radius r and size variable
+alpha_i in [0, 1], the signed distance of an element centre p is
+d_i(p) = r - |p - (a_i + t (b_i - a_i))| with t the clipped projection onto the
+segment. The share of a sample ball of radius w (the window) inside the bar,
+for a locally flat boundary, with s = clip(d_i / w, -1, 1), is
+
+    2-D   P(s) = 1/2 + (arcsin s + s sqrt(1 - s^2)) / pi
+    3-D   P(s) = 1/2 + 3 s / 4 - s^3 / 4
+
+so the bar's density is rho_i = alpha_i P(s), and the bars join by the bounded
+product union rho = 1 - prod_i (1 - rho_i), which stays in [0, 1] where bars
+overlap. The chain rule back uses prefix and suffix products of (1 - rho_j) and
+dP/ds, through d_i to a_i, b_i and alpha_i.
 """
 
 from itertools import product

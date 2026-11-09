@@ -6,6 +6,15 @@ PyTorch implementation, this smooth variant has no batch normalisation,
 LeakyReLU, density offset, AMSGrad or built-in symmetry/manufacturing rules.
 It uses the existing FE/filter/response chain and general-vector updaters.
 No training dataset, pretrained weights or third-party neural code is used.
+
+The maths: with p the element centre scaled to [-1, 1]^d, the network is
+
+    h_0 = p,   h_l = tanh(W_l h_{l-1} + c_l)  (l = 1 ... depth),   rho(p) = sigmoid(w^T h_depth + c)
+
+and every W_l, c_l, w, c is a design variable, bounded by weight_bound. The
+gradient of the objective with respect to them is the element sensitivities
+dJ/drho_e carried back through the layers by backpropagation, written out in
+NumPy: dsigmoid = rho (1 - rho), dtanh = 1 - h^2.
 """
 
 import numpy as np
