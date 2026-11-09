@@ -146,7 +146,10 @@ the one before.
       🤖 Done 9 November 2026: editor roles Spring (axes, stiffness), Output port (direction) and
       Heat loss (coefficient, a convective boundary to T = 0). A copied preset's point springs
       and output port become these objects.
-- [ ] 🧑 27 A proper 3D editor.
+- [x] 🧑 27 A proper 3D editor.
+      🤖 Done 9 November 2026: a box is drawn by two corners of its footprint on the work plane
+      with a set height; a selected unrotated box has face handles to move and resize it; a
+      snap step for both; other shapes keep the move/rotate/scale gizmo and exact values.
 - [ ] 🧑 A sleek website.
 
 ## 3. Human tasks

@@ -5,6 +5,46 @@
 import math
 from uuid import uuid4
 
+#: One colour per physical role, shared by the 2-D and the 3-D editor.
+COLOURS = {"support": "#49a5db", "load": "#f87777", "solid": "#c2cad3", "void": "#e1bc66", "domain": "#82cfa0",
+           "spring": "#a77bd6", "port": "#f0a35e", "heat_loss": "#e86fae"}
+
+
+def snap(value, step):
+    """`value` on the nearest multiple of `step`; unchanged when step is 0 or None."""
+    return round(value / step) * step if step else value
+
+
+def box_from_corners(first, second, z, height, step=None, minimum=None):
+    """An axis-aligned box drawn on the work plane at height `z`: footprint from two corners.
+
+    Coordinates snap to `step` mm when given; a side never collapses below `minimum`
+    (one snap step, or 1 % of the larger side).
+    """
+    (x0, y0), (x1, y1) = (snap(v, step) for v in first[:2]), (snap(v, step) for v in second[:2])
+    low = [min(x0, x1), min(y0, y1), snap(z, step)]
+    size = [abs(x1 - x0), abs(y1 - y0), snap(height, step) or height]
+    floor = minimum or step or 0.01 * max(size[0], size[1], height, 1e-9)
+    size = [max(s, floor) for s in size]
+    return low, size
+
+
+def resizable(obj):
+    """True for an object a box widget can move and resize: an unrotated box."""
+    return obj.get("shape") == "box" and not any(obj.get("rotation", [0, 0, 0])) and not obj.get("extrusion")
+
+
+def object_from_bounds(obj, bounds, step=None):
+    """A box object moved and resized to (xmin, xmax, ymin, ymax, zmin, zmax), snapped to `step`."""
+    import copy
+    edited = copy.deepcopy(obj)
+    low = [snap(bounds[0], step), snap(bounds[2], step), snap(bounds[4], step)]
+    high = [snap(bounds[1], step), snap(bounds[3], step), snap(bounds[5], step)]
+    floor = step or 1e-6
+    edited["position"] = low
+    edited["size"] = [max(h - lo, floor) for lo, h in zip(low, high, strict=True)]
+    return edited
+
 
 def make_object(shape="point", position=(0.0, 0.0, 0.0), size=(1.0, 1.0, 1.0), role="support", **values):
     """Create a serializable object with a stable identity and explicit physical role."""

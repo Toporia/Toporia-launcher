@@ -1,6 +1,11 @@
 # apps/gui/spatial_view.py — optional VTK/Qt viewport over the shared physical objects.
 # Numerical geometry remains in framework/problem/regions.py; this view only
 # renders, picks and emits edits. QtInteractor is created lazily when shown.
+#
+# Editing in 3-D: a box is drawn by two clicks on the work plane (its footprint) with the
+# height set beside the plane; a selected unrotated box gets face handles to move and
+# resize it, snapped to the grid step when one is set; every other object gets the
+# move/rotate/scale gizmo.  Exact values stay in the inspector.
 
 import importlib.util
 from copy import deepcopy
@@ -11,7 +16,7 @@ from PySide6.QtWidgets import QApplication, QLabel, QVBoxLayout, QWidget
 
 from toporia_core.framework.problem.spatial import rotation_matrix, triangle_mesh
 
-COLOURS = {"support": "#49a5db", "load": "#f87777", "solid": "#c2cad3", "void": "#e1bc66", "domain": "#82cfa0"}
+from .geometry import COLOURS, object_from_bounds, resizable
 
 
 def object_mesh(obj, marker_size=0.2):
@@ -97,6 +102,7 @@ class SpatialView(QWidget):
         self.gizmo = None
         self.tool = "select"
         self.workplane_z = 0
+        self.snap_step = 0.0           # mm; 0 is off
         self.camera = None
         self.layout_box = QVBoxLayout(self)
         self.layout_box.setContentsMargins(0, 0, 0, 0)
@@ -231,6 +237,19 @@ class SpatialView(QWidget):
                     self.diagnostic.emit(str(error))
                     QTimer.singleShot(0, self.draw)
 
+            if resizable(obj):
+                def resized(box):
+                    edited = object_from_bounds(obj, box.bounds, self.snap_step)
+                    QTimer.singleShot(0, lambda: self.transformed.emit(edited))
+
+                position, size = obj["position"], obj["size"]
+                bounds = [position[0], position[0] + size[0], position[1], position[1] + size[1],
+                          position[2], position[2] + size[2]]
+                self.gizmo = self.plotter.add_box_widget(resized, bounds=bounds, factor=1.0,
+                                                         rotation_enabled=False, interaction_event="end",
+                                                         color=COLOURS[obj["role"]], outline_translation=True)
+                self.plotter.render()
+                return
             actor = self.actors[identity]
             scale = max(self.scenario.Lx, self.scenario.Ly, self.scenario.Lz) * .12 / max(actor.length, .001)
             self.gizmo = self.plotter.add_affine_transform_widget(actor, origin=obj["position"], scale=scale,
@@ -239,7 +258,10 @@ class SpatialView(QWidget):
 
     def _remove_gizmo(self):
         if self.gizmo is not None:
-            self.gizmo.remove()
+            if hasattr(self.gizmo, "remove"):
+                self.gizmo.remove()
+            elif self.plotter is not None:
+                self.plotter.clear_box_widgets()
             self.gizmo = None
 
     def fit(self):

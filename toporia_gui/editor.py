@@ -34,11 +34,9 @@ from PySide6.QtWidgets import (
     QWidget,
 )
 
-from .geometry import make_object, objects_from_scenario
+from .geometry import COLOURS, box_from_corners, make_object, objects_from_scenario
 from .spatial_view import SpatialView
 
-COLOURS = {"support": "#49a5db", "load": "#f87777", "solid": "#c2cad3", "void": "#e1bc66", "domain": "#82cfa0",
-           "spring": "#a77bd6", "port": "#f0a35e", "heat_loss": "#e86fae"}
 ROLE_LABELS = {"heat_loss": "Heat loss", "port": "Output port"}
 #: The one number a role carries besides its geometry: (object key, label, default, minimum).
 ROLE_VALUES = {"spring": ("stiffness", "Stiffness [N/mm]", 0.1, 1e-12),
@@ -194,6 +192,18 @@ class ProblemEditor(QWidget):
         spatial_tools.addWidget(QLabel("Placement plane Z [mm]"))
         self.plane_z = _number(0)
         spatial_tools.addWidget(self.plane_z)
+        spatial_tools.addWidget(QLabel("New box height [mm]"))
+        self.box_height = _number(10)
+        self.box_height.setMinimum(1e-6)
+        self.box_height.setToolTip("A box is drawn by two clicks on the placement plane: its footprint. "
+                                   "This is its height above the plane.")
+        spatial_tools.addWidget(self.box_height)
+        spatial_tools.addWidget(QLabel("Snap [mm]"))
+        self.snap_step = _number(0)
+        self.snap_step.setMinimum(0)
+        self.snap_step.setToolTip("Positions and sizes drawn or dragged in 3-D land on multiples of this; 0 is off.")
+        self.snap_step.valueChanged.connect(lambda value: setattr(self.spatial, "snap_step", value))
+        spatial_tools.addWidget(self.snap_step)
         for title, plane in (("XY", "xy"), ("XZ", "xz"), ("YZ", "yz"), ("Isometric", "isometric")):
             button = QPushButton(title)
             button.clicked.connect(lambda _=False, p=plane: self.spatial.camera_view(p))
@@ -679,6 +689,15 @@ class ProblemEditor(QWidget):
             size = tuple(b - a for a, b in zip(self._first, point, strict=True))
             x, y, z = self._first
             self._first = None
+        if tool == "box":
+            if self._first is None:          # the first corner of the footprint
+                self._first = point
+                self.hint.setText("Click the opposite corner of the box's footprint on the placement plane.")
+                return
+            (x, y, z), size = box_from_corners(self._first, point, self.plane_z.value(),
+                                                self.box_height.value(), self.snap_step.value())
+            self._first = None
+            self.hint.setText("")
         if tool == "rectangle":
             size = (length, length, 0)
         role = "support" if tool in {"point", "line", "rectangle", "circle"} else "void"
