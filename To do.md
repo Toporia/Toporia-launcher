@@ -138,8 +138,8 @@ the one before.
       🤖 Done 9 November 2026: a truss is drawn as its bars (width from the area, red tension,
       blue compression) and nodes (size from the bar area meeting there), live, in the result
       and in the 3-D cloud; element designs can show their grid (Result display options).
-      Open for 🧑: should component designs (MMC, geometry projection) show their outlines
-      live too, and what value belongs at a truss node?
+      🧑 decided: component outlines and a truss solid only at the end, with a post-processing
+      step (done: truss_solid); a truss node shows a value of your own (done: node_value).
 - [x] 🧑 16 Loads and constraints on the Problem page for all physics: springs, compliant ports,
       heat loss.
 - [x] 🤖 Point springs (compliant-mechanism ports) are kept on a custom copy but cannot be
