@@ -126,6 +126,9 @@ def run_single_with_store(run, on_iteration=None, *, problem=None):
     document = network_document(network) if network else None
     if document:
         store.save_json("network.json", document)
+    mesh = method.mesh_view()
+    if mesh:
+        store.save_json("mesh.json", network_document(mesh))
     store.postprocess = run_postprocessors(run, method.get_density(), run.output.dir, geometry,
                                            problem=problem, history={"grey_level": store.grey_levels},
                                            network=document)
@@ -191,6 +194,10 @@ def _loop(run, method, store, on_iteration):
             network = method.network() if send else None
             if network:
                 send(network_document(network))
+            send = getattr(on_iteration, "on_mesh", None)
+            mesh = method.mesh_view() if send else None
+            if mesh:
+                send(network_document(mesh))
 
         # Nothing stops while a continuation is still moving: a design that has
         # settled at p = 1 or at a soft projection is not the answer at the end.

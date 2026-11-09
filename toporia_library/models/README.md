@@ -19,6 +19,7 @@ single update rule.
 | Model | File | Registry name | Scope |
 | :-- | :-- | :-- | :-- |
 | ✅ 2-D Q4 plane stress | [`q4.py`](q4.py) | `q4` | Toporia's own engine: 2-D plane stress, structured grid, SIMP, direct sparse solve. Provides compliance, volume and stress; accepts the filter pipeline. |
+| ✅ 2-D Q4 fibre-reinforced | [`q4_orthotropic.py`](q4_orthotropic.py) | `q4_orthotropic` | The orthotropic Q4 engine: a density and a fibre angle per element (with the `fibre_angle` representation). Compliance with exact density and angle gradients. |
 | ✅ 2-D Q4 multiresolution | [`q4_multiresolution.py`](q4_multiresolution.py) | `q4_multiresolution` | Nested coarse displacement space, fine density/filter grid, exact subcell integration and projected fine-grid loads/supports. Elastic energy and volume; no stress, springs or 3-D. |
 | ✅ 2-D Q4 with buckling | [`q4_buckling.py`](q4_buckling.py) | `q4_buckling` | Adds the `buckling_load` objective/constraint, retaining compliance, volume, stress, filters and material laws. |
 | ✅ 2-D Q4 compliant mechanism | [`q4_mechanism.py`](q4_mechanism.py) | `q4_mechanism` | Linear Q4 with density-independent point springs, opaque point-displacement probes and signed output sensitivities. Shared sparse LU for all real and virtual loads. |

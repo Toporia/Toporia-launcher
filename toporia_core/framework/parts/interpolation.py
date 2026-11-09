@@ -18,6 +18,11 @@
 # of every element and for the slope dE/dρ, which every response's sensitivity
 # needs.  Both act element-wise on arrays of any shape.
 
+# A multi-material law reads more than the density: the weights of its candidate
+# materials, a field of the representation (framework/parts/representation.py).  It names
+# the fields in `fields`, receives them with set_fields() before every solve, and gives
+# their slopes, dE/dfield and d(volume)/dfield, for the sensitivities.
+
 from abc import ABC, abstractmethod
 
 import numpy as np
@@ -43,6 +48,25 @@ class Interpolation(ABC):
     schedulable = ()
     #: True when the material budget differs from the geometric density sum.
     nonlinear_volume = False
+    #: The representation's extra fields this law reads, e.g. ("material",).
+    fields = ()
+
+    def set_fields(self, fields, order="C"):
+        """Receive the representation's extra fields before a solve: {name: array}.
+
+        `order` is how the physics flattens element fields when it calls stiffness() with a
+        flat array (Physics.element_order), so a field can be flattened the same way.
+        """
+        self.field_values = dict(fields)
+        self.field_order = order
+
+    def field_slopes(self, density, E0, Emin):
+        """{name: dE/dfield}, each shaped like its field."""
+        return {}
+
+    def volume_field_slopes(self, density):
+        """{name: d(volume_density)/dfield}, each shaped like its field."""
+        return {}
 
     def setup(self, problem):
         """Bind optional scenario context; ordinary laws need no setup."""

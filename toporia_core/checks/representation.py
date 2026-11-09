@@ -51,10 +51,12 @@ def check_representation(cls):
                    z, movable, report, "backward vs finite differences")
 
     with registered(REPRESENTATIONS, cls):
-        with report.step("short run with q4+mma"):
+        # A representation with extra fields names the parts that read them (check_with).
+        settings = {"method": "q4+mma", **getattr(cls, "check_with", {})}
+        with report.step(f"short run with {settings['method']}"):
             from toporia_core.engine.loop import initialized_method
-            run = in_dims(small_run(method="q4+mma", m=0.4, max_iter=4, tol=0.0, representation={"type": cls.name},
-                            method_params={"move": 0.02}), getattr(cls, "dims", None))
+            run = in_dims(small_run(m=0.4, max_iter=4, tol=0.0, representation={"type": cls.name},
+                                    method_params={"move": 0.02}, **settings), getattr(cls, "dims", None))
             method = initialized_method(run)
             iterate(method, 4)
             assert np.all(np.isfinite(method.get_density())), "the design has non-finite entries"

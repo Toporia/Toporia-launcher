@@ -314,6 +314,7 @@ class Q4PlaneStress(Physics):
     order = 10
     provides = (ELASTIC_ENERGY, STRESS)
     uses_interpolation = True
+    element_order = "F"          # elements are numbered column by column (element_dofs)
 
     def initialize(self, problem, settings, interpolation=None):
         scenario = problem.scenario

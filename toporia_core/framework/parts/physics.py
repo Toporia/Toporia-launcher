@@ -57,6 +57,12 @@ class Physics(ABC):
     order = 100
     params = ()
     provides = ()
+    #: How the engine flattens an element field when it asks the material law ("C" row-major,
+    #: "F" column-major); a material law reading extra fields flattens them the same way.
+    element_order = "C"
+    #: The representation's extra fields this engine reads (Wave 5), e.g. ("angle",) for an
+    #: orthotropic engine: set_fields() before every solve, field_energy() for sensitivities.
+    fields = ()
     uses_interpolation = False
     supports_springs = False
     #: The problem dimensions the engine solves: (2,) plane, (3,) solid.
@@ -160,6 +166,18 @@ class Physics(ABC):
         residual R, so it supplies ∂R_e/∂ρ_e.
         """
         raise NotImplementedError(f"{type(self).__name__} does not provide {END_COMPLIANCE!r}")
+
+    def set_fields(self, fields):
+        """Receive the representation's extra fields before a solve: {name: array}."""
+        self.field_values = dict(fields)
+
+    def field_energy(self, state, case, name):
+        """d(compliance of load case `case`)/d(field `name`) with the displacement held: Σ_e E_e uᵀ ∂K_e/∂f u.
+
+        The compliance sensitivity is its negative (self-adjoint).  Only an engine that lists
+        `name` in `fields` answers it.
+        """
+        raise NotImplementedError(f"{type(self).__name__} does not read a field {name!r}")
 
 
 # ── MODES ─────────────────────────────────────────────────────────────────────

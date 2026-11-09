@@ -18,7 +18,7 @@ ORIGINALS = {
     "cantilever", "cantilever_3d", "column_buckling",
     "force_inverter", "heat_sink", "l_bracket", "l_bracket_stress",
     "mbb_beam", "mbb_beam_fixed_projection", "mbb_beam_robust", "mbb_beam_stiffness_heat",
-    "mbb_beam_stiffness_stress", "michell_cantilever",
+    "mbb_beam_stiffness_stress", "michell_cantilever", "cantilever_two_materials", "mbb_beam_fibres",
     "nonlinear_cantilever", "standard_bar", "three_point_bending", "vibrating_beam",
 }
 RELATED = {

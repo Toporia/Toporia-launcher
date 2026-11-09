@@ -159,6 +159,8 @@ class NonlinearSolution:
 class Q4Nonlinear(Physics):
     """Large-displacement elasticity on Q4 elements: Newton–Raphson with load steps, energy-interpolated void."""
 
+    element_order = "F"          # elements numbered column by column, as in q4_plane_stress
+
     name = "q4_nonlinear"
     label = "2-D Q4 large deformation (Toporia)"
     reference = (

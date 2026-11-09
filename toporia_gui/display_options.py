@@ -51,7 +51,7 @@ class DisplayOptions(QDialog):
                          "where the density crosses 0.5. Drag either to rotate.")
         cloud.toggled.connect(self._emit)
         layout.addWidget(cloud, 6, 0, 1, 3)
-        network = self.controls["network"] = QCheckBox("Draw a truss as its bars and nodes")
+        network = self.controls["network"] = QCheckBox("Draw a truss or a triangle mesh in its own form")
         network.setToolTip("A design made of bars shows them over its density: wider for a larger area, red in "
                            "tension and blue in compression; a node grows with the bar area meeting there.")
         network.toggled.connect(self._emit)

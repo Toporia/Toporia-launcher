@@ -216,6 +216,14 @@ class OptimizationMethod(ABC):
         """
         return None
 
+    def mesh_view(self):
+        """A design on a mesh of its own (triangles), for its view, or None.
+
+        {"nodes": (n, 2) coordinates in mm, "triangles": (e, 3) node indices, "values": (e,)
+        densities}.  The engine saves it with the result (mesh.json) and the desktop app draws it.
+        """
+        return None
+
     def is_converged(self):
         """Optional method-specific stopping criterion.
 

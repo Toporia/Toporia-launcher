@@ -105,6 +105,17 @@ class Response:
         self.problem = problem
         self.settings = settings
 
+    def field_gradient(self, state, name):
+        """d(value)/d(field `name`) for a design with several fields per element (Wave 5).
+
+        A response that can be differentiated with respect to the material law's or the
+        physics' fields implements it; the others are refused before such a run.
+        """
+        raise ValueError(f"{self.label!r} cannot be used with a design of several fields per element")
+
+    #: True when field_gradient is implemented (checked before a run with several fields).
+    handles_fields = False
+
     def evaluate(self, state, gradient=True):
         """Return the ResponseValue for a solved state.  Skip the gradient when not asked for it."""
         raise NotImplementedError(f"Response {self.name!r} does not compute itself")

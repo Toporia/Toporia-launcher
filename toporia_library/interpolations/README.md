@@ -28,6 +28,7 @@ set) ignore it, and the Pipeline box says so.
 | Law | File | Name | f(ρ) | Reference |
 | :-- | :-- | :-- | :-- | :-- |
 | ✅ SIMP | [`simp.py`](simp.py) | `simp` | ρ^p (p = 3) | Bendsøe, *Struct. Optim.* 1989 |
+| ✅ Multi-material (DMO) | [`dmo.py`](dmo.py) | `dmo` | $E = E_{min} + \rho^p s(x)(E_0 - E_{min})$, $s = \sum_m w_m e_m$, $w_m = x_m^q \prod_{n \ne m}(1 - x_n^q)$; the budget counts the mass $\rho \sum_m w_m c_m$. Reads the `material` field of the multi-material representation; without it every element is material 1 | Stegmann & Lund, *IJNME* 2005 (DMO4) |
 | ✅ RAMP | [`ramp.py`](ramp.py) | `ramp` | ρ / (1 + q(1 − ρ)) (q = 8) | Stolpe & Svanberg, *SMO* 2001 |
 | ✅ Ordered SIMP, interval-local variant | [`ordered_simp.py`](ordered_simp.py) | `ordered_simp` | piecewise t^p between ordered materials | da Silveira & Palma 2022 modified law, increasing-modulus branch; inspired by Zuo & Saitou 2017 |
 | ✅ Basic SINH, shared-density variant | [`sinh.py`](sinh.py) | `sinh` | linear stiffness; effective volume `1-sinh(p(1-rho))/sinh(p)` | Bruns, *SMO* 2005, Table 2 case 5 |

@@ -57,6 +57,8 @@ class MultiresolutionState:
 class Q4Multiresolution(Physics):
     """Fine-cell material, coarse bilinear displacement analysis and full adjoint."""
 
+    element_order = "F"          # elements numbered column by column, as in q4_plane_stress
+
     name = "q4_multiresolution"
     label = "2-D Q4 multiresolution (nested grids)"
     provides = (ELASTIC_ENERGY,)

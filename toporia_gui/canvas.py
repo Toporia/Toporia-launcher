@@ -117,6 +117,7 @@ class LiveCanvas(PanZoom, FigureCanvas):
         self.objective_label = "Objective"
         self._latest = None
         self._network, self._network_width = None, None   # a truss, and the domain width in mm
+        self._mesh = None                                    # a design on triangles (unstructured)
         self._overlay = []
         self._volumes = {}
         self._setup()
@@ -272,6 +273,10 @@ class LiveCanvas(PanZoom, FigureCanvas):
         """
         self._network, self._network_width = network, width
 
+    def set_mesh(self, mesh, width=None):
+        """A design on a triangle mesh to draw instead of its grid sampling; None removes it."""
+        self._mesh, self._network_width = mesh, (width if mesh is not None else self._network_width)
+
     def _draw_overlay(self, shape):
         """The design in its own representation, over the 2-D image: bars and nodes, or the elements."""
         for artist in self._overlay:
@@ -290,6 +295,20 @@ class LiveCanvas(PanZoom, FigureCanvas):
             grid = LineCollection(edges, colors=self._colours()[1], linewidths=0.3, alpha=0.35)
             self._ax_d.add_collection(grid)
             self._overlay.append(grid)
+        mesh = self._mesh
+        if self.options.get("network", True) and mesh and len(mesh.get("triangles") or ()):
+            # The design on its own triangles, over the grid sampling the engine records.
+            h = (self._network_width or nx) / nx
+            nodes = np.asarray(mesh["nodes"], dtype=float)
+            x, y = nodes[:, 0] / h - 0.5, ny - nodes[:, 1] / h - 0.5
+            dark = is_dark(self._colours()[0])
+            values = np.asarray(mesh["values"], dtype=float)
+            artist = self._ax_d.tripcolor(x, y, np.asarray(mesh["triangles"], dtype=int),
+                                          facecolors=values if dark else 1.0 - values, cmap="gray",
+                                          vmin=0, vmax=1, edgecolors="none", zorder=2)
+            self._overlay.append(artist)
+            if self._im is not None:
+                self._im.set_alpha(0.0)
         network = self._network
         if not (self.options.get("network", True) and network and len(network.get("nodes") or ())
                 and len(network["nodes"][0]) == 2):

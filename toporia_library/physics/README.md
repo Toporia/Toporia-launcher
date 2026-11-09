@@ -18,6 +18,7 @@ density field can resolve and where the classic numerical artefacts come from.
 | Element | File | Scope |
 | :-- | :-- | :-- |
 | ✅ Q4 plane stress | [`q4_plane_stress.py`](q4_plane_stress.py) | Bilinear quadrilateral, 2 DOF per node, structured grid, column-major numbering, analytic element stiffness. The top88 element. 2-D. |
+| ✅ Q4 fibre-reinforced (orthotropic) | [`q4_orthotropic.py`](q4_orthotropic.py) | Plane stress lamina (E1 = E0, E2, G12, ν12) whose fibres point at the element's angle θ (field `angle`). In Tsai–Pagano form the element matrix is $K_e(\theta) = K_0 + \cos 2\theta K_1 + \sin 2\theta K_2 + \cos 4\theta K_3 + \sin 4\theta K_4$, assembled exactly at any angle, with the closed-form $\partial K_e/\partial\theta$ for exact angle sensitivities. Provides compliance. 2-D. |
 | ✅ Nested multiresolution Q4 | [`q4_multiresolution.py`](q4_multiresolution.py) | Fine-cell material integrated exactly into a coarse displacement space. Full fine-density energy gradient, virtual-work-preserving loads and fine-grid support constraints. 2-D elastic energy only. |
 | ✅ Q4 port springs and probes | [`q4_mechanism.py`](q4_mechanism.py) | Separate subclass with density-independent springs, signed point probes and one shared state/adjoint LU. External work includes spring energy. Adds the `point_displacement` feature; 2-D small-displacement elasticity. |
 | ✅ Q4 linearised buckling | [`q4_buckling.py`](q4_buckling.py) | Static Q4 plus geometric stiffness, positive buckling factors and the adjoint sensitivity through the prebuckling displacement. 2-D. |

@@ -24,7 +24,7 @@ A test (`tests/apps/test_gui.py`) fails if a part ever stops being reachable fro
 | **Wraps** | Calls an outside Python package. That package is installed separately. Parts whose package is missing are greyed out in the app, with the install command. |
 | **Own** | Toporia's own idea or standard practice. |
 
-## In the library today: 94 selectable parts and 95 benchmark/research presets
+## In the library today: 99 selectable parts and 98 benchmark/research presets
 
 The selectable parts include models and whole methods; their nine underlying
 physics engines are counted separately in the [catalogue totals](README.md).
@@ -34,6 +34,8 @@ physics engines are counted separately in the [catalogue totals](README.md).
 | In the app | Name | File | Came in | From |
 | :-- | :-- | :-- | :-- | :-- |
 | Element densities | `element_density` | [element_density.py](representations/element_density.py) | Own | Bendsøe 1989; Sigmund's 99-line code · papers [1](https://doi.org/10.1007/BF01650949) [2](https://doi.org/10.1007/s001580050176) |
+| Density and material choice (multi-material) | `multi_material` | [multi_material.py](representations/multi_material.py) | Paper | Stegmann & Lund, *IJNME* 2005 · [paper](https://doi.org/10.1002/nme.1259) |
+| Density and fibre angle | `fibre_angle` | [fibre_angle.py](representations/fibre_angle.py) | Paper | Nomura et al., *IJNME* 2015 · [paper](https://doi.org/10.1002/nme.4799) |
 | Moving morphable components (constant or variable thickness) | `mmc` | [mmc.py](representations/mmc.py) | Paper | Guo, Zhang & Zhong 2014; variable thickness as in MMC188 (Zhang et al., *SMO* 2016) · papers [1](https://doi.org/10.1115/1.4027609) [2](https://doi.org/10.1007/s00158-015-1372-3) |
 | Moving morphable voids (restricted 2D superellipses) | `mmv` | [mmv.py](representations/mmv.py) | Paper | Zhang et al., *CMAME* 2017; own geometric dual of MMC, without B-spline surfaces or FE pruning · [paper](https://doi.org/10.1016/j.cma.2017.05.002) |
 | Geometry projection (2D/3D capsule bars) | `geometry_projection` | [geometry_projection.py](representations/geometry_projection.py) | Paper | Own fixed-radius, bounded-union variant with component activation; no GPTO code copied · papers [1](https://doi.org/10.1016/j.cma.2015.05.005) [2](https://doi.org/10.1007/s00158-020-02552-0) |
@@ -64,6 +66,7 @@ physics engines are counted separately in the [catalogue totals](README.md).
 | In the app | Name | File | Came in | From |
 | :-- | :-- | :-- | :-- | :-- |
 | SIMP (power law) | `simp` | [simp.py](interpolations/simp.py) | Paper | Bendsøe 1989 · [paper](https://doi.org/10.1007/BF01650949) |
+| Multi-material (DMO) | `dmo` | [dmo.py](interpolations/dmo.py) | Paper | Stegmann & Lund, *IJNME* 2005 (DMO4) · [paper](https://doi.org/10.1002/nme.1259) |
 | RAMP (rational) | `ramp` | [ramp.py](interpolations/ramp.py) | Paper | Stolpe & Svanberg 2001 · [paper](https://doi.org/10.1007/s001580100129) |
 | SINH (shared-density variant) | `sinh` | [sinh.py](interpolations/sinh.py) | Paper | Bruns 2005, eqs. 22-23, Table 2 case 5: linear stiffness and effective-volume cost · [paper](https://doi.org/10.1007/s00158-005-0537-x) |
 | Hashin-Shtrikman (fixed-nu upper envelope) | `hashin_shtrikman` | [hashin_shtrikman.py](interpolations/hashin_shtrikman.py) | Own | Independent envelope of both elastic upper-channel bounds, 2-D/3-D; not variable nu or realisability certification · [paper](https://doi.org/10.1007/s004190050248) |
@@ -74,6 +77,7 @@ physics engines are counted separately in the [catalogue totals](README.md).
 | In the app | Name | File | Came in | From |
 | :-- | :-- | :-- | :-- | :-- |
 | 2-D Q4 plane stress (Toporia) | `q4` | [q4.py](models/q4.py), [q4_plane_stress.py](physics/q4_plane_stress.py) | Port | the physics half of top88 · [paper](https://doi.org/10.1007/s00158-010-0594-7) |
+| 2-D Q4 fibre-reinforced (angle per element) | `q4_orthotropic` | [q4_orthotropic.py](models/q4_orthotropic.py), [q4_orthotropic.py](physics/q4_orthotropic.py) | Paper | Tsai & Pagano 1968 invariants; Nomura et al., *IJNME* 2015 · [paper](https://doi.org/10.1002/nme.4799) |
 | 2-D Q4 multiresolution (nested grids) | `q4_multiresolution` | [model](models/q4_multiresolution.py), [physics](physics/q4_multiresolution.py) | Paper | Independent aligned 2-D Galerkin variant with exact fine-cell integration and projected supports; fine verification required · papers [1](https://doi.org/10.1007/s00158-009-0443-8) [2](https://doi.org/10.1007/s00158-018-2048-6) |
 | 2-D Q4 compliant mechanism (Toporia) | `q4_mechanism` | [q4_mechanism.py](models/q4_mechanism.py), [q4_mechanism.py](physics/q4_mechanism.py) | Paper | Own port-spring Q4 engine; optional independent pyMOTO assembly/backpropagation check · [paper](https://doi.org/10.1080/08905459708945415) |
 | 2-D Q4 with buckling (Toporia) | `q4_buckling` | [q4_buckling.py](models/q4_buckling.py), [q4_buckling.py](physics/q4_buckling.py) | Paper | Ferrari, Sigmund & Guest 2021; Toporia's p-norm aggregate and column geometry · [paper](https://doi.org/10.1007/s00158-021-02854-x) |
@@ -137,6 +141,7 @@ physics engines are counted separately in the [catalogue totals](README.md).
 | :-- | :-- | :-- | :-- | :-- |
 | RBF level set | `levelset` | [levelset_rbf.py](methods/levelset_rbf.py) | Port | TOPRBF.m (Luo et al.); Wang & Wang, *CMAME* 2006 · papers [1](https://doi.org/10.1002/nme.1536) [2](https://doi.org/10.1007/s00158-018-1904-8) |
 | Truss on a ground structure (2-D/3-D), stiffness or frequency, kept as bars | `truss` | [truss.py](methods/truss.py), [physics/truss.py](physics/truss.py) | Paper | Dorn, Gomory & Greenberg 1964; OC truss sizing as in Bendsøe & Sigmund 2003 · [book](https://doi.org/10.1007/978-3-662-05086-6) |
+| Density on an unstructured triangle mesh | `unstructured` | [unstructured.py](methods/unstructured.py), [physics/t3_mesh.py](physics/t3_mesh.py) | Paper | top88 on constant-strain triangles; Talischi et al., *SMO* 2012 · [paper](https://doi.org/10.1007/s00158-011-0696-x) |
 | Truss joints with material (`joint_length`) and anchored nodes | part of `truss` | [physics/truss_nodes.py](physics/truss_nodes.py) | Own | Toporia's own node models, not from the literature |
 | Reaction-diffusion level set | `levelset_reaction_diffusion` | [levelset_reaction_diffusion.py](methods/levelset_reaction_diffusion.py) | Paper | Otomori et al. 2015; own cell-centred variant, implicit diffusion and bisected volume multiplier · [paper](https://doi.org/10.1007/s00158-014-1190-z) |
 | Hamilton-Jacobi level set with circular-hole derivative | `levelset_hamilton_jacobi` | [levelset_hamilton_jacobi.py](methods/levelset_hamilton_jacobi.py) | Paper | Challis 2010; independent upwind HJ/TD, reinitialisation and normalised augmented-Lagrangian volume feedback · [paper](https://doi.org/10.1007/s00158-009-0430-0) |
@@ -181,6 +186,9 @@ and the preset *MBB Beam (Robust)*.
 | MBB Beam (Stiffness and Stress) | [mbb_beam_stiffness_stress.py](problems/mbb_beam_stiffness_stress.py) | combined objective; Marler & Arora 2004 · [paper](https://doi.org/10.1007/s00158-003-0368-6) |
 | MBB Beam (Stiffness and Heat) | [mbb_beam_stiffness_heat.py](problems/mbb_beam_stiffness_heat.py) | a second physics on the same design; Gao & Zhang 2010 · [paper](https://doi.org/10.1002/nme.2802) |
 | MBB Beam (Truss) | [truss_mbb.py](problems/truss_mbb.py) | ground-structure truss, made into a clean solid outline; Dorn et al. 1964 |
+| MBB Beam (Fibre-steered) | [mbb_beam_fibres.py](problems/mbb_beam_fibres.py) | density and fibre angle per element; Nomura et al. 2015 |
+| MBB Beam with a Hole (Triangles) | [mbb_beam_hole_triangles.py](problems/mbb_beam_hole_triangles.py) | unstructured triangles around a round hole; Talischi et al. 2012 |
+| Cantilever (Two Materials) | [cantilever_two_materials.py](problems/cantilever_two_materials.py) | void or one of two materials per element (DMO); Stegmann & Lund 2005 |
 | Cantilever 3D (Truss) | [truss_cantilever_3d.py](problems/truss_cantilever_3d.py) | space truss, made into an STL solid; Dorn et al. 1964 |
 | MBB Beam (Fixed Projection) | [mbb_beam_fixed_projection.py](problems/mbb_beam_fixed_projection.py) | Independent fixed-beta/tightened-MMA recipe; explicit settings [Høghøj & Träff §3.1](https://arxiv.org/html/2102.12999#S3.SS1), motivation [Guest et al. 2011](https://doi.org/10.1007/s00158-011-0676-1) |
 | Vibrating Beam | [vibrating_beam.py](problems/vibrating_beam.py) | after Du & Olhoff 2007 · [paper](https://doi.org/10.1007/s00158-007-0101-y) |

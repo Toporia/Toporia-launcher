@@ -208,9 +208,16 @@ waves 3 and 4 are complete. Open:
       then top88, top99neo, top3d/top3D125, MMA/GCMMA, RBF, reaction-diffusion and Challis
       level sets, TOBS, MMC, GGP/GPTO, AM filter, buckling, non-linear, multi-material,
       PolyStress, topflow, 3-D stress. (Strict oracle checks are done; bridges are not.)
-- [ ] 🤖 Wave 5, framework changes: several fields per element (DMO, fibres, multi-material);
+- [~] 🤖 Wave 5, framework changes: several fields per element (DMO, fibres, multi-material);
       unstructured meshes; beam/truss elements and ground structures (see 🧑 item 3);
       multiscale, IGA, CutFEM; fluids, transient, acoustics, photonics; generative models.
+      🤖 9 November 2026, 🧑 chose two parts: several fields per element done (representations
+      multi_material and fibre_angle, the DMO law, the orthotropic Q4 engine, field sensitivities
+      in the core; presets Cantilever (Two Materials), MBB Beam (Fibre-steered)), and unstructured
+      meshes done (the `unstructured` method on triangles that follow edges and round holes; 2-D;
+      preset MBB Beam with a Hole (Triangles)). Beam/truss elements and ground structures: done with
+      item 3. Open: 3-D unstructured meshes, multiscale, IGA, CutFEM, fluids, transient, acoustics,
+      photonics, generative models.
 - [ ] 🧑 Coupled solving and combination within optimisation iterations.
 - [ ] 🧑 GUI for authoring new computational functions (document the extension interface first).
 - [ ] 🧑 Export version control; more stress and price statistics.

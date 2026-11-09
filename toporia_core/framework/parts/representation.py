@@ -17,6 +17,14 @@
 # and also says where the design starts (initial()) and how far each variable
 # may move (bounds()), since both depend on what the variables are.
 #
+# Several fields per element (Wave 5).  Besides the density, a representation may
+# describe more fields on every element: the weights of candidate materials, a fibre
+# angle.  It names them in `fields`, hands them over with extra(z), and carries their
+# sensitivities back with backward_extra(z, ...).  Each field is used either by the
+# material law (a multi-material law: framework/parts/interpolation.py) or by the physics
+# (an orthotropic engine: framework/parts/physics.py); the model checks that every field
+# has exactly one user before the run.
+#
 # `element_wise` says whether the variables ARE element densities.  Some
 # update rules (optimality criteria, BESO, SiMPL) only make sense then; they
 # declare needs_element_densities, and such a pairing is refused before the
@@ -49,6 +57,11 @@ class Representation(ABC):
     monitor_physical_change = False
     #: The problem dimensions it works in (2 for plane problems, 3 for a box); None means any.
     dims = (2,)
+    #: Names of extra per-element fields besides the density (Wave 5), e.g. ("material",).
+    fields = ()
+    #: For the conformance check of a representation with extra fields: the run settings
+    #: that bring the parts reading them, e.g. {"interpolation": {"type": "dmo"}}.
+    check_with = {}
     #: One sentence of advice on using it (a suitable move limit, say), shown
     #: before a run and in the GUI; empty when there is none.
     advice = ""
@@ -72,6 +85,15 @@ class Representation(ABC):
     @abstractmethod
     def backward(self, z, sensitivity):
         """d(objective)/dz, given `sensitivity` = d(objective)/d(density(z)), shaped like the field."""
+
+    def extra(self, z):
+        """The extra fields the variables describe, {name: array}; empty for a density-only representation."""
+        return {}
+
+    def backward_extra(self, z, sensitivities):
+        """d(objective)/dz from {name: d(objective)/d(field)}, shaped like z."""
+        import numpy as np
+        return np.zeros_like(z, dtype=float)
 
     def outlines(self, z):
         """The design's own shapes as closed polygons [(n, 2) arrays in mm], for export; None when it has none."""

@@ -22,6 +22,13 @@
 # and it can then minimise or constrain every response its engine provides the
 # features for — compliance, volume, stress — with every filter and every
 # updater.  A new response or filter likewise works with every engine.
+#
+# Several fields per element (Wave 5): a representation may describe more than the
+# density (candidate-material weights, a fibre angle).  Each extra field goes to the one
+# part that reads it, the material law or the physics, before every solve; the responses
+# give d(value)/d(field) (field_gradient), the material law d(volume)/d(field), and the
+# representation carries both back to the variables with backward_extra.  The filters act
+# on the density only.
 
 import re
 
@@ -120,6 +127,8 @@ class AssembledModel(Model):
         self.engine.companions = build_companions(getattr(scenario, "extra_physics", None), type(self), problem)
         self.representation = design_representation(solver)
         self.representation.setup(problem)
+        self.fields = tuple(getattr(self.representation, "fields", ()))
+        self._check_fields()
         self.lb, self.ub = self.representation.bounds()
         self.volume_limit = scenario.volfrac * n_total
         self.pipeline = DensityFilterPipeline(problem, solver)
@@ -140,6 +149,38 @@ class AssembledModel(Model):
                 self.compliance = compliance_cls()
                 self.compliance.setup(self.engine, problem, {})
 
+    def _check_fields(self):
+        """Every extra field of the representation has exactly one reader: the material law or the physics.
+
+        A reader without its field uses its default (one material, fibres along x).
+        """
+        made = set(self.fields)
+        by_material = set(getattr(self.material, "fields", ()) or ()) if self.material is not None else set()
+        by_physics = set(getattr(self.engine, "fields", ()) or ())
+        unread = made - (by_material | by_physics)
+        if unread or by_material & by_physics & made:
+            raise ValueError(
+                f"The design's extra fields {sorted(made)} need a reader: the material law reads "
+                f"{sorted(by_material) or 'none'} and the physics {sorted(by_physics) or 'none'}; choose a "
+                f"representation, material law and physics that belong together")
+        self.fields = tuple(name for name in self.fields if name in by_material | by_physics)
+
+    def _set_fields(self, z):
+        """Hand the extra fields of design z to their readers."""
+        if not self.fields:
+            return
+        values = self.representation.extra(z)
+        if self.material is not None and getattr(self.material, "fields", ()):
+            self.material.set_fields({name: values[name] for name in self.material.fields},
+                                     order=getattr(self.engine, "element_order", "C"))
+        if getattr(self.engine, "fields", ()):
+            self.engine.set_fields({name: values[name] for name in self.engine.fields})
+
+    def _field_backward(self, z, response, state):
+        """d(response)/dz through the extra fields."""
+        return self.representation.backward_extra(z, {name: response.field_gradient(state, name)
+                                                      for name in self.fields})
+
     def _response(self, spec, role):
         cls, values = resolve_response(spec, role)
         if not cls.computable_on(type(self).physics):
@@ -148,6 +189,9 @@ class AssembledModel(Model):
         response = cls()
         response.role = role
         response.setup(self.engine, self.problem, values)
+        if self.fields and not getattr(response, "handles_fields", False):
+            raise ValueError(f"{cls.label!r} cannot be used with a design of several fields per element "
+                             f"({', '.join(self.fields)}); compliance and thermal compliance can")
         return response
 
     def initial_design(self):
@@ -183,6 +227,7 @@ class AssembledModel(Model):
 
     def volume_of(self, z):
         """Cheap budget evaluation, including a selected effective-volume law."""
+        self._set_fields(z)
         rho = self.physical(z)
         return np.sum(self.material.volume_density(rho) if self.material is not None else rho)
 
@@ -198,6 +243,7 @@ class AssembledModel(Model):
     def evaluate(self, z, gradients=True):
         x = self.representation.density(z)
         x_phys = self.pipeline.physical_density(x)
+        self._set_fields(z)
         state = self.engine.solve(x_phys)
 
         objective = self.objective.evaluate(state, gradient=gradients)
@@ -209,6 +255,12 @@ class AssembledModel(Model):
             volume_slope = self.material.volume_slope(x_phys) if self.material is not None else np.ones_like(x)
             dc, dv = self.pipeline.sensitivities(objective.gradient, volume_slope)
             dc, dv = self._backward(z, dc), self._backward(z, dv)
+            if self.fields:
+                dc = dc + self._field_backward(z, self.objective, state)
+                slopes = self.material.volume_field_slopes(x_phys) if self.material is not None else {}
+                dv = dv + self.representation.backward_extra(
+                    z, {name: slopes.get(name, np.zeros_like(self.representation.extra(z)[name]))
+                        for name in self.fields})
 
         reported = dict(objective.reported)
         volume = np.sum(self.material.volume_density(x_phys) if self.material is not None else x_phys)
@@ -219,6 +271,8 @@ class AssembledModel(Model):
         for i, response in enumerate(self.constraints):
             result = response.evaluate(state, gradient=gradients)
             gradient = self._backward(z, self.pipeline.sensitivity(result.gradient)) if gradients else None
+            if gradients and self.fields:
+                gradient = gradient + self._field_backward(z, response, state)
             constraints.append(ConstraintValue(response.name, result.value, gradient, exact=result.exact))
             for key, value in result.reported.items():
                 reported[key if len(self.constraints) == 1 else f"{key}_{i}"] = value

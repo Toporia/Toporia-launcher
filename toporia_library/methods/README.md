@@ -32,6 +32,7 @@ a buckling limit. Pairings with no compatible objective are rejected before solv
 | :-- | :-- | :-- | :-- |
 | ✅ RBF level set | [`levelset_rbf.py`](levelset_rbf.py) | `levelset` | Numerical variant of Wei et al., *SMO* 2018; related Wang & Wang 2006 |
 | ✅ Truss on a ground structure (2-D and 3-D), for stiffness or the lowest frequency; kept as bars | [`truss.py`](truss.py), [`../physics/truss.py`](../physics/truss.py), [`../physics/truss_nodes.py`](../physics/truss_nodes.py) | `truss` | Dorn, Gomory & Greenberg 1964; OC sizing as in Bendsøe & Sigmund 2003. Joint and anchored nodes are Toporia's own |
+| ✅ Density on an unstructured triangle mesh | [`unstructured.py`](unstructured.py), [`../physics/t3_mesh.py`](../physics/t3_mesh.py) | `unstructured` | The top88 recipe on constant-strain triangles that follow the domain's edges and round holes (Delaunay of a lattice plus sampled edges and rims), an area-weighted density filter and OC with the volume as area; the engine records the triangle densities sampled on the grid, the app draws the triangles. Talischi et al., *SMO* 2012 (PolyTop) |
 
 ### The truss method — `truss`
 

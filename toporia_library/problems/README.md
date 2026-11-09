@@ -33,6 +33,9 @@ Toporia exists to make.
 | ✅ MBB beam, stiffness and heat (two physics on one design) | [`mbb_beam_stiffness_heat.py`](mbb_beam_stiffness_heat.py) | `MBB Beam (Stiffness and Heat)` |
 | ✅ MBB beam as a truss, then rounded off for stress | [`truss_mbb.py`](truss_mbb.py) | `MBB Beam (Truss)` |
 | ✅ 3-D cantilever as a space truss | [`truss_cantilever_3d.py`](truss_cantilever_3d.py) | `Cantilever 3D (Truss)` |
+| ✅ MBB beam with steered fibres (density and fibre angle per element) | [`mbb_beam_fibres.py`](mbb_beam_fibres.py) | `MBB Beam (Fibre-steered)` |
+| ✅ Cantilever of two materials (DMO) | [`cantilever_two_materials.py`](cantilever_two_materials.py) | `Cantilever (Two Materials)` |
+| ✅ MBB beam with a round hole, on triangles (unstructured mesh) | [`mbb_beam_hole_triangles.py`](mbb_beam_hole_triangles.py) | `MBB Beam with a Hole (Triangles)` |
 | ✅ MBB beam, fixed projection | [`mbb_beam_fixed_projection.py`](mbb_beam_fixed_projection.py) | `MBB Beam (Fixed Projection)` |
 | ✅ Heat sink | [`heat_sink.py`](heat_sink.py) | `Heat Sink` |
 | ✅ Vibrating beam | [`vibrating_beam.py`](vibrating_beam.py) | `Vibrating Beam` |

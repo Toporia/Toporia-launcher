@@ -31,6 +31,27 @@ class ThermalCompliance(Response):
     roles = (OBJECTIVE_ROLE,)
     requires = (THERMAL_ENERGY,)
 
+    handles_fields = True
+
+    def field_gradient(self, state, name):
+        """dC_T/d(field) for a design of several fields per element (Wave 5).
+
+        Self-adjoint, so no extra solve.  A field of the material law (candidate-material
+        weights) changes only E_e:  dC_T/df = −(∂E/∂f) · Σ_k w_k e_k  with e_k the unit-E
+        element energy.  A field of the physics (a fibre angle) changes the element matrix:
+        dC_T/df = −Σ_k w_k E_e u_eᵀ (∂K_e/∂f) u_e, which the physics gives (field_energy).
+        """
+        physics = self.physics
+        material = getattr(physics, "material", None)
+        if material is not None and name in getattr(material, "fields", ()):
+            scenario = physics.problem.scenario
+            slope = material.field_slopes(state.density, scenario.E0, scenario.Emin)[name]
+            energy = np.zeros_like(state.density, dtype=float)
+            for case, weight in enumerate(state.weights):
+                energy += weight * physics.thermal_energy(state, case)
+            return -slope * energy
+        return -sum(weight * physics.field_energy(state, case, name) for case, weight in enumerate(state.weights))
+
     def evaluate(self, state, gradient=True):
         physics = self.physics
         value = 0.0

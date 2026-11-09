@@ -41,6 +41,8 @@ box shows the same reason, and Compare Methods skips the pairing.
 | Representation | File | Name | Variables | Reference |
 | :-- | :-- | :-- | :-- | :-- |
 | ✅ Element densities | [`element_density.py`](element_density.py) | `element_density` | one density per element; starts uniform at the volume fraction or full (`start`) | Bendsøe, *Struct. Optim.* 1989 |
+| ✅ Density and material choice | [`multi_material.py`](multi_material.py) | `multi_material` | several fields per element: a density ρ and one weight $x_m \in [0, 1]$ per candidate material, $z = [\rho; x_1; \dots; x_M]$; the weights are the field `material`, read by the DMO material law | Stegmann & Lund, *IJNME* 2005 |
+| ✅ Density and fibre angle | [`fibre_angle.py`](fibre_angle.py) | `fibre_angle` | several fields per element: a density ρ and a fibre direction θ, $z = [\rho; \theta]$, θ in [−π, π]; the angle is the field `angle`, read by the fibre-reinforced physics | Nomura et al., *IJNME* 2015 |
 | ✅ Moving morphable components | [`mmc.py`](mmc.py) | `mmc` | 5 per bar (centre, half-length, half-thickness, angle); starts as crossing bars in an `n_x × n_y` grid. 2-D only; 3-D components are a candidate | Guo, Zhang & Zhong, *J. Appl. Mech.* 2014 |
 | ✅ Variable-thickness MMC | [`mmc.py`](mmc.py) with `thickness = variable` | `mmc` | the same bars with the half-thickness at both ends and the middle (7 per bar), joined by a parabola, as in MMC188. 2-D only | Zhang, Yuan, Zhang & Guo, *SMO* 2016 |
 | ✅ Moving morphable voids | [`mmv.py`](mmv.py) | `mmv` | 5 per superelliptical hole; solid outside their union. Restricted 2-D variant | Zhang et al., *CMAME* 2017 |

@@ -134,6 +134,11 @@ def main(path):
 
     iteration.on_network = network
 
+    def mesh(document):
+        emit("mesh", **document)
+
+    iteration.on_mesh = mesh
+
     status = {"mode": "", "status": "running"}
     sys.stdout = Logs()
     try:
