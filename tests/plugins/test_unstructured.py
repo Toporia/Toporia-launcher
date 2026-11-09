@@ -7,7 +7,6 @@ and drawn as the design.
 """
 
 import json
-from dataclasses import replace
 
 import numpy as np
 import pytest
@@ -96,9 +95,3 @@ def test_the_triangles_are_drawn_as_the_design():
     canvas.set_mesh(network_document(method.mesh_view()), width=60.0)
     canvas.refresh(method.get_density(), [1.0], 1)
     assert any(isinstance(a, PolyCollection) for a in canvas._overlay) and canvas._im.get_alpha() == 0.0
-
-
-def test_only_two_dimensional_problems():
-    run = get_run("Cantilever 3D").updated(method="unstructured")
-    with pytest.raises(ValueError):
-        initialized_method(replace(run, solver=replace(run.solver, filter_specs=[])))

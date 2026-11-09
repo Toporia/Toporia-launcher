@@ -24,7 +24,7 @@ A test (`tests/apps/test_gui.py`) fails if a part ever stops being reachable fro
 | **Wraps** | Calls an outside Python package. That package is installed separately. Parts whose package is missing are greyed out in the app, with the install command. |
 | **Own** | Toporia's own idea or standard practice. |
 
-## In the library today: 99 selectable parts and 98 benchmark/research presets
+## In the library today: 100 selectable parts and 101 benchmark/research presets
 
 The selectable parts include models and whole methods; their nine underlying
 physics engines are counted separately in the [catalogue totals](README.md).
@@ -141,7 +141,7 @@ physics engines are counted separately in the [catalogue totals](README.md).
 | :-- | :-- | :-- | :-- | :-- |
 | RBF level set | `levelset` | [levelset_rbf.py](methods/levelset_rbf.py) | Port | TOPRBF.m (Luo et al.); Wang & Wang, *CMAME* 2006 · papers [1](https://doi.org/10.1002/nme.1536) [2](https://doi.org/10.1007/s00158-018-1904-8) |
 | Truss on a ground structure (2-D/3-D), stiffness or frequency, kept as bars | `truss` | [truss.py](methods/truss.py), [physics/truss.py](physics/truss.py) | Paper | Dorn, Gomory & Greenberg 1964; OC truss sizing as in Bendsøe & Sigmund 2003 · [book](https://doi.org/10.1007/978-3-662-05086-6) |
-| Density on an unstructured triangle mesh | `unstructured` | [unstructured.py](methods/unstructured.py), [physics/t3_mesh.py](physics/t3_mesh.py) | Paper | top88 on constant-strain triangles; Talischi et al., *SMO* 2012 · [paper](https://doi.org/10.1007/s00158-011-0696-x) |
+| Density on an unstructured mesh (triangles 2-D, tetrahedra 3-D) | `unstructured` | [unstructured.py](methods/unstructured.py), [physics/t3_mesh.py](physics/t3_mesh.py), [physics/tet_mesh.py](physics/tet_mesh.py) | Paper | top88 on constant-strain cells; Talischi et al., *SMO* 2012; Kuhn split and boundary snapping (own) · [paper](https://doi.org/10.1007/s00158-011-0696-x) |
 | Truss joints with material (`joint_length`) and anchored nodes | part of `truss` | [physics/truss_nodes.py](physics/truss_nodes.py) | Own | Toporia's own node models, not from the literature |
 | Reaction-diffusion level set | `levelset_reaction_diffusion` | [levelset_reaction_diffusion.py](methods/levelset_reaction_diffusion.py) | Paper | Otomori et al. 2015; own cell-centred variant, implicit diffusion and bisected volume multiplier · [paper](https://doi.org/10.1007/s00158-014-1190-z) |
 | Hamilton-Jacobi level set with circular-hole derivative | `levelset_hamilton_jacobi` | [levelset_hamilton_jacobi.py](methods/levelset_hamilton_jacobi.py) | Paper | Challis 2010; independent upwind HJ/TD, reinitialisation and normalised augmented-Lagrangian volume feedback · [paper](https://doi.org/10.1007/s00158-009-0430-0) |
@@ -167,6 +167,7 @@ and the preset *MBB Beam (Robust)*.
 | In the app | Name | File | Came in | From |
 | :-- | :-- | :-- | :-- | :-- |
 | Truss to a clean solid | `truss_solid` | [truss_solid.py](postprocessors/truss_solid.py) | Own | union of capsules and joints by signed distance; marching squares/cubes (Lorensen & Cline 1987) |
+| Fitted boundary from the mesh | `mesh_surface` | [mesh_surface.py](postprocessors/mesh_surface.py) | Own | boundary faces/edges of the solid cells of an unstructured mesh |
 | Threshold to black and white | `threshold` | [threshold.py](postprocessors/threshold.py) | Own | as method comparisons do (Rojas-Labanda & Stolpe 2015) · [paper](https://doi.org/10.1007/s00158-015-1250-z) |
 | Connectivity check | `connectivity` | [connectivity.py](postprocessors/connectivity.py) | Own | — |
 | Feature size | `feature_size` | [feature_size.py](postprocessors/feature_size.py) | Own | measures what Sigmund 2007 and Wang et al. 2011 promise · papers [1](https://doi.org/10.1007/s00158-006-0087-x) [2](https://doi.org/10.1007/s00158-010-0602-y) |
@@ -188,6 +189,9 @@ and the preset *MBB Beam (Robust)*.
 | MBB Beam (Truss) | [truss_mbb.py](problems/truss_mbb.py) | ground-structure truss, made into a clean solid outline; Dorn et al. 1964 |
 | MBB Beam (Fibre-steered) | [mbb_beam_fibres.py](problems/mbb_beam_fibres.py) | density and fibre angle per element; Nomura et al. 2015 |
 | MBB Beam with a Hole (Triangles) | [mbb_beam_hole_triangles.py](problems/mbb_beam_hole_triangles.py) | unstructured triangles around a round hole; Talischi et al. 2012 |
+| Cantilever 3D with a Hole (Tetrahedra) | [cantilever_3d_hole_tets.py](problems/cantilever_3d_hole_tets.py) | top3d cantilever with a bore, body-fitted tetrahedra |
+| Bridge 3D with Round Openings (Tetrahedra) | [bridge_3d_openings_tets.py](problems/bridge_3d_openings_tets.py) | two bores, body-fitted tetrahedra |
+| Block around a Spherical Void (Tetrahedra) | [block_spherical_void_tets.py](problems/block_spherical_void_tets.py) | a spherical cavity, tetrahedra snapped onto the sphere |
 | Cantilever (Two Materials) | [cantilever_two_materials.py](problems/cantilever_two_materials.py) | void or one of two materials per element (DMO); Stegmann & Lund 2005 |
 | Cantilever 3D (Truss) | [truss_cantilever_3d.py](problems/truss_cantilever_3d.py) | space truss, made into an STL solid; Dorn et al. 1964 |
 | MBB Beam (Fixed Projection) | [mbb_beam_fixed_projection.py](problems/mbb_beam_fixed_projection.py) | Independent fixed-beta/tightened-MMA recipe; explicit settings [Høghøj & Träff §3.1](https://arxiv.org/html/2102.12999#S3.SS1), motivation [Guest et al. 2011](https://doi.org/10.1007/s00158-011-0676-1) |

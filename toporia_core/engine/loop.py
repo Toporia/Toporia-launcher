@@ -127,11 +127,12 @@ def run_single_with_store(run, on_iteration=None, *, problem=None):
     if document:
         store.save_json("network.json", document)
     mesh = method.mesh_view()
-    if mesh:
-        store.save_json("mesh.json", network_document(mesh))
+    mesh_document = network_document(mesh) if mesh else None
+    if mesh_document:
+        store.save_json("mesh.json", mesh_document)
     store.postprocess = run_postprocessors(run, method.get_density(), run.output.dir, geometry,
                                            problem=problem, history={"grey_level": store.grey_levels},
-                                           network=document)
+                                           network=document, mesh=mesh_document)
     store.save_json("run.json", run_record(
         run, iterations=iteration, stop_reason=stop_reason, responses=final, limits=limits,
         optimiser=optimiser, postprocess=store.postprocess,

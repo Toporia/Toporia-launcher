@@ -217,7 +217,9 @@ waves 3 and 4 are complete. Open:
       in the core; presets Cantilever (Two Materials), MBB Beam (Fibre-steered)), and unstructured
       meshes done (the `unstructured` method on triangles that follow edges and round holes; 2-D;
       preset MBB Beam with a Hole (Triangles)). Beam/truss elements and ground structures: done with
-      item 3. Open: 3-D unstructured meshes, multiscale, IGA, CutFEM, fluids, transient, acoustics,
+      item 3. 3-D unstructured meshes done (tetrahedra fitted to curved voids, checked against
+      Timoshenko beam theory, three presets, the fitted STL). Open: multiscale (next), IGA, CutFEM,
+      fluids, transient, acoustics,
       photonics, generative models.
 - [ ] 🧑 GUI for authoring new computational functions (document the extension interface first).
 - [~] 🧑 Sweeps can change the optimiser: any part choice (optimiser, filter, material law,

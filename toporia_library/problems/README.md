@@ -36,6 +36,9 @@ Toporia exists to make.
 | ✅ MBB beam with steered fibres (density and fibre angle per element) | [`mbb_beam_fibres.py`](mbb_beam_fibres.py) | `MBB Beam (Fibre-steered)` |
 | ✅ Cantilever of two materials (DMO) | [`cantilever_two_materials.py`](cantilever_two_materials.py) | `Cantilever (Two Materials)` |
 | ✅ MBB beam with a round hole, on triangles (unstructured mesh) | [`mbb_beam_hole_triangles.py`](mbb_beam_hole_triangles.py) | `MBB Beam with a Hole (Triangles)` |
+| ✅ 3-D cantilever with a bore, on tetrahedra | [`cantilever_3d_hole_tets.py`](cantilever_3d_hole_tets.py) | `Cantilever 3D with a Hole (Tetrahedra)` |
+| ✅ 3-D bridge with two round openings, on tetrahedra | [`bridge_3d_openings_tets.py`](bridge_3d_openings_tets.py) | `Bridge 3D with Round Openings (Tetrahedra)` |
+| ✅ 3-D block around a spherical void, on tetrahedra | [`block_spherical_void_tets.py`](block_spherical_void_tets.py) | `Block around a Spherical Void (Tetrahedra)` |
 | ✅ MBB beam, fixed projection | [`mbb_beam_fixed_projection.py`](mbb_beam_fixed_projection.py) | `MBB Beam (Fixed Projection)` |
 | ✅ Heat sink | [`heat_sink.py`](heat_sink.py) | `Heat Sink` |
 | ✅ Vibrating beam | [`vibrating_beam.py`](vibrating_beam.py) | `Vibrating Beam` |

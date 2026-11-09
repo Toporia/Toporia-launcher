@@ -439,6 +439,20 @@ class LiveCanvas(PanZoom, FigureCanvas):
         h = element_size
         ax.scatter((x + 0.5) * h, (z + 0.5) * h, (y + 0.5) * h, c=colours, s=size, marker="s",
                    depthshade=False, edgecolors="none")
+        mesh = self._mesh
+        if self.options.get("network", True) and mesh and len(mesh.get("tetrahedra") or ()):
+            # A design on tetrahedra: the surface of its solid cells, which follows its holes.
+            from types import SimpleNamespace
+
+            from mpl_toolkits.mplot3d.art3d import Poly3DCollection
+
+            from toporia_library.physics.tet_mesh import solid_surface
+            cells = SimpleNamespace(nodes=np.asarray(mesh["nodes"], dtype=float),
+                                    tets=np.asarray(mesh["tetrahedra"], dtype=int))
+            faces = solid_surface(cells, np.asarray(mesh["values"], dtype=float))
+            if len(faces):
+                ax.add_collection3d(Poly3DCollection(faces[:, :, [0, 2, 1]], facecolor="0.62", edgecolor="none",
+                                                     alpha=0.9))
         network = self._network
         if (self.options.get("network", True) and network and len(network.get("nodes") or ())
                 and len(network["nodes"][0]) == 3):
