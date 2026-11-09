@@ -24,7 +24,7 @@ A test (`tests/apps/test_gui.py`) fails if a part ever stops being reachable fro
 | **Wraps** | Calls an outside Python package. That package is installed separately. Parts whose package is missing are greyed out in the app, with the install command. |
 | **Own** | Toporia's own idea or standard practice. |
 
-## In the library today: 100 selectable parts and 101 benchmark/research presets
+## In the library today: 107 selectable parts and 106 benchmark/research presets
 
 The selectable parts include models and whole methods; their nine underlying
 physics engines are counted separately in the [catalogue totals](README.md).
@@ -78,6 +78,9 @@ physics engines are counted separately in the [catalogue totals](README.md).
 | :-- | :-- | :-- | :-- | :-- |
 | 2-D Q4 plane stress (Toporia) | `q4` | [q4.py](models/q4.py), [q4_plane_stress.py](physics/q4_plane_stress.py) | Port | the physics half of top88 · [paper](https://doi.org/10.1007/s00158-010-0594-7) |
 | 2-D Q4 fibre-reinforced (angle per element) | `q4_orthotropic` | [q4_orthotropic.py](models/q4_orthotropic.py), [q4_orthotropic.py](physics/q4_orthotropic.py) | Paper | Tsai & Pagano 1968 invariants; Nomura et al., *IJNME* 2015 · [paper](https://doi.org/10.1002/nme.4799) |
+| 2-D unit cell (material microstructure) | `q4_periodic` | [q4_periodic.py](models/q4_periodic.py), [homogenisation.py](physics/homogenisation.py) | Paper | Andreassen & Andreasen 2014; Sigmund 1994 · [paper](https://doi.org/10.1016/j.commatsci.2013.09.006) |
+| 3-D unit cell (material microstructure) | `h8_periodic` | [h8_periodic.py](models/h8_periodic.py), [homogenisation.py](physics/homogenisation.py) | Paper | Andreassen & Andreasen 2014 · [paper](https://doi.org/10.1016/j.commatsci.2013.09.006) |
+| 2-D Q4 in a designed material | `q4_anisotropic` | [q4_anisotropic.py](models/q4_anisotropic.py), [q4_anisotropic.py](physics/q4_anisotropic.py) | Own | two-scale design; Wu, Sigmund & Groen 2021 · [review](https://doi.org/10.1007/s00158-021-02881-8) |
 | 2-D Q4 multiresolution (nested grids) | `q4_multiresolution` | [model](models/q4_multiresolution.py), [physics](physics/q4_multiresolution.py) | Paper | Independent aligned 2-D Galerkin variant with exact fine-cell integration and projected supports; fine verification required · papers [1](https://doi.org/10.1007/s00158-009-0443-8) [2](https://doi.org/10.1007/s00158-018-2048-6) |
 | 2-D Q4 compliant mechanism (Toporia) | `q4_mechanism` | [q4_mechanism.py](models/q4_mechanism.py), [q4_mechanism.py](physics/q4_mechanism.py) | Paper | Own port-spring Q4 engine; optional independent pyMOTO assembly/backpropagation check · [paper](https://doi.org/10.1080/08905459708945415) |
 | 2-D Q4 with buckling (Toporia) | `q4_buckling` | [q4_buckling.py](models/q4_buckling.py), [q4_buckling.py](physics/q4_buckling.py) | Paper | Ferrari, Sigmund & Guest 2021; Toporia's p-norm aggregate and column geometry · [paper](https://doi.org/10.1007/s00158-021-02854-x) |
@@ -103,6 +106,9 @@ physics engines are counted separately in the [catalogue totals](README.md).
 | End compliance (non-linear) | `end_compliance` | [end_compliance.py](responses/end_compliance.py) | Paper | Buhl, Pedersen & Sigmund, *SMO* 2000 · [paper](https://doi.org/10.1007/s001580050089) |
 | Peak von Mises stress | `stress` | [stress.py](responses/stress.py) | Paper | Le, Norato, Bruns, Ha & Tortorelli, *SMO* 2010 · [paper](https://doi.org/10.1007/s00158-009-0440-y) |
 | Peak von Mises stress (minimise) | `peak_stress` | [stress.py](responses/stress.py) | Paper | the same p-norm as `stress`, as an objective |
+| Bulk modulus (unit cell) | `bulk_modulus` | [homogenised.py](responses/homogenised.py) | Paper | Sigmund 1994; Xia & Breitkopf 2015 · [paper](https://doi.org/10.1007/s00158-015-1294-0) |
+| Shear modulus (unit cell) | `shear_modulus` | [homogenised.py](responses/homogenised.py) | Paper | Sigmund 1994 · [paper](https://doi.org/10.1016/0020-7683(94)90154-6) |
+| Negative Poisson's ratio (auxetic) | `auxetic` | [homogenised.py](responses/homogenised.py) | Paper | Xia & Breitkopf 2015 · [paper](https://doi.org/10.1007/s00158-015-1294-0) |
 | Combined objective | `combined` | [combined.py](responses/combined.py) | Own | weighted sum and min-max (KS) as in Marler & Arora, *SMO* 2004 · [paper](https://doi.org/10.1007/s00158-003-0368-6) |
 | A variable of the problem | `variable` | [variable.py](responses/variable.py) | Own | any built-in or own variable as objective, term or constraint |
 | Buckling load factor | `buckling_load` | [buckling.py](responses/buckling.py) | Paper | Reciprocal-factor aggregate; objective or constraint on `q4_buckling` · [paper](https://doi.org/10.1007/s00158-021-02854-x) |
@@ -168,6 +174,7 @@ and the preset *MBB Beam (Robust)*.
 | :-- | :-- | :-- | :-- | :-- |
 | Truss to a clean solid | `truss_solid` | [truss_solid.py](postprocessors/truss_solid.py) | Own | union of capsules and joints by signed distance; marching squares/cubes (Lorensen & Cline 1987) |
 | Fitted boundary from the mesh | `mesh_surface` | [mesh_surface.py](postprocessors/mesh_surface.py) | Own | boundary faces/edges of the solid cells of an unstructured mesh |
+| Material card (homogenised stiffness) | `material_card` | [material_card.py](postprocessors/material_card.py) | Own | the homogenised matrix as a reusable material |
 | Threshold to black and white | `threshold` | [threshold.py](postprocessors/threshold.py) | Own | as method comparisons do (Rojas-Labanda & Stolpe 2015) · [paper](https://doi.org/10.1007/s00158-015-1250-z) |
 | Connectivity check | `connectivity` | [connectivity.py](postprocessors/connectivity.py) | Own | — |
 | Feature size | `feature_size` | [feature_size.py](postprocessors/feature_size.py) | Own | measures what Sigmund 2007 and Wang et al. 2011 promise · papers [1](https://doi.org/10.1007/s00158-006-0087-x) [2](https://doi.org/10.1007/s00158-010-0602-y) |
@@ -192,6 +199,11 @@ and the preset *MBB Beam (Robust)*.
 | Cantilever 3D with a Hole (Tetrahedra) | [cantilever_3d_hole_tets.py](problems/cantilever_3d_hole_tets.py) | top3d cantilever with a bore, body-fitted tetrahedra |
 | Bridge 3D with Round Openings (Tetrahedra) | [bridge_3d_openings_tets.py](problems/bridge_3d_openings_tets.py) | two bores, body-fitted tetrahedra |
 | Block around a Spherical Void (Tetrahedra) | [block_spherical_void_tets.py](problems/block_spherical_void_tets.py) | a spherical cavity, tetrahedra snapped onto the sphere |
+| Material: Maximum Bulk Modulus | [material_bulk.py](problems/material_bulk.py) | 98 % of the Hashin-Shtrikman bound; Xia & Breitkopf 2015 |
+| Material: Maximum Shear Modulus | [material_shear.py](problems/material_shear.py) | inverse homogenisation; Sigmund 1994 |
+| Material: Auxetic (Negative Poisson's Ratio) | [material_auxetic.py](problems/material_auxetic.py) | Xia & Breitkopf 2015 |
+| Material: Maximum Bulk Modulus 3D | [material_bulk_3d.py](problems/material_bulk_3d.py) | 3-D unit cell |
+| Cantilever of a Designed Material | [cantilever_designed_material.py](problems/cantilever_designed_material.py) | two-scale: the bulk lattice as the part's material |
 | Cantilever (Two Materials) | [cantilever_two_materials.py](problems/cantilever_two_materials.py) | void or one of two materials per element (DMO); Stegmann & Lund 2005 |
 | Cantilever 3D (Truss) | [truss_cantilever_3d.py](problems/truss_cantilever_3d.py) | space truss, made into an STL solid; Dorn et al. 1964 |
 | MBB Beam (Fixed Projection) | [mbb_beam_fixed_projection.py](problems/mbb_beam_fixed_projection.py) | Independent fixed-beta/tightened-MMA recipe; explicit settings [Høghøj & Träff §3.1](https://arxiv.org/html/2102.12999#S3.SS1), motivation [Guest et al. 2011](https://doi.org/10.1007/s00158-011-0676-1) |

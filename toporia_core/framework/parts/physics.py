@@ -266,3 +266,32 @@ class PointDisplacementPhysics:
     def probe_displacement(self, state, case, probe):
         """Signed displacement in the probe direction for one real load case."""
         raise NotImplementedError(f"{type(self).__name__} does not provide {POINT_DISPLACEMENT!r}")
+
+
+# ── HOMOGENISED ───────────────────────────────────────────────────────────────
+#
+# The effective (homogenised) elasticity tensor of a periodic unit cell: the design is a
+# material's microstructure, not a part (multiscale, Wave 5).  For each unit test strain
+# ε⁰ⁱ the cell is solved with periodic boundary conditions, K χⁱ = fⁱ, and
+#
+#     C^H_ij = (1/|Y|) Σ_e (u⁰ⁱ − χⁱ)_eᵀ K_e (u⁰ʲ − χʲ)_e          (energy form)
+#     ∂C^H_ij/∂ρ_e = (1/|Y|) E'(ρ_e) (u⁰ⁱ − χⁱ)_eᵀ K_e⁰ (u⁰ʲ − χʲ)_e   (exact, self-adjoint)
+#
+# with u⁰ⁱ the displacements of the uniform strain ε⁰ⁱ.  Provided by
+# toporia_library/physics/homogenisation.py.
+
+#: Feature: the homogenised elasticity tensor of a periodic unit cell and its sensitivities.
+HOMOGENISED = "homogenised"
+
+
+class HomogenisedPhysics:
+    """The questions a physics engine answers when it provides HOMOGENISED."""
+
+    def homogenised(self, state):
+        """C^H, the effective elasticity matrix in Voigt notation (3 × 3 in 2-D, 6 × 6 in 3-D)."""
+        raise NotImplementedError(f"{type(self).__name__} does not provide {HOMOGENISED!r}")
+
+    def homogenised_slope(self, state, i, j):
+        """∂C^H_ij/∂ρ per element, shaped like the density."""
+        raise NotImplementedError(f"{type(self).__name__} does not provide {HOMOGENISED!r}")
+

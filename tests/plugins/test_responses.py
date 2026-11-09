@@ -31,10 +31,10 @@ STRESS = {"type": "stress", "limit": 10.0}
 def test_responses_are_discovered_with_their_roles():
     assert RESPONSES.names() == ["compliance", "phase_field", "thermal_compliance", "dynamic_compliance", "end_compliance",
                                  "output_displacement", "volume", "stress", "local_stress", "peak_stress", "minimum_length", "buckling_load", "eigenfrequency", "eigenfrequency_limit",
-                                 "combined", "variable"]
+                                 "bulk_modulus", "shear_modulus", "auxetic", "combined", "variable"]
     assert [c.name for c in responses_for(OBJECTIVE_ROLE)] == [
         "compliance", "phase_field", "thermal_compliance", "dynamic_compliance", "end_compliance", "output_displacement", "volume", "peak_stress",
-        "buckling_load", "eigenfrequency", "combined", "variable"]
+        "buckling_load", "eigenfrequency", "bulk_modulus", "shear_modulus", "auxetic", "combined", "variable"]
     assert [c.name for c in responses_for(CONSTRAINT_ROLE)] == ["stress", "local_stress", "minimum_length", "buckling_load", "eigenfrequency_limit", "variable"]
 
 

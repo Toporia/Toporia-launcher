@@ -30,6 +30,9 @@ Lagrangian to survive thousands of local constraints.
 | ✅ Peak von Mises stress (minimise) | [`stress.py`](stress.py) | `peak_stress` | objective | every engine with `stress`: `q4`, `h8`, `q4_mechanism`, ... |
 | ✅ Combined objective (weighted sum, min-max, formula) | [`combined.py`](combined.py) | `combined` | objective | every engine; each term must be computable on it |
 | ✅ A variable of the problem | [`variable.py`](variable.py) | `variable` | objective or constraint | every engine; the variable must be computable on it |
+| ✅ Bulk modulus (unit cell) | [`homogenised.py`](homogenised.py) | `bulk_modulus` | objective (maximise) | `q4_periodic`, `h8_periodic`: $\kappa = (C_{11}+C_{22}+2C_{12})/4$ (2-D), the 3-D mean over the normal block |
+| ✅ Shear modulus (unit cell) | [`homogenised.py`](homogenised.py) | `shear_modulus` | objective (maximise) | $C_{33}$ (2-D), $(C_{44}+C_{55}+C_{66})/3$ (3-D) |
+| ✅ Negative Poisson's ratio (auxetic, unit cell) | [`homogenised.py`](homogenised.py) | `auxetic` | objective | $(C_{12} - \beta^n (C_{11}+C_{22}))/(C_{11}^0+C_{22}^0)$ after Xia & Breitkopf 2015; reports $\nu = C_{12}/((C_{11}+C_{22})/2)$ |
 | ✅ Buckling load factor | [`buckling.py`](buckling.py) | `buckling_load` | objective or constraint | `q4_buckling` |
 | ✅ Local von Mises stress (augmented Lagrangian) | [`local_stress.py`](local_stress.py) | `local_stress` | constraint | `q4`, `h8` |
 | ✅ Geometric minimum feature length | [`minimum_length.py`](minimum_length.py) | `minimum_length` | constraint | All eight native physics engines (geometry only), 2-D/3-D |

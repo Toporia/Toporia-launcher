@@ -36,9 +36,11 @@ class ElementDensity(Representation):
     dims = (2, 3)
     params = (
         Param("start", "uniform", "Start design",
-              "Uniform at the volume fraction (meets the budget at once), or a full domain "
-              "(what BESO and volume minimisation under a stress limit start from).",
-              choices=(("uniform", "Uniform at the volume fraction"), ("full", "Full domain"))),
+              "Uniform at the volume fraction (meets the budget at once), a full domain "
+              "(what BESO and volume minimisation under a stress limit start from), or a hole in "
+              "the middle (unit cells: a uniform cell has no pattern to grow from).",
+              choices=(("uniform", "Uniform at the volume fraction"), ("full", "Full domain"),
+                       ("hole", "A hole in the middle (unit cells)"))),
     )
 
     def __init__(self, start="uniform"):
@@ -49,8 +51,21 @@ class ElementDensity(Representation):
 
     def initial(self):
         problem = self.problem
+        if self.start == "hole":
+            return self._with_hole()
         value = problem.scenario.volfrac if self.start == "uniform" else 1.0
         return np.clip(np.full(problem.shape, value), problem.lower_bound, problem.upper_bound)
+
+    def _with_hole(self):
+        """Void in a disc (ball in 3-D) of a quarter of the smallest side around the centre, the rest
+        uniform so the total meets the volume fraction (as the unit-cell codes of Xia & Breitkopf start)."""
+        problem = self.problem
+        centres = [problem.elem_x, problem.elem_y] + ([problem.elem_z] if problem.dims == 3 else [])
+        middle = [problem.Lx / 2, problem.Ly / 2] + ([problem.Lz / 2] if problem.dims == 3 else [])
+        radius = 0.25 * min([problem.Lx, problem.Ly] + ([problem.Lz] if problem.dims == 3 else []))
+        inside = sum((c - m) ** 2 for c, m in zip(centres, middle, strict=True)) <= radius ** 2
+        outside = min(1.0, problem.scenario.volfrac * inside.size / max(int((~inside).sum()), 1))
+        return np.clip(np.where(inside, 0.0, outside), problem.lower_bound, problem.upper_bound)
 
     def bounds(self):
         return self.problem.lower_bound, self.problem.upper_bound

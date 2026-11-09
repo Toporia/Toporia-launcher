@@ -218,7 +218,9 @@ waves 3 and 4 are complete. Open:
       meshes done (the `unstructured` method on triangles that follow edges and round holes; 2-D;
       preset MBB Beam with a Hole (Triangles)). Beam/truss elements and ground structures: done with
       item 3. 3-D unstructured meshes done (tetrahedra fitted to curved voids, checked against
-      Timoshenko beam theory, three presets, the fitted STL). Open: multiscale (next), IGA, CutFEM,
+      Timoshenko beam theory, three presets, the fitted STL); multiscale done (periodic unit cells
+      in 2-D and 3-D, bulk/shear/auxetic objectives, 98 % of the Hashin-Shtrikman bulk bound, the
+      material card, parts in a designed material). Open: IGA, CutFEM,
       fluids, transient, acoustics,
       photonics, generative models.
 - [ ] 🧑 GUI for authoring new computational functions (document the extension interface first).

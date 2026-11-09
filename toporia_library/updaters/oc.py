@@ -39,7 +39,8 @@ class OCUpdater(Updater):
     # OC needs objective and volume sensitivities of opposite sign, and finds a
     # single multiplier: compliance (or its heat-conduction twin, the thermal
     # compliance) under the volume budget and nothing more.
-    objectives = ("compliance", "thermal_compliance")
+    # Maximised moduli of a unit cell have one-signed sensitivities too (as in Xia & Breitkopf 2015).
+    objectives = ("compliance", "thermal_compliance", "bulk_modulus", "shear_modulus")
     max_constraints = 0
     # The rule moves each element's density on its own (see needs_element_densities).
     needs_element_densities = True

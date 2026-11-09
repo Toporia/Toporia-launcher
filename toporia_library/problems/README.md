@@ -39,6 +39,11 @@ Toporia exists to make.
 | ✅ 3-D cantilever with a bore, on tetrahedra | [`cantilever_3d_hole_tets.py`](cantilever_3d_hole_tets.py) | `Cantilever 3D with a Hole (Tetrahedra)` |
 | ✅ 3-D bridge with two round openings, on tetrahedra | [`bridge_3d_openings_tets.py`](bridge_3d_openings_tets.py) | `Bridge 3D with Round Openings (Tetrahedra)` |
 | ✅ 3-D block around a spherical void, on tetrahedra | [`block_spherical_void_tets.py`](block_spherical_void_tets.py) | `Block around a Spherical Void (Tetrahedra)` |
+| ✅ Material with the largest bulk modulus (2-D unit cell) | [`material_bulk.py`](material_bulk.py) | `Material: Maximum Bulk Modulus` |
+| ✅ Material with the largest shear modulus (2-D unit cell) | [`material_shear.py`](material_shear.py) | `Material: Maximum Shear Modulus` |
+| ✅ Auxetic material (2-D unit cell) | [`material_auxetic.py`](material_auxetic.py) | `Material: Auxetic (Negative Poisson's Ratio)` |
+| ✅ Material with the largest bulk modulus (3-D unit cell) | [`material_bulk_3d.py`](material_bulk_3d.py) | `Material: Maximum Bulk Modulus 3D` |
+| ✅ Cantilever built of a designed material (two scales) | [`cantilever_designed_material.py`](cantilever_designed_material.py) | `Cantilever of a Designed Material` |
 | ✅ MBB beam, fixed projection | [`mbb_beam_fixed_projection.py`](mbb_beam_fixed_projection.py) | `MBB Beam (Fixed Projection)` |
 | ✅ Heat sink | [`heat_sink.py`](heat_sink.py) | `Heat Sink` |
 | ✅ Vibrating beam | [`vibrating_beam.py`](vibrating_beam.py) | `Vibrating Beam` |
