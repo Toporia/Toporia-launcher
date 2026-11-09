@@ -14,6 +14,8 @@
 #              through void elements are left out
 #   stiffness  k_i = E a_i / L_i · [c cᵀ  −c cᵀ; −c cᵀ  c cᵀ], c the bar's unit vector
 #   gradient   dC/da_i = −Σ_k w_k (E / L_i) (c · Δu_ik)²,  so C is convex in a (Svanberg)
+#   vibration  K φ = λ M φ with the bar mass lumped at the nodes (and joints, truss_nodes.py);
+#              with φᵀMφ = 1:  dλ/da_i = φ_iᵀ (k_i / a_i) φ_i − λ φ_iᵀ (∂M/∂a_i) φ_i
 #
 # A truss becomes a density field by drawing every bar as a capsule: in 2-D a band as wide
 # as its area (unit thickness), in 3-D a cylinder of the same cross-section, smoothed over
@@ -46,6 +48,11 @@ class GroundStructure:
     def ndof(self):
         """Degrees of freedom: dims per node."""
         return self.nodes.shape[0] * self.dims
+
+
+def node_coordinates_grid(problem):
+    """Coordinates of every mesh node, shaped like the node masks plus one axis."""
+    return _node_coordinates(problem)
 
 
 def _node_coordinates(problem):
@@ -183,9 +190,9 @@ def _nearest(nodes, point):
 
 
 class TrussSolver:
-    """Assembles and solves K(a) u = f on a ground structure."""
+    """Assembles and solves K(a) u = f on a ground structure, and its lowest natural mode."""
 
-    def __init__(self, structure, E):
+    def __init__(self, structure, E, springs=None):
         from scipy import sparse
         self.s, self.E = structure, float(E)
         dims = structure.dims
@@ -202,14 +209,23 @@ class TrussSolver:
         free[structure.fixed] = False
         self.free = np.flatnonzero(free)
         self._sparse = sparse
+        # Anchor springs (truss_nodes.py): density-independent stiffness on the diagonal.
+        self.springs = np.zeros(structure.ndof) if springs is None else np.asarray(springs, dtype=float)
+
+    def stiffness(self, areas):
+        """K(a) on the free DOFs, springs included."""
+        s = self.s
+        values = (self.unit * areas[:, None, None]).ravel()
+        K = self._sparse.coo_matrix((values, (self.rows, self.cols)), shape=(s.ndof, s.ndof)).tocsc()
+        if self.springs.any():
+            K = K + self._sparse.diags(self.springs, format="csc")
+        return K[self.free][:, self.free]
 
     def solve(self, areas):
         """Displacements per load case, compliance, and dC/da."""
         from scipy.sparse.linalg import spsolve
         s = self.s
-        values = (self.unit * areas[:, None, None]).ravel()
-        K = self._sparse.coo_matrix((values, (self.rows, self.cols)), shape=(s.ndof, s.ndof)).tocsc()
-        K = K[self.free][:, self.free]
+        K = self.stiffness(areas)
         compliance, gradient, displacements = 0.0, np.zeros_like(areas), []
         for force, weight in zip(s.forces, s.weights, strict=True):
             u = np.zeros(s.ndof)
@@ -220,6 +236,29 @@ class TrussSolver:
             gradient -= weight * energy
             displacements.append(u)
         return displacements, compliance, gradient
+
+    def lowest_mode(self, areas, node_mass, mass_slope):
+        """The lowest eigenvalue λ = ω² of K φ = λ M φ, its mode (full length, φᵀMφ = 1) and dλ/da.
+
+        `node_mass` is the lumped mass per node; `mass_slope[i]` is d(mass at each end)/d(a_i).
+        """
+        from scipy.sparse.linalg import eigsh
+        s, dims = self.s, self.s.dims
+        K = self.stiffness(areas)
+        mass = np.repeat(node_mass, dims)[self.free]
+        M = self._sparse.diags(mass, format="csc")
+        count = min(3, K.shape[0] - 1)
+        values, vectors = eigsh(K, k=count, M=M, sigma=0.0, which="LM")
+        order = np.argsort(values)
+        lam, phi_free = float(values[order[0]]), vectors[:, order[0]]
+        phi_free = phi_free / np.sqrt(float(phi_free @ (mass * phi_free)))
+        phi = np.zeros(s.ndof)
+        phi[self.free] = phi_free
+        pe = phi[self.dof]                                                  # (b, 2 dims)
+        stiff = np.einsum("bi,bij,bj->b", pe, self.unit, pe)
+        ends = phi.reshape(-1, dims)
+        kinetic = np.sum(ends[s.bars[:, 0]] ** 2, axis=1) + np.sum(ends[s.bars[:, 1]] ** 2, axis=1)
+        return lam, phi, stiff - lam * mass_slope * kinetic
 
     def axial_forces(self, areas, u):
         """Bar forces N_i = E a_i / L_i · c · Δu (tension positive) for one load case."""

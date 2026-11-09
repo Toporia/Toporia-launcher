@@ -55,3 +55,19 @@ def test_a_space_truss_joins_the_density_cloud(app):
     canvas.refresh(np.full((4, 10, 20), 0.5), [1.0], 1)
     canvas.show_3d(np.full((4, 10, 20), 0.5), 1.0)
     assert any(isinstance(c, Line3DCollection) for c in canvas._ax_d.collections)
+
+
+def test_nodes_are_coloured_by_their_own_value_and_the_density_fades(app):
+    from matplotlib.collections import PathCollection
+
+    from toporia_gui.canvas import LiveCanvas
+    from toporia_gui.display_options import DEFAULTS
+    canvas = LiveCanvas()
+    canvas.set_display(DEFAULTS)
+    canvas.set_network({**NETWORK, "node_values": [1.0, 2.0, 3.0], "node_label": "force"}, width=20.0)
+    canvas.refresh(np.zeros((10, 20)), [1.0], 1)
+    dots = [a for a in canvas._overlay if isinstance(a, PathCollection)]
+    assert len(dots) == 1 and dots[0].get_array() is not None
+    assert canvas._im.get_alpha() == pytest.approx(0.15) and "node colour: force" in canvas._ax_d.get_title()
+    canvas.set_display({**DEFAULTS, "network": False})
+    assert canvas._im.get_alpha() == pytest.approx(1.0)

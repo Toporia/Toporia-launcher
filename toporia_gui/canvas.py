@@ -253,6 +253,8 @@ class LiveCanvas(PanZoom, FigureCanvas):
 
         self._draw_overlay(disp.shape)
         seen = "  (depth average)" if np.ndim(density) == 3 else ""
+        if self._network and self.options.get("network", True) and self._network.get("node_label"):
+            seen += f"\nnode colour: {self._network['node_label']}"
         self._ax_d.set_title(self._stat_title(density, objectives, iteration) + seen, color=tc, fontsize=10)
 
         self._line.set_data(range(1, len(objectives) + 1), objectives)
@@ -278,6 +280,8 @@ class LiveCanvas(PanZoom, FigureCanvas):
             except (ValueError, NotImplementedError):
                 pass
         self._overlay = []
+        if self._im is not None:
+            self._im.set_alpha(1.0)
         ny, nx = shape
         if self.options.get("elements", False) and nx * ny <= 40_000:
             from matplotlib.collections import LineCollection
@@ -293,6 +297,9 @@ class LiveCanvas(PanZoom, FigureCanvas):
         h = (self._network_width or nx) / nx                    # mm per element
         nodes = np.asarray(network["nodes"], dtype=float)
         pixels = np.column_stack([nodes[:, 0] / h - 0.5, ny - nodes[:, 1] / h - 0.5])
+        # A truss is its bars: the density drawn for the record fades to a faint background.
+        if self._im is not None:
+            self._im.set_alpha(0.15)
         self._overlay += draw_network(self._ax_d, pixels, network, self._colours()[1])
 
     def _stat_title(self, density, objectives, iteration):
@@ -531,5 +538,11 @@ def draw_network(ax, points, network, ink):
     used = joint > 0
     if used.any():
         sizes = 4 + 30 * joint[used] / joint.max()
-        artists.append(ax.scatter(*points[used].T, s=sizes, c=ink, zorder=3, linewidths=0))
+        values = network.get("node_values")
+        if values is not None and len(values) == len(points):
+            # The node's own value (methods/truss.py, "Node value"), on a colour scale.
+            colour = {"c": np.asarray(values, dtype=float)[used], "cmap": "viridis"}
+        else:
+            colour = {"c": ink}
+        artists.append(ax.scatter(*points[used].T, s=sizes, zorder=3, linewidths=0, **colour))
     return artists

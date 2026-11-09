@@ -129,9 +129,10 @@ the one before.
       stresses. Modules with transfer functions, for multi-level optimisation of flexure
       systems. 🤖 The truss, the conversion and the two-stage run first; transfer-function
       modules are research.
-      🤖 Done 9 November 2026: the `truss` method (2-D and 3-D ground structure, OC sizing), drawn
-      as a density, then a stress check or a peak-stress optimisation from it; presets MBB Beam
-      (Truss) and Cantilever 3D (Truss). Transfer-function modules stay research.
+      🤖 Done 9 November 2026: the `truss` method (2-D and 3-D ground structure, OC sizing for
+      stiffness or the lowest frequency), kept as bars; the post-processor `truss_solid` makes a
+      clean solid (DXF/SVG/STL) only when asked. Toporia's own node models: joints with material,
+      anchored nodes, a node value of your own. Transfer-function modules stay research.
 - [x] 🧑 10 Each representation has its own view: a network with a value at each node and
       connection for a truss; the elements for element-based ones. Ask 🧑 where unclear.
       🤖 Done 9 November 2026: a truss is drawn as its bars (width from the area, red tension,

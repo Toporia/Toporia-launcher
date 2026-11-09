@@ -5,7 +5,16 @@
 # so adding a parameter to a plugin makes it appear here with no GUI changes.
 
 from PySide6.QtCore import Signal
-from PySide6.QtWidgets import QCheckBox, QComboBox, QDoubleSpinBox, QFormLayout, QLabel, QSpinBox, QWidget
+from PySide6.QtWidgets import (
+    QCheckBox,
+    QComboBox,
+    QDoubleSpinBox,
+    QFormLayout,
+    QLabel,
+    QLineEdit,
+    QSpinBox,
+    QWidget,
+)
 
 from ..help import param_topic, with_help
 
@@ -39,7 +48,8 @@ class ParamForm(QWidget):
         self.set_values({})
         for editor in self._editors.values():
             signal = (editor.toggled if isinstance(editor, QCheckBox) else editor.currentIndexChanged
-                      if isinstance(editor, QComboBox) else editor.valueChanged)
+                      if isinstance(editor, QComboBox) else editor.textChanged
+                      if isinstance(editor, QLineEdit) else editor.valueChanged)
             signal.connect(lambda *_: self.changed.emit())
 
     def names(self):
@@ -65,6 +75,8 @@ class ParamForm(QWidget):
 def _make_editor(param):
     if param.kind == "bool":
         return QCheckBox()
+    if param.kind == "text":
+        return QLineEdit()
     if param.kind == "choice":
         box = QComboBox()
         for value, text in param.choices:
@@ -87,6 +99,8 @@ def _make_editor(param):
 def _read(editor, param):
     if param.kind == "bool":
         return editor.isChecked()
+    if param.kind == "text":
+        return editor.text()
     if param.kind == "choice":
         return editor.currentData()
     return editor.value()
@@ -96,6 +110,8 @@ def _write(editor, param, value):
     value = param.coerce(value)
     if param.kind == "bool":
         editor.setChecked(value)
+    elif param.kind == "text":
+        editor.setText(value)
     elif param.kind == "choice":
         editor.setCurrentIndex(max(editor.findData(value), 0))
     else:

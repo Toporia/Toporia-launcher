@@ -31,7 +31,23 @@ a buckling limit. Pairings with no compatible objective are rejected before solv
 | Method | File | Name | Reference |
 | :-- | :-- | :-- | :-- |
 | ✅ RBF level set | [`levelset_rbf.py`](levelset_rbf.py) | `levelset` | Numerical variant of Wei et al., *SMO* 2018; related Wang & Wang 2006 |
-| ✅ Truss on a ground structure (2-D and 3-D), then a continuum stress check or optimisation | [`truss.py`](truss.py), [`../physics/truss.py`](../physics/truss.py) | `truss` | Dorn, Gomory & Greenberg 1964; OC sizing as in Bendsøe & Sigmund 2003 |
+| ✅ Truss on a ground structure (2-D and 3-D), for stiffness or the lowest frequency; kept as bars | [`truss.py`](truss.py), [`../physics/truss.py`](../physics/truss.py), [`../physics/truss_nodes.py`](../physics/truss_nodes.py) | `truss` | Dorn, Gomory & Greenberg 1964; OC sizing as in Bendsøe & Sigmund 2003. Joint and anchored nodes are Toporia's own |
+
+### The truss method — `truss`
+
+**What it does.** The design variables are the areas $a_i$ of the bars of a ground structure: a grid of nodes (every `spacing` mm, on mesh nodes, plus point supports and loads) with a bar to every neighbour up to `reach` grid steps away, leaving out bars that overlap a shorter collinear one or cross a hole. Each bar adds the stiffness $k_i = \frac{E a_i}{L_i}\begin{bmatrix}cc^T & -cc^T\\ -cc^T & cc^T\end{bmatrix}$ along its unit vector $c$. Each iteration solves the truss and updates the areas by optimality criteria, $a_i \leftarrow a_i\,(s_i/(\lambda V_i))^{1/2}$ within move limits, with $V_i$ the material length of bar $i$ and $\lambda$ found by bisection so that $\sum_i a_i V_i$ meets the volume budget. For compliance $s_i = -\partial C/\partial a_i = \sum_k w_k (E/L_i)(c\cdot\Delta u_{ik})^2$; for the lowest frequency ($K\varphi = \lambda M\varphi$, bar mass lumped at the nodes, $\varphi^TM\varphi = 1$) $s_i = \partial\lambda/\partial a_i = \varphi_i^T(k_i/a_i)\varphi_i - \lambda\,\varphi_i^T(\partial M/\partial a_i)\varphi_i$.
+
+**The design stays bars.** It is never mapped onto the finite-element mesh; the density the engine records is only a drawing of the bars for the run's images, and the app shows the bars (width from area, red tension, blue compression) with the nodes coloured by a value you choose. For a shape to make, add the post-processor [`truss_solid`](../postprocessors/README.md).
+
+**Nodes.** A node is an ideal pin, as in the literature. Two node models are **Toporia's own**, not from a paper ([`truss_nodes.py`](../physics/truss_nodes.py)):
+
+- *Joint with material* (`joint_length` $\ell > 0$): every bar end brings a length $\ell$ of its cross-section into the node, so the volume is $\sum_i a_i (L_i + 2\ell)$ and node $n$ carries the mass $\rho\sum_{i\ni n} a_i (L_i/2 + \ell)$: big joints where heavy bars meet, which use material and lower the natural frequencies.
+- *Anchored node*: a spring $k$ ties the node to where it started, $K_{nn} \mathrel{+}= kI$. Spring objects on the Problem page anchor their nodes on their axes; `anchor_stiffness` anchors every free node.
+
+**Node value.** A formula of `displacement`, `joint_area`, `force` (sum of bar forces at the node), `x`, `y`, `z`, shown as the node colour.
+
+**Use it.** Presets *MBB Beam (Truss)* and *Cantilever 3D (Truss)*; `toporia run "MBB Beam (Truss)"`.
+
 | ✅ Reaction-diffusion level set | [`levelset_reaction_diffusion.py`](levelset_reaction_diffusion.py) | `levelset_reaction_diffusion` | Otomori et al., *SMO* 2015; independent finite-volume variant |
 | ✅ Hamilton-Jacobi level set with circular TD | [`levelset_hamilton_jacobi.py`](levelset_hamilton_jacobi.py) | `levelset_hamilton_jacobi` | Challis, *SMO* 2010; independent HJ/TD variant |
 

@@ -51,6 +51,8 @@ class Result:
     #: Result comes straight from a run; None for a design loaded from a saved folder, which keeps
     #: no history.  A post-processor that wants it must work without.
     history: dict | None = None
+    #: A design of nodes and bars (a truss: OptimizationMethod.network()), or None.
+    network: dict | None = None
     #: The black-and-white design, once a post-processor (threshold) has made one.
     binary: np.ndarray | None = None
     #: The level the black-and-white design was cut at (0.5 until a threshold says otherwise).

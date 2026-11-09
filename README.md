@@ -93,19 +93,19 @@ any doubt about what this repository actually does today:
 
 | Layer | ✅ In Toporia | 🔗 Open code | 📄 Paper only |
 | :-- | :-- | --: | --: |
-| [Whole methods](toporia_library/methods/README.md) | RBF, reaction-diffusion and Hamilton-Jacobi/topological-derivative level sets; ground-structure truss (2-D/3-D) with a continuum stage | 10 | 1 |
+| [Whole methods](toporia_library/methods/README.md) | RBF, reaction-diffusion and Hamilton-Jacobi/topological-derivative level sets; ground-structure truss (2-D/3-D), kept as bars, with Toporia's own joint and anchored nodes | 10 | 1 |
 | [Filters](toporia_library/filters/README.md) — regularisation and fabrication | density, sensitivity, Heaviside (fixed or volume-preserving), PDE (isotropic or anisotropic), morphology, AM overhang, Gaynor–Guest support projection, symmetry, routing, extrusion, pattern, casting, Cartesian PDE machining | 1 | 4 |
 | [Design representations](toporia_library/representations/README.md) — what the variables are | element densities, moving morphable components (constant or variable thickness), moving morphable voids (2D), capsule geometry projection (2D/3D), B-spline fields, NumPy neural coordinate fields (2D/3D) | 0 | 0 |
 | [Material laws](toporia_library/interpolations/README.md) — stiffness and resource cost | SIMP, RAMP, ordered SIMP, basic SINH (shared-density variant), Hashin-Shtrikman fixed-nu upper envelope | 0 | 1 |
 | [Schedules](toporia_library/schedules/README.md) — continuation, and robust variants | equal steps, geometric, linear ramp, when the design settles | 0 | 1 |
-| [Post-processors](toporia_library/postprocessors/README.md) — threshold, checks, exports | threshold, connectivity, feature size, grey level over the run, SVG, DXF, STL, smoothed outlines | 0 | 1 |
+| [Post-processors](toporia_library/postprocessors/README.md) — threshold, checks, exports | threshold, connectivity, feature size, grey level over the run, SVG, DXF, STL, smoothed outlines, truss to a clean solid | 0 | 1 |
 | [Models](toporia_library/models/README.md) — physics and gradients | 2-D Q4, nested multiresolution Q4, 3-D H8, pyMOTO elasticity; heat (2-D, 3-D, pyMOTO); vibration (Q4, pyMOTO); large deformation; linearised buckling; port springs and compliant mechanisms | 24 | 3 |
 | [Elements](toporia_library/physics/README.md) — discretisation | Q4 plane stress, nested multiresolution Q4, H8 solid, Q4 and H8 heat, Q4 with mass, Q4 large deformation, Q4 buckling, Q4 with port springs | 5 | 3 |
 | [Responses](toporia_library/responses/README.md) — objectives and constraints | compliance, phase-field energy, geometric minimum length, volume, von Mises stress (peak and local, as constraint or objective), combined objectives (weighted sum, min-max, formula), your own variables, thermal compliance, end compliance, eigenfrequency, dynamic compliance, buckling load factor, signed output displacement | 4 | 12 |
 | [Updaters](toporia_library/updaters/README.md) — optimisers | OC, MMA, GCMMA, SiMPL, BESO, SLSQP, trust-constr, NLopt (MMA, CCSAQ, SLSQP, AUGLAG), mmapy (MMA, GCMMA), null-space, TOBS, CONLIN, multi-constraint OC, Adam, PTO, hard-kill BESO, augmented Lagrangian, floating projection | 4 | 0 |
 | [Problems](toporia_library/problems/README.md) — benchmarks | MBB, robust MBB, cantilever, 3-D cantilever, Michell cantilever, L-bracket, L-bracket (local stress), heat sink, vibrating beam, column buckling, non-linear cantilever, force inverter, 3-point bending, bar | 6 | 0 |
 
-**197 implementations: 93 selectable plugins, 9 physics engines and 95 presets.
+**198 implementations: 94 selectable plugins, 9 physics engines and 95 presets.
 54 catalogue entries have open code elsewhere; 26 are paper-only.**
 Plugin counts follow the registries; composed pairings and parameter options are
 not counted again as additional implementations.

@@ -118,14 +118,17 @@ def run_single_with_store(run, on_iteration=None, *, problem=None):
     store.limits = limits
     store.optimiser = optimiser
     store.save_final(method.get_density(), save_history=False)
-    geometry = method.geometry()
+    # Outlines of a shape design are made only for a post-processing step that uses them.
+    geometry = method.geometry() if run.output.postprocess else None
     if geometry:
         save_geometry(run.output.dir, geometry)
     network = method.network()
-    if network:
-        store.save_json("network.json", network_document(network))
+    document = network_document(network) if network else None
+    if document:
+        store.save_json("network.json", document)
     store.postprocess = run_postprocessors(run, method.get_density(), run.output.dir, geometry,
-                                           problem=problem, history={"grey_level": store.grey_levels})
+                                           problem=problem, history={"grey_level": store.grey_levels},
+                                           network=document)
     store.save_json("run.json", run_record(
         run, iterations=iteration, stop_reason=stop_reason, responses=final, limits=limits,
         optimiser=optimiser, postprocess=store.postprocess,

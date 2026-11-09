@@ -9,6 +9,7 @@
 #     LISTED      False for a problem only the checks and tests use (optional)
 #     scenario()  -> Scenario   what is being solved
 #     solver()    -> Solver     recommended settings (optional; defaults otherwise)
+#     output()    -> Output     its post-processing (optional), e.g. a clean solid at the end
 #
 # Presets come from the entry-point group "toporia.problems", a package (every module
 # in it not starting with an underscore) or a single module.  Toporia's own presets,
@@ -18,6 +19,7 @@
 import importlib
 import importlib.metadata
 import pkgutil
+from dataclasses import replace
 from functools import lru_cache
 
 from .run import Run
@@ -64,7 +66,10 @@ def get_run(name):
     except KeyError:
         raise KeyError(f"Unknown problem {name!r}. Available: {problem_names()}") from None
     solver = module.solver() if hasattr(module, "solver") else Solver()
-    return Run(scenario=module.scenario(), solver=solver)
+    run = Run(scenario=module.scenario(), solver=solver)
+    if hasattr(module, "output"):          # e.g. a truss preset that makes a clean solid at the end
+        run = replace(run, output=module.output())
+    return run
 
 
 def problem_info(name):

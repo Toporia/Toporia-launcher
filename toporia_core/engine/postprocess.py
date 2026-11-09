@@ -50,7 +50,7 @@ def check_postprocess(run):
             raise ImportError(f"Post-processor {cls.name!r} needs {', '.join(missing)}: {install_hint(missing)}")
 
 
-def run_postprocessors(run, density, folder, geometry=None, problem=None, history=None):
+def run_postprocessors(run, density, folder, geometry=None, problem=None, history=None, network=None):
     """Apply run.output.postprocess to `density`; return {key: {"type", "metrics", "files"} or {"type", "error"}}."""
     specs = run.output.postprocess
     if not specs:
@@ -60,7 +60,7 @@ def run_postprocessors(run, density, folder, geometry=None, problem=None, histor
         problem = make_problem(run.scenario, run.solver.m)
     folder = Path(folder)
     result = Result(density=np.asarray(density, dtype=float), problem=problem, run=run,
-                    folder=folder / FOLDER, geometry=geometry, history=history)
+                    folder=folder / FOLDER, geometry=geometry, history=history, network=network)
     done = {}
     for key, cls, processor in _instances(specs):
         written = len(result.files)
@@ -110,7 +110,9 @@ def postprocess_folder(folder, specs):
     geometry = None
     if geometry_file.exists():
         geometry = [np.asarray(p) for p in json.loads(geometry_file.read_text(encoding="utf-8"))["polygons"]]
-    done = run_postprocessors(run, density, folder, geometry)
+    network_file = folder / "network.json"           # a truss: its bars, for the solid
+    network = json.loads(network_file.read_text(encoding="utf-8")) if network_file.exists() else None
+    done = run_postprocessors(run, density, folder, geometry, network=network)
     record["postprocess"] = {**record.get("postprocess", {}), **done}
     (folder / "run.json").write_text(json.dumps(record, indent=2) + "\n", encoding="utf-8")
     return done

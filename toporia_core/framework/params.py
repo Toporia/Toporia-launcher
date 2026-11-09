@@ -11,7 +11,7 @@
 
 from dataclasses import dataclass
 
-KINDS = ("float", "int", "bool", "choice")
+KINDS = ("float", "int", "bool", "choice", "text")
 
 
 @dataclass(frozen=True)
@@ -24,7 +24,7 @@ class Param:
     default  : value used when nothing is specified
     label    : short human-readable name for the GUI (defaults to `name`)
     help     : one or two sentences; becomes the tooltip
-    kind     : "float" | "int" | "bool" | "choice" — inferred from the default
+    kind     : "float" | "int" | "bool" | "choice" | "text" — inferred from the default
     min, max : inclusive bounds for numeric kinds (None = unbounded)
     step     : GUI spin-box increment
     decimals : GUI display precision for floats
@@ -72,6 +72,10 @@ class Param:
         """
         if self.kind == "bool":
             return bool(value)
+        if self.kind == "text":            # e.g. a formula; checked by the part that reads it
+            if not isinstance(value, str):
+                raise ValueError(f"{self.name}={value!r} must be text")
+            return value
         if self.kind == "choice":
             for allowed, _ in self.choices:
                 if value == allowed:
@@ -96,6 +100,8 @@ def _infer_kind(default, choices):
         return "int"
     if isinstance(default, float):
         return "float"
+    if isinstance(default, str):
+        return "text"
     raise ValueError(f"Cannot infer a Param kind from default {default!r}; pass kind=")
 
 
