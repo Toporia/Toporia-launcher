@@ -190,6 +190,17 @@ class Scenario:
     # Object definitions live in mm and are remeshed on every resolution change.
     regions: list | None = None
 
+    # Your own variables, recorded every iteration and usable as an objective, a term or a
+    # constraint through the "variable" response: {"name": "c", "type": "compliance", ...}
+    # measures a quantity, {"name": "ratio", "expression": "c / volume"} derives one
+    # (toporia_core/framework/variables.py).  Empty keeps historical fingerprints.
+    variables: list = field(default_factory=list)
+
+    # More physics on the same design field, each with its own material law:
+    # [{"model": "q4_heat", "interpolation": {"type": "simp"}}] (framework/companions.py).
+    # A variable names the physics it is measured on.  Empty keeps historical fingerprints.
+    extra_physics: list = field(default_factory=list)
+
 
 # Param declarations for the scenario fields the GUI and sweeps expose.
 SCENARIO_PARAMS = (

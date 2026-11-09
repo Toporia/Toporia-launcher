@@ -27,6 +27,9 @@ Lagrangian to survive thousands of local constraints.
 | ✅ Output displacement (maximise) | [`output_displacement.py`](output_displacement.py) | `output_displacement` | objective | `q4_mechanism` |
 | ✅ Material volume | [`volume.py`](volume.py) | `volume` | objective | `q4`, `pymoto_elastic` |
 | ✅ Peak von Mises stress | [`stress.py`](stress.py) | `stress` | constraint | `q4`, `pymoto_elastic` |
+| ✅ Peak von Mises stress (minimise) | [`stress.py`](stress.py) | `peak_stress` | objective | every engine with `stress`: `q4`, `h8`, `q4_mechanism`, ... |
+| ✅ Combined objective (weighted sum, min-max, formula) | [`combined.py`](combined.py) | `combined` | objective | every engine; each term must be computable on it |
+| ✅ A variable of the problem | [`variable.py`](variable.py) | `variable` | objective or constraint | every engine; the variable must be computable on it |
 | ✅ Buckling load factor | [`buckling.py`](buckling.py) | `buckling_load` | objective or constraint | `q4_buckling` |
 | ✅ Local von Mises stress (augmented Lagrangian) | [`local_stress.py`](local_stress.py) | `local_stress` | constraint | `q4`, `h8` |
 | ✅ Geometric minimum feature length | [`minimum_length.py`](minimum_length.py) | `minimum_length` | constraint | All eight native physics engines (geometry only), 2-D/3-D |
@@ -237,6 +240,28 @@ A response declares the engine features it `requires` (see
 [`framework/parts/physics.py`](../../toporia_core/framework/parts/physics.py)); a model can offer it exactly when its engine
 provides them. Compliance needs `elastic_energy`, the stress response needs `stress` — so
 adding one feature to an engine adds every response built on it at once.
+
+## Combined objective — `combined`
+
+**What it does.** Several quantities in one objective. Each *term* is an objective-capable response
+(compliance, volume, peak stress, thermal compliance, ...) with a weight and *minimise* or *maximise*;
+each is divided by its value at the first design, so weights compare different units fairly. The terms
+are joined by a **weighted sum**, by a **min-max** (the Kreisselmeier–Steinhauser smooth maximum, which
+pushes down the worst term and needs no extra variable, so every updater can use it), or by a **Python
+expression** over the terms' raw values, e.g. `compliance * sqrt(peak_stress)`. The terms' gradients are
+exact; the formula's slope per term is a central difference of the scalar formula. The run records every
+term as `term:<name>`.
+
+**How to use it.** GUI: Objective *Combined objective*; add terms, set the weights, choose *Combine by*.
+JSON:
+
+```json
+"objective": {"type": "combined", "combine": "sum",
+              "terms": [{"type": "compliance", "weight": 1.0},
+                        {"type": "peak_stress", "weight": 0.3, "p": 8}]}
+```
+
+Use a gradient-based updater with general objectives (MMA, CONLIN); OC assumes compliance-like sensitivities.
 
 ## Local von Mises stress — `local_stress`
 

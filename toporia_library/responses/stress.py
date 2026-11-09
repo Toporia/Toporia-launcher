@@ -47,11 +47,13 @@
 #     doubles that row again.  Its von Mises stress is therefore too high
 #     wherever there is shear (by 22 % on a random MBB design).
 
+from dataclasses import replace
+
 import numpy as np
 
 from toporia_core.framework.params import Param
 from toporia_core.framework.parts.physics import STRESS
-from toporia_core.framework.parts.response import CONSTRAINT_ROLE, Response, ResponseValue
+from toporia_core.framework.parts.response import CONSTRAINT_ROLE, OBJECTIVE_ROLE, Response, ResponseValue
 
 # 2-D plane-stress von Mises from Voigt stress s = [sxx, syy, txy]:  vm² = sᵀ V s
 VON_MISES_2D = np.array([[1.0, -0.5, 0.0], [-0.5, 1.0, 0.0], [0.0, 0.0, 3.0]])
@@ -140,3 +142,30 @@ class VonMisesStress(Response):
             adjoint = physics.adjoint(state, physics.stress_load(state, case, d_stress))
             sensitivity -= slope * physics.mutual_energy(state, case, adjoint)
         return ResponseValue(value, scale / limit * sensitivity, exact, reported)
+
+
+class PeakStress(VonMisesStress):
+    """The peak von Mises stress itself, as a quantity to minimise (alone or as a term)."""
+    name = "peak_stress"
+    label = "Peak von Mises stress (minimise)"
+    use_when = (
+        "To lower the peak stress for a given amount of material, or as one term of a combined "
+        "objective next to compliance. As a hard limit, use the stress constraint instead."
+    )
+    order = 35
+    reference = VonMisesStress.reference
+    roles = (OBJECTIVE_ROLE,)
+    # As an objective the smooth p-norm itself is minimised: adaptive scaling would make it
+    # the true, non-smooth maximum, with a gradient that is not its derivative.
+    params = tuple(replace(param, default=False) if param.name == "adaptive" else param
+                   for param in VonMisesStress.params if param.name != "limit")
+    limit_in_units = False
+    gradient_check_settings = {}
+
+    def setup(self, physics, problem, settings):
+        super().setup(physics, problem, {**settings, "limit": 1.0})
+
+    def evaluate(self, state, gradient=True):
+        result = super().evaluate(state, gradient)
+        # With a limit of 1 the constraint is norm − 1: add the 1 back.
+        return ResponseValue(result.value + 1.0, result.gradient, reported=result.reported)

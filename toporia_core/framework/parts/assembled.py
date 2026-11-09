@@ -27,12 +27,14 @@ import re
 
 import numpy as np
 
+from toporia_core.framework.companions import build_companions
 from toporia_core.framework.parts.filter_pipeline import DensityFilterPipeline
 from toporia_core.framework.parts.method import Capabilities
 from toporia_core.framework.parts.model import ConstraintValue, Evaluation, Model
 from toporia_core.framework.parts.response import CONSTRAINT_ROLE, OBJECTIVE_ROLE
 from toporia_core.framework.parts.schedule import change_parameter
 from toporia_core.framework.registries import RESPONSES, resolve_response, responses_for
+from toporia_core.framework.variables import VariableSet
 
 
 def _capabilities(physics):
@@ -111,6 +113,8 @@ class AssembledModel(Model):
                 raise ValueError("; ".join(reasons))
             self.material.setup(problem)
         self.engine.initialize(problem, settings, self.material)
+        # More physics on the same field, solved when a variable asks (framework/companions.py).
+        self.engine.companions = build_companions(getattr(scenario, "extra_physics", None), type(self), problem)
         self.representation = design_representation(solver)
         self.representation.setup(problem)
         self.lb, self.ub = self.representation.bounds()
@@ -121,6 +125,9 @@ class AssembledModel(Model):
 
         self.objective = self._response(scenario.objective, OBJECTIVE_ROLE)
         self.constraints = [self._response(spec, CONSTRAINT_ROLE) for spec in scenario.constraints]
+        # The scenario's own variables are recorded every iteration (framework/variables.py).
+        self.variables = (VariableSet(self.engine, problem, scenario.variables)
+                          if getattr(scenario, "variables", None) else None)
         # Compliance is worth recording whenever it is not the objective and
         # the engine gives it for free.
         self.compliance = None
@@ -136,6 +143,7 @@ class AssembledModel(Model):
             raise ValueError(f"{cls.label!r} cannot be computed on {type(self).physics.label!r}; "
                              f"it needs the physics features {cls.requires}")
         response = cls()
+        response.role = role
         response.setup(self.engine, self.problem, values)
         return response
 
@@ -213,6 +221,10 @@ class AssembledModel(Model):
                 reported[key if len(self.constraints) == 1 else f"{key}_{i}"] = value
         if self.compliance is not None:
             reported["compliance"] = self.compliance.evaluate(state, gradient=False).value
+        if self.variables is not None:
+            for name, (value, _) in self.variables.evaluate(state).items():
+                if name in self.variables.names:
+                    reported[f"var:{name}"] = value
 
         return Evaluation(objective=objective.value, objective_gradient=dc,
                           volume=volume, volume_gradient=dv,

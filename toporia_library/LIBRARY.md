@@ -24,7 +24,7 @@ A test (`tests/apps/test_gui.py`) fails if a part ever stops being reachable fro
 | **Wraps** | Calls an outside Python package. That package is installed separately. Parts whose package is missing are greyed out in the app, with the install command. |
 | **Own** | Toporia's own idea or standard practice. |
 
-## In the library today: 89 selectable parts and 91 benchmark/research presets
+## In the library today: 92 selectable parts and 91 benchmark/research presets
 
 The selectable parts include models and whole methods; their nine underlying
 physics engines are counted separately in the [catalogue totals](README.md).
@@ -98,6 +98,9 @@ physics engines are counted separately in the [catalogue totals](README.md).
 | Local von Mises stress (augmented Lagrangian) | `local_stress` | [local_stress.py](responses/local_stress.py) | Paper | Giraldo-Londoño & Paulino, *SMO* 2021 (PolyStress); Senhora et al., *SMO* 2020 · papers [1](https://doi.org/10.1007/s00158-020-02760-8) [2](https://doi.org/10.1007/s00158-020-02573-9) |
 | End compliance (non-linear) | `end_compliance` | [end_compliance.py](responses/end_compliance.py) | Paper | Buhl, Pedersen & Sigmund, *SMO* 2000 · [paper](https://doi.org/10.1007/s001580050089) |
 | Peak von Mises stress | `stress` | [stress.py](responses/stress.py) | Paper | Le, Norato, Bruns, Ha & Tortorelli, *SMO* 2010 · [paper](https://doi.org/10.1007/s00158-009-0440-y) |
+| Peak von Mises stress (minimise) | `peak_stress` | [stress.py](responses/stress.py) | Paper | the same p-norm as `stress`, as an objective |
+| Combined objective | `combined` | [combined.py](responses/combined.py) | Own | weighted sum and min-max (KS) as in Marler & Arora, *SMO* 2004 · [paper](https://doi.org/10.1007/s00158-003-0368-6) |
+| A variable of the problem | `variable` | [variable.py](responses/variable.py) | Own | any built-in or own variable as objective, term or constraint |
 | Buckling load factor | `buckling_load` | [buckling.py](responses/buckling.py) | Paper | Reciprocal-factor aggregate; objective or constraint on `q4_buckling` · [paper](https://doi.org/10.1007/s00158-021-02854-x) |
 | Thermal compliance | `thermal_compliance` | [thermal_compliance.py](responses/thermal_compliance.py) | Paper | Bendsøe & Sigmund 2003, section 1.5; Gersborg-Hansen et al., *SMO* 2006 · [paper](https://doi.org/10.1007/s00158-005-0584-3) |
 | Fundamental frequency (maximise) | `eigenfrequency` | [eigenfrequency.py](responses/eigenfrequency.py) | Paper | Díaz & Kikuchi, *IJNME* 1992; Du & Olhoff, *SMO* 2007 · papers [1](https://doi.org/10.1002/nme.1620350707) [2](https://doi.org/10.1007/s00158-007-0101-y) |

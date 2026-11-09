@@ -19,6 +19,13 @@ from .report import Report
 
 # ── Response ──────────────────────────────────────────────────────────────────
 
+def check_settings(cls, physics):
+    """The settings a response is checked with on `physics`: its Params, plus structured keys."""
+    settings = dict(cls.gradient_check_settings_for(physics))
+    extra = {key: settings.pop(key) for key in cls.structured if key in settings}
+    return {**resolve_params(cls.name, cls.params, settings), **extra}
+
+
 def check_response(cls):
     """Check a Response: its roles, and its gradient on every engine that can compute it."""
     from toporia_core.framework.parts.assembled import AssembledModel
@@ -44,8 +51,7 @@ def check_response(cls):
         engine = model_cls.physics()
         engine.initialize(problem, resolve_params(model_cls.name, model_cls.params, {}))
         response = cls()
-        response.setup(engine, problem, resolve_params(cls.name, cls.params,
-                                                       getattr(cls, "gradient_check_settings", {})))
+        response.setup(engine, problem, check_settings(cls, model_cls.physics))
         rng = np.random.default_rng(1)
         density = np.clip(rng.uniform(0.2, 0.9, problem.shape),
                           problem.lower_bound, problem.upper_bound)

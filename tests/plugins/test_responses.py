@@ -30,10 +30,12 @@ STRESS = {"type": "stress", "limit": 10.0}
 
 def test_responses_are_discovered_with_their_roles():
     assert RESPONSES.names() == ["compliance", "phase_field", "thermal_compliance", "dynamic_compliance", "end_compliance",
-                                 "output_displacement", "volume", "stress", "local_stress", "minimum_length", "buckling_load", "eigenfrequency", "eigenfrequency_limit"]
+                                 "output_displacement", "volume", "stress", "local_stress", "peak_stress", "minimum_length", "buckling_load", "eigenfrequency", "eigenfrequency_limit",
+                                 "combined", "variable"]
     assert [c.name for c in responses_for(OBJECTIVE_ROLE)] == [
-        "compliance", "phase_field", "thermal_compliance", "dynamic_compliance", "end_compliance", "output_displacement", "volume", "buckling_load", "eigenfrequency"]
-    assert [c.name for c in responses_for(CONSTRAINT_ROLE)] == ["stress", "local_stress", "minimum_length", "buckling_load", "eigenfrequency_limit"]
+        "compliance", "phase_field", "thermal_compliance", "dynamic_compliance", "end_compliance", "output_displacement", "volume", "peak_stress",
+        "buckling_load", "eigenfrequency", "combined", "variable"]
+    assert [c.name for c in responses_for(CONSTRAINT_ROLE)] == ["stress", "local_stress", "minimum_length", "buckling_load", "eigenfrequency_limit", "variable"]
 
 
 def test_the_default_scenario_minimises_compliance_under_the_volume_budget_only():
@@ -75,7 +77,8 @@ def test_capabilities_say_what_each_method_can_do():
     # The Q4 model computes stress through the physics interface, so an updater
     # that takes constraints can now enforce it on Toporia's own solver.
     gcmma = method_class("q4+pymoto_gcmma").capabilities
-    assert set(gcmma.objectives) == {"compliance", "phase_field", "volume"} and gcmma.constraints == ("stress", "minimum_length")
+    assert set(gcmma.objectives) == {"compliance", "phase_field", "volume", "peak_stress", "combined", "variable"}
+    assert gcmma.constraints == ("stress", "minimum_length", "variable")
 
 
 @pytest.mark.parametrize("method", ["q4+oc", "q4+mma", "q4+simpl", "levelset"])

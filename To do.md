@@ -104,16 +104,26 @@ Numbers are the note's own.
 The framework redesign from the note (🧑). 🤖 suggested this order, because each builds on
 the one before.
 
-- [ ] 🧑 4 Rethink the objective: list the variables in the design space, pick one or more to
+- [x] 🧑 4 Rethink the objective: list the variables in the design space, pick one or more to
       minimise or maximise, and choose how they combine. A variable can be a Python line of
       other variables, or a separate Python file for full control.
-- [ ] 🧑 1 + 2 The problem space is a variable space: the Problem tab lists every variable and
+      🤖 Done 9 November 2026: the `combined` objective (weighted sum, min-max through the KS
+      function, or a Python expression), and `peak_stress` as an objective. 🧑 chose no Python
+      file for now.
+- [x] 🧑 1 + 2 The problem space is a variable space: the Problem tab lists every variable and
       field (compliance, peak local stress, volume fraction, your own). 🤖 Scalars first;
       extra fields next to the density, or with a time axis, need the engine to carry more
       than one design field.
-- [ ] 🧑 9 Physics and material law chosen in the Problem tab, several physics on one field,
+      🤖 Scalars done 9 November 2026: `scenario.variables` (measured or a formula), recorded
+      every run, usable through the `variable` response; the Problem page lists built-in
+      variables, your own, and the fields. Extra design fields and a time axis stay open
+      (section 6, Wave 5).
+- [x] 🧑 9 Physics and material law chosen in the Problem tab, several physics on one field,
       each with its own material law. 🤖 Combined through item 4 first; truly coupled physics
       is the "coupled solving" item below.
+      🤖 Done 9 November 2026: the material law sits on the Problem page; "More physics on the
+      same design" adds physics with their own law and solid/void property
+      (`scenario.extra_physics`), measured by variables; preset MBB Beam (Stiffness and Heat).
 - [ ] 🧑 3 Native truss representation (ground structure), and a function that converts a
       truss network back into a density field, which is then checked and optimised for peak
       stresses. Modules with transfer functions, for multi-level optimisation of flexure

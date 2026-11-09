@@ -33,6 +33,9 @@ def to_dict(obj):
     # Preserve historical scenario fingerprints and baseline provenance.
     if isinstance(obj, Scenario) and data.get("regions") is None:
         data.pop("regions", None)
+    for name in ("variables", "extra_physics"):
+        if isinstance(obj, Scenario) and not data.get(name):
+            data.pop(name, None)
     return data
 
 

@@ -107,7 +107,28 @@ def resolve_response(spec, role):
     if role not in cls.roles:
         roles = " or ".join(cls.roles) or "nothing"
         raise ValueError(f"{cls.label!r} cannot be used as the {role}; it can be used as: {roles}")
-    return cls, resolve_params(f"{role} {cls.name!r}", cls.params, values)
+    extra = {key: values.pop(key) for key in cls.structured if key in values}
+    resolved = resolve_params(f"{role} {cls.name!r}", cls.params, values)
+    resolved.update(extra)
+    validate = getattr(cls, "validate_spec", None)
+    if validate is not None:
+        validate(resolved)
+    return cls, resolved
+
+
+def _check_variable_names(scenario, resolved):
+    """Every variable a response names exists: the scenario's own, or a built-in quantity."""
+    from toporia_core.framework.variables import check_variables
+    specs = getattr(scenario, "variables", None) or []
+    check_variables(specs)
+    known = {spec["name"] for spec in specs} | {cls.name for cls in responses_for(OBJECTIVE_ROLE)}
+    terms = [values for _, values in resolved]
+    terms += [term for _, values in resolved for term in values.get("terms", []) or []]
+    for values in terms:
+        name = values.get("variable")
+        if name is not None and name not in known:
+            raise ValueError(f"There is no variable {name!r}; define it on the Problem page "
+                             f"(the scenario's variables) or use a built-in quantity")
 
 
 def check_responses(scenario):
@@ -117,6 +138,7 @@ def check_responses(scenario):
     """
     objective = resolve_response(scenario.objective, OBJECTIVE_ROLE)
     constraints = [resolve_response(spec, CONSTRAINT_ROLE) for spec in scenario.constraints]
+    _check_variable_names(scenario, [objective, *constraints])
     if objective[0].needs_constraint and not constraints:
         raise ValueError(
             f"Minimising {objective[0].label.lower()} needs at least one constraint besides the "

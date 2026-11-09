@@ -198,6 +198,10 @@ class MainWindow(WorkflowActions, ProjectActions, ExecutionActions, QMainWindow)
         self.material = MaterialGroup(INTERPOLATIONS.classes())
         self.objective = ObjectiveGroup(responses_for(OBJECTIVE_ROLE))
         self.constraints = ConstraintsGroup(responses_for(CONSTRAINT_ROLE))
+        from .panels.extra_physics import ExtraPhysicsGroup
+        from .panels.variables import VariablesGroup
+        self.variables = VariablesGroup()
+        self.extra_physics = ExtraPhysicsGroup()
         self.filters = SpecListGroup("Filters", FILTERS.classes(), initial=[{"type": "density"}], noun="filter")
         self.schedules = ScheduleListGroup(SCHEDULES.classes())
         self.variants = VariantsGroup()
@@ -335,13 +339,15 @@ class MainWindow(WorkflowActions, ProjectActions, ExecutionActions, QMainWindow)
         self.parameter_dialog.finished.connect(lambda *_: self._restore_inspector())
         self.method_settings = QWidget(self)
         settings_layout = QVBoxLayout(self.method_settings)
-        for widget in (self.core, self.material, self.filters, self.schedules, self.variants):
+        for widget in (self.core, self.filters, self.schedules, self.variants):
             settings_layout.addWidget(widget)
         self.method_settings.hide()
         self._inspected_widget = None
         self.constraints.attach_budget(self.core.volume_box, self.core)
         self.constraints.budget_changed.connect(self._on_budget_changed)
         self.objective.changed.connect(self._ensure_budget)
+        self.variables.changed.connect(self._share_variable_names)
+        self.extra_physics.changed.connect(self._show_variable_space)
         problem_files = QWidget()
         problem_row = QHBoxLayout(problem_files)
         problem_row.setContentsMargins(0, 0, 0, 0)
@@ -371,7 +377,8 @@ class MainWindow(WorkflowActions, ProjectActions, ExecutionActions, QMainWindow)
         physics_row.addWidget(self.problem_physics, 1)
         self.problem_physics_box = physics_box
         pages = (
-            (problem_files, self.design, self.lc, physics_box, self.objective, self.constraints),
+            (problem_files, self.design, self.lc, physics_box, self.material, self.extra_physics, self.variables,
+             self.objective, self.constraints),
             (QLabel("Select a function to open its settings.\nEnter a block to work in its local network.\nUse the library to add compatible functions."),),
             (mode_box, history_section, self.sg, self.sg2, self.cg, self.clcg, self.cmg, self.msg, self.sens, self.ssg, self.ssg2),
             (self._build_post_box(),),
@@ -1049,6 +1056,20 @@ class MainWindow(WorkflowActions, ProjectActions, ExecutionActions, QMainWindow)
             self._clean_geometry = self.project.objects
             self._show_blank_setup()
 
+    def _show_variable_space(self):
+        """The variables panel follows the main physics and the extra physics."""
+        from toporia_library.methods import method_class
+        model = getattr(method_class(self.core.method_name()), "model", None)
+        self.extra_physics.set_main(model)
+        self.variables.set_physics(getattr(model, "physics", None), self.extra_physics.companions())
+        self._share_variable_names()
+
+    def _share_variable_names(self):
+        """Every variable name, for the objective, its terms and the constraints that name one."""
+        names = self.variables.names()
+        self.objective.set_variable_names(names)
+        self.constraints.set_variable_names(names)
+
     def _on_method_changed(self, name):
         """Adapt the panels to what the selected method can do."""
         from toporia_library.filters import FILTERS
@@ -1056,6 +1077,7 @@ class MainWindow(WorkflowActions, ProjectActions, ExecutionActions, QMainWindow)
 
         capabilities = method_class(name).capabilities
         self._show_problem_physics(name)
+        self._show_variable_space()
         self.filters.set_allowed(FILTERS.names() if capabilities.accepts_filters else [])
         self.design.set_representation_available(capabilities.accepts_representation)
         from toporia_core.framework.parts.composition import ComposedMethod

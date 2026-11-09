@@ -10,7 +10,9 @@ constraint entry; scenario.constraints adds further limits on top of it.
     compliance.py  weighted compliance — objective
     end_compliance.py  compliance at the final load of a non-linear solve — objective
     volume.py      material volume — objective, used with a further constraint
-    stress.py      peak von Mises stress — constraint
+    stress.py      peak von Mises stress — constraint, and peak_stress — objective
+    combined.py    several terms in one objective: weighted sum, min-max or a formula
+    variable.py    any variable of the problem (framework/variables.py) — objective or constraint
     buckling.py    reciprocal load-factor aggregate — objective or constraint
     thermal_compliance.py  weighted thermal compliance of heat conduction — objective
     eigenfrequency.py     lowest natural frequency — objective (maximise) and constraint (at least)

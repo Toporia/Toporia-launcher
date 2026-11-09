@@ -17,7 +17,8 @@ from ._research import Equation, ResearchDescription
 ORIGINALS = {
     "cantilever", "cantilever_3d", "column_buckling",
     "force_inverter", "heat_sink", "l_bracket", "l_bracket_stress",
-    "mbb_beam", "mbb_beam_fixed_projection", "mbb_beam_robust", "michell_cantilever",
+    "mbb_beam", "mbb_beam_fixed_projection", "mbb_beam_robust", "mbb_beam_stiffness_heat",
+    "mbb_beam_stiffness_stress", "michell_cantilever",
     "nonlinear_cantilever", "standard_bar", "three_point_bending", "vibrating_beam",
 }
 RELATED = {
@@ -223,6 +224,11 @@ def original_description(module):
         equations += (Equation(r"J=\sum_e\rho_e",
                                "This preset minimises the material used, subject to its stress constraint; "
                                "the volume budget above is only an upper bound."),)
+    if objective == "combined":
+        equations += (Equation(r"J=\sum_i w_i s_i\,\frac{f_i(\rho)}{|f_i(\rho^0)|}",
+                               "A combined objective: each term f_i is divided by its value at the start design, "
+                               "weighed by w_i and minimised (s_i = +1) or maximised (s_i = -1). A term may be a "
+                               "variable measured on another physics on the same design."),)
     if projected:
         equations += FILTER_CASES["heaviside"]["equations"][:1]
     equations += (Equation(
@@ -238,6 +244,9 @@ def original_description(module):
                  "representation:"+solver.representation.get("type", "element_density"),
                  "interpolation:"+solver.interpolation.get("type", "simp"), "response:"+objective]
     functions += ["response:"+c["type"] for c in scenario.constraints]
+    functions += ["response:"+term["type"] for term in scenario.objective.get("terms", ()) or ()]
+    functions += ["response:"+v["type"] for v in getattr(scenario, "variables", ()) if "type" in v]
+    functions += ["model:"+p["model"] for p in getattr(scenario, "extra_physics", ())]
     functions += ["filter:"+spec["type"] for spec in solver.filter_specs]
     functions += ["schedule:"+spec["type"] for spec in solver.schedules]
     functions = tuple(dict.fromkeys(functions))

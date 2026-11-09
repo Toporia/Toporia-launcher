@@ -77,7 +77,8 @@ class ProjectActions:
                             objective=self.objective, constraints=self.constraints,
                             interpolation=self.material, representation=self.design,
                             schedules=self.schedules, variants=self.variants,
-                            postprocess=self.post, design=self.design)
+                            postprocess=self.post, design=self.design, variables=self.variables,
+                            extra_physics=self.extra_physics)
         if self.project.objects is not None:
             cfg = replace(cfg, scenario=replace(cfg.scenario, regions=self.project.objects))
         elif self.project.benchmark is not None:
@@ -167,6 +168,8 @@ class ProjectActions:
         self.core.load_from_config(cfg)
         self.design.load_from_config(cfg)
         self.material.load_spec(cfg.solver.interpolation)
+        self.extra_physics.load_specs(getattr(cfg.scenario, "extra_physics", []))
+        self.variables.load_specs(getattr(cfg.scenario, "variables", []))
         self.objective.load_spec(cfg.scenario.objective)
         self.constraints.load_specs(cfg.scenario.constraints)
         self.constraints.refresh_budget()
@@ -276,7 +279,7 @@ class ProjectActions:
         """Protect reference problems while allowing solver and resolution experiments."""
         locked = self.project.benchmark is not None
         self.lc.set_regional(self.project.objects is not None)
-        for widget in (self.lc, self.objective, self.constraints,
+        for widget in (self.lc, self.extra_physics, self.variables, self.objective, self.constraints,
                        self.design.dims, self.design.depth):
             widget.setEnabled(not locked)
         if hasattr(self, "project_label"):

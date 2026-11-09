@@ -51,6 +51,15 @@ class _SpecRow(QWidget):
         self.header = header
         outer.addLayout(header)
 
+        # A spec that names a variable of the problem ("variable") gets a selector of names.
+        self._variable = None
+        if any("variable" in getattr(cls, "structured", ()) for cls in self._classes):
+            self._variable = QComboBox()
+            self._variable.setEditable(True)
+            self._variable.setToolTip("Which variable of the problem: built in, or your own from the "
+                                      "Problem page's Variables and fields.")
+            self._variable.currentTextChanged.connect(lambda *_: self.changed.emit())
+            outer.addWidget(self._variable)
         self._wanted = self._classes[0].name if self._classes else None  # kept while it is not offered
         self._forms = {}
         for cls in self._classes:
@@ -92,7 +101,24 @@ class _SpecRow(QWidget):
         key = self._type.currentData()
         for name, form in self._forms.items():
             form.setVisible(name == key)
+        if self._variable is not None:
+            self._variable.setVisible(self._names_variable(key))
         self.changed.emit()
+
+    def _names_variable(self, key):
+        cls = next((c for c in self._classes if c.name == key), None)
+        return cls is not None and "variable" in getattr(cls, "structured", ())
+
+    def set_variable_names(self, names):
+        """Offer these variable names, keeping the one chosen."""
+        if self._variable is None:
+            return
+        current = self._variable.currentText()
+        self._variable.blockSignals(True)
+        self._variable.clear()
+        self._variable.addItems(list(names))
+        self._variable.setCurrentText(current or (names[0] if names else ""))
+        self._variable.blockSignals(False)
 
     def type_topic(self):
         """Help on the type selected now."""
@@ -111,7 +137,10 @@ class _SpecRow(QWidget):
 
     def get_spec(self):
         key = self._type.currentData() or self._wanted
-        return {"type": key, **self._forms[key].get_values()}
+        spec = {"type": key, **self._forms[key].get_values()}
+        if self._variable is not None and self._names_variable(key):
+            spec["variable"] = self._variable.currentText().strip()
+        return spec
 
     def load_spec(self, spec):
         values = dict(spec)
@@ -121,6 +150,8 @@ class _SpecRow(QWidget):
         index = self._type.findData(key)
         if index >= 0:
             self._type.setCurrentIndex(index)
+        if self._variable is not None and "variable" in values:
+            self._variable.setCurrentText(str(values.pop("variable")))
         if key in self._forms:
             self._forms[key].set_values(values)
 
@@ -143,6 +174,7 @@ class SpecListGroup(QWidget):
         self._classes = list(classes)
         self._allowed = [cls.name for cls in self._classes]
         self._rows = []
+        self._variable_names = []
 
         outer = QVBoxLayout(self)
         outer.setContentsMargins(0, 0, 0, 4)
@@ -187,6 +219,7 @@ class SpecListGroup(QWidget):
     def _add_row(self, spec=None):
         row = self._make_row(spec)
         row.set_allowed(self._allowed)
+        row.set_variable_names(self._variable_names)
         row.changed.connect(self.changed.emit)
         if self._title == "Filters":
             for label, delta in (("↑", -1), ("↓", 1)):
@@ -228,6 +261,12 @@ class SpecListGroup(QWidget):
             row.set_allowed(self._allowed)
         self.setVisible(bool(self._allowed))
         self.changed.emit()
+
+    def set_variable_names(self, names):
+        """The variables a row may name (built in and your own)."""
+        self._variable_names = list(names)
+        for row in self._rows:
+            row.set_variable_names(self._variable_names)
 
     def get_specs(self):
         """The rows as spec dicts, in order; empty while no type is allowed."""
@@ -427,6 +466,7 @@ class SingleSpecGroup(QWidget):
         self._row.changed.connect(self.changed.emit)
         section.body_layout.addWidget(self._row)
         outer.addWidget(section)
+        self.section = section
 
     def offered_types(self):
         """The types the selector offers, in menu order."""
@@ -435,6 +475,10 @@ class SingleSpecGroup(QWidget):
     def set_allowed(self, names):
         """Offer only these types."""
         self._row.set_allowed(names)
+
+    def set_variable_names(self, names):
+        """The variables the spec may name (built in and your own)."""
+        self._row.set_variable_names(names)
 
     def get_spec(self):
         """The row as a spec dict: {"type": ..., <param>: <value>}."""
@@ -446,9 +490,47 @@ class SingleSpecGroup(QWidget):
 
 
 class ObjectiveGroup(SingleSpecGroup):
-    """What the scenario minimises, from the response declarations."""
+    """What the scenario minimises, from the response declarations; with the terms of a combined one."""
 
     title = "Objective"
+
+    def __init__(self, classes, parent=None):
+        from .objective_terms import ObjectiveTermsEditor
+        super().__init__(classes, parent)
+        self.terms = ObjectiveTermsEditor(classes)
+        self.section.body_layout.addWidget(self.terms)
+        self.terms.changed.connect(self.changed.emit)
+        self._row.changed.connect(self._show_terms)
+        self._show_terms()
+
+    def _show_terms(self):
+        spec = self._row.get_spec()
+        self.terms.setVisible(spec.get("type") == "combined")
+        self.terms.set_combine(spec.get("combine", "sum"))
+
+    def set_allowed(self, names):
+        super().set_allowed(names)
+        self.terms.set_offered([name for name in names if name != "combined"])
+
+    def set_variable_names(self, names):
+        super().set_variable_names(names)
+        self.terms.set_variable_names(names)
+
+    def get_spec(self):
+        spec = super().get_spec()
+        if spec.get("type") == "combined":
+            spec["terms"] = self.terms.terms()
+            if spec.get("combine") == "expression":
+                spec["expression"] = self.terms.expression.text()
+        return spec
+
+    def load_spec(self, spec):
+        values = dict(spec)
+        terms, expression = values.pop("terms", None), values.pop("expression", "")
+        super().load_spec(values)
+        if values.get("type") == "combined":
+            self.terms.load(terms, expression)
+        self._show_terms()
 
 
 class MaterialGroup(SingleSpecGroup):

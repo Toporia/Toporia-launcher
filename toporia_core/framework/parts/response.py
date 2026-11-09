@@ -82,11 +82,22 @@ class Response:
     #: normalised constraint g = value / limit - 1 can be reported in those units.
     #: False when "limit" only scales a tolerance: the run report then shows g itself.
     limit_in_units = True
+    #: Spec keys that hold structured values (lists, text) rather than Params; they are
+    #: passed to setup() unchanged, e.g. the terms of a combined objective.
+    structured = ()
+    #: The role it was set up for (OBJECTIVE_ROLE or CONSTRAINT_ROLE); the model sets it
+    #: before setup(), for a response that behaves differently in the two.
+    role = OBJECTIVE_ROLE
 
     @classmethod
     def computable_on(cls, physics):
         """True when this response can compute itself on the given physics class."""
         return cls.requires is not None and set(cls.requires) <= set(physics.provides)
+
+    @classmethod
+    def gradient_check_settings_for(cls, physics):
+        """The settings its gradient is checked with on a physics class; usually the same for all."""
+        return cls.gradient_check_settings
 
     def setup(self, physics, problem, settings):
         """Prepare for a run on `physics`.  `settings` holds this response's Param values."""
