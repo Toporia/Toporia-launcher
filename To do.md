@@ -139,10 +139,13 @@ the one before.
       and in the 3-D cloud; element designs can show their grid (Result display options).
       Open for 🧑: should component designs (MMC, geometry projection) show their outlines
       live too, and what value belongs at a truss node?
-- [ ] 🧑 16 Loads and constraints on the Problem page for all physics: springs, compliant ports,
+- [x] 🧑 16 Loads and constraints on the Problem page for all physics: springs, compliant ports,
       heat loss.
-- [ ] 🤖 Point springs (compliant-mechanism ports) are kept on a custom copy but cannot be
+- [x] 🤖 Point springs (compliant-mechanism ports) are kept on a custom copy but cannot be
       drawn or edited in the Problem editor yet; they need an object role. (Part of 16.)
+      🤖 Done 9 November 2026: editor roles Spring (axes, stiffness), Output port (direction) and
+      Heat loss (coefficient, a convective boundary to T = 0). A copied preset's point springs
+      and output port become these objects.
 - [ ] 🧑 27 A proper 3D editor.
 - [ ] 🧑 A sleek website.
 

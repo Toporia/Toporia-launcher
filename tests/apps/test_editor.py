@@ -106,3 +106,29 @@ def test_material_presets_fill_real_moduli_and_keep_the_void_relative():
     assert (editor.scenario.E0, editor.scenario.nu) == MATERIALS["Aluminium alloy"][:2]
     assert editor.scenario.Emin == VOID_RATIO * editor.scenario.E0
     assert matching_material(70_000.0, 0.33) == "Aluminium alloy"
+
+
+def test_springs_ports_and_heat_loss_are_edited_with_their_own_value(editor):
+    editor.load(Scenario(), [], False)
+    obj = make_object("point", (30, 0, 0), (1, 1, 1), "support")
+    editor.add_object(obj)
+    editor.role.setCurrentIndex(editor.role.findData("spring"))
+    assert editor.amount.isVisibleTo(editor) and "Stiffness" in editor.amount_label.text()
+    assert editor.axes["x"].isEnabled()
+    editor.amount.setValue(0.25)
+    editor.axes["x"].setChecked(False)
+    editor.axes["y"].setChecked(True)
+    editor.apply_inspector()
+    assert editor.objects[0]["stiffness"] == 0.25 and editor.objects[0]["axes"] == ["y"]
+
+    editor.role.setCurrentIndex(editor.role.findData("port"))
+    assert "direction" in editor.amount_label.text().lower()
+    editor.amount.setValue(90.0)
+    editor.apply_inspector()
+    assert editor.objects[0]["direction"] == 90.0 and "stiffness" not in editor.objects[0]
+
+    editor.role.setCurrentIndex(editor.role.findData("domain"))
+    assert not editor.amount.isVisibleTo(editor)
+    assert editor.role.itemText(editor.role.findData("heat_loss")) == "Heat loss"
+    editor.select(obj["id"])
+    editor.delete_selected()

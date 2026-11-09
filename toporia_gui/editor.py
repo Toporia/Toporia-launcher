@@ -37,7 +37,13 @@ from PySide6.QtWidgets import (
 from .geometry import make_object, objects_from_scenario
 from .spatial_view import SpatialView
 
-COLOURS = {"support": "#49a5db", "load": "#f87777", "solid": "#c2cad3", "void": "#e1bc66", "domain": "#82cfa0"}
+COLOURS = {"support": "#49a5db", "load": "#f87777", "solid": "#c2cad3", "void": "#e1bc66", "domain": "#82cfa0",
+           "spring": "#a77bd6", "port": "#f0a35e", "heat_loss": "#e86fae"}
+ROLE_LABELS = {"heat_loss": "Heat loss", "port": "Output port"}
+#: The one number a role carries besides its geometry: (object key, label, default, minimum).
+ROLE_VALUES = {"spring": ("stiffness", "Stiffness [N/mm]", 0.1, 1e-12),
+               "port": ("direction", "Output direction [°]", 180.0, -360.0),
+               "heat_loss": ("coefficient", "Heat loss [W/K]", 1.0, 1e-12)}
 
 
 class GeometryItem(QGraphicsPathItem):
@@ -223,7 +229,10 @@ class ProblemEditor(QWidget):
         form.addRow("Name", self.name)
         self.role = QComboBox()
         for role in COLOURS:
-            self.role.addItem(role.title(), role)
+            self.role.addItem(ROLE_LABELS.get(role, role.title()), role)
+        self.role.setToolTip("Spring: ground springs on the chosen axes (compliant mechanisms). Output port: "
+                             "where a mechanism's output displacement is measured, and which way. Heat loss: "
+                             "heat leaves to the surroundings here, in heat conduction.")
         form.addRow("Role", self.role)
         self.sampling = QComboBox()
         self.sampling.addItem("Closed volume", "volume")
@@ -252,6 +261,11 @@ class ProblemEditor(QWidget):
         self.case = QSpinBox()
         self.case.setRange(1, 100)
         form.addRow("Load case", self.case)
+        self.amount = _number(0.1)
+        self.amount.setRange(-1e12, 1e12)
+        self.amount.setDecimals(6)
+        form.addRow("Value", self.amount)
+        self.amount_label = form.labelForField(self.amount)
         self.object_form_layout = form
         self.apply_button = QPushButton("Apply object changes")
         self.apply_button.clicked.connect(self.apply_inspector)
@@ -479,14 +493,24 @@ class ProblemEditor(QWidget):
         if obj.get("extrusion"):
             self.fields["d"].setValue(obj["extrusion"])
         self.case.setValue(obj["case"] + 1)
+        value = ROLE_VALUES.get(obj["role"])
+        if value is not None:
+            self.amount.setValue(obj.get(value[0], value[2]))
         self._role_fields()
 
     def _role_fields(self):
+        role = self.role.currentData()
         for key in ("fx", "fy", "fz"):
-            self.fields[key].setEnabled(self.role.currentData() == "load")
-        self.case.setEnabled(self.role.currentData() == "load")
+            self.fields[key].setEnabled(role == "load")
+        self.case.setEnabled(role == "load")
         for check in self.axes.values():
-            check.setEnabled(self.role.currentData() == "support")
+            check.setEnabled(role in {"support", "spring"})
+        value = ROLE_VALUES.get(role)
+        self.amount.setVisible(value is not None)
+        self.amount_label.setVisible(value is not None)
+        if value is not None:
+            self.amount_label.setText(value[1])
+            self.amount.setMinimum(value[3])
 
     def _snapshot(self):
         return self.scenario, deepcopy(self.objects)
@@ -569,6 +593,11 @@ class ProblemEditor(QWidget):
             obj["sampling"] = self.sampling.currentData()
         obj["axes"] = [axis for axis, check in self.axes.items() if check.isChecked()]
         obj["case"] = self.case.value() - 1
+        for key, *_ in ROLE_VALUES.values():
+            obj.pop(key, None)
+        value = ROLE_VALUES.get(obj["role"])
+        if value is not None:
+            obj[value[0]] = self.amount.value()
         self._commit(before, obj["id"])
 
     def _pick_material(self, E0, nu):

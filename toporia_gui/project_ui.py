@@ -313,7 +313,9 @@ class ProjectActions:
             if self.project.objects is None:
                 from .geometry import objects_from_scenario
                 self.project.objects = objects_from_scenario(self.project.run.scenario)
-            self._base_cfg = replace(self._base_cfg, scenario=replace(self._base_cfg.scenario, regions=self.project.objects))
+            # Point springs are spring objects now; keeping both would count them twice.
+            self._base_cfg = replace(self._base_cfg, scenario=replace(
+                self._base_cfg.scenario, regions=self.project.objects, point_springs=[]))
             self._apply_problem_lock()
             self.show_problem()
             self._update_project_title()

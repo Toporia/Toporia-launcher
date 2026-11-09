@@ -55,6 +55,15 @@ def objects_from_scenario(scenario):
         for hole in rings:
             objects.append(make_object("circle", (hole.cx, hole.cy, 0), (2 * hole.r_passive,) * 3, "load",
                                        force=force, case=case_index))
+    # Ground springs and a mechanism's output port become objects of their own (regions.py).
+    for spring in scenario.point_springs:
+        if spring.stiffness > 0:
+            objects.append(make_object(position=(spring.x, spring.y, 0), role="spring", axes=[spring.dof],
+                                       stiffness=spring.stiffness, name=f"Spring {spring.dof}"))
+    if scenario.objective.get("type") == "output_displacement":
+        objective = scenario.objective
+        objects.append(make_object(position=(objective.get("x", 60.0), objective.get("y", 10.0), 0), role="port",
+                                   direction=objective.get("angle", 180.0), name="Output port"))
     if scenario.Lz > 0:
         for obj in objects:
             obj["extrusion"] = scenario.Lz

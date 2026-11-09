@@ -3,6 +3,14 @@
 # This adapter is shared by GUI and CLI. It never invents supports or loads.
 # Regional forces are total vectors, distributed equally across selected nodes;
 # every load owns its own vector and load case. Legacy presets bypass this file.
+#
+# Besides domain, solid, void, support and load, three roles carry physics of their own:
+#   spring     ground springs on the chosen axes, "stiffness" in N/mm in total, shared
+#              by its nodes (models that support springs: the compliant-mechanism Q4)
+#   port       the output port of a compliant mechanism: a point and a "direction" in
+#              degrees; the output-displacement objective measures there
+#   heat_loss  a convective boundary for heat conduction, "coefficient" in W/K in total,
+#              shared by its nodes, to an ambient of T = 0 (heat flows out where it is warm)
 
 import math
 
@@ -145,6 +153,13 @@ def spatial_mask(obj, coordinates, tolerance, nodes):
     raise ValueError(f"Unsupported spatial shape: {shape!r}")
 
 
+ROLES = ("domain", "support", "load", "solid", "void", "spring", "port", "heat_loss")
+
+
+def _positive(value):
+    return isinstance(value, (int, float)) and not isinstance(value, bool) and math.isfinite(value) and value > 0
+
+
 def validate_object(obj, dims):
     """Validate physical object data before using it in geometry or physics."""
     if not isinstance(obj, dict):
@@ -153,8 +168,20 @@ def validate_object(obj, dims):
         value = obj.get(key)
         if not isinstance(value, list) or len(value) != 3 or not all(isinstance(v, (int, float)) and math.isfinite(v) for v in value):
             raise ValueError(f"Region {key} must contain three finite numbers")
-    if obj.get("role") not in {"domain", "support", "load", "solid", "void"}:
-        raise ValueError("Region role must be domain, support, load, solid or void")
+    if obj.get("role") not in ROLES:
+        raise ValueError("Region role must be one of " + ", ".join(ROLES))
+    if obj.get("role") == "spring":
+        if not obj.get("axes") or set(obj["axes"]) - set("xyz"[:dims]):
+            raise ValueError(f"{obj.get('name', 'Spring')}: select at least one axis for the spring")
+        if not _positive(obj.get("stiffness")):
+            raise ValueError(f"{obj.get('name', 'Spring')}: the stiffness must be a positive number")
+    if obj.get("role") == "port":
+        if obj.get("shape") != "point":
+            raise ValueError(f"{obj.get('name', 'Port')}: an output port is a point")
+        if not isinstance(obj.get("direction", 0.0), (int, float)) or not math.isfinite(obj.get("direction", 0.0)):
+            raise ValueError(f"{obj.get('name', 'Port')}: the direction must be a finite angle")
+    if obj.get("role") == "heat_loss" and not _positive(obj.get("coefficient")):
+        raise ValueError(f"{obj.get('name', 'Heat loss')}: the coefficient must be a positive number")
     if obj.get("role") == "support" and (not obj.get("axes") or set(obj["axes"]) - set("xyz"[:dims])):
         raise ValueError(f"{obj.get('name', 'Support')}: select at least one supported displacement axis")
     if obj.get("role") == "load":
@@ -177,13 +204,16 @@ def apply_regions(problem):
     problem.load_node_sets = []
     problem.region_loads = []
     problem.region_weights = []
+    problem.region_springs = []      # (node mask, axes, total stiffness)
+    problem.region_ports = []        # (coordinates, direction in degrees)
+    problem.region_heat_loss = []    # (node mask, total coefficient)
     domain = np.zeros(problem.shape, bool)
     has_domain = False
     tolerance = .51 * np.linalg.norm([problem.dx, problem.dy, *([problem.dz] if problem.dims == 3 else [])])
     for obj in objects:
         validate_object(obj, problem.dims)
         role = obj["role"]
-        nodes = role in {"support", "load"}
+        nodes = role in {"support", "load", "spring", "port", "heat_loss"}
         mask = region_mask(obj, node_coords if nodes else elem_coords, tolerance, nodes)
         if not np.any(mask):
             raise ValueError(f"{obj.get('name', role)} selects no {'nodes' if nodes else 'elements'}; refine the mesh or enlarge the region")
@@ -196,6 +226,12 @@ def apply_regions(problem):
         elif role == "support":
             for axis in obj["axes"]:
                 getattr(problem, f"fixed_{axis}_nodes")[:] |= mask
+        elif role == "spring":
+            problem.region_springs.append((mask, list(obj["axes"]), float(obj["stiffness"])))
+        elif role == "port":
+            problem.region_ports.append((list(obj["position"][:problem.dims]), float(obj.get("direction", 0.0))))
+        elif role == "heat_loss":
+            problem.region_heat_loss.append((mask, float(obj["coefficient"])))
         elif role == "load":
             if obj["case"] >= len(problem.scenario.load_cases):
                 raise ValueError(f"{obj['name']}: load case {obj['case'] + 1} does not exist; add it under Load Cases")
@@ -224,6 +260,8 @@ def apply_regions(problem):
         active_nodes[slices] |= ~problem.void_elements
     for axis in "xyz"[:problem.dims]:
         getattr(problem, f"fixed_{axis}_nodes")[:] &= active_nodes
+    for mask, *_ in problem.region_springs + problem.region_heat_loss:
+        mask &= active_nodes
     for _, mask, _ in problem.region_loads:
         mask &= active_nodes
         if not np.any(mask):
@@ -248,8 +286,9 @@ def validate_field(problem, field):
         return
     masks = [problem.fixed_nodes, *(getattr(problem, f"fixed_{axis}_nodes") for axis in "xyz"[:problem.dims])]
     if field == "temperature":
-        if not any(np.any(mask) for mask in masks):
-            raise ValueError("Add a support: in heat conduction a support is a heat sink held at T = 0")
+        if not any(np.any(mask) for mask in masks) and not getattr(problem, "region_heat_loss", None):
+            raise ValueError("Add a support or a heat loss: in heat conduction a support is a heat sink held "
+                             "at T = 0, and a heat loss lets heat flow out to the surroundings")
         return
     validate_supports(problem, _coordinates(problem, True))
     if not problem.region_loads:
@@ -277,6 +316,18 @@ def validate_supports(problem, coordinates):
     scale = max(problem.Lx, problem.Ly, getattr(problem, "Lz", 0), 1)
     coords = coordinates / scale
     rows = []
+    for mask, axes, stiffness in getattr(problem, "region_springs", ()):
+        if stiffness <= 0:
+            continue
+        for point in coords[mask]:
+            for axis in axes:
+                index = "xyz".index(axis)
+                if dims == 2:
+                    x, y = point
+                    rows.append([1, 0, -y] if index == 0 else [0, 1, x])
+                else:
+                    x, y, z = point
+                    rows.append(([1, 0, 0, 0, z, -y], [0, 1, 0, -z, 0, x], [0, 0, 1, y, -x, 0])[index])
     if dims == 2:
         for spring in getattr(problem.scenario, "point_springs", ()):
             if spring.stiffness > 0:

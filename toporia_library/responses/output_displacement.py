@@ -28,7 +28,8 @@ class OutputDisplacement(Response):
     dims = (2,)
     requires = (POINT_DISPLACEMENT, STRESS)
     params = (
-        Param("x", 60.0, "Output x", "Output port coordinate, snapped to the nearest mesh node.",
+        Param("x", 60.0, "Output x", "Output port coordinate, snapped to the nearest mesh node. A port "
+              "object on the Problem page takes the place of x, y and the direction.",
               min=0.0, max=1e6, step=1.0, decimals=3, units="mm"),
         Param("y", 10.0, "Output y", "Output port coordinate from the bottom of the domain.",
               min=0.0, max=1e6, step=1.0, decimals=3, units="mm"),
@@ -45,7 +46,11 @@ class OutputDisplacement(Response):
 
     def setup(self, physics, problem, settings):
         super().setup(physics, problem, settings)
-        self.probe = physics.point_probe(settings["x"], settings["y"], settings["angle"])
+        x, y, angle = settings["x"], settings["y"], settings["angle"]
+        ports = getattr(problem, "region_ports", None)
+        if ports:                          # a port object on the Problem page decides where and which way
+            (x, y, *_), angle = ports[0]
+        self.probe = physics.point_probe(x, y, angle)
 
     def evaluate(self, state, gradient=True):
         physics = self.physics

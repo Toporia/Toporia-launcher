@@ -94,6 +94,9 @@ class AssembledModel(Model):
         scenario = problem.scenario
         if scenario.point_springs and not self.capabilities.supports_springs:
             raise ValueError(f"{type(self).__name__} does not support point springs")
+        if getattr(problem, "region_springs", None) and not self.capabilities.supports_springs:
+            raise ValueError(f"{self.label} does not support springs; choose a model with port springs "
+                             f"(2-D Q4 elasticity with port springs)")
         self.problem = problem
 
         n_total = int(np.prod(problem.shape))

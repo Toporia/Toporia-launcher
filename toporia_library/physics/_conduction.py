@@ -35,7 +35,7 @@
 # the finite volume method", Struct. Multidisc. Optim. 31 (2006) 251-259.
 
 import numpy as np
-from scipy.sparse import coo_matrix
+from scipy.sparse import coo_matrix, diags
 from scipy.sparse.linalg import splu
 
 from toporia_core.framework.params import Param
@@ -127,6 +127,11 @@ class Conduction(Physics):
         # Uniform generation: each element hands an equal share of Q·V to its nodes.
         generated = np.zeros(self.n_nodes)
         np.add.at(generated, self.enodes, self.heat_source * measure / n)
+        # Heat-loss objects (regions.py): a conductance to an ambient of T = 0, shared by their nodes.
+        self.loss = np.zeros(self.n_nodes)
+        for mask, coefficient in getattr(problem, "region_heat_loss", ()):
+            nodes = node_ids[mask]
+            np.add.at(self.loss, nodes, coefficient / max(len(nodes), 1))
         self.forces = [(case.weight, generated + self._heat_input(index, case, node_ids))
                        for index, case in enumerate(scenario.load_cases)]
 
@@ -153,6 +158,8 @@ class Conduction(Physics):
                                                scenario.E0, scenario.Emin)
         values = (self.KE.ravel()[None, :] * conductivity[:, None]).ravel()
         K = coo_matrix((values, (self.iK, self.jK)), shape=(self.n_nodes, self.n_nodes)).tocsc()
+        if self.loss.any():
+            K = K + diags(self.loss, format="csc")
         solve_free = splu(K[self.free][:, self.free].tocsc()).solve
         T = np.zeros((self.n_nodes, len(self.forces)))
         energies, compliances = [], []

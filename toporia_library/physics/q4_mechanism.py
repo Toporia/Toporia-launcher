@@ -29,6 +29,11 @@ class Q4Mechanism(Q4PlaneStress, PointDisplacementPhysics):
         for spring in problem.scenario.point_springs:
             node = self._node(spring.x, spring.y)
             self.spring_diagonal[2 * node + (spring.dof == "y")] += spring.stiffness
+        # Spring objects of the Problem page: the total stiffness is shared by their nodes.
+        for mask, axes, stiffness in getattr(problem, "region_springs", ()):
+            nodes = self.layout.node_ids[mask]
+            for axis in axes:
+                np.add.at(self.spring_diagonal, 2 * nodes + "xy".index(axis), stiffness / max(len(nodes), 1))
         # Springs are supports in their own right: do not invent a clamp when
         # they are the only supports, but reject incomplete rigid-body restraint.
         rigid = np.zeros((self.layout.ndof, 3))

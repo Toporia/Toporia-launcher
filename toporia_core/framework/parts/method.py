@@ -67,7 +67,8 @@ class Capabilities:
     def problems_with(self, scenario):
         """Return why the method cannot solve `scenario` — an empty list when it can."""
         reasons = []
-        if scenario.point_springs and not self.supports_springs:
+        springs = scenario.point_springs or any(obj.get("role") == "spring" for obj in scenario.regions or ())
+        if springs and not self.supports_springs:
             reasons.append("it does not support point springs (choose a spring-capable model)")
         objective = scenario.objective.get("type", "compliance")
         if objective not in self.objectives:
