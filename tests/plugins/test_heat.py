@@ -92,7 +92,12 @@ def test_a_point_load_is_heat_input_and_supports_are_sinks():
 @pytest.mark.parametrize("plugin", ["model:q4_heat", "model:h8_heat", "model:pymoto_heat", "response:thermal_compliance"])
 def test_the_heat_parts_conform(plugin):
     if plugin.endswith("pymoto_heat"):
-        pytest.importorskip("pymoto")
+        from toporia_core.framework.registry import missing_dependencies
+        from toporia_library.models import MODELS
+        if missing_dependencies(MODELS.get("pymoto_heat")):
+            pytest.skip("optional dependency: pip install pymoto")
+        from toporia_library.models.pymoto_elastic import import_pymoto
+        import_pymoto()            # guarded: pyMOTO would switch matplotlib to Tk under Qt
     conformance(plugin).assert_ok()
 
 

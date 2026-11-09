@@ -30,10 +30,12 @@ def editor():
 def test_xyz_inspector_and_gizmo_share_undoable_physical_objects(editor):
     editor.load(Scenario(Lz=20), [], False)
     editor.set_tool("box")
-    editor._place_spatial([10, 12, 3])
+    editor.plane_z.setValue(3)
+    editor._place_spatial([10, 12, 3])            # one corner of the footprint ...
+    editor._place_spatial([16, 18, 3])            # ... and the opposite one
     assert editor.viewport_stack.currentWidget() is editor.spatial
     obj = editor.objects[0]
-    assert obj["position"] == [10, 12, 3]
+    assert obj["position"] == [10, 12, 3] and obj["size"][:2] == [6, 6]
     editor.fields["z"].setValue(6)
     editor.fields["rx"].setValue(30)
     editor.fields["fz"].setValue(-9)
