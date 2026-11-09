@@ -129,6 +129,11 @@ def main(path):
 
     iteration.on_stage = stage
 
+    def network(document):
+        emit("network", **document)
+
+    iteration.on_network = network
+
     status = {"mode": "", "status": "running"}
     sys.stdout = Logs()
     try:

@@ -39,6 +39,8 @@ def problem_description(name):
     module = _modules()[name]
     if hasattr(module, "DESCRIPTION"):
         return module.DESCRIPTION
+    if hasattr(module, "_description"):          # built when asked, e.g. from the solver settings
+        return module._description()
     from ._research_defaults import original_description
     return original_description(module)
 

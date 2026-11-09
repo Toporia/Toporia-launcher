@@ -24,7 +24,7 @@ A test (`tests/apps/test_gui.py`) fails if a part ever stops being reachable fro
 | **Wraps** | Calls an outside Python package. That package is installed separately. Parts whose package is missing are greyed out in the app, with the install command. |
 | **Own** | Toporia's own idea or standard practice. |
 
-## In the library today: 92 selectable parts and 91 benchmark/research presets
+## In the library today: 93 selectable parts and 95 benchmark/research presets
 
 The selectable parts include models and whole methods; their nine underlying
 physics engines are counted separately in the [catalogue totals](README.md).
@@ -136,6 +136,7 @@ physics engines are counted separately in the [catalogue totals](README.md).
 | In the app | Name | File | Came in | From |
 | :-- | :-- | :-- | :-- | :-- |
 | RBF level set | `levelset` | [levelset_rbf.py](methods/levelset_rbf.py) | Port | TOPRBF.m (Luo et al.); Wang & Wang, *CMAME* 2006 · papers [1](https://doi.org/10.1002/nme.1536) [2](https://doi.org/10.1007/s00158-018-1904-8) |
+| Truss on a ground structure (2-D/3-D), converted to a density | `truss` | [truss.py](methods/truss.py), [physics/truss.py](physics/truss.py) | Paper | Dorn, Gomory & Greenberg 1964; OC truss sizing as in Bendsøe & Sigmund 2003 · [book](https://doi.org/10.1007/978-3-662-05086-6) |
 | Reaction-diffusion level set | `levelset_reaction_diffusion` | [levelset_reaction_diffusion.py](methods/levelset_reaction_diffusion.py) | Paper | Otomori et al. 2015; own cell-centred variant, implicit diffusion and bisected volume multiplier · [paper](https://doi.org/10.1007/s00158-014-1190-z) |
 | Hamilton-Jacobi level set with circular-hole derivative | `levelset_hamilton_jacobi` | [levelset_hamilton_jacobi.py](methods/levelset_hamilton_jacobi.py) | Paper | Challis 2010; independent upwind HJ/TD, reinitialisation and normalised augmented-Lagrangian volume feedback · [paper](https://doi.org/10.1007/s00158-009-0430-0) |
 
@@ -175,6 +176,10 @@ and the preset *MBB Beam (Robust)*.
 | Paper: top88 Fig. 3(a) - Density | [paper_top88_density.py](problems/paper_top88_density.py) | Andreassen et al. 2011, 60 by 20 bottom panel; [comparison and mathematical description](../docs/research/batch-1.md) |
 | Paper: top88 Fig. 3(a) - Sensitivity | [paper_top88_sensitivity.py](problems/paper_top88_sensitivity.py) | Andreassen et al. 2011, 60 by 20 top panel; [comparison and mathematical description](../docs/research/batch-1.md) |
 | MBB Beam (Robust) | [mbb_beam_robust.py](problems/mbb_beam_robust.py) | Wang, Lazarov & Sigmund 2011 · [paper](https://doi.org/10.1007/s00158-010-0602-y) |
+| MBB Beam (Stiffness and Stress) | [mbb_beam_stiffness_stress.py](problems/mbb_beam_stiffness_stress.py) | combined objective; Marler & Arora 2004 · [paper](https://doi.org/10.1007/s00158-003-0368-6) |
+| MBB Beam (Stiffness and Heat) | [mbb_beam_stiffness_heat.py](problems/mbb_beam_stiffness_heat.py) | a second physics on the same design; Gao & Zhang 2010 · [paper](https://doi.org/10.1002/nme.2802) |
+| MBB Beam (Truss) | [truss_mbb.py](problems/truss_mbb.py) | ground-structure truss, then a stress stage; Dorn et al. 1964 |
+| Cantilever 3D (Truss) | [truss_cantilever_3d.py](problems/truss_cantilever_3d.py) | space truss with a stress check; Dorn et al. 1964 |
 | MBB Beam (Fixed Projection) | [mbb_beam_fixed_projection.py](problems/mbb_beam_fixed_projection.py) | Independent fixed-beta/tightened-MMA recipe; explicit settings [Høghøj & Träff §3.1](https://arxiv.org/html/2102.12999#S3.SS1), motivation [Guest et al. 2011](https://doi.org/10.1007/s00158-011-0676-1) |
 | Vibrating Beam | [vibrating_beam.py](problems/vibrating_beam.py) | after Du & Olhoff 2007 · [paper](https://doi.org/10.1007/s00158-007-0101-y) |
 | Column Buckling | [column_buckling.py](problems/column_buckling.py) | Toporia column geometry, Ferrari, Sigmund & Guest's linearised formulation · [paper](https://doi.org/10.1007/s00158-021-02854-x) |

@@ -31,6 +31,7 @@ a buckling limit. Pairings with no compatible objective are rejected before solv
 | Method | File | Name | Reference |
 | :-- | :-- | :-- | :-- |
 | ✅ RBF level set | [`levelset_rbf.py`](levelset_rbf.py) | `levelset` | Numerical variant of Wei et al., *SMO* 2018; related Wang & Wang 2006 |
+| ✅ Truss on a ground structure (2-D and 3-D), then a continuum stress check or optimisation | [`truss.py`](truss.py), [`../physics/truss.py`](../physics/truss.py) | `truss` | Dorn, Gomory & Greenberg 1964; OC sizing as in Bendsøe & Sigmund 2003 |
 | ✅ Reaction-diffusion level set | [`levelset_reaction_diffusion.py`](levelset_reaction_diffusion.py) | `levelset_reaction_diffusion` | Otomori et al., *SMO* 2015; independent finite-volume variant |
 | ✅ Hamilton-Jacobi level set with circular TD | [`levelset_hamilton_jacobi.py`](levelset_hamilton_jacobi.py) | `levelset_hamilton_jacobi` | Challis, *SMO* 2010; independent HJ/TD variant |
 

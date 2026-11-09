@@ -116,6 +116,8 @@ class LiveCanvas(PanZoom, FigureCanvas):
         self.options = dict(DEFAULTS)
         self.objective_label = "Objective"
         self._latest = None
+        self._network, self._network_width = None, None   # a truss, and the domain width in mm
+        self._overlay = []
         self._volumes = {}
         self._setup()
         self._install_pan_zoom()
@@ -215,6 +217,7 @@ class LiveCanvas(PanZoom, FigureCanvas):
         self.showing_problem = False
         self._latest = None
         self._volumes = {}
+        self._overlay = []          # cleared with the figure
         self._fig.clf()
         axes = self._fig.subplots(1, 2, gridspec_kw={"width_ratios": [2, 1]})
         self._ax_d, self._ax_c = axes
@@ -248,6 +251,7 @@ class LiveCanvas(PanZoom, FigureCanvas):
             self._im.set_data(disp)
             self._im.set_extent([0, disp.shape[1], 0, disp.shape[0]])
 
+        self._draw_overlay(disp.shape)
         seen = "  (depth average)" if np.ndim(density) == 3 else ""
         self._ax_d.set_title(self._stat_title(density, objectives, iteration) + seen, color=tc, fontsize=10)
 
@@ -258,6 +262,38 @@ class LiveCanvas(PanZoom, FigureCanvas):
         self._volume_axis.relim()
         self._volume_axis.autoscale_view(scaley=False)
         self.draw_idle()
+
+    def set_network(self, network, width=None):
+        """A design of nodes and bars (a truss) to draw over the density; None removes it.
+
+        `width` is the domain's width in mm, which places the nodes on the image.
+        """
+        self._network, self._network_width = network, width
+
+    def _draw_overlay(self, shape):
+        """The design in its own representation, over the 2-D image: bars and nodes, or the elements."""
+        for artist in self._overlay:
+            try:
+                artist.remove()
+            except (ValueError, NotImplementedError):
+                pass
+        self._overlay = []
+        ny, nx = shape
+        if self.options.get("elements", False) and nx * ny <= 40_000:
+            from matplotlib.collections import LineCollection
+            edges = [[(x - 0.5, -0.5), (x - 0.5, ny - 0.5)] for x in range(nx + 1)]
+            edges += [[(-0.5, y - 0.5), (nx - 0.5, y - 0.5)] for y in range(ny + 1)]
+            grid = LineCollection(edges, colors=self._colours()[1], linewidths=0.3, alpha=0.35)
+            self._ax_d.add_collection(grid)
+            self._overlay.append(grid)
+        network = self._network
+        if not (self.options.get("network", True) and network and len(network.get("nodes") or ())
+                and len(network["nodes"][0]) == 2):
+            return
+        h = (self._network_width or nx) / nx                    # mm per element
+        nodes = np.asarray(network["nodes"], dtype=float)
+        pixels = np.column_stack([nodes[:, 0] / h - 0.5, ny - nodes[:, 1] / h - 0.5])
+        self._overlay += draw_network(self._ax_d, pixels, network, self._colours()[1])
 
     def _stat_title(self, density, objectives, iteration):
         values = []
@@ -377,6 +413,11 @@ class LiveCanvas(PanZoom, FigureCanvas):
         h = element_size
         ax.scatter((x + 0.5) * h, (z + 0.5) * h, (y + 0.5) * h, c=colours, s=size, marker="s",
                    depthshade=False, edgecolors="none")
+        network = self._network
+        if (self.options.get("network", True) and network and len(network.get("nodes") or ())
+                and len(network["nodes"][0]) == 3):
+            nodes = np.asarray(network["nodes"], dtype=float)
+            draw_network(ax, nodes[:, [0, 2, 1]], network, tc)        # x, depth, height, as the cloud
         title = self._stat_title(*self._latest) if self._latest is not None else "3-D design"
         ax.set_title(title + "\n(density cloud: drag to rotate)", color=tc, fontsize=10)
         self._ax_d, self._im = ax, None
@@ -450,3 +491,45 @@ class LiveCanvas(PanZoom, FigureCanvas):
         self._im   = None
         self._line = None
         self.draw_idle()
+
+
+TENSION, COMPRESSION = "#c0392b", "#2e86de"
+
+
+def draw_network(ax, points, network, ink):
+    """Draw bars (width from their area, red in tension and blue in compression) and nodes on `ax`.
+
+    `points` are the node positions in the axes' coordinates, 2 or 3 per node; a node's dot
+    grows with the bar area that meets there.  Returns the artists, so they can be removed.
+    """
+    from matplotlib.collections import LineCollection
+    bars = np.asarray(network["bars"], dtype=int).reshape(-1, 2)
+    areas = np.asarray(network["areas"], dtype=float)
+    if not len(bars) or not np.max(areas) > 0:
+        return []
+    relative = areas / np.max(areas)
+    shown = relative > 1e-2
+    forces = network.get("forces")
+    if forces is not None:
+        forces = np.asarray(forces, dtype=float)
+        colours = np.where(forces[shown] >= 0, TENSION, COMPRESSION)
+    else:
+        colours = ink
+    widths = 0.4 + 3.6 * np.sqrt(relative[shown])
+    segments = points[bars[shown]]
+    if points.shape[1] == 3:
+        from mpl_toolkits.mplot3d.art3d import Line3DCollection
+        lines = Line3DCollection(segments, colors=colours, linewidths=widths)
+        ax.add_collection3d(lines)
+    else:
+        lines = LineCollection(segments, colors=colours, linewidths=widths, zorder=2)
+        ax.add_collection(lines)
+    artists = [lines]
+    joint = np.zeros(len(points))
+    np.add.at(joint, bars[shown, 0], relative[shown])
+    np.add.at(joint, bars[shown, 1], relative[shown])
+    used = joint > 0
+    if used.any():
+        sizes = 4 + 30 * joint[used] / joint.max()
+        artists.append(ax.scatter(*points[used].T, s=sizes, c=ink, zorder=3, linewidths=0))
+    return artists

@@ -206,6 +206,15 @@ class OptimizationMethod(ABC):
         """Explicit outlines of the current design (closed polygons in mm), for export; None for a density design."""
         return None
 
+    def network(self):
+        """A design of nodes and connections, for its own view, or None for a field design.
+
+        {"nodes": (n, dims) coordinates in mm, "bars": (b, 2) node indices, "areas": (b,)
+        a value per connection, "forces": (b,) another value per connection or None}.  The
+        engine saves it with the result (network.json) and the desktop app draws it.
+        """
+        return None
+
     def is_converged(self):
         """Optional method-specific stopping criterion.
 

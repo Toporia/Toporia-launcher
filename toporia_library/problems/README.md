@@ -29,6 +29,10 @@ Toporia exists to make.
 | ✅ L-bracket | [`l_bracket.py`](l_bracket.py) | `L-bracket` |
 | ✅ L-bracket (local stress) | [`l_bracket_stress.py`](l_bracket_stress.py) | `L-bracket (local stress)` |
 | ✅ MBB beam, robust | [`mbb_beam_robust.py`](mbb_beam_robust.py) | `MBB Beam (Robust)` |
+| ✅ MBB beam, stiffness and stress (combined objective) | [`mbb_beam_stiffness_stress.py`](mbb_beam_stiffness_stress.py) | `MBB Beam (Stiffness and Stress)` |
+| ✅ MBB beam, stiffness and heat (two physics on one design) | [`mbb_beam_stiffness_heat.py`](mbb_beam_stiffness_heat.py) | `MBB Beam (Stiffness and Heat)` |
+| ✅ MBB beam as a truss, then rounded off for stress | [`truss_mbb.py`](truss_mbb.py) | `MBB Beam (Truss)` |
+| ✅ 3-D cantilever as a space truss | [`truss_cantilever_3d.py`](truss_cantilever_3d.py) | `Cantilever 3D (Truss)` |
 | ✅ MBB beam, fixed projection | [`mbb_beam_fixed_projection.py`](mbb_beam_fixed_projection.py) | `MBB Beam (Fixed Projection)` |
 | ✅ Heat sink | [`heat_sink.py`](heat_sink.py) | `Heat Sink` |
 | ✅ Vibrating beam | [`vibrating_beam.py`](vibrating_beam.py) | `Vibrating Beam` |

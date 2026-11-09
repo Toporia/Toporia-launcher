@@ -5,7 +5,7 @@ from PySide6.QtWidgets import QCheckBox, QDialog, QDialogButtonBox, QGridLayout,
 
 DEFAULTS = {"live": True, "interval": 1, "volume": True, "iteration": True,
             "objective": True, "volume_graph": False, "objective_graph": True,
-            "iteration_graph": False, "cloud3d": True}
+            "iteration_graph": False, "cloud3d": True, "network": True, "elements": False}
 
 
 def validate_display(values):
@@ -51,14 +51,23 @@ class DisplayOptions(QDialog):
                          "where the density crosses 0.5. Drag either to rotate.")
         cloud.toggled.connect(self._emit)
         layout.addWidget(cloud, 6, 0, 1, 3)
+        network = self.controls["network"] = QCheckBox("Draw a truss as its bars and nodes")
+        network.setToolTip("A design made of bars shows them over its density: wider for a larger area, red in "
+                           "tension and blue in compression; a node grows with the bar area meeting there.")
+        network.toggled.connect(self._emit)
+        layout.addWidget(network, 7, 0, 1, 3)
+        elements = self.controls["elements"] = QCheckBox("Draw the element grid of an element design")
+        elements.setToolTip("Thin lines between the finite elements, whose densities are the design.")
+        elements.toggled.connect(self._emit)
+        layout.addWidget(elements, 8, 0, 1, 3)
         self.interval.valueChanged.connect(self._emit)
         live.toggled.connect(self._emit)
         buttons = QDialogButtonBox(QDialogButtonBox.Close)
         buttons.rejected.connect(self.hide)
-        layout.addWidget(buttons, 7, 0, 1, 3)
+        layout.addWidget(buttons, 9, 0, 1, 3)
         from .help import HelpButton, text_topic
         layout.addWidget(HelpButton(lambda: text_topic("Result display",
-            "Volume fraction is the mean physical density over the original rectangular mesh. Solid density is dark in Basic and white in Sleek; void is the opposite. The objective is the selected named response; its values come from optimization evaluations. Iterations count completed optimization steps. The optional iteration graph is a progress bar against the configured maximum, hidden by default. Live display can be disabled or updated every N iterations; the final result is always shown. A finished 3-D design shows as a density cloud (every element with material, more opaque where denser) or as the 0.5 surface. Post-processing updates geometry and volume but does not re-evaluate the objective.")), 8, 2)
+            "Volume fraction is the mean physical density over the original rectangular mesh. Solid density is dark in Basic and white in Sleek; void is the opposite. The objective is the selected named response; its values come from optimization evaluations. Iterations count completed optimization steps. The optional iteration graph is a progress bar against the configured maximum, hidden by default. Live display can be disabled or updated every N iterations; the final result is always shown. A finished 3-D design shows as a density cloud (every element with material, more opaque where denser) or as the 0.5 surface. A truss draws its bars and nodes over its density; an element design can show its element grid. Post-processing updates geometry and volume but does not re-evaluate the objective.")), 10, 2)
         self._loading = False
         self.load({})
 

@@ -153,6 +153,7 @@ class ExecutionActions:
             self._display_timer.stop()
             self._pending_iteration = None
             self.canvas.reset()
+            self.canvas.set_network(None)
             self._stage_objective_label = RESPONSES.get(message["objective"].get("type", "compliance")).label
             self.canvas.set_display(self.display_options.values(), self._stage_objective_label)
             self.run_progress.setMaximum(message["max_iter"])
@@ -178,6 +179,9 @@ class ExecutionActions:
             if options["objective"] and message["objectives"]:
                 stats.append(f"{self._stage_objective_label}: {message['objectives'][-1]:.5g}")
             self.run_status.setText(" · ".join(stats) or "Running")
+        elif event == "network":
+            network = {key: value for key, value in message.items() if key != "event"}
+            self.canvas.set_network(network, self._run_config.scenario.Lx)
         elif event in {"result", "stopped", "error"}:
             self._display_timer.stop()
             self._pending_iteration = None
@@ -217,7 +221,10 @@ class ExecutionActions:
             self.post_progress.setMaximum(result.get("max_iterations", self._result_config.solver.max_iter))
             self.post_progress.setValue(self._result_iteration)
             self._result_objective_label = result.get("objective_label") or self._objective_label(self._result_config)
+            network_file = runner.last_run_folder / "network.json"
+            network = json.loads(network_file.read_text(encoding="utf-8")) if network_file.exists() else None
             for canvas in (self.canvas, self.post_canvas):
+                canvas.set_network(network, self._result_config.scenario.Lx)
                 canvas.reset()
                 canvas.set_display(self.display_options.values(), self._result_objective_label)
                 canvas._volumes = {i + 1: value for i, value in enumerate(result.get("volumes", []))}

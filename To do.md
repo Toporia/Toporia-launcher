@@ -124,13 +124,21 @@ the one before.
       🤖 Done 9 November 2026: the material law sits on the Problem page; "More physics on the
       same design" adds physics with their own law and solid/void property
       (`scenario.extra_physics`), measured by variables; preset MBB Beam (Stiffness and Heat).
-- [ ] 🧑 3 Native truss representation (ground structure), and a function that converts a
+- [x] 🧑 3 Native truss representation (ground structure), and a function that converts a
       truss network back into a density field, which is then checked and optimised for peak
       stresses. Modules with transfer functions, for multi-level optimisation of flexure
       systems. 🤖 The truss, the conversion and the two-stage run first; transfer-function
       modules are research.
-- [ ] 🧑 10 Each representation has its own view: a network with a value at each node and
+      🤖 Done 9 November 2026: the `truss` method (2-D and 3-D ground structure, OC sizing), drawn
+      as a density, then a stress check or a peak-stress optimisation from it; presets MBB Beam
+      (Truss) and Cantilever 3D (Truss). Transfer-function modules stay research.
+- [x] 🧑 10 Each representation has its own view: a network with a value at each node and
       connection for a truss; the elements for element-based ones. Ask 🧑 where unclear.
+      🤖 Done 9 November 2026: a truss is drawn as its bars (width from the area, red tension,
+      blue compression) and nodes (size from the bar area meeting there), live, in the result
+      and in the 3-D cloud; element designs can show their grid (Result display options).
+      Open for 🧑: should component designs (MMC, geometry projection) show their outlines
+      live too, and what value belongs at a truss node?
 - [ ] 🧑 16 Loads and constraints on the Problem page for all physics: springs, compliant ports,
       heat loss.
 - [ ] 🤖 Point springs (compliant-mechanism ports) are kept on a custom copy but cannot be
