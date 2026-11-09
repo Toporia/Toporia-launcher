@@ -16,20 +16,26 @@ dependencies = [
     "scipy>=1.10",
     "matplotlib>=3.7",
     "Pillow>=9.0",
+    # An optimiser installed by default (MIT; see THIRD-PARTY-NOTICES.md). The code still
+    # imports it only when its updater runs, and greys it out if it is missing.
+    "pymoto>=2.0",       # method="pymoto", pymoto_mma and pymoto_gcmma
+    # NLopt is installed by default where a working wheel exists. On PyPI the newest (2.6.2)
+    # is built for Python 3.8 and older; on newer Pythons it installs but cannot load.
+    "nlopt>=2.6; python_version < '3.9'",
 ]
 
 [project.optional-dependencies]
 # The desktop app (toporia_gui). The core and the library run, check and test without it.
 gui = ["PySide6>=6.5"]
 dev = ["pytest>=7", "ruff"]
-# Enables method="pymoto": compliance minimisation with pyMOTO's module network,
-# which computes sensitivities by backpropagation instead of by hand.
-pymoto = ["pymoto>=2.0"]
-# Enables the updaters nlopt_mma, nlopt_ccsaq, nlopt_slsqp and nlopt_auglag (NLopt's
-# gradient-based constrained optimisers), e.g. method="q4+nlopt_mma".
-nlopt = ["nlopt"]
+# pymoto and nlopt are default dependencies now; these names remain so older install
+# commands ("pip install toporia[pymoto]") keep working.
+pymoto = []
+# NLopt on any Python where pip finds a working build (conda-forge has current ones).
+nlopt = ["nlopt>=2.6"]
 # GPL-3 optimisers, kept as extras the user chooses to install.  Toporia (Apache-2.0)
-# never bundles or requires them; they are imported only when their updater runs.
+# never bundles or requires them, and the Windows program never contains them (see
+# THIRD-PARTY-NOTICES.md); they are imported only when their updater runs.
 # Enables updaters mmapy_mma and mmapy_gcmma (Svanberg's MMA/GCMMA, Python port).
 mmapy = ["mmapy>=0.3"]
 # Enables updater nullspace (Feppon's null-space optimiser for constrained problems).

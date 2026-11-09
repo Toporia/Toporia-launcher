@@ -70,6 +70,9 @@ class NLoptOptimizer(ExternalOptimizer):
     """
 
     dependencies = ("nlopt",)
+    # The PyPI wheel (2.6.2) carries a core compiled for Python 3.8; it installs on newer
+    # Pythons but does not load, so the compiled core itself is checked.
+    dependency_checks = {"nlopt": "nlopt._nlopt"}
     params = (
         Param("nlopt_maxeval", 500, "NLopt evaluations",
               "NLopt's own limit on function evaluations (each one is a physics solve with "

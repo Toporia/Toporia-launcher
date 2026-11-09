@@ -217,3 +217,13 @@ def test_entry_point_groups_follow_the_plugin_kinds():
         "filter": "toporia.filters", "schedule": "toporia.schedules",
         "interpolation": "toporia.interpolations", "response": "toporia.responses", "method": "toporia.methods",
         "postprocessor": "toporia.postprocessors"}
+
+
+def test_a_package_that_installs_but_does_not_load_counts_as_missing():
+    class _BrokenCore(OCUpdater):
+        name, label = "broken_core", "Broken core"
+        dependencies = ("numpy",)
+        dependency_checks = {"numpy": "numpy._a_core_that_does_not_exist"}
+    assert missing_dependencies(_BrokenCore) == ["numpy"]
+    assert missing_dependencies(type("Fine", (OCUpdater,), {"dependencies": ("numpy",),
+                                                             "dependency_checks": {"numpy": "numpy.linalg"}})) == []

@@ -19,9 +19,23 @@ code-signed. Choose *More info → Run anyway*.)
 pip install -e ".[dev,3d,gui3d]"
 ```
 
+This installs pyMOTO too. The GPL-3 optimisers are separate (see Licence):
+
+```bash
+pip install -e ".[mmapy]"
+```
+
 Then `toporia` opens the desktop app, and `toporia run "MBB Beam"` runs from the command
 line. New to Python, or the install fails? [docs/installation.md](docs/installation.md)
 walks through it step by step.
+
+## Licence
+
+Toporia is Apache-2.0. pyMOTO is installed with it and is in the Windows program; NLopt
+is installed where a working build exists (not on Python 3.15, see the notices). Two optional optimisers, **mmapy** and **nullspace_optimizer**, are **GPL-3**, so
+they are never installed by default and never bundled: a program that contains them has to
+be distributed under GPL-3. [THIRD-PARTY-NOTICES.md](THIRD-PARTY-NOTICES.md) explains what
+that means, and lists every package and its licence.
 
 ## The desktop app
 

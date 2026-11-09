@@ -49,11 +49,18 @@ def missing_dependencies(cls):
     """The packages a plugin declares in `dependencies` that cannot be imported here.
 
     For a method composed of a model and an updater, both parts' dependencies count.
+    `dependency_checks` maps a package to a module inside it that must load as well,
+    e.g. {"nlopt": "nlopt._nlopt"}, its compiled core.
     """
-    declared = list(getattr(cls, "dependencies", ()))
+    declared, checks = list(getattr(cls, "dependencies", ())), dict(getattr(cls, "dependency_checks", {}))
     for part in ("model", "updater"):
-        declared += list(getattr(getattr(cls, part, None), "dependencies", ()))
-    return [name for name in dict.fromkeys(declared) if not _installed(name)]
+        owner = getattr(cls, part, None)
+        declared += list(getattr(owner, "dependencies", ()))
+        checks.update(getattr(owner, "dependency_checks", {}))
+    # A package can install and still not load (a wheel built for another Python): where a
+    # plugin names the module that must load (`dependency_checks`), that module is asked too.
+    return [name for name in dict.fromkeys(declared)
+            if not _installed(name) or (name in checks and not _installed(checks[name]))]
 
 
 @functools.cache
