@@ -23,7 +23,8 @@ engine/
 ├── postprocess.py  applies the run's post-processors to the final design, or to a saved run
 └── modes/          one module per analysis mode
     ├── single.py       Run One
-    ├── sweep.py        Sweep, Sweep 2D
+    ├── sweep.py        Sweep, Sweep 2D (numeric parameters or choices of part)
+    ├── choices.py      a choice of part as a sweep variable
     ├── compare.py      Compare Two, Compare Load Cases
     ├── methods.py      Compare Methods, and `toporia benchmark`
     ├── sensitivity.py  Sensitivity, Sensitivity Sweep, Sensitivity Sweep 2D
@@ -62,6 +63,7 @@ any parameter path can be swept, compared or perturbed — and sends each throug
 | :--- | :--- | :--- |
 | [`modes/single.py`](modes/single.py) | Run One | One optimisation, with a summary of the meshed problem first and `history.png` at the end. |
 | [`modes/sweep.py`](modes/sweep.py) | Sweep · Sweep 2D | One parameter over an `n_rows × n_cols` grid, or two parameters (rows × columns); one run per cell; `sweep_grid.png` / `sweep2d_grid.png`. |
+| [`modes/choices.py`](modes/choices.py) | (in Sweep · Sweep 2D) | A choice of part as a sweep variable, with a few options: `choice:updater`, `choice:model`, `choice:method`, `choice:interpolation`, `choice:representation`, `choice:filters[i]`. Each option replaces only that part (with its defaults); a combination that cannot run is left out and its cell says why. Against a numeric parameter in a 2-D sweep it is Compare Methods on one axis and a parameter study on the other. |
 | [`modes/compare.py`](modes/compare.py) | Compare Two · Compare Load Cases | Two runs differing in one parameter, or in their load cases; `comparison.png` shows material only in A, only in B, and in both. `compare_runs` takes any two prepared runs (used by `toporia compare`). |
 | [`modes/methods.py`](modes/methods.py) | Compare Methods · `toporia benchmark` | Several methods on the same scenario, mesh, filters and stopping rule (and, for a benchmark, on several problems): `methods_grid.png` with every final design, and `methods.csv` / `benchmark.csv` with each method's own objective, a **referee compliance** (native Q4/H8 or heat conduction, SIMP p = 3, no filter; mechanism springs retained), volume, grey level, iterations, physics solves, time, stop reason and whether every limit was met. A method that cannot solve the scenario is listed with the reason. |
 | [`modes/sensitivity.py`](modes/sensitivity.py) | Sensitivity · Sensitivity Sweep (1-D, 2-D) | Runs at `base` and `base + gap` and maps `(ρ_perturbed − ρ_base) / gap` per element over the base design (`sensitivity.png`, `.csv`); the sweeps do that for every cell, and can also vary the base value or the gap (`senssweep_grid.png`, `senssweep2d_grid.png`). |

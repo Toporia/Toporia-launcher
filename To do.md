@@ -224,9 +224,10 @@ waves 3 and 4 are complete. Open:
       fluids, transient, acoustics,
       photonics, generative models.
 - [ ] 🧑 GUI for authoring new computational functions (document the extension interface first).
-- [~] 🧑 Sweeps can change the optimiser: any part choice (optimiser, filter, material law,
+- [x] 🧑 Sweeps can change the optimiser: any part choice (optimiser, filter, material law,
       representation, physics model) as a discrete sweep variable, alone or against a continuous
-      one in a 2-D sweep (🧑 9 November 2026).
+      one in a 2-D sweep (🧑 9 November 2026). 🤖 Done: choice paths in the sweep (engine, CLI
+      --values, GUI option lists); incompatible combinations are skipped with the reason.
 - [ ] 🤖 A Python 3.13 sidecar process for NLopt and the null-space optimiser, whose compiled
       packages have no build for the newer Python the project stays on (🧑 9 November 2026:
       backlog, not now).

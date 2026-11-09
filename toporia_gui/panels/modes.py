@@ -63,6 +63,71 @@ def _add_row(form, label, widget):
     form.addRow(label, with_help(widget, lambda: text_topic(label, FIELD_HELP.get(label, ""), STUDY_SOURCE)))
 
 
+# ── Choices of part as sweep variables (toporia_core/engine/modes/choices.py) ─────────────
+
+CHOICE_LABELS = (("choice:updater", "Updater (a choice)"), ("choice:model", "Physics model (a choice)"),
+                 ("choice:method", "Whole method (a choice)"), ("choice:interpolation", "Material law (a choice)"),
+                 ("choice:representation", "Design representation (a choice)"))
+
+
+def choice_items(items):
+    """The parameter menu's (label, path) items, plus every choice of part (one per filter)."""
+    import re
+    filters = sorted({int(found[1]) for _, path in items if (found := re.match(r"filters\[(\d+)\]", path))})
+    extra = list(CHOICE_LABELS) + [(f"choice:filters[{i}]", f"Filter {i + 1} type (a choice)") for i in filters]
+    return list(items) + [(label, path) for path, label in extra]
+
+
+def choice_options(path):
+    """[(label, name)] of the options a choice path can take, from the registries."""
+    from toporia_core.framework.registries import (
+        FILTERS,
+        INTERPOLATIONS,
+        MODELS,
+        REPRESENTATIONS,
+        UPDATERS,
+        method_classes,
+    )
+    kind = path.split(":", 1)[1]
+    if kind.startswith("filters["):
+        registry = FILTERS
+    else:
+        registry = {"updater": UPDATERS, "model": MODELS, "interpolation": INTERPOLATIONS,
+                    "representation": REPRESENTATIONS}.get(kind)
+    if registry is None:                                     # whole methods: every selectable one
+        return [(cls.label or cls.name, cls.name) for cls in method_classes()]
+    return [(cls.label or cls.name, cls.name) for cls in registry.classes()]
+
+
+class ChoiceList(QListWidget):
+    """The options of a choice of part, each with a check box; the checked ones are the values."""
+
+    def __init__(self, parent=None):
+        super().__init__(parent)
+        self.setMaximumHeight(160)
+        self.path = None
+
+    def show_choice(self, path, keep=()):
+        """Fill with the options of `path` (None hides it), keeping the names in `keep` checked."""
+        self.path = path
+        self.setVisible(path is not None)
+        if path is None:
+            return
+        checked = set(keep) or set(self.values())
+        self.clear()
+        for label, name in choice_options(path):
+            item = QListWidgetItem(f"{label}  ({name})")
+            item.setData(Qt.UserRole, name)
+            item.setFlags(item.flags() | Qt.ItemIsUserCheckable)
+            item.setCheckState(Qt.Checked if name in checked else Qt.Unchecked)
+            self.addItem(item)
+
+    def values(self):
+        """The checked options, in menu order."""
+        return [self.item(i).data(Qt.UserRole) for i in range(self.count())
+                if self.item(i).checkState() == Qt.Checked]
+
+
 class CompareLoadCasesParamsGroup(QGroupBox):
     """Two independent load-case sets for a head-to-head structural comparison.
 
@@ -157,22 +222,47 @@ class SweepParamsGroup(QGroupBox):
         self.max_val = double_box(0.60, -1e6, 1e6, dec=4, step=0.05)
         self.n_rows = int_box(3, 1, 20)
         self.n_cols = int_box(3, 1, 20)
+        self.options = ChoiceList()
         for lbl, w in [
             ("Parameter", self.param),
             ("Min", self.min_val),
             ("Max", self.max_val),
+            ("Options", self.options),
             ("Rows", self.n_rows),
             ("Cols", self.n_cols),
         ]:
             _add_row(f, lbl, w)
+        self._form = f
+        self.param.currentIndexChanged.connect(self._show_kind)
+        self._show_kind()
 
     def refresh(self, items):
-        """Rebuild the parameter menu from (label, path) items."""
-        fill_combo(self.param, items, prefer="volfrac")
+        """Rebuild the parameter menu from (label, path) items, with every choice of part added."""
+        fill_combo(self.param, choice_items(items), prefer="volfrac")
+        self._show_kind()
+
+    def _show_kind(self):
+        """A choice of part lists its options; a parameter has a range."""
+        choice = str(self.key()).startswith("choice:")
+        self.options.show_choice(self.key() if choice else None)
+        for widget, shown in ((self.min_val, not choice), (self.max_val, not choice), (self.options, choice)):
+            widget.setVisible(shown)
+            label = self._form.labelForField(widget)
+            if label is not None:
+                label.setVisible(shown)
 
     def key(self):
         """The parameter path chosen."""
         return self.param.currentData() or self.param.currentText()
+
+    def selected(self):
+        """The options checked for a choice of part, saved with the project ({"values": None} otherwise)."""
+        return {"values": self.options.values() if str(self.key()).startswith("choice:") else None}
+
+    def set_selected(self, value):
+        """Check the saved options again."""
+        if value and value.get("values") and str(self.key()).startswith("choice:"):
+            self.options.show_choice(self.key(), keep=value["values"])
 
 
 class Sweep2DParamsGroup(QGroupBox):
@@ -189,22 +279,57 @@ class Sweep2DParamsGroup(QGroupBox):
         self.col_min = double_box(0.40, -1e6, 1e6, dec=4, step=0.05)
         self.col_max = double_box(0.75, -1e6, 1e6, dec=4, step=0.05)
         self.n_cols = int_box(2, 1, 20)
+        self.row_options, self.col_options = ChoiceList(), ChoiceList()
         for lbl, w in [
             ("Row param", self.row_param),
             ("Row min", self.row_min),
             ("Row max", self.row_max),
+            ("Row options", self.row_options),
             ("N rows", self.n_rows),
             ("Col param", self.col_param),
             ("Col min", self.col_min),
             ("Col max", self.col_max),
+            ("Col options", self.col_options),
             ("N cols", self.n_cols),
         ]:
             _add_row(f, lbl, w)
+        self._form = f
+        self.row_param.currentIndexChanged.connect(self._show_kind)
+        self.col_param.currentIndexChanged.connect(self._show_kind)
+        self._show_kind()
 
     def refresh(self, items):
-        """Rebuild both parameter menus from (label, path) items."""
-        fill_combo(self.row_param, items, prefer="volfrac")
-        fill_combo(self.col_param, items, prefer="m")
+        """Rebuild both parameter menus from (label, path) items, with every choice of part added."""
+        fill_combo(self.row_param, choice_items(items), prefer="volfrac")
+        fill_combo(self.col_param, choice_items(items), prefer="m")
+        self._show_kind()
+
+    def _show_kind(self):
+        """Each axis: a choice of part lists its options and sets its count; a parameter has a range."""
+        for key, low, high, options, count in ((self.row_key(), self.row_min, self.row_max, self.row_options,
+                                                self.n_rows),
+                                               (self.col_key(), self.col_min, self.col_max, self.col_options,
+                                                self.n_cols)):
+            choice = str(key).startswith("choice:")
+            options.show_choice(key if choice else None)
+            for widget, shown in ((low, not choice), (high, not choice), (options, choice), (count, not choice)):
+                widget.setVisible(shown)
+                label = self._form.labelForField(widget)
+                if label is not None:
+                    label.setVisible(shown)
+
+    def selected(self):
+        """The options checked on each axis that is a choice of part, saved with the project."""
+        return {"row_values": self.row_options.values() if str(self.row_key()).startswith("choice:") else None,
+                "col_values": self.col_options.values() if str(self.col_key()).startswith("choice:") else None}
+
+    def set_selected(self, value):
+        """Check the saved options again."""
+        value = value or {}
+        if value.get("row_values") and str(self.row_key()).startswith("choice:"):
+            self.row_options.show_choice(self.row_key(), keep=value["row_values"])
+        if value.get("col_values") and str(self.col_key()).startswith("choice:"):
+            self.col_options.show_choice(self.col_key(), keep=value["col_values"])
 
     def row_key(self):
         """The parameter path varied down the rows."""

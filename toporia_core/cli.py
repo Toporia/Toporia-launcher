@@ -5,7 +5,7 @@
     toporia export PRESET DIR                        write a preset as scenario + solver JSON
     toporia run SCENARIO [SOLVER]                    one optimisation
     toporia compare SCENARIO SOLVER_A SOLVER_B       same problem, two solvers
-    toporia sweep SCENARIO [SOLVER] --param PATH --range MIN MAX [--grid ROWS COLS]
+    toporia sweep SCENARIO [SOLVER] --param PATH (--range MIN MAX | --values V ...) [--grid ROWS COLS]
     toporia check [KIND:NAME ...] [--quick]          conformance test of plugins (all by default)
     toporia benchmark --methods M ... [--problems P ...] [--set PATH=VALUE] [--out DIR]
                                                      several methods on several problems, one table
@@ -213,9 +213,25 @@ def _cmd_sweep(args):
 
     run = _build_run(args.scenario, args.solver, args.set, args.out)
     rows, cols = args.grid
-    sweep(args.param, args.range[0], args.range[1], rows, cols, run)
-    print(f"grid in {Path(run.output.dir) / f'sweep_{args.param}' / 'sweep_grid.png'}")
+    if args.values is None and args.range is None:
+        raise SystemExit("toporia sweep: give --range MIN MAX for a parameter, or --values for a list "
+                         "(required for a choice such as --param choice:updater)")
+    values = None
+    if args.values is not None:
+        values = [_number_or_name(v) for v in args.values]
+        rows, cols = (1, len(values)) if args.grid == (3, 3) else (rows, cols)
+    low, high = args.range if args.range else (0.0, 0.0)
+    grid = sweep(args.param, low, high, rows, cols, run, values=values)
+    print(f"grid in {grid}")
     return 0
+
+
+def _number_or_name(text):
+    """A sweep value from the command line: a number when it reads as one, else a part's name."""
+    try:
+        return float(text)
+    except ValueError:
+        return text
 
 
 def _cmd_benchmark(args):
@@ -304,8 +320,14 @@ def _parser():
 
     sweep = running("sweep", "vary one parameter over a grid of runs", _cmd_sweep)
     sweep.add_argument("solver", nargs="?", help="solver JSON file")
-    sweep.add_argument("--param", required=True, help="parameter path to vary, e.g. volfrac")
-    sweep.add_argument("--range", required=True, nargs=2, type=float, metavar=("MIN", "MAX"))
+    sweep.add_argument("--param", required=True,
+                       help="parameter path to vary, e.g. volfrac, or a choice of part: choice:updater, "
+                            "choice:model, choice:method, choice:interpolation, choice:representation, "
+                            "choice:filters[0]")
+    sweep.add_argument("--range", nargs=2, type=float, metavar=("MIN", "MAX"),
+                       help="a numeric parameter, linearly spaced over the grid")
+    sweep.add_argument("--values", nargs="+", metavar="VALUE",
+                       help="the values to try instead of a range; the options of a choice, e.g. oc mma beso")
     sweep.add_argument("--grid", nargs=2, type=int, default=(3, 3), metavar=("ROWS", "COLS"))
     return parser
 

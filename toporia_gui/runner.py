@@ -9,7 +9,6 @@
 #   2. calls one analysis mode (engine/modes) with the live-update callback.
 
 import sys
-from pathlib import Path
 
 from toporia_core.engine.modes.check import check_parts as _check_parts
 from toporia_core.engine.modes.compare import compare_load_cases as _compare_lc
@@ -116,7 +115,7 @@ def run_sweep(config, sg, on_iter, log_fn):
     """sg = SweepParamsGroup widget.  Returns path to the assembled grid PNG."""
     old = _redir(log_fn)
     try:
-        _sweep(
+        grid = _sweep(
             sg.key(),
             sg.min_val.value(),
             sg.max_val.value(),
@@ -124,11 +123,11 @@ def run_sweep(config, sg, on_iter, log_fn):
             sg.n_cols.value(),
             config,
             on_iteration=on_iter,
+            values=sg.selected()["values"],
         )
     finally:
         sys.stdout = old
-    # The grid PNG is always written to this predictable location by sweep.py.
-    return Path(config.output.dir) / f"sweep_{sg.key()}" / "sweep_grid.png"
+    return grid
 
 
 def run_sensitivity(config, sg, on_iter, log_fn):
@@ -254,7 +253,8 @@ def run_sweep_2d(config, sg, on_iter, log_fn):
     """sg = Sweep2DParamsGroup widget.  Returns path to the assembled grid PNG."""
     old = _redir(log_fn)
     try:
-        _sweep_2d(
+        chosen = sg.selected()
+        grid = _sweep_2d(
             sg.row_key(),
             sg.row_min.value(),
             sg.row_max.value(),
@@ -265,7 +265,9 @@ def run_sweep_2d(config, sg, on_iter, log_fn):
             sg.n_cols.value(),
             config,
             on_iteration=on_iter,
+            row_values=chosen["row_values"],
+            col_values=chosen["col_values"],
         )
     finally:
         sys.stdout = old
-    return Path(config.output.dir) / f"sweep2d_{sg.row_key()}_vs_{sg.col_key()}" / "sweep2d_grid.png"
+    return grid

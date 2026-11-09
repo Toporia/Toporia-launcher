@@ -18,7 +18,6 @@ import time
 from pathlib import Path
 
 from toporia_core.engine.loop import run_single
-from toporia_core.framework import apply_param
 
 
 def mode_folder(base_run, name):
@@ -29,10 +28,34 @@ def mode_folder(base_run, name):
 
 
 def with_values(run, assignments):
-    """The run with each (parameter path, value) applied in order; the input is not changed."""
+    """The run with each (path, value) applied in order — a parameter path or a choice of part
+    (toporia_core/engine/modes/choices.py); the input is not changed."""
+    from .choices import assign
     for path, value in assignments:
-        run = apply_param(run, path, value)
+        run = assign(run, path, value)
     return run
+
+
+def label_of(assignments):
+    """The assignments as a cell's label: "volfrac=0.4 choice:updater=mma"."""
+    from .choices import show
+    return " ".join(f"{path}={show(value)}" for path, value in assignments)
+
+
+def runnable(base_run, cells):
+    """Split cells into those that can run and {folder: why not} for those that cannot."""
+    from .choices import problems
+    good, skipped = [], {}
+    for assignments, folder in cells:
+        try:
+            reasons = problems(with_values(base_run, assignments))
+        except ValueError as error:
+            reasons = [str(error)]
+        if reasons:
+            skipped[folder] = "; ".join(reasons)
+        else:
+            good.append((assignments, folder))
+    return good, skipped
 
 
 #: Below this many cells a grid runs one cell after another: starting processes costs more.
@@ -82,7 +105,7 @@ def run_cells(base_run, cells, on_iteration=None):
     start = time.perf_counter()
     for k, (assignments, folder) in enumerate(cells, 1):
         run = with_values(base_run.with_output_dir(folder), assignments)
-        label = " ".join(f"{path}={value:.3g}" for path, value in assignments)
+        label = label_of(assignments)
         print(f"[{k}/{len(cells)}] {label}  starting...")
         t0 = time.perf_counter()
         run_single(run, on_iteration)
@@ -105,7 +128,7 @@ def _run_cells_parallel(base_run, cells, workers):
             jobs = {}
             for k, (assignments, folder) in enumerate(cells, 1):
                 run = with_values(base_run.with_output_dir(folder), assignments)
-                label = " ".join(f"{path}={value:.3g}" for path, value in assignments)
+                label = label_of(assignments)
                 jobs[pool.submit(_run_cell, run)] = (k, label)
             for done, job in enumerate(as_completed(jobs), 1):
                 k, label = jobs[job]
@@ -140,8 +163,8 @@ def save_grid(images, n_rows, n_cols, path, look, fontsize):
     plt = pyplot()
     if plt is None:
         return None
-    first = next(image for image, _ in images if image is not None)
-    height, width = plt.imread(str(first)).shape[:2]
+    first = next((image for image, _ in images if image is not None), None)   # every cell may be skipped
+    height, width = plt.imread(str(first)).shape[:2] if first is not None else (200, 300)
     cell_w = max(look["smallest_cell"][0], width / look["pixels_per_inch"])
     cell_h = max(look["smallest_cell"][1], height / look["pixels_per_inch"])
     fig, axes = plt.subplots(n_rows, n_cols, squeeze=False, figsize=(cell_w * n_cols, cell_h * n_rows))
@@ -155,6 +178,8 @@ def save_grid(images, n_rows, n_cols, path, look, fontsize):
         ax.axis("off")
         if look["equal_aspect"]:
             ax.axis("equal")
+    for ax in list(axes.flat)[len(images):]:          # a grid larger than the list of values
+        ax.axis("off")
     fig.tight_layout()
     fig.savefig(path, dpi=look["dpi"])
     plt.close(fig)        # never pop up as an interactive window

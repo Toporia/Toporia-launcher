@@ -54,13 +54,15 @@ def execute(project, on_iteration):
         return {"kind": "checks"}
     if mode == "Sweep":
         s = study["sg"]
-        sweep(s["param"], s["min_val"], s["max_val"], s["n_rows"], s["n_cols"], cfg, **callback)
-        path = Path(cfg.output.dir) / f"sweep_{s['param']}" / "sweep_grid.png"
+        values = (s.get("selected") or {}).get("values")
+        path = sweep(s["param"], s["min_val"], s["max_val"], s["n_rows"], s["n_cols"], cfg, values=values,
+                     **callback)
     elif mode == "Sweep 2D":
         s = study["sg2"]
-        sweep_2d(s["row_param"], s["row_min"], s["row_max"], s["n_rows"],
-                 s["col_param"], s["col_min"], s["col_max"], s["n_cols"], cfg, **callback)
-        path = Path(cfg.output.dir) / f"sweep2d_{s['row_param']}_vs_{s['col_param']}" / "sweep2d_grid.png"
+        chosen = s.get("selected") or {}
+        path = sweep_2d(s["row_param"], s["row_min"], s["row_max"], s["n_rows"],
+                        s["col_param"], s["col_min"], s["col_max"], s["n_cols"], cfg,
+                        row_values=chosen.get("row_values"), col_values=chosen.get("col_values"), **callback)
     elif mode == "Compare Two":
         s = study["cg"]
         path, _, _ = compare_two(s["param"], s["value_a"], s["value_b"], cfg, **callback)
