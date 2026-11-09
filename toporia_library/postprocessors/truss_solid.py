@@ -16,7 +16,7 @@
 # keeps them only to keep the stiffness matrix solvable.
 #
 # It runs only when it is in the run's post-processing list, and only on a design that is a
-# network; on any other design it reports that and writes nothing.
+# network; on any other design its metrics are None and it writes nothing.
 
 import numpy as np
 
@@ -99,7 +99,7 @@ class TrussSolid(PostProcessor):
     def process(self, result):
         network = getattr(result, "network", None)
         if not network:
-            return {"bars": None, "joints": None, "note": "not a truss design"}
+            return {"bars": None, "joints": None}           # not a truss design: nothing to make
         dims = len(network["nodes"][0])
         nodes, bars, radii, joints = solid_parts(network, dims, self.min_area, self.joint_scale)
         if not len(bars):
@@ -136,7 +136,8 @@ class TrussSolid(PostProcessor):
                     "too_thin": dropped}
         triangles = self._surface(phi, axes, step)
         if triangles is None:
-            return {"bars": int(len(bars)), "joints": len(joints), "note": "pip install scikit-image for the STL"}
+            print("  truss_solid: pip install scikit-image for the STL surface")
+            return {"bars": int(len(bars)), "joints": len(joints), "triangles": None}
         write_binary_stl(result.file("truss_solid.stl"), triangles)
         volume = float(np.count_nonzero(phi <= 0)) * step ** 3
         return {"bars": int(len(bars)), "joints": len(joints), "triangles": int(len(triangles)), "volume": volume,

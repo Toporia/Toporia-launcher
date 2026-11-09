@@ -62,7 +62,11 @@ def smoke_test(exe):
 
 def check_licences(folder):
     """The program must not contain the GPL-3 optimisers (THIRD-PARTY-NOTICES.md)."""
-    found = [path for name in ("mmapy", "nullspace_optimizer") for path in folder.rglob(name + "*")]
+    # The packages themselves (their folder or metadata next to the program's libraries),
+    # not documentation that merely mentions them.
+    libraries = folder / "_internal"
+    found = [path for name in ("mmapy", "nullspace_optimizer")
+             for path in [*libraries.glob(name), *libraries.glob(name + "-*.dist-info"), *libraries.glob(name + ".py")]]
     if found:
         raise SystemExit(f"GPL-3 code ended up in the program: {found[:3]}")
 
