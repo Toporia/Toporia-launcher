@@ -208,7 +208,8 @@ waves 3 and 4 are complete. Open:
       then top88, top99neo, top3d/top3D125, MMA/GCMMA, RBF, reaction-diffusion and Challis
       level sets, TOBS, MMC, GGP/GPTO, AM filter, buckling, non-linear, multi-material,
       PolyStress, topflow, 3-D stress. (Strict oracle checks are done; bridges are not.)
-- [~] 🤖 Wave 5, framework changes: several fields per element (DMO, fibres, multi-material);
+- [~] 🤖 Wave 5, framework changes (🧑 9 November 2026: next, deep: 3-D unstructured meshes and
+      multiscale microstructures; the rest stays here): several fields per element (DMO, fibres, multi-material);
       unstructured meshes; beam/truss elements and ground structures (see 🧑 item 3);
       multiscale, IGA, CutFEM; fluids, transient, acoustics, photonics; generative models.
       🤖 9 November 2026, 🧑 chose two parts: several fields per element done (representations
@@ -218,10 +219,13 @@ waves 3 and 4 are complete. Open:
       preset MBB Beam with a Hole (Triangles)). Beam/truss elements and ground structures: done with
       item 3. Open: 3-D unstructured meshes, multiscale, IGA, CutFEM, fluids, transient, acoustics,
       photonics, generative models.
-- [ ] 🧑 Coupled solving and combination within optimisation iterations.
 - [ ] 🧑 GUI for authoring new computational functions (document the extension interface first).
-- [ ] 🧑 Export version control; more stress and price statistics.
-- [ ] 🧑 Sweeps can change the optimiser.
+- [~] 🧑 Sweeps can change the optimiser: any part choice (optimiser, filter, material law,
+      representation, physics model) as a discrete sweep variable, alone or against a continuous
+      one in a 2-D sweep (🧑 9 November 2026).
+- [ ] 🤖 A Python 3.13 sidecar process for NLopt and the null-space optimiser, whose compiled
+      packages have no build for the newer Python the project stays on (🧑 9 November 2026:
+      backlog, not now).
 
 ## Done earlier
 
