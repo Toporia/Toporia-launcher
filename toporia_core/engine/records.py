@@ -23,9 +23,9 @@ from pathlib import Path
 
 import numpy as np
 import scipy
-from PIL import Image  # writes the greyscale PNGs
 
 import toporia_core
+from toporia_core.engine.png import write_png  # the greyscale PNGs, NumPy only
 from toporia_core.framework.problem.files import dump_json, fingerprint, to_dict
 from toporia_core.framework.problem.mesh import projection
 from toporia_core.framework.problem.run import PROJECT_ROOT
@@ -113,11 +113,14 @@ class ResultStore:
         """
         pixels = np.flipud(1.0 - projection(density))
         pixels = (np.clip(pixels, 0.0, 1.0) * 255).astype(np.uint8)
-        Image.fromarray(pixels, mode="L").save(path)  # "L" = 8-bit greyscale
+        write_png(path, pixels)  # 8-bit greyscale
 
     def save_history(self):
-        """Write a two-panel PNG: objective (top) and volume fraction (bottom)."""
-        import matplotlib.pyplot as plt
+        """Write a two-panel PNG: objective (top) and volume fraction (bottom); skipped without matplotlib."""
+        from toporia_core.engine.plotting import pyplot
+        plt = pyplot()
+        if plt is None:
+            return
         fig, axes = plt.subplots(2, 1, figsize=(6, 5), sharex=True)  # shared x-axis
         axes[0].plot(self.objectives)
         axes[0].set_ylabel("Objective")

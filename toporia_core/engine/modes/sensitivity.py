@@ -24,7 +24,6 @@ import csv
 import time
 
 import numpy as np
-from matplotlib.colors import TwoSlopeNorm
 
 from toporia_core.engine.loop import run_single
 from toporia_core.framework import apply_param, projection
@@ -125,7 +124,11 @@ def _save_csv(sensitivity, param_key, base_value, gap, folder):
 
 def _save_figure(density_base, sensitivity, param_key, base_value, gap, folder):
     """The sensitivity over a faint image of the base design, with a colour bar; returns the PNG's path."""
-    import matplotlib.pyplot as plt
+    from toporia_core.engine.plotting import pyplot
+    plt = pyplot()
+    if plt is None:
+        return None
+    from matplotlib.colors import TwoSlopeNorm
     density_base, sensitivity = projection(density_base), projection(sensitivity)   # 3-D: depth averages
     max_abs = float(np.max(np.abs(sensitivity)))
     if max_abs < 1e-9:

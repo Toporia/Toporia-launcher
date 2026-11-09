@@ -17,8 +17,6 @@ import textwrap
 import time
 from pathlib import Path
 
-import matplotlib.image as mpimg
-
 from toporia_core.engine.loop import run_single
 from toporia_core.framework import apply_param
 
@@ -138,9 +136,12 @@ def save_grid(images, n_rows, n_cols, path, look, fontsize):
     An image path of None leaves its cell empty but for the title, written across the
     middle of the cell (a run that was skipped, and why).
     """
-    import matplotlib.pyplot as plt
+    from toporia_core.engine.plotting import pyplot
+    plt = pyplot()
+    if plt is None:
+        return None
     first = next(image for image, _ in images if image is not None)
-    height, width = mpimg.imread(str(first)).shape[:2]
+    height, width = plt.imread(str(first)).shape[:2]
     cell_w = max(look["smallest_cell"][0], width / look["pixels_per_inch"])
     cell_h = max(look["smallest_cell"][1], height / look["pixels_per_inch"])
     fig, axes = plt.subplots(n_rows, n_cols, squeeze=False, figsize=(cell_w * n_cols, cell_h * n_rows))
@@ -149,7 +150,7 @@ def save_grid(images, n_rows, n_cols, path, look, fontsize):
             ax.text(0.5, 0.5, "\n".join(textwrap.fill(line, 38) for line in title.split("\n")),
                     ha="center", va="center", fontsize=fontsize, color="gray", transform=ax.transAxes)
         else:
-            ax.imshow(mpimg.imread(str(image)), **look["show"])
+            ax.imshow(plt.imread(str(image)), **look["show"])
             ax.set_title(title, fontsize=fontsize)
         ax.axis("off")
         if look["equal_aspect"]:

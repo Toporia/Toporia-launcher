@@ -173,8 +173,11 @@ chose before launch, and prefixed names to avoid clashes with other installed pa
       `AssembledModel`, the filter pipeline and the comparison referee moved into the core.
 - [x] 🤖 One `pyproject.toml`; PySide6 is the `gui` extra.
 - [x] 🤖 Library PDFs in `docs/library/`; `results/` ignored.
-- [ ] 🤖 Plotting (`engine/records.py`, the compare/sweep/sensitivity images) is imported only
+- [x] 🤖 Plotting (`engine/records.py`, the compare/sweep/sensitivity images) is imported only
       when used, but matplotlib is still a core dependency; making it optional is open.
+      🤖 Done 9 November 2026: the core needs NumPy and SciPy only; PNGs by `engine/png.py`,
+      figures only with matplotlib (`engine/plotting.py`); `tests/test_core_alone.py` runs the
+      core with matplotlib and Pillow blocked. Pillow is no longer a dependency.
 
 ## 5. Research and paper comparisons
 

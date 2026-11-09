@@ -13,7 +13,6 @@
 import itertools
 
 import numpy as np
-from PIL import Image
 from scipy import ndimage
 
 from toporia_core.framework.parts.postprocess import PostProcessor
@@ -59,7 +58,7 @@ class Connectivity(PostProcessor):
         seen, adrift = (solid.any(axis=0), floating.any(axis=0)) if solid.ndim == 3 else (solid, floating)
         picture = np.stack([1.0 - seen] * 3, axis=-1)
         picture[adrift] = (0.85, 0.15, 0.15)
-        Image.fromarray((np.flipud(picture) * 255).astype(np.uint8), mode="RGB").save(
-            result.file("connectivity.png"))
+        from toporia_core.engine.png import write_png
+        write_png(result.file("connectivity.png"), (np.flipud(picture) * 255).astype(np.uint8))
         return {"pieces": int(count), "floating_fraction": float(floating.sum() / max(solid.sum(), 1)),
                 "loads_connected": loads_connected}

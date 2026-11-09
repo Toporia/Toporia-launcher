@@ -72,7 +72,8 @@ def compare_methods(methods, base_config, on_iteration=None, problem_name=""):
         n_cols = min(4, len(images))
         n_rows = -(-len(images) // n_cols)
         grid = save_grid(images, n_rows, n_cols, folder / "methods_grid.png", DESIGNS, fontsize=8)
-        print(f"\nSaved comparison grid -> {grid}")
+        if grid:
+            print(f"\nSaved comparison grid -> {grid}")
     return grid, rows
 
 
@@ -132,7 +133,8 @@ def sweep_methods(methods, parameter, min_val, max_val, n_values, base_config, o
     grid = None
     if any(image is not None for image, _ in images):
         grid = save_grid(images, len(methods), len(values), folder / "methods_sweep_grid.png", DESIGNS, fontsize=7)
-        print(f"\nSaved methods x {parameter} grid -> {grid}")
+        if grid:
+            print(f"\nSaved methods x {parameter} grid -> {grid}")
     return grid, rows
 
 

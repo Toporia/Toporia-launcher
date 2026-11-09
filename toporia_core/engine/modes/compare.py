@@ -19,9 +19,7 @@
 import colorsys
 from pathlib import Path
 
-import matplotlib.patches as mpatches
 import numpy as np
-from matplotlib.gridspec import GridSpec
 
 from toporia_core.engine.loop import run_single
 from toporia_core.framework import apply_param, projection
@@ -94,7 +92,12 @@ def _overlay(density_a, density_b):
 
 def _save_figure(density_a, density_b, label_a, label_b, output_dir):
     """The overlay on top (twice the height), the two designs below; returns the PNG's path."""
-    import matplotlib.pyplot as plt
+    from toporia_core.engine.plotting import pyplot
+    plt = pyplot()
+    if plt is None:
+        return None
+    import matplotlib.patches as mpatches
+    from matplotlib.gridspec import GridSpec
     fig = plt.figure(figsize=(10, 7))
     grid = GridSpec(2, 2, figure=fig, height_ratios=[2, 1], hspace=0.30, wspace=0.05)
     ax_both, ax_a, ax_b = fig.add_subplot(grid[0, :]), fig.add_subplot(grid[1, 0]), fig.add_subplot(grid[1, 1])

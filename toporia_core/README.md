@@ -10,7 +10,7 @@ The code is three packages, next to each other in the repository:
 
 | Package | What it is | Needs |
 | :-- | :-- | :-- |
-| [`toporia_core/`](.) (this folder) | The glue every function uses and no function itself: what a run is, what a part must do, the registries, the engine loop and run modes, the conformance checks, `api.py` and the command line. | numpy, scipy (matplotlib and Pillow for the images a run writes) |
+| [`toporia_core/`](.) (this folder) | The glue every function uses and no function itself: what a run is, what a part must do, the registries, the engine loop and run modes, the conformance checks, `api.py` and the command line. | numpy, scipy; matplotlib only for figures, when installed ([`engine/plotting.py`](engine/plotting.py)); density images are written by [`engine/png.py`](engine/png.py) |
 | [`toporia_library/`](../toporia_library/README.md) | Every function: models and physics, updaters, filters, material laws, representations, responses, schedules, post-processors, whole methods, and the presets with their research descriptions. | the core |
 | [`toporia_gui/`](../toporia_gui/README.md) | The desktop app. A run never needs it. | the core, the library, PySide6 |
 
@@ -68,6 +68,8 @@ toporia_core/
 │   ├── pipeline.py      names the parts of a run, for the console and the GUI
 │   ├── fields.py        stress, displacement, temperature of a finished design
 │   ├── measure.py       the referee every method in a comparison is measured with
+│   ├── png.py           PNG images with NumPy alone
+│   ├── plotting.py      matplotlib only when it is installed
 │   └── modes/           single · sweep · compare · methods · sensitivity · check
 └── checks/              the conformance test, one module per kind of part
 

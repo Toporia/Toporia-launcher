@@ -1,7 +1,6 @@
 # plugins/postprocessors/_measure.py — measurements and drawings several post-processors share.
 
 import numpy as np
-from PIL import Image
 
 from toporia_core.framework.problem.mesh import projection
 
@@ -62,7 +61,8 @@ def pinned(problem):
 def save_image(field, path):
     """A design as a greyscale PNG, solid dark, drawn the way final_density.png is (3-D: depth average)."""
     pixels = (np.clip(np.flipud(1.0 - projection(np.asarray(field, dtype=float))), 0.0, 1.0) * 255).astype(np.uint8)
-    Image.fromarray(pixels, mode="L").save(path)
+    from toporia_core.engine.png import write_png
+    write_png(path, pixels)
 
 
 def outlines(result):
