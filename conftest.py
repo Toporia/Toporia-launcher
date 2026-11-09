@@ -9,7 +9,7 @@ after the summary the threads still alive are listed, and if the process is stil
 there that many seconds later, every thread's stack is printed (repeatedly).
 
 Once the summary is printed, a session that loaded Qt leaves with pytest's own exit
-status, without running native finalisers: Qt and VTK torn down together at interpreter
+status, without running native finalisers or library unload handlers: Qt and VTK torn down together at interpreter
 exit can abort (exit 139) after every test has passed, which would report a green run
 as a crash.
 """
@@ -41,7 +41,17 @@ def pytest_unconfigure(config):
     if _exit_status is not None and "PySide6.QtCore" in sys.modules:
         sys.stdout.flush()
         sys.stderr.flush()
-        os._exit(_exit_status)
+        _leave(_exit_status)
+
+
+def _leave(status):
+    """End the process now with `status`.  On Windows os._exit still runs the libraries'
+    unload handlers, where Qt and VTK can crash; TerminateProcess skips them."""
+    if sys.platform == "win32":
+        import ctypes
+        kernel32 = ctypes.windll.kernel32
+        kernel32.TerminateProcess(kernel32.GetCurrentProcess(), int(status))
+    os._exit(status)
 
 
 def _trace_exit():

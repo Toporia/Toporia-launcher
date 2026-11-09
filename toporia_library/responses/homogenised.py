@@ -81,6 +81,7 @@ class BulkModulus(_Homogenised):
     use_when = "To design the stiffest material under uniform expansion or pressure, on a periodic unit cell."
     order = 70
     maximise = True
+    reference = REFERENCE
 
     def _weights(self, C):
         d = 2 if len(C) == 3 else 3
@@ -97,6 +98,7 @@ class ShearModulus(_Homogenised):
     use_when = "To design the material that resists shear best, on a periodic unit cell."
     order = 71
     maximise = True
+    reference = REFERENCE
 
     def _weights(self, C):
         W = np.zeros_like(C)
@@ -117,6 +119,9 @@ class Auxetic(_Homogenised):
     order = 72
     maximise = False
     normalised = False
+    reference = ('L. Xia, P. Breitkopf, "Design of materials using topology optimization and energy-based'
+                 ' homogenization approach in Matlab", Struct. Multidisc. Optim. 52 (2015) 1229-1241.'
+                 " Papers: https://doi.org/10.1007/s00158-015-1294-0")
     params = (Param("beta", 0.8, "Stiffness weight decay", "β in C12 − βⁿ (C11 + C22): the weight that keeps the "
                     "cell stiff falls by this factor every iteration.", min=0.0, max=0.99, step=0.05, decimals=3),)
 

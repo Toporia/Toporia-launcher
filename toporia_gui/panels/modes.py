@@ -49,6 +49,10 @@ _GAP = ("How far the second design's value lies from the base. Each element's ch
 FIELD_HELP = {
     "Parameter": _PARAMETER, "Sens. parameter": _PARAMETER, "Sweep parameter": _PARAMETER,
     "Row param": _PARAMETER, "Col param": _PARAMETER, "Row parameter": _PARAMETER, "Col parameter": _PARAMETER,
+    "Options": ("For a choice of part (an updater, model, material law, ...): the options to try, one run "
+                "each. A combination that cannot run is skipped and its cell says why."),
+    "Row options": "The options of the choice down the rows: one row each.",
+    "Col options": "The options of the choice across the columns: one column each.",
     "Value A": "The setting's value for the first design.",
     "Value B": "The setting's value for the second design, optimised and shown beside the first.",
     "Min": _RANGE, "Max": _RANGE, "Row min": _RANGE, "Row max": _RANGE, "Col min": _RANGE, "Col max": _RANGE,

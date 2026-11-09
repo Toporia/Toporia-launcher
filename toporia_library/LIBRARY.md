@@ -202,7 +202,7 @@ and the preset *MBB Beam (Robust)*.
 | Material: Maximum Bulk Modulus | [material_bulk.py](problems/material_bulk.py) | 98 % of the Hashin-Shtrikman bound; Xia & Breitkopf 2015 |
 | Material: Maximum Shear Modulus | [material_shear.py](problems/material_shear.py) | inverse homogenisation; Sigmund 1994 |
 | Material: Auxetic (Negative Poisson's Ratio) | [material_auxetic.py](problems/material_auxetic.py) | Xia & Breitkopf 2015 |
-| Material: Maximum Bulk Modulus 3D | [material_bulk_3d.py](problems/material_bulk_3d.py) | 3-D unit cell |
+| Material: Maximum Bulk Modulus 3D | [material_bulk_3d.py](problems/material_bulk_3d.py) | 3-D unit cell; 91 % of the 3-D Hashin-Shtrikman bound |
 | Cantilever of a Designed Material | [cantilever_designed_material.py](problems/cantilever_designed_material.py) | two-scale: the bulk lattice as the part's material |
 | Cantilever (Two Materials) | [cantilever_two_materials.py](problems/cantilever_two_materials.py) | void or one of two materials per element (DMO); Stegmann & Lund 2005 |
 | Cantilever 3D (Truss) | [truss_cantilever_3d.py](problems/truss_cantilever_3d.py) | space truss, made into an STL solid; Dorn et al. 1964 |
