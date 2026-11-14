@@ -56,7 +56,7 @@ class BaseProblem:
     1. Subclass BaseProblem (or duck-type it if you prefer).
     2. In __post_init__ / __init__, set all required attributes listed below.
     3. Call self.validate() at the end of setup to catch omissions early.
-    4. Register the problem in toporia/plugins/problems/__init__.py so the GUI sees it.
+    4. Register the problem in toporia/plugins/problems/__init__.py so the browser UI sees it.
 
     Attributes
     ----------
@@ -373,7 +373,7 @@ def projection(field):
 
     The average is what an X-ray along z would show: 1 where the design is
     solid all the way through, grey where only part of the depth is.  Images,
-    comparisons and the GUI's live view draw this; the full 3-D field is kept
+    comparisons and the browser UI's live view draw this; the full 3-D field is kept
     as well (final_density.npy).
     """
     field = np.asarray(field)

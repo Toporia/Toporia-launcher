@@ -174,27 +174,6 @@ def test_a_run_refuses_a_missing_dependency_before_it_starts(needs_missing):
         initialized_method(run)
 
 
-def test_the_gui_greys_out_what_is_not_installed_and_says_why(needs_missing):
-    pytest.importorskip("PySide6.QtWidgets")
-    import os
-    os.environ.setdefault("QT_QPA_PLATFORM", "offscreen")
-    from PySide6 import QtWidgets
-    QtWidgets.QApplication.instance() or QtWidgets.QApplication([])
-    from toporia.apps.gui.window import MainWindow
-
-    window = MainWindow()
-    combo = window.core.updater
-    index = combo.findData("needs_missing")
-    item = combo.model().item(index)
-    assert not item.isEnabled()
-    assert MISSING in item.text() and f"pip install {MISSING}" in item.toolTip()
-    assert combo.model().item(combo.findData("oc")).isEnabled()
-
-    window.core.select_method("q4+needs_missing")      # e.g. from a preset written elsewhere
-    assert any("Not installed here" in note for note in window.pipeline.notes())
-    window.close()
-
-
 # ── The public API ────────────────────────────────────────────────────────────
 
 def test_the_api_offers_everything_a_plugin_needs():

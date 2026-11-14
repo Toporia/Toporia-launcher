@@ -74,7 +74,7 @@ class Solver:
     tol: float = 0.01       # stop when the design change a method reports is below tol
 
 
-# Param declarations for the solver fields the GUI and sweeps expose.  Method
+# Param declarations for the solver fields the browser UI and sweeps expose. Method
 # and filter parameters are declared on their own classes in toporia.plugins.
 SOLVER_PARAMS = (
     Param("m", 1.0, "Mesh res m",

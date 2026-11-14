@@ -11,8 +11,9 @@ differ in one part are a fair comparison.
 pip install -e ".[dev,3d]"
 ```
 
-Then `toporia` opens the desktop app, and `toporia run "MBB Beam"` runs from the command
-line.
+Then `toporia` opens the browser-based local interface, and `toporia run "MBB Beam"` runs
+from the command line. The interface runs on your computer and saves results under
+`results/web/`.
 
 | You want to… | Read |
 | :-- | :-- |
@@ -20,6 +21,30 @@ line.
 | understand how the code fits together | [toporia/README.md](toporia/README.md) |
 | add any kind of part, with a worked example of each | [docs/writing-plugins.md](docs/writing-plugins.md) |
 | see what exists in the field, and what is here | [toporia/plugins/README.md](toporia/plugins/README.md) |
+
+The browser UI is the only graphical interface. It runs locally and submits configurations
+to the same optimization engine used by the command-line tools; the UI is separate from the
+engine, so headless runs and scripts do not need a browser.
+
+## Contributing
+
+Contributions are welcome. If you want to report a bug, improve the docs, add a plugin, or
+help expand the project, please read [CONTRIBUTING.md](CONTRIBUTING.md) first.
+
+## Run with Docker Compose
+
+With Docker Engine and the Compose plugin installed:
+
+```bash
+docker compose -f docker/docker-compose.yaml up --build
+```
+
+Open [http://localhost:8765](http://localhost:8765). The service is published on loopback
+only, and run files persist in `results/web/`. Stop it with Ctrl+C; set `TOPORIA_PORT` to
+choose a different host port. This builds and tags the image as `toporia:local` before
+starting it. A Compose **Start Service** action may only start an existing container; use
+this command or the extension's **Up/Rebuild** action to build. The image includes the
+optional 3-D dependencies.
 
 ## What is implemented, and what is not
 

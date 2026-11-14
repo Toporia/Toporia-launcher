@@ -28,7 +28,7 @@
 # callback.  One with no such hook (NLopt) calls it from its objective wrapper,
 # once per evaluation; one that reports nothing until the end never calls it,
 # and the engine receives the final design as a single step.  `reports` says
-# which, so the GUI can show it.
+# which, so the browser UI can show it.
 
 import queue
 import threading

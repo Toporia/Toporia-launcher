@@ -15,7 +15,7 @@ It is a part of its own — see
 [`framework/parts/representation.py`](../../framework/parts/representation.py) — chosen in
 the solver like the filters and the material law,
 `solver.representation = {"type": "mmc", "n_x": 4, "n_y": 2}`. It also sets the start
-design and the bounds of every variable. In the GUI it is the **Design representation**
+design and the bounds of every variable. In the browser UI it is the **Design representation**
 panel, and the Pipeline box shows it as the first stage ("Design").
 
 Any model assembled from parts ([`models/assembled.py`](../models/assembled.py), such as
@@ -25,7 +25,7 @@ and the panel is hidden for them.
 **Which updaters work with it.** Updaters that work on any vector (MMA, GCMMA, SLSQP) work
 with every representation. Updaters whose rule moves each element's density on its own
 (optimality criteria, BESO, SiMPL) declare `needs_element_densities`. Pairing one of them
-with another representation is refused before the run, with the reason. The GUI's Pipeline
+with another representation is refused before the run, with the reason. The browser UI's Pipeline
 box shows the same reason, and Compare Methods skips the pairing.
 
 **Status: 2 in Toporia · 2 with open code · 3 paper only**

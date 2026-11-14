@@ -158,7 +158,7 @@ class Scenario:
     nu:   float = 0.3     # Poisson's ratio
 
 
-# Param declarations for the scenario fields the GUI and sweeps expose.
+# Param declarations for the scenario fields the browser UI and sweeps expose.
 SCENARIO_PARAMS = (
     Param("volfrac", 0.5, "Vol fraction",
           "Target fraction of solid material allowed in the design.",

@@ -3,11 +3,11 @@
 # Every tunable value in Toporia is declared once, as a Param, next to the code
 # that uses it.  From that single declaration:
 #
-#   - the GUI builds the input widget (range, step, tooltip, units),
+#   - the browser UI builds the input widget (range, step, tooltip, units),
 #   - sweeps and comparisons know which values exist and can be varied,
 #   - a run validates its configuration before any computation starts.
 #
-# Nothing here imports Qt, NumPy or any algorithm.
+# Nothing here imports a UI toolkit, NumPy or any algorithm.
 
 from dataclasses import dataclass
 
@@ -22,12 +22,12 @@ class Param:
     ----------
     name     : key used in configs, filter specs and parameter paths
     default  : value used when nothing is specified
-    label    : short human-readable name for the GUI (defaults to `name`)
+    label    : short human-readable name for the browser UI (defaults to `name`)
     help     : one or two sentences; becomes the tooltip
     kind     : "float" | "int" | "bool" | "choice" — inferred from the default
     min, max : inclusive bounds for numeric kinds (None = unbounded)
-    step     : GUI spin-box increment
-    decimals : GUI display precision for floats
+    step     : browser UI input increment
+    decimals : browser UI display precision for floats
     choices  : for kind "choice", a tuple of (value, label) pairs
     units    : shown next to the label, e.g. "mm" or "°"
     """

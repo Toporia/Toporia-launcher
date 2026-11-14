@@ -63,7 +63,7 @@ def test_a_method_that_cannot_move_the_chosen_design_is_skipped_with_its_reason(
 
 
 def test_one_methods_settings_do_not_stop_another(tmp_path):
-    """The GUI passes the selected method's parameters; a different method must ignore them."""
+    """The browser UI passes the selected method's parameters; a different method must ignore them."""
     run = _small(method_params={"move": 0.1, "mma_tol": 1e-3}).with_output_dir(tmp_path)
     _, rows = compare_methods(["levelset", "q4+mma"], run)
     assert [row["status"] for row in rows] == ["ran", "ran"]

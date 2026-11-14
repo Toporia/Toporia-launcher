@@ -1,6 +1,6 @@
 # TO DO
 
-- [] Make a slicer looking GUI for the mode definition and results
+- [] Make a slicer-like browser UI for mode definition and results
   - [] making it multiple windows one goes through before running
   - [] making like a slicer that the options are on the side and on the top
   - [] make the problem defention explicit

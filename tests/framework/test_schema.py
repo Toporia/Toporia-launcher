@@ -1,7 +1,7 @@
 """test_schema.py — parameter declarations, plugin registries and parameter paths.
 
 These pin the machinery that lets a plugin describe itself: if they pass, a new
-method or filter only has to declare its Params to appear in the GUI, be
+method or filter only has to declare its Params to appear in the browser UI, be
 sweepable, and be validated before a run.
 """
 
@@ -201,7 +201,7 @@ def _current_value(run, path):
 
 @pytest.mark.parametrize("method", [c.name for c in method_classes()])
 def test_every_offered_path_round_trips_through_validation(method):
-    """Every path the GUI offers must be writable and must still validate."""
+    """Every path the browser UI offers must be writable and must still validate."""
     run = get_run("MBB Beam").updated(method=method, filter_specs=[{"type": "density"}, {"type": "heaviside"}])
     for _, path in parameter_paths(method, run.solver.filter_specs, len(run.scenario.load_cases)):
         updated = apply_param(run, path, _current_value(run, path))

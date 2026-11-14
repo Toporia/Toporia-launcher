@@ -3,7 +3,7 @@
 # A run's method is assembled from parts: the design passes through the
 # filters, the physics engine solves it, the responses are measured, and the
 # updater moves the design.  This module names each part for a given Run, so
-# the console and the GUI show exactly the same chain:
+# the console and browser UI show exactly the same chain:
 #
 #     variables -> representation -> filters -> physics (material law) -> objective, constraints -> updater
 #
@@ -11,7 +11,7 @@
 # chain is the method itself.
 #
 # pipeline_parts() is the one answer to "which plugins does this run use": the
-# console line, the GUI's Pipeline box, run.json's record of every part and
+# console line, the browser UI's Pipeline box, run.json's record of every part and
 # the Check Parts mode all start from it.  A part that comes from another
 # installed package is shown with that package's name and version.
 

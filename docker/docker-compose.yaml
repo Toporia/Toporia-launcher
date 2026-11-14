@@ -1,0 +1,10 @@
+services:
+  toporia:
+    image: toporia:local
+    build:
+      context: ..
+      dockerfile: docker/Dockerfile
+    ports:
+      - "127.0.0.1:${TOPORIA_PORT:-8765}:8765"
+    volumes:
+      - ../results/web:/app/results/web

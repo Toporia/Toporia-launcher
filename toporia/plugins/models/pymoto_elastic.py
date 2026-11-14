@@ -47,10 +47,10 @@ def import_pymoto():
     (pymoto/modules/io.py).  That backend is only for pyMOTO's own interactive
     plot windows, which Toporia never uses, and the switch does real harm:
 
-      - inside the Qt GUI matplotlib refuses it outright ("Cannot load backend
-        'TkAgg' ... as 'qt' is currently running"), so the import fails;
-      - elsewhere it would hijack plotting for the whole process, e.g. the CLI
-        on a machine without a display.
+      - after another interactive backend is initialized, matplotlib may refuse
+        the switch, so importing pyMOTO can fail;
+      - otherwise it changes plotting for the whole process and can require a
+        display unavailable to headless runs.
 
     So the switch is suppressed for the duration of the import.  The install
     hint is only given when pyMOTO itself is missing; any other import error

@@ -38,7 +38,7 @@ def run_cells(base_run, cells, on_iteration=None):
     """Run one optimisation per cell and print progress.
 
     `cells` is a list of (assignments, folder): the parameter values to set,
-    and where that cell's results go.  `on_iteration` is the GUI's live
+    and where that cell's results go.  `on_iteration` is the browser UI's live
     callback, passed through to every run.
     """
     start = time.perf_counter()

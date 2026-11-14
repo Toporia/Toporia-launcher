@@ -19,7 +19,7 @@ Every entry in every table in this library carries exactly one of these:
 | 🔗 **Open code** | Not in Toporia. A public reference implementation exists — port it, or validate against it. A 🔗 entry with no link means the code ships with the paper as supplementary material; follow the reference. |
 | 📄 **Paper only** | Not in Toporia, and no public implementation found. Would be written from the paper, with the citation in the module docstring. |
 
-Nothing is ever labelled ✅ until it is registered, tested, and reachable from the GUI.
+Nothing is ever labelled ✅ until it is registered, tested, and reachable from the browser UI.
 
 ## Where things live
 
@@ -90,7 +90,7 @@ example of every plugin kind, each one run and checked by the test suite.
 There is no decorator and no list to maintain: a class in the right package, subclassing
 the right base, with a non-empty `name`, **is** registered
 ([`framework/registry.py`](../framework/registry.py)). Parameters are declared as
-[`Param`](../framework/params.py) objects next to the code that uses them, and the GUI, the
+[`Param`](../framework/params.py) objects next to the code that uses them, and the browser UI, the
 sweeps and the config validation are all generated from those declarations.
 
 ### From another package
@@ -105,18 +105,18 @@ my_optimisers = "my_package.optimisers"            # every plugin class in a mod
 my_slsqp      = "my_package.optimisers:MySLSQP"    # or a single class
 ```
 
-After `pip install my_package` it appears in the GUI menus, the CLI (`toporia list` shows
-where each plugin comes from) and the configs. The groups are `toporia.models`,
+After `pip install my_package` it appears in method selection where applicable, the CLI
+(`toporia list` shows where each plugin comes from) and the configs. The groups are `toporia.models`,
 `toporia.updaters`, `toporia.representations`, `toporia.filters`, `toporia.interpolations`,
 `toporia.responses`, `toporia.schedules`, `toporia.postprocessors` and
 `toporia.methods`. A plugin
-that fails to import is reported in the GUI's log and by `toporia list`, and every other
+that fails to import is reported in the browser UI's log and by `toporia list`, and every other
 plugin still loads. A plugin that needs an optional package declares
 `dependencies = ("package",)`: where the package is missing it is greyed out in the menus
 with the install command, and a run asking for it stops at once with that command.
 
 Then run the conformance test on it — `toporia check updater:my_updater` on the command
-line, **Check Parts** in the GUI's mode menu, or `toporia.checks.conformance(MyClass)` in a
+line, **Check Parts** in the browser UI's mode menu, or `toporia.checks.conformance(MyClass)` in a
 test. It checks the interface, every gradient against finite differences, the adjoint of a
 filter, and, for an updater, a benchmark run on the MBB beam within 10 % of optimality
 criteria. Nothing is ✅ until it passes.

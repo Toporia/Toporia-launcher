@@ -1,7 +1,7 @@
 """test_cli.py — the headless command line.
 
 This is the architecture's acceptance test: every capability is reachable
-without the GUI, starting from plain files.
+without starting the browser app, from plain files.
 """
 
 import json
@@ -17,6 +17,13 @@ from toporia.framework.problem.files import fingerprint, load, save  # noqa: E40
 
 # Small and fast: every command below runs real optimisations.
 SMALL = ["--set", "m=0.25", "--set", "max_iter=3", "--set", "tol=0", "--set", "save_every=0"]
+
+
+def test_legacy_gui_command_is_not_registered(capsys):
+    with pytest.raises(SystemExit) as exc:
+        main(["gui"])
+    assert exc.value.code == 2
+    assert "invalid choice" in capsys.readouterr().err
 
 
 def test_list_shows_every_registry(capsys):

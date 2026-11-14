@@ -6,7 +6,7 @@
 #     objective   = {"type": "compliance"}
 #     constraints = [{"type": "stress", "limit": 10.0, "p": 8}]
 #
-# From these declarations the GUI builds its objective and constraint panels,
+# From these declarations the browser UI builds its objective and constraint panels,
 # sweeps can vary their numeric parameters, and a run validates them before it
 # starts.
 #
