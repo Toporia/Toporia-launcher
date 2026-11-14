@@ -2,7 +2,7 @@
 
 Each module in this package defines:
 
-    NAME        display name, shown in the GUI and accepted by the CLI
+    NAME        display name, shown in the browser UI and accepted by the CLI
     ORDER       menu position (lower first)
     scenario()  -> Scenario   what is being solved
     solver()    -> Solver     recommended settings (optional; defaults otherwise)

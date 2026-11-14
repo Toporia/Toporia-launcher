@@ -8,7 +8,7 @@ elements.
 
     loop.py      the one optimisation loop every mode goes through
     records.py   what a run leaves behind: history, images, limit check, run.json
-    pipeline.py  names the parts a run is made of, for the console and the GUI
+    pipeline.py     names the parts a run is made of, for the console and browser UI
     modes/       one module per analysis mode: single, sweep, compare, methods, sensitivity, check
 """
 

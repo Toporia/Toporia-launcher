@@ -5,7 +5,7 @@ They deliberately do NOT check numbers: the golden tests in test_golden.py pin
 the physics, and duplicating that here would just make the suite slow.
 
 What these protect is the engine layer (toporia/engine/modes) — the sweep,
-compare and sensitivity drivers that the GUI and the command line call.
+compare and sensitivity drivers that the browser UI and the command line call.
 
 Configs are tiny on purpose: several of these modes run four or more full
 optimisations each.
@@ -50,7 +50,7 @@ def test_run_one(cfg):
 
 
 def test_run_one_fires_iteration_callback(cfg):
-    """The GUI's live canvas depends on this callback; pin its contract."""
+    """The browser UI's live preview depends on this callback; pin its contract."""
     seen = []
     run_one(cfg, on_iteration=lambda d, objectives, it: seen.append((d.shape, it)))
     assert len(seen) == cfg.solver.max_iter

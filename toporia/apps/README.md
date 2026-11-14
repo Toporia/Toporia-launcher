@@ -1,39 +1,37 @@
-# `toporia/apps` — the desktop app and the command line
+# `toporia/apps` — the browser app and command line
 
-Neither contains optimisation logic. Both turn what the person chose into a
+The browser app and CLI contain no optimization logic. They turn what the person chose into a
 [`Run`](../framework/problem/run.py) and hand it to the [`engine`](../engine/README.md).
 
 ```
 apps/
-├── cli.py            the command line; with no command, the GUI
-└── gui/
-    ├── app.py        starts Qt (and sets matplotlib's Qt backend first)
-    ├── window.py     the main window: lays out the panels, wires the Run/Stop button
-    ├── canvas.py     the live design and convergence curve; a 3-D view at the end
-    ├── config.py     the panels' values → a Run (cheap, so the Pipeline box can refresh)
-    ├── runner.py     calls the engine's modes and routes their printed output to the log
-    └── panels/       every input panel, one module each
-        ├── method.py     volume, and the method: physics model + updater, or whole
-        ├── design.py     representation, 2-D or 3-D, resolution and the mesh it gives
-        ├── pipeline.py   the Pipeline box
-        ├── specs.py      filters, objective, constraints, schedules
-        ├── loads.py      load cases
-        ├── modes.py      the settings of each analysis mode
-        ├── forms.py      a form generated from Param declarations
-        └── common.py     small shared widgets and helpers
+├── cli.py            the command line; with no command, the browser UI
+└── web/              local Flask server and browser UI
+    ├── __init__.py   API, local job runner, and server launch
+    ├── templates/    the page
+    └── static/       browser interactions and styling
 ```
 
-```mermaid
-flowchart TB
-    panels["panels/<br/>generated from the plugins"]
-    config["config.py<br/>the values become a Run"]
-    runner["runner.py<br/>starts an analysis mode"]
-    canvas["canvas.py · log<br/>live design, curve, output"]
-    panels --> config --> runner --> canvas
-```
+`toporia` (or `toporia web`) starts the browser UI at `http://127.0.0.1:8765/`. It binds to
+loopback only and accepts one optimization job at a time. Stop the server with Ctrl+C in
+the terminal. Runs and files are stored under `results/web/`.
 
-Every input that comes from a plugin — a method's, filter's or response's parameters,
-the list of models, updaters, filters, objectives, constraints — is generated from the
-plugin classes, so a new plugin appears in the GUI and the CLI without editing anything
-here. A plugin whose optional package is not installed is shown greyed out with the
-install command.
+The browser reconnects to the current job after a page refresh while the server is running.
+Job state lives in server memory, so stopping or restarting the server interrupts active jobs;
+completed result files remain in `results/web/`.
+
+The Compose setup binds the server on the container interface while publishing it only to
+the host's loopback address. It mounts `results/web/` so output files remain available on
+the host.
+
+The browser app is a local front end over the existing optimization engine. It builds and
+validates `Run` configurations, sends them to engine modes, and presents progress and results.
+The CLI can invoke the same engine directly without starting the browser or a web server.
+The framework, plugins, and engine do not depend on the browser app.
+
+Both interfaces generate plugin parameter forms from the same `Param` declarations. The
+browser exposes the pipeline, design, material, objective, constraint, filter, schedule,
+variant, load-case, output, and analysis-mode controls; its pipeline description uses the
+engine's shared pipeline code. Advanced JSON remains available for preset geometry and
+expert-only fields. Methods and plugins whose optional packages are missing are identified
+before a run.

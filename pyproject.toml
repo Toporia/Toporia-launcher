@@ -5,10 +5,10 @@ build-backend = "hatchling.build"
 [project]
 name = "toporia"
 version = "0.1.0"
-description = "Open-source topology optimisation platform with benchmarks and a live GUI"
+description = "Open-source topology optimisation platform with benchmarks and a local browser UI"
 readme = "README.md"
 requires-python = ">=3.10"
-license = { text = "MIT" }
+license = "Apache-2.0"
 keywords = ["topology optimisation", "structural optimisation", "finite element", "SIMP"]
 
 dependencies = [
@@ -16,7 +16,7 @@ dependencies = [
     "scipy>=1.10",
     "matplotlib>=3.7",
     "Pillow>=9.0",
-    "PySide6>=6.5",
+    "Flask>=3.0",
 ]
 
 [project.optional-dependencies]
@@ -41,6 +41,14 @@ testpaths = ["tests"]
 addopts = "-q"
 # Escalate our own numerical warnings, but do not fail on a dependency's.
 filterwarnings = ["error::RuntimeWarning:toporia.*"]
+
+[tool.hatch.build.targets.wheel]
+packages = ["toporia"]
+include = [
+    "toporia/apps/web/templates/*.html",
+    "toporia/apps/web/static/*.js",
+    "toporia/apps/web/static/*.css",
+]
 
 # ── Linting ───────────────────────────────────────────────────────────────────
 [tool.ruff]

@@ -18,7 +18,7 @@ solver.schedules = [{"path": "interpolation.penal", "type": "steps",
 ```
 
 The engine applies every schedule before each iteration and records the value with the
-history. In the GUI they are the **Schedules** panel, and the Pipeline box lists them.
+history. In the browser UI they are the **Schedules** panel, and the Pipeline box lists them.
 
 **The engine does not stop on its tolerance while a schedule is still moving.** A design that
 settles at p = 1, or at a soft projection, is not the answer to the problem at the end of the
@@ -78,7 +78,7 @@ minimised. This is a solver setting, not a schedule; see
 solver.variants = {"path": "filters[1].eta", "values": [0.75, 0.5, 0.25], "combine": "worst"}
 ```
 
-In the GUI it is the **Variants (robust design)** panel, and its button fills in the robust
+In the browser UI it is the **Variants (robust design)** panel, and its button fills in the robust
 projection. The same setting covers uncertain loads, e.g. `load_cases[0].Fa` at three
 angles, and an expected value (`"combine": "mean"`).
 

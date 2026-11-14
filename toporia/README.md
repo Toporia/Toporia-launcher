@@ -26,7 +26,7 @@ Read in this order; each step is one folder and one README.
 
 ```mermaid
 flowchart TB
-    apps["apps/ · checks/<br/>the GUI, the command line, the conformance test"]
+    apps["apps/ · checks/<br/>the browser UI, the command line, the conformance test"]
     engine["engine/<br/>the loop and the analysis modes"]
     plugins["plugins/<br/>the swappable parts"]
     framework["framework/<br/>the rules: what a run is, what a part must do"]
@@ -70,12 +70,12 @@ toporia/
 ├── engine/              RUNNING THINGS
 │   ├── loop.py          the one optimisation loop
 │   ├── records.py       history, images, the limit check, run.json
-│   ├── pipeline.py      names the parts of a run, for the console and the GUI
+│   ├── pipeline.py      names the parts of a run, for the console and browser UI
 │   └── modes/           single · sweep · compare · methods · sensitivity · check
 ├── checks/              the conformance test, one module per plugin kind
 └── apps/
     ├── cli.py           toporia run · sweep · compare · benchmark · check · list · export
-    └── gui/             app · window · canvas · runner · config · panels/
+    └── web/             local browser UI and job API
 ```
 
 | Path | What it is | Read |
@@ -84,7 +84,7 @@ toporia/
 | [`plugins/`](plugins/) | **The swappable parts.** Each subfolder is scanned for plugins, so adding one is adding a file. Each folder's README maps its part of the field: what is here, what exists elsewhere, what is paper only. | [plugins/README.md](plugins/README.md) |
 | [`engine/`](engine/) | **Running things.** Builds the method from a run, steps it, applies the one stopping rule, records history and `run.json`, checks the limits; and the analysis modes built on that loop. | [engine/README.md](engine/README.md) |
 | [`checks/`](checks/) | **The conformance test.** `conformance(MyPlugin)` checks a plugin's interface, its gradients against finite differences and, for an updater, a benchmark against optimality criteria. | [checks/README.md](checks/README.md) |
-| [`apps/`](apps/) | **The desktop app and the command line.** Neither contains optimisation logic; both build a `Run` and hand it to the engine. | [apps/README.md](apps/README.md) |
+| [`apps/`](apps/) | **The browser UI and command line.** They build a `Run` and hand it to the engine. | [apps/README.md](apps/README.md) |
 | [`api.py`](api.py) | **What a plugin imports.** The stable names for writing plugins, especially in other packages. | [docs/writing-plugins.md](../docs/writing-plugins.md) |
 
 ## The life of a run
@@ -140,6 +140,6 @@ Then `toporia check kind:name`, and mark it ✅ in the folder's README.
   the method is documented once, in `framework/parts/`.
 - **Comments say why**, or what a non-obvious line does — not what the code already says.
 - **Parameters are declared, not read from dictionaries by hand**: a `Param` next to the
-  code that uses it, so the GUI, sweeps and validation follow automatically.
+  code that uses it, so the browser UI, sweeps and validation follow automatically.
 - **Results are pinned.** `tests/golden/` stores eight runs bit for bit, one of them 3-D; a change that moves
   them is either a bug or is said in its commit, with the baseline regenerated.

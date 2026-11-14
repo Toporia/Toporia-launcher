@@ -1,0 +1,194 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Toporia — topology optimisation</title>
+  <link rel="stylesheet" href="/static/style.css">
+</head>
+<body>
+  <header class="topbar">
+    <h1>Toporia <span>Topology Optimisation</span></h1>
+    <div class="server-status"><span class="status-dot"></span> Running locally</div>
+  </header>
+
+  <main class="workspace">
+    <section class="card controls">
+      <div class="section-heading">
+        <h2>Configuration</h2>
+        <span class="eyebrow">LOCAL WORKSPACE</span>
+      </div>
+      <label for="preset">Configuration</label>
+      <select id="preset"></select>
+      <label for="mode">Mode</label>
+      <select id="mode"></select>
+
+      <section class="pipeline-panel" aria-live="polite">
+        <h3>Pipeline</h3>
+        <ol id="pipeline-stages"></ol>
+        <ul id="pipeline-notes"></ul>
+      </section>
+
+      <div class="control-scroll">
+        <details class="control-section" open>
+          <summary>Core Parameters</summary>
+          <div class="section-body">
+            <div id="core-fields" class="field-grid"></div>
+            <details class="subsection" open>
+              <summary>Method</summary>
+              <div class="section-body">
+                <label for="approach">Approach</label>
+                <select id="approach"></select>
+                <div id="parts-selector">
+                  <label for="model">Physics model</label>
+                  <select id="model"></select>
+                  <div id="model-parameters" class="field-grid"></div>
+                  <label for="updater">Updater</label>
+                  <select id="updater"></select>
+                  <div id="updater-parameters" class="field-grid"></div>
+                </div>
+                <div id="whole-method-selector" hidden>
+                  <div id="whole-method-parameters" class="field-grid"></div>
+                </div>
+                <p id="method-note" class="hint"></p>
+              </div>
+            </details>
+            <details class="subsection">
+              <summary>Convergence</summary>
+              <div id="convergence-fields" class="field-grid"></div>
+            </details>
+            <details class="subsection">
+              <summary>Output</summary>
+              <div id="output-fields" class="field-grid"></div>
+            </details>
+          </div>
+        </details>
+
+        <details id="design-section" class="control-section" open>
+          <summary>Design</summary>
+          <div class="section-body">
+            <div class="field-grid">
+              <div class="field">
+                <label for="dimensions">Dimensions</label>
+                <select id="dimensions">
+                  <option value="2">2-D (plane stress)</option>
+                  <option value="3">3-D (extruded)</option>
+                </select>
+              </div>
+              <div class="field" id="depth-field">
+                <label for="depth">Depth</label>
+                <input id="depth" type="number" min="0.1" max="10000" step="1">
+              </div>
+              <div class="field">
+                <label for="resolution-mode">Resolution as</label>
+                <select id="resolution-mode">
+                  <option value="per_mm">Elements per mm</option>
+                  <option value="size">Element size (mm)</option>
+                </select>
+              </div>
+              <div class="field">
+                <label for="resolution">Resolution</label>
+                <input id="resolution" type="number" min="0.001" max="1000" step="0.1">
+              </div>
+            </div>
+            <p id="mesh-counts" class="hint"></p>
+            <div id="representation-editor"></div>
+          </div>
+        </details>
+
+        <details id="material-section" class="control-section">
+          <summary>Material law</summary>
+          <div id="material-editor" class="section-body"></div>
+        </details>
+        <details id="objective-section" class="control-section">
+          <summary>Objective</summary>
+          <div id="objective-editor" class="section-body"></div>
+        </details>
+        <details id="constraints-section" class="control-section">
+          <summary id="constraints-title">Constraints (none active)</summary>
+          <div class="section-body">
+            <p class="hint">The volume budget is always enforced from Core Parameters.</p>
+            <p id="constraint-note" class="hint"></p>
+            <div id="constraints-editor"></div>
+          </div>
+        </details>
+        <details id="filters-section" class="control-section">
+          <summary id="filters-title">Filters (1 active)</summary>
+          <div id="filters-editor" class="section-body"></div>
+        </details>
+        <details id="schedules-section" class="control-section">
+          <summary id="schedules-title">Schedules (none active)</summary>
+          <div id="schedules-editor" class="section-body"></div>
+        </details>
+        <details id="variants-section" class="control-section">
+          <summary id="variants-title">Variants (robust design)</summary>
+          <div id="variants-editor" class="section-body"></div>
+        </details>
+        <details id="postprocess-section" class="control-section">
+          <summary id="postprocess-title">Post-processing (none active)</summary>
+          <div id="postprocess-editor" class="section-body"></div>
+        </details>
+        <details id="load-cases-section" class="control-section">
+          <summary id="load-cases-title">Load Cases</summary>
+          <div id="load-cases-editor" class="section-body"></div>
+        </details>
+        <details id="mode-section" class="control-section" open>
+          <summary>Mode Options</summary>
+          <div class="section-body">
+            <p id="mode-note" class="hint"></p>
+            <div id="mode-fields" class="field-grid"></div>
+          </div>
+        </details>
+
+        <details class="control-section">
+          <summary>Advanced configuration JSON</summary>
+          <div class="section-body">
+            <p class="hint">The forms cover the standard options. Use JSON for preset-specific geometry and expert-only fields; applying JSON reloads the controls.</p>
+            <label for="scenario-json">Scenario</label>
+            <textarea id="scenario-json" spellcheck="false"></textarea>
+            <label for="solver-json">Solver</label>
+            <textarea id="solver-json" spellcheck="false"></textarea>
+            <label for="output-json">Output</label>
+            <textarea id="output-json" spellcheck="false"></textarea>
+            <button id="apply-json" class="secondary">Apply JSON to forms</button>
+          </div>
+        </details>
+      </div>
+
+      <div class="actions">
+        <button id="run" class="primary">▶ &nbsp; Run</button>
+        <button id="stop" class="secondary" disabled>■ &nbsp; Stop</button>
+      </div>
+      <p id="notice" class="notice" role="status"></p>
+    </section>
+
+    <section class="card results">
+      <div class="section-heading">
+        <h2>Live View</h2>
+        <span id="job-status" class="badge">Ready</span>
+      </div>
+      <div class="visualization">
+        <div class="plot-wrap design-wrap">
+          <img id="density" alt="Live topology design preview" hidden>
+          <div id="empty-view" class="empty-view"><span>◇</span><p>Your design will appear here</p><small>Choose a configuration and start a run</small></div>
+          <div class="plot-caption"><span>Design density</span><span id="iteration-label">Iteration —</span></div>
+        </div>
+        <div class="plot-wrap chart-wrap">
+          <canvas id="convergence" aria-label="Objective value by iteration"></canvas>
+          <div class="chart-caption"><span>Objective value</span><span>Iteration</span></div>
+        </div>
+      </div>
+      <details class="result-section" open>
+        <summary>Console output</summary>
+        <pre id="log" aria-live="polite"></pre>
+      </details>
+      <details class="result-section">
+        <summary>Saved results</summary>
+        <p id="artifact-placeholder" class="hint">Completed runs will list their files here.</p>
+        <ul id="artifacts"></ul>
+      </details>
+    </section>
+  </main>
+  <script src="/static/app.js" defer></script>
+</body>
+</html>

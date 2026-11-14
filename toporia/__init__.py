@@ -11,7 +11,7 @@ Quickstart
 
 Or from the command line:
     toporia run "MBB Beam" --set volfrac=0.4
-    toporia                      (no command: launches the GUI, as does python main.py)
+    toporia                      (no command: launches the browser UI, as does python main.py)
 """
 
 __version__ = "0.1.0"

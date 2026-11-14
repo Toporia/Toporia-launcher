@@ -1,6 +1,7 @@
-"""toporia command line — the whole platform without the GUI.
+"""toporia command line and local browser app.
 
-    toporia                                          launch the GUI
+    toporia                                          launch the local browser UI
+    toporia web                                      launch the local browser UI
     toporia list                                     presets, methods, filters, responses
     toporia export PRESET DIR                        write a preset as scenario + solver JSON
     toporia run SCENARIO [SOLVER]                    one optimisation
@@ -35,11 +36,11 @@ from pathlib import Path
 
 
 def main(argv=None) -> int:
-    """Parse the command line and run the command; no command opens the GUI.  Returns the exit code."""
+    """Parse the command line and run the command; no command opens the browser UI."""
     parser = _parser()
     args = parser.parse_args(argv)
-    if args.command in (None, "gui"):
-        from toporia.apps.gui import launch
+    if args.command in (None, "web"):
+        from toporia.apps.web import launch
         launch()
         return 0
     return args.handler(args)
@@ -222,11 +223,11 @@ def _cmd_check(args):
 
 def _parser():
     parser = argparse.ArgumentParser(
-        prog="toporia", description="Topology optimisation platform. Run without a command for the GUI.",
+        prog="toporia", description="Topology optimisation platform. Run without a command for the browser UI.",
         formatter_class=argparse.RawDescriptionHelpFormatter, epilog=__doc__,
     )
     commands = parser.add_subparsers(dest="command")
-    commands.add_parser("gui", help="launch the GUI (the default)")
+    commands.add_parser("web", help="launch the local browser UI (the default)")
     commands.add_parser("list", help="show presets, methods and filters").set_defaults(handler=_cmd_list)
 
     check = commands.add_parser("check", help="conformance test of plugins, as kind:name (all by default)")

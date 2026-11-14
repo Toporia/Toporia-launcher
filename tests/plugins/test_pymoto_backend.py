@@ -79,7 +79,7 @@ def test_honours_passive_and_void_bounds():
 def test_importing_pymoto_leaves_the_matplotlib_backend_alone():
     """pyMOTO calls matplotlib.use("TkAgg") on import; import_pymoto() must undo it.
 
-    Otherwise selecting a pyMOTO method would switch every figure the GUI or the
+    Otherwise selecting a pyMOTO method would switch every figure the browser UI or the
     CLI saves to Tk.  Run in a fresh interpreter, because in this process pyMOTO
     may already have been imported by an earlier test.
     """
@@ -91,26 +91,6 @@ def test_importing_pymoto_leaves_the_matplotlib_backend_alone():
     )
     result = subprocess.run([sys.executable, "-c", script], capture_output=True, text=True, check=True)
     assert result.stdout.strip().lower() == "agg"
-
-
-def test_pymoto_imports_inside_the_running_qt_gui():
-    """The GUI case: with Qt running, matplotlib refuses pyMOTO's switch to TkAgg.
-
-    Before the fix this made every pyMOTO method fail in the GUI with a
-    misleading "please install pyMOTO" message, while the CLI worked.
-    """
-    pytest.importorskip("PySide6")
-    script = (
-        "import os; os.environ['QT_QPA_PLATFORM'] = 'offscreen'\n"
-        "from PySide6.QtWidgets import QApplication; app = QApplication([])\n"
-        "import matplotlib; matplotlib.use('QtAgg'); import matplotlib.pyplot\n"
-        "from toporia.plugins.models.pymoto_elastic import import_pymoto\n"
-        "import_pymoto()\n"
-        "print(matplotlib.get_backend())\n"
-    )
-    result = subprocess.run([sys.executable, "-c", script], capture_output=True, text=True)
-    assert result.returncode == 0, result.stderr
-    assert result.stdout.strip().lower() == "qtagg"
 
 
 def test_the_install_hint_appears_only_when_pymoto_is_missing():

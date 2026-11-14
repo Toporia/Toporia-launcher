@@ -9,8 +9,8 @@ conformance(MyUpdater).assert_ok()      # in a test
 print(conformance(MyUpdater))           # a readable report
 ```
 
-or `toporia check updater:my_updater` on the command line, or **Check Parts** in the GUI's
-mode menu (every part of the selected pipeline).
+or `toporia check updater:my_updater` on the command line, or **Check Parts** in the browser
+UI's mode menu (every part of the selected pipeline).
 
 ```
 checks/

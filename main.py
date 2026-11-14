@@ -1,10 +1,9 @@
-"""
-main.py — launch the Morpho GUI.
+"""Launch Toporia's local browser interface.
 
 Usage:
     python main.py
 """
 
-from toporia.apps.gui import launch
+from toporia.apps.web import launch
 
 launch()

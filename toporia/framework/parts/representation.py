@@ -45,7 +45,7 @@ class Representation(ABC):
     #: The problem dimensions it works in (2 for plane problems, 3 for a box); None means any.
     dims = (2,)
     #: One sentence of advice on using it (a suitable move limit, say), shown
-    #: before a run and in the GUI; empty when there is none.
+    #: before a run and in the browser UI; empty when there is none.
     advice = ""
 
     @abstractmethod

@@ -1,6 +1,6 @@
 # Quick start: changing Toporia
 
-From a fresh checkout to your own part running in the GUI, in about fifteen minutes.
+From a fresh checkout to your own part running in Toporia, in about fifteen minutes.
 For every kind of part in detail, see [writing-plugins.md](writing-plugins.md). For how the
 code fits together, see [toporia/README.md](../toporia/README.md).
 
@@ -18,7 +18,8 @@ everything works:
 toporia
 ```
 
-This opens the GUI. Pick **MBB Beam** and press **Run**.
+This opens the browser interface on your computer. Pick **MBB Beam** and press **Run**.
+The optimization engine runs locally; results are saved under `results/web/`.
 
 ```bash
 toporia run "Cantilever 3D"
@@ -99,7 +100,7 @@ Three things make it a Toporia part:
 toporia list
 ```
 
-It appears under *Post-processors*. In the GUI it is now in the **Post-processing** panel,
+It appears under *Post-processors*. In the browser UI it is now in the **Post-processing** panel,
 with its *Thickness* field generated from the `Param`.
 
 **Step 3: check it.**
@@ -163,7 +164,7 @@ python tests/golden/regenerate_baselines.py mbb_oc
   back through the filters and the representation.
 - **Constraints are normalised so that `value ≤ 0` means satisfied.**
 - **Optional packages are imported inside your methods, and declared:**
-  `dependencies = ("nlopt",)`. Where the package is missing, the GUI greys the part out with
+  `dependencies = ("nlopt",)`. Where the package is missing, the browser UI greys the part out with
   the install command, instead of failing part-way through a run.
 - **`framework/` imports nothing from the rest of Toporia.** To change an interface, add an
   optional method with a default rather than change an existing one; every plugin is
@@ -179,6 +180,6 @@ python tests/golden/regenerate_baselines.py mbb_oc
 | the layers and the life of a run | [toporia/README.md](../toporia/README.md) |
 | every interface a part implements | [toporia/framework/README.md](../toporia/framework/README.md) |
 | the loop, the stopping rule, what a run writes | [toporia/engine/README.md](../toporia/engine/README.md) |
-| the GUI and the command line | [toporia/apps/README.md](../toporia/apps/README.md) |
+| the browser UI and the command line | [toporia/apps/README.md](../toporia/apps/README.md) |
 | every kind of part, with a worked example | [writing-plugins.md](writing-plugins.md) |
 | what exists in the field, and what is here | [toporia/plugins/README.md](../toporia/plugins/README.md) |

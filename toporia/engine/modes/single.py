@@ -12,7 +12,7 @@ def run_one(config, on_iteration=None):
     """Run one optimisation to the end.  Returns (ResultStore, final density).
 
     `on_iteration(density, objectives, iteration)` is called after every step;
-    the GUI uses it to redraw the live canvas.  Pass nothing for a headless run.
+    the browser UI uses it to refresh the live preview. Pass nothing for a headless run.
     """
     scenario = config.scenario
     # Mesh the problem once here, only to report its size.  The engine does not

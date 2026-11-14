@@ -21,7 +21,7 @@
 #   3. By hand, with register() — from a notebook, a script or a test.
 #
 # A plugin that fails to import does not take the others down with it: the
-# failure is kept in `errors`, shown by `toporia list` and in the GUI's log,
+# failure is kept in `errors`, shown by `toporia list` and in the browser UI's log,
 # and every other plugin still loads.
 #
 # A plugin that needs an optional package declares it, e.g.

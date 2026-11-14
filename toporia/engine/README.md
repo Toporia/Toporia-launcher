@@ -15,7 +15,7 @@ comparison fair.
 engine/
 ├── loop.py         the one optimisation loop
 ├── records.py      what a run leaves behind: history, images, limit check, run.json
-├── pipeline.py     names the parts of a run, for the console and the GUI
+├── pipeline.py     names the parts of a run, for the console and browser UI
 ├── postprocess.py  applies the run's post-processors to the final design, or to a saved run
 └── modes/          one module per analysis mode
     ├── single.py       Run One
@@ -31,7 +31,7 @@ engine/
 
 ```mermaid
 flowchart TB
-    callers["the GUI · the command line · tests"]
+    callers["the browser UI · the command line · tests"]
     modes["modes/<br/>one module per analysis mode"]
     loop["loop.py<br/>the one optimisation loop"]
     method["the method<br/>built from plugins"]
@@ -44,17 +44,17 @@ flowchart TB
 
 | File | What it does |
 | :--- | :--- |
-| [`loop.py`](loop.py) | **The one optimisation loop.** `initialized_method(run)` looks the method up by name, refuses it before anything is computed if a package it needs is missing or it cannot do what the scenario asks (naming the methods that can), prints the pipeline, meshes the problem and initialises the method. `run_single_with_store(run, on_iteration)` steps it, records every iteration, calls the live callback (the GUI's canvas and Stop button), applies the stopping rule, always calls `method.close()`, checks the limits, and writes the results and `run.json`. `run_single(run)` returns just the final density. |
+| [`loop.py`](loop.py) | **The one optimisation loop.** `initialized_method(run)` looks the method up by name, refuses it before anything is computed if a package it needs is missing or it cannot do what the scenario asks (naming the methods that can), prints the pipeline, meshes the problem and initialises the method. `run_single_with_store(run, on_iteration)` steps it, records every iteration, calls the live callback (used by the browser UI's preview and Stop button), applies the stopping rule, always calls `method.close()`, checks the limits, and writes the results and `run.json`. `run_single(run)` returns just the final density. |
 | [`postprocess.py`](postprocess.py) | **After the run.** `run_postprocessors` applies `run.output.postprocess` to the final design in order; files go to `<run>/post/` and the numbers into `run.json` under `"postprocess"`. One that fails is reported and the others still run. `check_postprocess` refuses an unknown or misconfigured one before the run starts. `postprocess_folder` does the same for a saved run (`toporia post`), from its `run.json`, `final_density.csv` and, for explicit geometry, `final_geometry.json`. `table_metrics` gives the numbers Compare Methods adds as columns. |
 | [`records.py`](records.py) | **What a run leaves behind.** `ResultStore` keeps the per-iteration history (objective, volume, every reported response), writes density snapshots, `final_density.png`, `final_density.csv` and an optional `history.png`; a 3-D design is drawn and tabulated as its depth average and saved whole as `final_density.npy`. `check_limits` judges the final design against the volume budget and every constraint (on the exact value when there is one, e.g. the true peak stress) and `describe_violations` turns broken ones into `WARNING:` lines. `run_record` builds `run.json`: scenario and solver with fingerprints, software versions and git commit, how the run ended, every limit, the final responses, and an outside optimiser's own verdict. |
-| [`pipeline.py`](pipeline.py) | Names what a run is made of: design → filters → physics → objective, constraints → what the optimiser sees → updater, and why any part is unavailable. The console line at the start of every run and the GUI's **Pipeline** panel both come from here. |
+| [`pipeline.py`](pipeline.py) | Names what a run is made of: design → filters → physics → objective, constraints → what the optimiser sees → updater, and why any part is unavailable. The console line at the start of every run and the browser UI's **Pipeline** panel both come from here. |
 
 ### The analysis modes
 
 Each mode builds variants of a `Run` with [`apply_param`](../framework/problem/run.py) — so
 any parameter path can be swept, compared or perturbed — and sends each through the loop.
 
-| File | GUI mode | What it produces |
+| File | Browser UI mode | What it produces |
 | :--- | :--- | :--- |
 | [`modes/single.py`](modes/single.py) | Run One | One optimisation, with a summary of the meshed problem first and `history.png` at the end. |
 | [`modes/sweep.py`](modes/sweep.py) | Sweep · Sweep 2D | One parameter over an `n_rows × n_cols` grid, or two parameters (rows × columns); one run per cell; `sweep_grid.png` / `sweep2d_grid.png`. |

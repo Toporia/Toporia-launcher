@@ -33,7 +33,7 @@ The **Michell cantilever** carries a point load to a clamped circular support. I
 layout is known analytically (Michell 1904: orthogonal spirals leaving the circle at 45°),
 which makes it the check that a method converges to the right *shape*, not only to a low
 number. The analytical optimum is a truss of infinitely many members, so compare layouts
-rather than exact values. Run every method on it with **Compare Methods** in the GUI, or
+rather than exact values. Run every method on it with **Compare Methods** in the browser UI, or
 `toporia benchmark --methods q4+oc q4+mma levelset --problems "Michell Cantilever"`.
 
 ## 📄 Canonical benchmarks not here yet

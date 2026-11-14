@@ -50,7 +50,7 @@ def compare_methods(methods, base_config, on_iteration=None, problem_name=""):
     """Run every method in `methods` (names) on `base_config`'s problem.
 
     Returns (path of methods_grid.png or None, rows): one row per method, a
-    dict with the COLUMNS.  `on_iteration` is the GUI's live callback.
+    dict with the COLUMNS.  `on_iteration` is the browser UI's live callback.
     """
     folder = mode_folder(base_config, "compare_methods")
     methods = list(dict.fromkeys(methods))     # each method once, in the order given
@@ -121,7 +121,7 @@ def _run_method(name, base_config, folder, on_iteration):
         return row
 
     # Keep only the parameters this method declares, so one method's settings
-    # (chosen in the GUI for another) never stop another method's run.
+    # (chosen in the browser UI for another) never stop another method's run.
     own = {p.name for p in method_cls.params}
     params = {key: value for key, value in base_config.solver.method_params.items() if key in own}
     run = (base_config.with_output_dir(folder / _folder_name(method_cls.name))
@@ -156,7 +156,7 @@ grey_level = measure.grey_level
 # ── The table ─────────────────────────────────────────────────────────────────
 
 def format_table(rows):
-    """The rows as an aligned text table for the console and the GUI's log."""
+    """The rows as an aligned text table for the console and browser UI's log."""
     shown = ("problem", "method", "status", "referee_compliance", "objective", "volume",
              "grey_level", "iterations", "solves", "seconds", "feasible")
     if not any(row.get("problem") for row in rows):

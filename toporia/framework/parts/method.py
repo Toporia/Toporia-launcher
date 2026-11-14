@@ -34,7 +34,7 @@ OBJECTIVE = "objective"
 
 @dataclass(frozen=True)
 class Capabilities:
-    """What a method can do, so the engine and GUI can adapt instead of warn.
+    """What a method can do, so the engine and browser UI can adapt instead of warn.
 
     variable_kind   : what the design variables are, e.g. "density" or "level_set"
     accepts_filters : whether solver.filter_specs is honoured
@@ -88,7 +88,7 @@ class OptimizationMethod(ABC):
 
     A method also describes itself through class attributes.  The registry
     (toporia.plugins.methods.METHODS) finds every subclass with a `name`, the
-    GUI builds its panel from `params`, and `capabilities` tells both what the
+    The browser UI builds its panel from `params`, and `capabilities` tells both what the
     method supports.
     """
 

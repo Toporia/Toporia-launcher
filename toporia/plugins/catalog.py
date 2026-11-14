@@ -13,7 +13,7 @@ A *parameter path* addresses one value in a Run:
     load_cases[0].Fmag      a field of the first load case
 
 framework.problem.run.apply_param writes to a path.  This module lists which paths exist
-for a given setup, with human-readable labels — it is what the GUI's sweep,
+for a given setup, with human-readable labels — it is what the browser UI's sweep,
 comparison and sensitivity dropdowns show.  Only numeric parameters are listed,
 because only numbers can be swept.
 """
@@ -85,7 +85,7 @@ def schedulable_paths(method, filter_specs=(), objective=None, constraints=(), i
     """Return [(label, path), ...] for every parameter a schedule may change in this setup.
 
     The same parts as parameter_paths, kept to the parameters each part
-    declares `schedulable` — what the GUI's schedule rows offer.
+    declares `schedulable` — what the browser UI's schedule rows offer.
     """
     method_cls = method_class(method)
     capabilities = method_cls.capabilities

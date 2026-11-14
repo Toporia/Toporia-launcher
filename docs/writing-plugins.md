@@ -46,18 +46,18 @@ may move.
 1. **Write the class** in the right folder (or in your own package — see *Packaging*).
    Give it a `name` (the registry key), a `label` (for menus) and its `params`.
 2. **There is no step 2.** A class with a `name` in the right package *is* registered: it
-   appears in the GUI menus, in `toporia list`, and in configs.
-3. **Check it:** `toporia check updater:my_updater` (or **Check Parts** in the GUI's mode
-   menu, or `conformance(MyUpdater).assert_ok()` in a test). It checks the interface,
-   every gradient against finite differences, and — for an updater — a benchmark against
-   optimality criteria. Fix what it reports.
-4. **Run it** from the GUI: pick it as the updater (or filter, objective, …); the
+   appears in method selection where applicable, in `toporia list`, and in configs.
+3. **Check it:** `toporia check updater:my_updater` (or **Check Parts** in the browser UI,
+   or `conformance(MyUpdater).assert_ok()` in a test). It checks the
+   interface, every gradient against finite differences, and — for an updater — a benchmark
+   against optimality criteria. Fix what it reports.
+4. **Run it** from the UI: pick it as the updater (or filter, objective, …); the
    **Pipeline** panel shows where it sits in the chain.
 5. **Mark it ✅** in the folder's README, with the paper's citation in the module docstring.
 
 ## Parameters
 
-Declare every tunable value as a `Param`. The GUI form, the sweep menus, config
+Declare every tunable value as a `Param`. The browser UI form, the sweep menus, config
 validation and the defaults all come from these declarations:
 
 ```python
@@ -126,7 +126,7 @@ class ProjectedGradient(Updater):
 
 Declare honestly what it can do: `objectives` (which responses it may minimise; `None`
 means any) and `max_constraints` (how many constraints besides the volume budget; `None`
-means any number). The GUI only offers what the pairing can do, and explains the rest.
+means any number). The browser UI only offers what the pairing can do, and explains the rest.
 
 ## An updater: a library that runs its own loop
 
@@ -517,7 +517,7 @@ If your plugin needs a package Toporia does not require, import it inside your m
 dependencies = ("nlopt",)
 ```
 
-Where it is missing, the GUI greys the plugin out with the install command, and a run
+Where it is missing, the browser UI greys the plugin out with the install command, and a run
 asking for it stops at once with that command — instead of failing part-way.
 
 ## Packaging, outside this repository
@@ -533,7 +533,7 @@ my_slsqp      = "my_package.optimisers:MySLSQP"    # or a single class
 
 After `pip install my_package` the plugins appear everywhere Toporia's own do;
 `toporia list` shows which package each one came from. A plugin that fails to import is
-reported (in `toporia list` and the GUI's log) and the others still load. In a notebook,
+reported (in `toporia list` and the browser UI's log) and the others still load. In a notebook,
 `UPDATERS.register(MyUpdater)` does the same for one session.
 
 ## Checklist
@@ -542,5 +542,5 @@ reported (in `toporia list` and the GUI's log) and the others still load. In a n
 - [ ] capabilities honest: `objectives`, `max_constraints` / `requires` / `exact_adjoint` / `dims`
 - [ ] optional packages in `dependencies`, imported lazily
 - [ ] `toporia check kind:name` passes
-- [ ] a run from the GUI looks right, and the Pipeline panel describes it correctly
+- [ ] a run from the browser UI looks right, and the Pipeline panel describes it correctly
 - [ ] the folder README's row says ✅ with a link to the file

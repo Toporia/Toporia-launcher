@@ -14,7 +14,7 @@
     registry.py   plugin discovery
     serialize.py  Scenario / Solver <-> JSON, and fingerprints
 
-Nothing in core imports from toporia.engine, toporia.plugins or toporia.apps.gui
+Nothing in core imports from toporia.engine, toporia.plugins or toporia.apps
 (the registry looks plugins up by package name, at lookup time).  That one-way
 rule is what keeps the data flow readable.
 """

@@ -227,7 +227,7 @@ def compose(model_cls, updater_cls):
 def explain(model_cls, updater_cls):
     """Plain-language reasons why this pairing offers less than one of its parts could.
 
-    Empty when nothing is lost.  The GUI shows these next to the selectors, so a
+    Empty when nothing is lost. The browser UI shows these next to the selectors, so a
     missing objective, constraint or filter list is explained, not just absent.
     """
     notes = []

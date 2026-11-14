@@ -11,7 +11,7 @@ section. Any combination works, in the order given:
 output.postprocess = [{"type": "threshold"}, {"type": "connectivity"}, {"type": "export_dxf"}]
 ```
 
-- **GUI:** the **Post-processing** panel. The post-processors also appear in the Pipeline box.
+- **Browser UI:** the **Post-processing** panel. The post-processors also appear in the Pipeline box.
 - **Command line:** `--set 'postprocess=[{"type": "threshold"}]'` on any run.
 
 **Outputs.**

@@ -20,7 +20,7 @@ def sweep(parameter, min_val, max_val, n_rows, n_cols, base_config, on_iteration
 
     Results go to <output>/sweep_<parameter>/, one sub-folder per value, and
     the grid image to sweep_grid.png there.  `on_iteration(density,
-    objectives, iteration)` is the GUI's live callback.
+    objectives, iteration)` is the browser UI's live callback.
     """
     folder = mode_folder(base_config, f"sweep_{parameter}")
     values = np.linspace(min_val, max_val, n_rows * n_cols)
